@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JDA Networks</title>
 
 <style>
@@ -15,66 +13,47 @@
 }
 
 :root {
-    --green: #075e54;
-    --green-light: #128c7e;
-    --accent: #25d366;
-    --dark: #0b141a;
-    --dark2: #111b21;
-    --dark3: #202c33;
-    --text: #e9edef;
+    --bg: #071017;
+    --header: #071017;
+    --card: #111c23;
+    --search: #202c33;
+    --text: #f1f5f7;
     --muted: #8696a0;
-    --line: #27343a;
+    --green: #20d366;
+    --dark-green: #075e54;
+    --line: #1c292f;
 }
 
-html,
 body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
     font-family: Arial, Helvetica, sans-serif;
-    background: var(--dark);
+    background: var(--bg);
     color: var(--text);
-}
-
-button,
-input {
-    font-family: inherit;
-}
-
-button {
-    border: none;
-    cursor: pointer;
+    min-height: 100vh;
 }
 
 /* APP */
 
 .app {
     width: 100%;
-    height: 100vh;
-    max-width: 600px;
-    margin: auto;
-    background: var(--dark);
-    display: flex;
-    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg);
     position: relative;
+    padding-bottom: 78px;
 }
 
-/* HEADER */
+/* TOP HEADER */
 
-.header {
-    background: var(--dark);
-    padding: 18px 18px 10px;
-    flex-shrink: 0;
-}
-
-.header-top {
+.top-header {
+    height: 74px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 0 24px;
+    background: var(--header);
 }
 
-.logo {
-    font-size: 29px;
+.app-name {
+    font-size: 30px;
     font-weight: 700;
     letter-spacing: -1px;
 }
@@ -82,41 +61,37 @@ button {
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 24px;
 }
 
-.icon-btn {
-    background: transparent;
+.header-icon {
+    font-size: 31px;
+    cursor: pointer;
     color: white;
-    font-size: 27px;
-    width: 32px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.menu {
-    font-size: 30px;
-    line-height: 20px;
 }
 
 /* TABS */
 
 .tabs {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background: var(--dark);
-    margin-top: 14px;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    background: var(--header);
+    border-bottom: 1px solid var(--line);
 }
 
 .tab {
-    color: var(--muted);
-    background: transparent;
-    padding: 13px 4px 12px;
-    font-size: 14px;
-    font-weight: 700;
+    height: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    flex: 1;
 }
 
 .tab.active {
@@ -127,32 +102,31 @@ button {
     content: "";
     position: absolute;
     bottom: 0;
-    left: 15%;
-    right: 15%;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 4px;
+    height: 4px;
+    width: 70%;
+    border-radius: 5px;
+    background: var(--green);
 }
 
 /* SEARCH */
 
-.search-area {
-    background: var(--dark);
-    padding: 10px 12px 12px;
+.search-container {
+    padding: 16px 22px 12px;
 }
 
 .search-box {
-    background: var(--dark3);
-    border-radius: 28px;
-    min-height: 48px;
+    height: 56px;
+    width: 100%;
+    border-radius: 30px;
+    background: var(--search);
     display: flex;
     align-items: center;
-    padding: 0 16px;
-    gap: 12px;
+    padding: 0 20px;
+    gap: 15px;
 }
 
 .search-icon {
-    font-size: 23px;
+    font-size: 28px;
     color: var(--muted);
 }
 
@@ -162,79 +136,64 @@ button {
     outline: none;
     background: transparent;
     color: white;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .search-box input::placeholder {
     color: var(--muted);
 }
 
-/* CONTENT */
+/* CHAT LIST */
 
-.content {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background: var(--dark);
-    padding-bottom: 92px;
-}
-
-.content::-webkit-scrollbar {
-    width: 3px;
-}
-
-.content::-webkit-scrollbar-thumb {
-    background: #39464c;
-}
-
-/* CHAT ROW */
-
-.chat-row {
+.chat-list {
     width: 100%;
-    min-height: 76px;
+}
+
+.chat {
+    min-height: 94px;
     display: flex;
     align-items: center;
-    padding: 9px 15px;
-    gap: 13px;
-    background: var(--dark);
-    border-bottom: 1px solid rgba(255,255,255,0.025);
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.chat-row:active {
-    background: var(--dark3);
+.chat:hover {
+    background: #111b21;
 }
 
 .avatar {
-    width: 57px;
-    height: 57px;
-    min-width: 57px;
+    width: 66px;
+    height: 66px;
+    min-width: 66px;
     border-radius: 50%;
     object-fit: cover;
-    background: #344047;
+    margin-right: 17px;
 }
 
 .default-avatar {
+    background: #30444f;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #37474f;
-    font-size: 23px;
+    font-size: 30px;
 }
 
-.chat-info {
-    min-width: 0;
+.chat-content {
     flex: 1;
+    min-width: 0;
 }
 
 .chat-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .chat-name {
-    font-size: 17px;
+    font-size: 19px;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
@@ -243,380 +202,241 @@ button {
 
 .chat-time {
     color: var(--muted);
-    font-size: 12px;
+    font-size: 13px;
     white-space: nowrap;
 }
 
-.chat-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 5px;
-    gap: 10px;
-}
-
-.last-message {
+.chat-preview {
     color: var(--muted);
-    font-size: 14px;
+    margin-top: 6px;
+    font-size: 16px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.unread {
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #061b12;
+/* AI CHAT */
+
+.ai-screen {
+    display: none;
+    min-height: calc(100vh - 78px);
+    background: #0b141a;
+}
+
+.ai-header {
+    height: 70px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
+    padding: 0 18px;
+    gap: 15px;
+    background: #202c33;
 }
 
-/* EMPTY */
-
-.empty {
-    min-height: 350px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 30px;
-    color: var(--muted);
-}
-
-.empty-icon {
-    width: 82px;
-    height: 82px;
-    border-radius: 50%;
-    background: var(--dark3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 42px;
-    margin-bottom: 20px;
-}
-
-.empty h2 {
-    color: var(--text);
-    font-size: 21px;
-    margin-bottom: 8px;
-}
-
-.empty p {
-    font-size: 15px;
-}
-
-/* AI */
-
-.ai-section {
-    padding: 10px 14px 5px;
-}
-
-.ai-card {
-    background: var(--dark2);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+.back {
+    font-size: 30px;
+    cursor: pointer;
 }
 
 .ai-avatar {
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid var(--accent);
 }
 
 .ai-info {
     flex: 1;
-    min-width: 0;
 }
 
 .ai-name {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 .ai-status {
-    color: var(--muted);
+    color: var(--green);
     font-size: 13px;
     margin-top: 3px;
 }
 
-.ai-button {
-    background: var(--green-light);
-    color: white;
-    border-radius: 20px;
-    padding: 9px 13px;
-    font-weight: 700;
+.ai-messages {
+    padding: 22px 15px 100px;
+    min-height: calc(100vh - 148px);
+    background:
+        radial-gradient(circle at center, #172229 0, #0b141a 65%);
 }
 
-/* BOTTOM NAV */
-
-.bottom-nav {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 70px;
-    background: #111b21;
-    border-top: 1px solid var(--line);
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    z-index: 10;
+.ai-welcome {
+    text-align: center;
+    margin-top: 100px;
 }
 
-.bottom-item {
-    background: transparent;
-    color: var(--muted);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    font-size: 11px;
-    font-weight: 600;
-}
-
-.bottom-item span:first-child {
-    font-size: 23px;
-}
-
-.bottom-item.active {
-    color: var(--accent);
-}
-
-/* FLOATING PLUS */
-
-.fab {
-    position: absolute;
-    right: 18px;
-    bottom: 82px;
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #052e1c;
-    font-size: 34px;
-    font-weight: 300;
-    box-shadow: 0 5px 18px rgba(0,0,0,.45);
-    z-index: 11;
-}
-
-.fab:active {
-    transform: scale(.94);
-}
-
-/* MODAL */
-
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.7);
-    display: none;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 50;
-}
-
-.overlay.show {
-    display: flex;
-}
-
-.modal {
-    width: 100%;
-    max-width: 600px;
-    background: #202c33;
-    border-radius: 22px 22px 0 0;
-    padding: 22px;
-    animation: slideUp .2s ease;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0);
-    }
-}
-
-.modal h2 {
-    font-size: 21px;
-    margin-bottom: 18px;
-}
-
-.modal-option {
-    width: 100%;
-    padding: 16px 5px;
-    background: transparent;
-    color: white;
-    text-align: left;
-    border-bottom: 1px solid var(--line);
-    font-size: 16px;
-}
-
-.modal-option span {
-    display: inline-flex;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: var(--green-light);
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
-}
-
-.close-modal {
-    margin-top: 15px;
-    width: 100%;
-    padding: 13px;
-    background: #37474f;
-    color: white;
-    border-radius: 25px;
-    font-size: 15px;
-}
-
-/* CHAT SCREEN */
-
-.chat-screen {
-    position: absolute;
-    inset: 0;
-    background: #0b141a;
-    display: none;
-    flex-direction: column;
-    z-index: 40;
-}
-
-.chat-screen.show {
-    display: flex;
-}
-
-.chat-header {
-    height: 67px;
-    background: var(--green);
-    display: flex;
-    align-items: center;
-    padding: 7px 10px;
-    gap: 8px;
-}
-
-.back-btn {
-    background: transparent;
-    color: white;
-    font-size: 28px;
-    padding: 5px;
-}
-
-.chat-header-avatar {
-    width: 43px;
-    height: 43px;
+.ai-welcome img {
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     object-fit: cover;
+    margin-bottom: 15px;
 }
 
-.chat-header-info {
-    flex: 1;
+.ai-welcome h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
 }
 
-.chat-header-name {
-    font-weight: 700;
-    font-size: 16px;
-}
-
-.chat-header-status {
-    font-size: 12px;
-    color: #d2eee8;
-    margin-top: 3px;
-}
-
-.header-call {
-    color: white;
-    background: transparent;
-    font-size: 22px;
-    padding: 8px;
-}
-
-.messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px 12px;
-    background:
-        radial-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
-    background-size: 16px 16px;
+.ai-welcome p {
+    color: var(--muted);
+    font-size: 15px;
 }
 
 .message {
-    max-width: 78%;
-    padding: 8px 10px;
-    border-radius: 9px;
-    margin-bottom: 8px;
-    font-size: 15px;
-    line-height: 1.35;
-    position: relative;
+    max-width: 82%;
+    padding: 10px 13px;
+    border-radius: 10px;
+    margin: 12px 0;
+    line-height: 1.4;
+    font-size: 16px;
 }
 
-.message.received {
+.message.ai {
     background: #202c33;
     margin-right: auto;
 }
 
-.message.sent {
+.message.user {
     background: #005c4b;
     margin-left: auto;
 }
 
-.message-time {
-    color: #aeb8bd;
-    font-size: 10px;
-    float: right;
-    margin-left: 10px;
-    margin-top: 4px;
-}
-
-.message-input-area {
+.ai-input-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     background: #202c33;
-    padding: 8px;
+    padding: 10px;
     display: flex;
-    gap: 7px;
-    align-items: center;
+    gap: 8px;
+    z-index: 20;
 }
 
-.message-input {
+.ai-input {
     flex: 1;
     border: none;
     outline: none;
+    border-radius: 25px;
+    padding: 13px 17px;
     background: #2a3942;
     color: white;
-    border-radius: 23px;
-    padding: 12px 16px;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .send-btn {
-    width: 45px;
-    height: 45px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: var(--accent);
-    color: #06351f;
-    font-size: 21px;
+    border: none;
+    background: var(--green);
+    font-size: 22px;
+    cursor: pointer;
 }
 
-/* RESPONSIVE */
+/* PLUS BUTTON */
 
-@media (min-width: 601px) {
-    .app {
-        border-left: 1px solid #263238;
-        border-right: 1px solid #263238;
+.plus-button {
+    position: fixed;
+    right: 24px;
+    bottom: 94px;
+    width: 68px;
+    height: 68px;
+    border-radius: 20px;
+    background: var(--green);
+    color: #071017;
+    border: none;
+    font-size: 42px;
+    line-height: 1;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    cursor: pointer;
+    z-index: 10;
+}
+
+.plus-button:active {
+    transform: scale(0.94);
+}
+
+/* BOTTOM NAVIGATION */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 78px;
+    background: #111b21;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 15;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.nav-item span:first-child {
+    font-size: 25px;
+}
+
+.nav-item.active {
+    color: white;
+}
+
+/* EMPTY STATES */
+
+.empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 70px 20px;
+}
+
+.empty-icon {
+    font-size: 60px;
+    margin-bottom: 15px;
+}
+
+.empty h2 {
+    color: white;
+    margin-bottom: 8px;
+}
+
+/* DESKTOP */
+
+@media (min-width: 700px) {
+
+    .app,
+    .bottom-nav,
+    .ai-input-area {
+        max-width: 700px;
+        margin: auto;
+    }
+
+    .bottom-nav,
+    .ai-input-area {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .plus-button {
+        right: calc(50% - 325px);
     }
 }
 </style>
@@ -626,72 +446,58 @@ button {
 
 <div class="app">
 
-    <!-- HEADER -->
-    <header class="header">
+    <!-- MAIN HOME SCREEN -->
+    <div id="homeScreen">
 
-        <div class="header-top">
-
-            <div class="logo">
-                JDA Networks
-            </div>
+        <header class="top-header">
+            <div class="app-name">JDA Networks</div>
 
             <div class="header-actions">
-                <button class="icon-btn" onclick="focusSearch()">⌕</button>
-                <button class="icon-btn menu" onclick="openMenu()">⋮</button>
+                <div class="header-icon" onclick="focusSearch()">⌕</div>
+                <div class="header-icon" onclick="showMenu()">⋮</div>
             </div>
-
-        </div>
+        </header>
 
         <!-- TABS -->
         <div class="tabs">
 
-            <button class="tab active" onclick="switchTab('chats', this)">
+            <div class="tab active" onclick="changeTab(this, 'chats')">
                 CHATS
-            </button>
+            </div>
 
-            <button class="tab" onclick="switchTab('updates', this)">
+            <div class="tab" onclick="changeTab(this, 'updates')">
                 UPDATES
-            </button>
+            </div>
 
-            <button class="tab" onclick="switchTab('communities', this)">
+            <div class="tab" onclick="changeTab(this, 'groups')">
                 GROUPS
-            </button>
+            </div>
 
-            <button class="tab" onclick="switchTab('calls', this)">
+            <div class="tab" onclick="changeTab(this, 'calls')">
                 CALLS
-            </button>
+            </div>
 
         </div>
 
-    </header>
+        <!-- SEARCH -->
+        <div class="search-container">
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
 
-    <!-- SEARCH -->
-    <div class="search-area">
-
-        <div class="search-box">
-
-            <span class="search-icon">⌕</span>
-
-            <input
-                id="searchInput"
-                type="text"
-                placeholder="Search chats"
-                oninput="searchChats()"
-            >
-
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="Search chats"
+                    oninput="searchChats()"
+                >
+            </div>
         </div>
 
-    </div>
-
-    <!-- CONTENT -->
-    <main class="content" id="content">
-
-        <div id="chatList">
+        <!-- CHAT LIST -->
+        <div class="chat-list" id="chatList">
 
             <!-- OUMA JONATHAN -->
-            <div class="chat-row"
-                 onclick="openAI()"
-                 data-name="Ouma Jonathan">
+            <div class="chat" data-name="Ouma Jonathan" onclick="openOuma()">
 
                 <img
                     class="avatar"
@@ -699,10 +505,9 @@ button {
                     alt="Ouma Jonathan"
                 >
 
-                <div class="chat-info">
+                <div class="chat-content">
 
                     <div class="chat-top">
-
                         <div class="chat-name">
                             Ouma Jonathan
                         </div>
@@ -710,31 +515,24 @@ button {
                         <div class="chat-time">
                             now
                         </div>
-
                     </div>
 
-                    <div class="chat-bottom">
-
-                        <div class="last-message">
-                            Ask Ouma Jonathan anything
-                        </div>
-
+                    <div class="chat-preview">
+                        Ask Ouma Jonathan anything
                     </div>
 
                 </div>
 
             </div>
 
-            <!-- SAMPLE CHAT -->
-            <div class="chat-row"
-                 onclick="openChat('JDA Network')"
-                 data-name="JDA Network">
+            <!-- JDA NETWORK -->
+            <div class="chat" data-name="JDA Network" onclick="openNetwork()">
 
                 <div class="avatar default-avatar">
                     👥
                 </div>
 
-                <div class="chat-info">
+                <div class="chat-content">
 
                     <div class="chat-top">
 
@@ -748,12 +546,8 @@ button {
 
                     </div>
 
-                    <div class="chat-bottom">
-
-                        <div class="last-message">
-                            Your messages will appear here
-                        </div>
-
+                    <div class="chat-preview">
+                        Your messages will appear here
                     </div>
 
                 </div>
@@ -763,221 +557,111 @@ button {
         </div>
 
         <!-- EMPTY SEARCH -->
-        <div class="empty" id="emptySearch" style="display:none;">
+        <div id="emptySearch" class="empty" style="display:none;">
+            <div class="empty-icon">🔎</div>
+            <h2>No chats found</h2>
+            <p>Try another search.</p>
+        </div>
 
-            <div class="empty-icon">
-                🔎
+        <!-- LARGE PLUS -->
+        <button class="plus-button" onclick="newChat()">+</button>
+
+        <!-- BOTTOM NAV -->
+        <nav class="bottom-nav">
+
+            <div class="nav-item active" onclick="bottomNav(this)">
+                <span>▰</span>
+                <span>Chats</span>
             </div>
 
-            <h2>No chats found</h2>
+            <div class="nav-item" onclick="bottomNav(this)">
+                <span>◉</span>
+                <span>Updates</span>
+            </div>
 
-            <p>Try searching for another name.</p>
+            <div class="nav-item" onclick="bottomNav(this)">
+                <span>♧</span>
+                <span>Communities</span>
+            </div>
+
+            <div class="nav-item" onclick="bottomNav(this)">
+                <span>☎</span>
+                <span>Calls</span>
+            </div>
+
+        </nav>
+
+    </div>
+
+
+    <!-- OUMA AI CHAT SCREEN -->
+
+    <div class="ai-screen" id="aiScreen">
+
+        <div class="ai-header">
+
+            <div class="back" onclick="closeOuma()">
+                ‹
+            </div>
+
+            <img
+                class="ai-avatar"
+                src="IMG-20260826-WA0039.jpg"
+                alt="Ouma Jonathan"
+            >
+
+            <div class="ai-info">
+
+                <div class="ai-name">
+                    Ouma Jonathan
+                </div>
+
+                <div class="ai-status">
+                    AI assistant • online
+                </div>
+
+            </div>
+
+            <div class="header-icon">
+                ⋮
+            </div>
 
         </div>
 
-        <!-- AI SECTION AT BOTTOM -->
-        <div class="ai-section">
+        <div class="ai-messages" id="aiMessages">
 
-            <div class="ai-card"
-                 onclick="openAI()">
+            <div class="ai-welcome">
 
                 <img
-                    class="ai-avatar"
                     src="IMG-20260826-WA0039.jpg"
                     alt="Ouma Jonathan"
                 >
 
-                <div class="ai-info">
+                <h2>Ouma Jonathan</h2>
 
-                    <div class="ai-name">
-                        Ouma Jonathan
-                    </div>
+                <p>
+                    Your JDA Networks AI assistant
+                </p>
 
-                    <div class="ai-status">
-                        AI assistant • Tap to chat
-                    </div>
+            </div>
 
-                </div>
-
-                <button class="ai-button">
-                    Chat
-                </button>
-
+            <div class="message ai">
+                Hello 👋 I'm Ouma Jonathan. How can I help you today?
             </div>
 
         </div>
 
-    </main>
-
-    <!-- FLOATING PLUS -->
-    <button class="fab" onclick="openNewChat()" aria-label="New chat">
-        +
-    </button>
-
-    <!-- BOTTOM NAV -->
-    <nav class="bottom-nav">
-
-        <button class="bottom-item active"
-                onclick="bottomTab('chats', this)">
-            <span>▤</span>
-            <span>Chats</span>
-        </button>
-
-        <button class="bottom-item"
-                onclick="bottomTab('updates', this)">
-            <span>◉</span>
-            <span>Updates</span>
-        </button>
-
-        <button class="bottom-item"
-                onclick="bottomTab('groups', this)">
-            <span>♧</span>
-            <span>Groups</span>
-        </button>
-
-        <button class="bottom-item"
-                onclick="bottomTab('calls', this)">
-            <span>☎</span>
-            <span>Calls</span>
-        </button>
-
-    </nav>
-
-    <!-- NEW CHAT MODAL -->
-    <div class="overlay" id="newChatModal">
-
-        <div class="modal">
-
-            <h2>New chat</h2>
-
-            <button class="modal-option" onclick="startNewChat()">
-                <span>👤</span>
-                New contact
-            </button>
-
-            <button class="modal-option" onclick="showLogin()">
-                <span>🔐</span>
-                Sign in to JDA Networks
-            </button>
-
-            <button class="modal-option" onclick="openAI()">
-                <span>🤖</span>
-                Chat with Ouma Jonathan
-            </button>
-
-            <button class="close-modal"
-                    onclick="closeNewChat()">
-                Cancel
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- SIGN IN MODAL -->
-    <div class="overlay" id="loginModal">
-
-        <div class="modal">
-
-            <h2>Sign in to JDA Networks</h2>
+        <div class="ai-input-area">
 
             <input
-                id="loginName"
-                class="message-input"
-                style="width:100%; margin-bottom:10px;"
-                placeholder="Your name"
+                class="ai-input"
+                id="aiInput"
+                type="text"
+                placeholder="Message Ouma Jonathan"
+                onkeydown="handleEnter(event)"
             >
 
-            <input
-                id="loginPhone"
-                class="message-input"
-                style="width:100%;"
-                placeholder="Mobile number"
-                type="tel"
-            >
-
-            <button
-                class="ai-button"
-                style="width:100%; margin-top:15px; padding:14px;"
-                onclick="signIn()">
-                Continue
-            </button>
-
-            <button
-                class="close-modal"
-                onclick="closeLogin()">
-                Cancel
-            </button>
-
-        </div>
-
-    </div>
-
-    <!-- CHAT SCREEN -->
-    <div class="chat-screen" id="chatScreen">
-
-        <div class="chat-header">
-
-            <button class="back-btn"
-                    onclick="closeChat()">
-                ‹
-            </button>
-
-            <img
-                id="chatAvatar"
-                class="chat-header-avatar"
-                src="IMG-20260826-WA0039.jpg"
-                alt=""
-            >
-
-            <div class="chat-header-info">
-
-                <div
-                    class="chat-header-name"
-                    id="chatName">
-                    Ouma Jonathan
-                </div>
-
-                <div
-                    class="chat-header-status"
-                    id="chatStatus">
-                    online
-                </div>
-
-            </div>
-
-            <button class="header-call"
-                    onclick="alert('Calling will be connected when the calling backend is added.')">
-                ☎
-            </button>
-
-            <button class="header-call">
-                ⋮
-            </button>
-
-        </div>
-
-        <div class="messages" id="messages">
-
-            <div class="message received">
-                Hello 👋 I'm Ouma Jonathan. How can I help you?
-                <span class="message-time">now</span>
-            </div>
-
-        </div>
-
-        <div class="message-input-area">
-
-            <input
-                id="messageInput"
-                class="message-input"
-                placeholder="Message"
-                onkeydown="handleMessageKey(event)"
-            >
-
-            <button
-                class="send-btn"
-                onclick="sendMessage()">
+            <button class="send-btn" onclick="sendMessage()">
                 ➤
             </button>
 
@@ -990,285 +674,81 @@ button {
 
 <script>
 
-/* =========================
-   BASIC NAVIGATION
-========================= */
+/* OPEN OUMA */
 
-function switchTab(name, button) {
+function openOuma() {
 
-    document.querySelectorAll(".tab")
-        .forEach(tab => tab.classList.remove("active"));
+    document.getElementById("homeScreen").style.display = "none";
 
-    button.classList.add("active");
+    document.getElementById("aiScreen").style.display = "block";
 
-    const input = document.getElementById("searchInput");
+    window.scrollTo(0, 0);
 
-    if (name === "chats") {
-        input.placeholder = "Search chats";
-        showChats();
-    }
-
-    if (name === "updates") {
-        input.placeholder = "Search updates";
-        showEmpty("Updates");
-    }
-
-    if (name === "communities") {
-        input.placeholder = "Search groups";
-        showEmpty("Groups");
-    }
-
-    if (name === "calls") {
-        input.placeholder = "Search calls";
-        showEmpty("Calls");
-    }
+    setTimeout(function() {
+        document.getElementById("aiInput").focus();
+    }, 300);
 }
 
 
-function bottomTab(name, button) {
+/* CLOSE OUMA */
 
-    document.querySelectorAll(".bottom-item")
-        .forEach(item => item.classList.remove("active"));
+function closeOuma() {
 
-    button.classList.add("active");
+    document.getElementById("aiScreen").style.display = "none";
 
-    if (name === "chats") {
-        showChats();
-    } else {
-        showEmpty(name);
-    }
+    document.getElementById("homeScreen").style.display = "block";
+
+    window.scrollTo(0, 0);
 }
 
 
-function showChats() {
+/* SEND AI MESSAGE */
 
-    document.getElementById("chatList").style.display = "block";
-    document.querySelector(".ai-section").style.display = "block";
-    document.getElementById("emptySearch").style.display = "none";
-}
+function sendMessage() {
 
+    const input = document.getElementById("aiInput");
+    const text = input.value.trim();
 
-function showEmpty(name) {
-
-    document.getElementById("chatList").style.display = "none";
-    document.querySelector(".ai-section").style.display = "none";
-
-    const empty = document.getElementById("emptySearch");
-
-    empty.style.display = "flex";
-
-    empty.querySelector("h2").textContent =
-        "No " + name.toLowerCase() + " yet";
-
-    empty.querySelector("p").textContent =
-        "Your " + name.toLowerCase() + " will appear here.";
-}
-
-
-/* =========================
-   SEARCH
-========================= */
-
-function focusSearch() {
-
-    document.getElementById("searchInput").focus();
-}
-
-
-function searchChats() {
-
-    const value =
-        document.getElementById("searchInput")
-        .value
-        .toLowerCase()
-        .trim();
-
-    const rows =
-        document.querySelectorAll(".chat-row");
-
-    let found = false;
-
-    rows.forEach(row => {
-
-        const name =
-            row.dataset.name.toLowerCase();
-
-        if (!value || name.includes(value)) {
-
-            row.style.display = "flex";
-            found = true;
-
-        } else {
-
-            row.style.display = "none";
-
-        }
-
-    });
-
-    document.getElementById("emptySearch").style.display =
-        found ? "none" : "flex";
-}
-
-
-/* =========================
-   NEW CHAT
-========================= */
-
-function openNewChat() {
-
-    document
-        .getElementById("newChatModal")
-        .classList.add("show");
-}
-
-
-function closeNewChat() {
-
-    document
-        .getElementById("newChatModal")
-        .classList.remove("show");
-}
-
-
-function startNewChat() {
-
-    closeNewChat();
-
-    alert(
-        "New contacts will sign in to JDA Networks using their own phone number. Real account registration will be connected to the backend later."
-    );
-}
-
-
-/* =========================
-   SIGN IN
-========================= */
-
-function showLogin() {
-
-    closeNewChat();
-
-    document
-        .getElementById("loginModal")
-        .classList.add("show");
-}
-
-
-function closeLogin() {
-
-    document
-        .getElementById("loginModal")
-        .classList.remove("show");
-}
-
-
-function signIn() {
-
-    const name =
-        document.getElementById("loginName").value.trim();
-
-    const phone =
-        document.getElementById("loginPhone").value.trim();
-
-    if (!name || !phone) {
-
-        alert("Please enter your name and mobile number.");
-
+    if (!text) {
         return;
     }
 
-    localStorage.setItem(
-        "jdaUser",
-        JSON.stringify({
-            name: name,
-            phone: phone
-        })
-    );
+    const messages = document.getElementById("aiMessages");
 
-    closeLogin();
+    const userMessage = document.createElement("div");
 
-    alert(
-        "Welcome to JDA Networks, " + name + "!"
-    );
+    userMessage.className = "message user";
+
+    userMessage.textContent = text;
+
+    messages.appendChild(userMessage);
+
+    input.value = "";
+
+    messages.scrollTop = messages.scrollHeight;
+
+    /* Temporary demo response */
+
+    setTimeout(function() {
+
+        const aiMessage = document.createElement("div");
+
+        aiMessage.className = "message ai";
+
+        aiMessage.textContent =
+            "I'm Ouma Jonathan 🤖. Your message was received. Connect an AI backend to give me full AI responses.";
+
+        messages.appendChild(aiMessage);
+
+        messages.scrollTop = messages.scrollHeight;
+
+    }, 700);
 }
 
 
-/* =========================
-   OUMA JONATHAN AI
-========================= */
+/* ENTER TO SEND */
 
-function openAI() {
-
-    const screen =
-        document.getElementById("chatScreen");
-
-    screen.classList.add("show");
-
-    document.getElementById("chatName")
-        .textContent = "Ouma Jonathan";
-
-    document.getElementById("chatStatus")
-        .textContent = "online";
-
-    document.getElementById("chatAvatar")
-        .src = "IMG-20260826-WA0039.jpg";
-
-    document.getElementById("messageInput")
-        .focus();
-}
-
-
-/* =========================
-   NORMAL CHAT
-========================= */
-
-function openChat(name) {
-
-    document
-        .getElementById("chatScreen")
-        .classList.add("show");
-
-    document
-        .getElementById("chatName")
-        .textContent = name;
-
-    document
-        .getElementById("chatStatus")
-        .textContent = "online";
-
-    document
-        .getElementById("chatAvatar")
-        .src = "IMG-20260826-WA0039.jpg";
-
-    document
-        .getElementById("messages")
-        .innerHTML = `
-            <div class="message received">
-                Welcome to JDA Networks 👋
-                <span class="message-time">now</span>
-            </div>
-        `;
-
-    document
-        .getElementById("messageInput")
-        .focus();
-}
-
-
-function closeChat() {
-
-    document
-        .getElementById("chatScreen")
-        .classList.remove("show");
-}
-
-
-/* =========================
-   MESSAGES
-========================= */
-
-function handleMessageKey(event) {
+function handleEnter(event) {
 
     if (event.key === "Enter") {
         sendMessage();
@@ -1276,123 +756,129 @@ function handleMessageKey(event) {
 }
 
 
-function sendMessage() {
+/* SEARCH */
+
+function searchChats() {
 
     const input =
-        document.getElementById("messageInput");
+        document.getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
 
-    const text =
-        input.value.trim();
+    const chats =
+        document.querySelectorAll(".chat");
 
-    if (!text) return;
+    let found = false;
 
-    const messages =
-        document.getElementById("messages");
+    chats.forEach(function(chat) {
 
-    const sent =
-        document.createElement("div");
+        const name =
+            chat.getAttribute("data-name").toLowerCase();
 
-    sent.className = "message sent";
+        if (name.includes(input)) {
 
-    sent.innerHTML =
-        escapeHTML(text) +
-        ' <span class="message-time">now ✓✓</span>';
+            chat.style.display = "flex";
 
-    messages.appendChild(sent);
+            found = true;
 
-    input.value = "";
+        } else {
 
-    messages.scrollTop =
-        messages.scrollHeight;
+            chat.style.display = "none";
 
-    /* Ouma Jonathan demo reply */
+        }
 
-    if (
-        document
-            .getElementById("chatName")
-            .textContent === "Ouma Jonathan"
-    ) {
+    });
 
-        setTimeout(() => {
-
-            const reply =
-                document.createElement("div");
-
-            reply.className =
-                "message received";
-
-            reply.innerHTML =
-                getAIReply(text) +
-                ' <span class="message-time">now</span>';
-
-            messages.appendChild(reply);
-
-            messages.scrollTop =
-                messages.scrollHeight;
-
-        }, 700);
-    }
+    document.getElementById("emptySearch").style.display =
+        found ? "none" : "block";
 }
 
 
-function getAIReply(message) {
+/* SEARCH ICON */
 
-    const text =
-        message.toLowerCase();
+function focusSearch() {
 
-    if (text.includes("hello") ||
-        text.includes("hi") ||
-        text.includes("hlo")) {
+    document.getElementById("searchInput").focus();
 
-        return "Hello 👋 I'm Ouma Jonathan. Nice to hear from you.";
-    }
-
-    if (text.includes("name")) {
-
-        return "My name is Ouma Jonathan, the AI assistant inside JDA Networks.";
-    }
-
-    if (text.includes("help")) {
-
-        return "Of course. Tell me what you need help with and I'll do my best.";
-    }
-
-    if (text.includes("jda")) {
-
-        return "JDA Networks is your messaging platform. 💬";
-    }
-
-    return "I received your message 👍. I'm Ouma Jonathan, and I'm ready to help.";
+    window.scrollTo({
+        top: 100,
+        behavior: "smooth"
+    });
 }
 
 
-/* =========================
-   SECURITY
-========================= */
+/* NEW CHAT */
 
-function escapeHTML(text) {
+function newChat() {
 
-    const div =
-        document.createElement("div");
+    openOuma();
 
-    div.textContent = text;
-
-    return div.innerHTML;
 }
 
 
-/* =========================
-   MENU
-========================= */
+/* NETWORK */
 
-function openMenu() {
+function openNetwork() {
 
     alert(
-        "JDA Networks\n\nSettings\nPrivacy\nNotifications\nAbout JDA Networks"
+        "JDA Network chat is ready. Member and group messaging can be connected to the database next."
     );
+
+}
+
+
+/* TABS */
+
+function changeTab(element, tab) {
+
+    document
+        .querySelectorAll(".tab")
+        .forEach(function(item) {
+            item.classList.remove("active");
+        });
+
+    element.classList.add("active");
+
+    if (tab !== "chats") {
+
+        alert(
+            tab.charAt(0).toUpperCase() +
+            tab.slice(1) +
+            " section is ready to be connected."
+        );
+
+    }
+
+}
+
+
+/* BOTTOM NAV */
+
+function bottomNav(element) {
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(function(item) {
+            item.classList.remove("active");
+        });
+
+    element.classList.add("active");
+
+}
+
+
+/* MENU */
+
+function showMenu() {
+
+    alert(
+        "JDA Networks\n\nSettings\nPrivacy\nNotifications\nHelp"
+    );
+
 }
 
 </script>
 
 </body>
-  </html>
+      </html>

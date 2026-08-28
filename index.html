@@ -8,311 +8,220 @@
 <style>
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 body {
+  margin: 0;
   font-family: Arial, sans-serif;
   background: #f2f6fc;
   color: #172033;
 }
 
 header {
-  background: #18345f;
+  background: #17345f;
   color: white;
-  padding: 20px;
+  padding: 22px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 
 header h1 {
-  font-size: 25px;
-}
-
-.status {
-  font-size: 15px;
+  margin: 0;
+  font-size: 28px;
 }
 
 .connected {
-  color: #7bdc4c;
+  color: #71d34a;
+  font-size: 17px;
 }
 
 .container {
   max-width: 700px;
   margin: auto;
-  padding: 20px;
+  padding: 25px 18px 50px;
 }
 
 .card {
   background: white;
-  border-radius: 22px;
-  padding: 28px;
-  margin-bottom: 22px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  border-radius: 24px;
+  padding: 30px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
 }
 
-.welcome h2 {
-  font-size: 40px;
-  margin-bottom: 20px;
+.hero h2 {
+  font-size: 42px;
+  margin: 0 0 20px;
 }
 
-.welcome p {
-  font-size: 21px;
+.hero p {
+  font-size: 22px;
   line-height: 1.5;
+  margin: 0;
 }
 
 .section-title {
-  font-size: 28px;
-  margin-bottom: 20px;
-}
-
-.search {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  font-size: 16px;
-  margin-bottom: 15px;
+  font-size: 30px;
+  margin: 0 0 25px;
 }
 
 .member {
+  border: 1px solid #e1e5ec;
+  border-radius: 18px;
+  padding: 18px;
+  margin-bottom: 15px;
+}
+
+.member-top {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 15px 0;
-  border-bottom: 1px solid #eee;
+  align-items: center;
   gap: 10px;
 }
 
-.member:last-child {
-  border-bottom: none;
-}
-
-.member-info {
-  flex: 1;
-}
-
 .member-name {
+  font-size: 22px;
   font-weight: bold;
-  font-size: 19px;
 }
 
-.member-phone {
-  color: #777;
-  margin-top: 5px;
+.phone {
+  color: #666;
+  margin-top: 6px;
 }
 
-.member-status {
+.offline {
   color: #777;
-  font-size: 14px;
+}
+
+.online {
+  color: #49ad35;
 }
 
 button {
-  border: none;
+  border: 0;
   border-radius: 12px;
-  padding: 13px 18px;
-  font-size: 15px;
+  padding: 14px 20px;
+  font-size: 17px;
   cursor: pointer;
 }
 
-.primary {
-  background: #18345f;
+.add-btn {
+  background: #17345f;
   color: white;
+  margin-top: 10px;
 }
 
-.primary:hover {
-  background: #102747;
-}
-
-.chat-button {
-  background: #1685d8;
+.chat-btn {
+  background: #1687d9;
   color: white;
+  margin-top: 15px;
+  width: 100%;
 }
 
-.delete-button {
+.delete-btn {
   background: #eee;
-  color: #d33;
-  padding: 9px 12px;
+  color: #c62828;
+  margin-top: 10px;
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  border: 1px solid #ccd3df;
+  border-radius: 12px;
+  font-size: 17px;
+  margin: 8px 0 15px;
+}
+
+.form-title {
+  font-size: 25px;
+  margin-top: 0;
 }
 
 .empty {
   color: #777;
-  font-size: 17px;
+  font-size: 18px;
 }
 
-.modal {
+#chatScreen {
   display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  z-index: 100;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal-box {
-  background: white;
-  width: 100%;
-  max-width: 450px;
-  border-radius: 20px;
-  padding: 25px;
-}
-
-.modal-box h2 {
-  margin-bottom: 20px;
-}
-
-.input {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-bottom: 14px;
-  font-size: 16px;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.cancel {
-  background: #eee;
-}
-
-.chat-screen {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #f2f6fc;
-  z-index: 200;
 }
 
 .chat-header {
-  background: #18345f;
-  color: white;
-  padding: 18px;
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-.back {
-  background: transparent;
-  color: white;
-  font-size: 25px;
-  padding: 5px;
+.back-btn {
+  background: #eee;
+  color: #17345f;
+  padding: 10px 15px;
 }
 
-.chat-header-info {
-  flex: 1;
-}
-
-.chat-header-info strong {
-  display: block;
-  font-size: 19px;
-}
-
-.chat-header-info span {
-  font-size: 13px;
-  color: #b9f5a1;
+.chat-header h2 {
+  margin: 0;
 }
 
 .messages {
-  height: calc(100vh - 135px);
+  height: 430px;
   overflow-y: auto;
-  padding: 20px;
+  background: #f3f6fa;
+  border-radius: 18px;
+  padding: 15px;
+  margin: 20px 0;
 }
 
 .message {
-  max-width: 78%;
+  max-width: 80%;
   padding: 12px 15px;
-  border-radius: 16px;
-  margin-bottom: 12px;
+  border-radius: 18px;
+  margin: 10px 0;
   line-height: 1.4;
 }
 
 .sent {
-  background: #18345f;
+  background: #17345f;
   color: white;
   margin-left: auto;
-  border-bottom-right-radius: 4px;
 }
 
 .received {
   background: white;
-  margin-right: auto;
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  color: #172033;
 }
 
-.message-time {
-  display: block;
-  font-size: 11px;
-  opacity: .7;
-  margin-top: 5px;
-}
-
-.chat-input {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  padding: 10px;
+.send-area {
   display: flex;
   gap: 8px;
 }
 
-.chat-input input {
-  flex: 1;
-  padding: 13px;
-  border: 1px solid #ddd;
-  border-radius: 25px;
-  font-size: 16px;
+.send-area input {
+  margin: 0;
 }
 
-.send {
-  background: #1685d8;
+.send-btn {
+  background: #1687d9;
   color: white;
-  border-radius: 25px;
-}
-
-.notice {
-  background: #fff7d6;
-  padding: 12px;
-  border-radius: 10px;
-  color: #765d00;
-  margin-bottom: 15px;
-  font-size: 14px;
 }
 
 @media(max-width:500px) {
-  .container {
-    padding: 12px;
-  }
-
-  .card {
-    padding: 22px;
-  }
-
-  .welcome h2 {
+  .hero h2 {
     font-size: 34px;
   }
 
-  .welcome p {
-    font-size: 18px;
+  .hero p {
+    font-size: 19px;
   }
 
-  .member {
-    align-items: flex-start;
+  .card {
+    padding: 23px;
+  }
+
+  header h1 {
+    font-size: 25px;
   }
 }
 </style>
@@ -322,25 +231,388 @@ button {
 
 <header>
   <h1>JDA Networks</h1>
-  <div class="status">
-    ● <span class="connected">Connected</span>
-  </div>
+  <div class="connected">● Connected</div>
 </header>
 
-<main class="container">
+<div class="container">
 
-  <section class="card welcome">
-    <h2>Welcome to JDA Networks</h2>
-    <p>
-      Connect with members and chat with people in your network.
-    </p>
-  </section>
+  <div id="homeScreen">
 
-  <section class="card">
-    <h2 class="section-title">🟢 Online Members</h2>
-    <div id="onlineMembers" class="empty">
-      No members online yet.
+    <div class="card hero">
+      <h2>Welcome to JDA Networks</h2>
+      <p>
+        Connect with members and chat with people in your network.
+      </p>
     </div>
-  </section>
 
-  <section class="card"￼Enter
+    <div class="card">
+      <h2 class="section-title">🟢 Online Members</h2>
+      <div id="onlineMembers" class="empty">
+        No members online yet.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">👥 Members</h2>
+
+      <div id="membersList"></div>
+
+      <button class="add-btn" onclick="showAddForm()">
+        + Add Member
+      </button>
+
+      <div id="addForm" style="display:none;">
+        <hr style="margin:25px 0; border:0; border-top:1px solid #ddd;">
+
+        <h3 class="form-title">Add New Member</h3>
+
+        <label>Member name</label>
+        <input id="nameInput" type="text" placeholder="Enter name">
+
+        <label>Mobile number</label>
+        <input id="phoneInput" type="tel" placeholder="Enter mobile number">
+
+        <button class="add-btn" onclick="addMember()">
+          Save Member
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+
+  <div id="chatScreen">
+
+    <div class="card">
+
+      <div class="chat-header">
+        <button class="back-btn" onclick="closeChat()">← Back</button>
+        <h2 id="chatName">Chat</h2>
+      </div>
+
+      <div id="messages" class="messages"></div>
+
+      <div class="send-area">
+        <input
+          id="messageInput"
+          type="text"
+          placeholder="Type a message..."
+          onkeydown="if(event.key==='Enter') sendMessage()"
+        >
+
+        <button class="send-btn" onclick="sendMessage()">
+          Send
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let members = JSON.parse(localStorage.getItem("jda_members")) || [];
+
+let chats = JSON.parse(localStorage.getItem("jda_chats")) || {};
+
+let currentMember = null;
+
+
+/* SHOW ADD FORM */
+
+function showAddForm() {
+  document.getElementById("addForm").style.display = "block";
+  document.getElementById("nameInput").focus();
+}
+
+
+/* ADD MEMBER */
+
+function addMember() {
+
+  const name = document.getElementById("nameInput").value.trim();
+  const phone = document.getElementById("phoneInput").value.trim();
+
+  if (!name || !phone) {
+    alert("Please enter both name and mobile number.");
+    return;
+  }
+
+  const member = {
+    id: Date.now(),
+    name: name,
+    phone: phone,
+    online: false
+  };
+
+  members.push(member);
+
+  localStorage.setItem(
+    "jda_members",
+    JSON.stringify(members)
+  );
+
+  document.getElementById("nameInput").value = "";
+  document.getElementById("phoneInput").value = "";
+
+  document.getElementById("addForm").style.display = "none";
+
+  renderMembers();
+}
+
+
+/* DISPLAY MEMBERS */
+
+function renderMembers() {
+
+  const list = document.getElementById("membersList");
+  const online = document.getElementById("onlineMembers");
+
+  list.innerHTML = "";
+
+  const onlineMembers = members.filter(m => m.online);
+
+  if (onlineMembers.length === 0) {
+    online.innerHTML = "No members online yet.";
+  } else {
+
+    online.innerHTML = onlineMembers.map(m => `
+      <div class="member">
+        <div class="member-name">${escapeHTML(m.name)}</div>
+        <div class="online">● Online</div>
+      </div>
+    `).join("");
+  }
+
+
+  if (members.length === 0) {
+
+    list.innerHTML = `
+      <p class="empty">No members yet.</p>
+    `;
+
+    return;
+  }
+
+
+  members.forEach(member => {
+
+    const div = document.createElement("div");
+
+    div.className = "member";
+
+    div.innerHTML = `
+      <div class="member-top">
+
+        <div>
+          <div class="member-name">
+            ${escapeHTML(member.name)}
+          </div>
+
+          <div class="phone">
+            ${escapeHTML(member.phone)}
+          </div>
+        </div>
+
+        <div class="${member.online ? "online" : "offline"}">
+          ● ${member.online ? "Online" : "Offline"}
+        </div>
+
+      </div>
+
+      <button class="chat-btn"
+        onclick="openChat(${member.id})">
+        💬 Chat
+      </button>
+
+      <button class="delete-btn"
+        onclick="deleteMember(${member.id})">
+        Delete Member
+      </button>
+    `;
+
+    list.appendChild(div);
+
+  });
+
+}
+
+
+/* DELETE MEMBER */
+
+function deleteMember(id) {
+
+  const member = members.find(m => m.id === id);
+
+  if (!member) return;
+
+  if (!confirm("Delete " + member.name + "?")) {
+    return;
+  }
+
+  members = members.filter(m => m.id !== id);
+
+  localStorage.setItem(
+    "jda_members",
+    JSON.stringify(members)
+  );
+
+  renderMembers();
+}
+
+
+/* OPEN CHAT */
+
+function openChat(id) {
+
+  const member = members.find(m => m.id === id);
+
+  if (!member) return;
+
+  currentMember = member;
+
+  document.getElementById("homeScreen").style.display = "none";
+
+  document.getElementById("chatScreen").style.display = "block";
+
+  document.getElementById("chatName").textContent =
+    member.name;
+
+  if (!chats[id]) {
+    chats[id] = [];
+  }
+
+  renderMessages();
+
+}
+
+
+/* CLOSE CHAT */
+
+function closeChat() {
+
+  document.getElementById("chatScreen").style.display = "none";
+
+  document.getElementById("homeScreen").style.display = "block";
+
+  currentMember = null;
+
+}
+
+
+/* SEND MESSAGE */
+
+function sendMessage() {
+
+  if (!currentMember) return;
+
+  const input = document.getElementById("messageInput");
+
+  const text = input.value.trim();
+
+  if (!text) return;
+
+
+  if (!chats[currentMember.id]) {
+    chats[currentMember.id] = [];
+  }
+
+
+  chats[currentMember.id].push({
+    text: text,
+    sender: "me",
+    time: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    })
+  });
+
+
+  localStorage.setItem(
+    "jda_chats",
+    JSON.stringify(chats)
+  );
+
+
+  input.value = "";
+
+  renderMessages();
+
+}
+
+
+/* DISPLAY MESSAGES */
+
+function renderMessages() {
+
+  const box = document.getElementById("messages");
+
+  const messages = chats[currentMember.id] || [];
+
+  box.innerHTML = "";
+
+
+  if (messages.length === 0) {
+
+    box.innerHTML = `
+      <p class="empty" style="text-align:center;">
+        No messages yet. Start the conversation.
+      </p>
+    `;
+
+    return;
+  }
+
+
+  messages.forEach(message => {
+
+    const div = document.createElement("div");
+
+    div.className =
+      "message " +
+      (message.sender === "me"
+        ? "sent"
+        : "received");
+
+    div.innerHTML = `
+      ${escapeHTML(message.text)}
+      <small style="display:block;opacity:.65;margin-top:5px;">
+        ${message.time}
+      </small>
+    `;
+
+    box.appendChild(div);
+
+  });
+
+
+  box.scrollTop = box.scrollHeight;
+
+}
+
+
+/* SECURITY */
+
+function escapeHTML(text) {
+
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* START */
+
+renderMembers();
+
+</script>
+
+</body>
+        </html>

@@ -8,220 +8,314 @@
 <style>
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
   font-family: Arial, sans-serif;
-  background: #f2f6fc;
+  background: #e9eef5;
   color: #172033;
 }
 
-header {
-  background: #17345f;
-  color: white;
-  padding: 22px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 28px;
-}
-
-.connected {
-  color: #71d34a;
-  font-size: 17px;
-}
-
-.container {
-  max-width: 700px;
+.app {
+  max-width: 600px;
   margin: auto;
-  padding: 25px 18px 50px;
-}
-
-.card {
+  min-height: 100vh;
   background: white;
-  border-radius: 24px;
-  padding: 30px;
-  margin-bottom: 24px;
-  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+  box-shadow: 0 0 20px rgba(0,0,0,.12);
 }
 
-.hero h2 {
-  font-size: 42px;
-  margin: 0 0 20px;
+/* TOP BAR */
+.topbar {
+  background: #075e54;
+  color: white;
+  padding: 18px 16px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.hero p {
-  font-size: 22px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.section-title {
-  font-size: 30px;
-  margin: 0 0 25px;
-}
-
-.member {
-  border: 1px solid #e1e5ec;
-  border-radius: 18px;
-  padding: 18px;
-  margin-bottom: 15px;
-}
-
-.member-top {
+.top-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
 }
 
-.member-name {
-  font-size: 22px;
+.logo {
+  font-size: 24px;
   font-weight: bold;
 }
 
-.phone {
-  color: #666;
-  margin-top: 6px;
+.top-icons {
+  display: flex;
+  gap: 20px;
+  font-size: 22px;
 }
 
-.offline {
-  color: #777;
+/* TABS */
+.tabs {
+  display: flex;
+  margin-top: 18px;
 }
 
-.online {
-  color: #49ad35;
-}
-
-button {
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 20px;
-  font-size: 17px;
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 12px 5px;
+  font-weight: bold;
+  color: #d7ebe8;
   cursor: pointer;
 }
 
-.add-btn {
-  background: #17345f;
+.tab.active {
   color: white;
-  margin-top: 10px;
+  border-bottom: 3px solid white;
 }
 
-.chat-btn {
-  background: #1687d9;
+/* SEARCH */
+.search {
+  padding: 10px;
+  background: #f5f5f5;
+}
+
+.search input {
+  width: 100%;
+  border: none;
+  border-radius: 25px;
+  padding: 13px 18px;
+  font-size: 16px;
+  outline: none;
+}
+
+/* CHAT LIST */
+.chat-list {
+  background: white;
+}
+
+.chat {
+  display: flex;
+  align-items: center;
+  padding: 14px 15px;
+  border-bottom: 1px solid #eeeeee;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: #128c7e;
   color: white;
-  margin-top: 15px;
-  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: bold;
+  margin-right: 14px;
 }
 
-.delete-btn {
-  background: #eee;
-  color: #c62828;
-  margin-top: 10px;
-  width: 100%;
+.chat-info {
+  flex: 1;
+  min-width: 0;
 }
 
-input {
-  width: 100%;
-  padding: 15px;
-  border: 1px solid #ccd3df;
-  border-radius: 12px;
+.chat-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.name {
   font-size: 17px;
-  margin: 8px 0 15px;
+  font-weight: bold;
 }
 
-.form-title {
-  font-size: 25px;
-  margin-top: 0;
+.time {
+  color: #777;
+  font-size: 12px;
+}
+
+.last-message {
+  margin-top: 6px;
+  color: #777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .empty {
+  padding: 60px 25px;
+  text-align: center;
   color: #777;
-  font-size: 18px;
 }
 
-#chatScreen {
+/* ADD MEMBER */
+.add-section {
+  padding: 20px;
+  background: #f5f7fa;
+}
+
+.add-btn {
+  width: 100%;
+  background: #128c7e;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.form {
   display: none;
+  background: white;
+  padding: 20px;
+  margin-top: 15px;
+  border-radius: 10px;
+}
+
+.form input {
+  width: 100%;
+  padding: 14px;
+  margin: 8px 0 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.save-btn {
+  width: 100%;
+  background: #075e54;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* CHAT SCREEN */
+.chat-screen {
+  display: none;
+  height: 100vh;
+  background: #efe7de;
+  position: relative;
 }
 
 .chat-header {
+  background: #075e54;
+  color: white;
+  padding: 12px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
 }
 
-.back-btn {
-  background: #eee;
-  color: #17345f;
-  padding: 10px 15px;
+.back {
+  font-size: 28px;
+  cursor: pointer;
 }
 
-.chat-header h2 {
-  margin: 0;
+.header-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #128c7e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
 }
 
+.header-info {
+  flex: 1;
+}
+
+.header-name {
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.status {
+  font-size: 12px;
+  opacity: .9;
+}
+
+/* MESSAGES */
 .messages {
-  height: 430px;
+  padding: 20px 12px 90px;
+  min-height: calc(100vh - 70px);
   overflow-y: auto;
-  background: #f3f6fa;
-  border-radius: 18px;
-  padding: 15px;
-  margin: 20px 0;
 }
 
 .message {
-  max-width: 80%;
-  padding: 12px 15px;
-  border-radius: 18px;
-  margin: 10px 0;
-  line-height: 1.4;
-}
-
-.sent {
-  background: #17345f;
-  color: white;
-  margin-left: auto;
+  max-width: 78%;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  font-size: 15px;
+  position: relative;
+  clear: both;
 }
 
 .received {
   background: white;
-  color: #172033;
+  float: left;
 }
 
-.send-area {
+.sent {
+  background: #d9fdd3;
+  float: right;
+}
+
+.message-time {
+  font-size: 10px;
+  color: #777;
+  float: right;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+/* MESSAGE INPUT */
+.message-box {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 600px;
+  background: #f0f0f0;
+  padding: 8px;
   display: flex;
-  gap: 8px;
+  gap: 7px;
 }
 
-.send-area input {
-  margin: 0;
+.message-box input {
+  flex: 1;
+  border: none;
+  border-radius: 25px;
+  padding: 13px 16px;
+  font-size: 16px;
+  outline: none;
 }
 
-.send-btn {
-  background: #1687d9;
+.send {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #128c7e;
   color: white;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-@media(max-width:500px) {
-  .hero h2 {
-    font-size: 34px;
-  }
-
-  .hero p {
-    font-size: 19px;
-  }
-
-  .card {
-    padding: 23px;
-  }
-
-  header h1 {
-    font-size: 25px;
+/* DESKTOP */
+@media (min-width: 601px) {
+  .message-box {
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 </style>
@@ -229,50 +323,56 @@ input {
 
 <body>
 
-<header>
-  <h1>JDA Networks</h1>
-  <div class="connected">● Connected</div>
-</header>
+<div class="app">
 
-<div class="container">
-
+  <!-- HOME SCREEN -->
   <div id="homeScreen">
 
-    <div class="card hero">
-      <h2>Welcome to JDA Networks</h2>
-      <p>
-        Connect with members and chat with people in your network.
-      </p>
-    </div>
+    <div class="topbar">
+      <div class="top-row">
+        <div class="logo">JDA Networks</div>
+        <div class="top-icons">
+          <span>🔍</span>
+          <span>⋮</span>
+        </div>
+      </div>
 
-    <div class="card">
-      <h2 class="section-title">🟢 Online Members</h2>
-      <div id="onlineMembers" class="empty">
-        No members online yet.
+      <div class="tabs">
+        <div class="tab active">CHATS</div>
+        <div class="tab">GROUPS</div>
+        <div class="tab">CALLS</div>
       </div>
     </div>
 
-    <div class="card">
-      <h2 class="section-title">👥 Members</h2>
+    <div class="search">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search chats"
+        oninput="searchMembers()">
+    </div>
 
-      <div id="membersList"></div>
+    <div id="chatList" class="chat-list"></div>
 
-      <button class="add-btn" onclick="showAddForm()">
-        + Add Member
+    <div class="add-section">
+      <button class="add-btn" onclick="showForm()">
+        ＋ Add Member
       </button>
 
-      <div id="addForm" style="display:none;">
-        <hr style="margin:25px 0; border:0; border-top:1px solid #ddd;">
+      <div id="memberForm" class="form">
+        <h2>Add New Member</h2>
 
-        <h3 class="form-title">Add New Member</h3>
+        <input
+          type="text"
+          id="memberName"
+          placeholder="Member name">
 
-        <label>Member name</label>
-        <input id="nameInput" type="text" placeholder="Enter name">
+        <input
+          type="tel"
+          id="memberPhone"
+          placeholder="Mobile number">
 
-        <label>Mobile number</label>
-        <input id="phoneInput" type="tel" placeholder="Enter mobile number">
-
-        <button class="add-btn" onclick="addMember()">
+        <button class="save-btn" onclick="addMember()">
           Save Member
         </button>
       </div>
@@ -281,29 +381,43 @@ input {
   </div>
 
 
-  <div id="chatScreen">
+  <!-- CHAT SCREEN -->
+  <div id="chatScreen" class="chat-screen">
 
-    <div class="card">
+    <div class="chat-header">
 
-      <div class="chat-header">
-        <button class="back-btn" onclick="closeChat()">← Back</button>
-        <h2 id="chatName">Chat</h2>
+      <span class="back" onclick="closeChat()">‹</span>
+
+      <div class="header-avatar" id="headerAvatar">?</div>
+
+      <div class="header-info">
+        <div class="header-name" id="headerName">
+          Member
+        </div>
+
+        <div class="status" id="headerStatus">
+          offline
+        </div>
       </div>
 
-      <div id="messages" class="messages"></div>
+      <span style="font-size:22px;">📞</span>
+      <span style="font-size:22px;">⋮</span>
 
-      <div class="send-area">
-        <input
-          id="messageInput"
-          type="text"
-          placeholder="Type a message..."
-          onkeydown="if(event.key==='Enter') sendMessage()"
-        >
+    </div>
 
-        <button class="send-btn" onclick="sendMessage()">
-          Send
-        </button>
-      </div>
+    <div id="messages" class="messages"></div>
+
+    <div class="message-box">
+
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Type a message..."
+        onkeydown="if(event.key==='Enter') sendMessage()">
+
+      <button class="send" onclick="sendMessage()">
+        ➤
+      </button>
 
     </div>
 
@@ -314,305 +428,310 @@ input {
 
 <script>
 
-let members = JSON.parse(localStorage.getItem("jda_members")) || [];
-
-let chats = JSON.parse(localStorage.getItem("jda_chats")) || {};
+let members = JSON.parse(
+  localStorage.getItem("jdaMembers") || "[]"
+);
 
 let currentMember = null;
 
 
-/* SHOW ADD FORM */
+/* DISPLAY MEMBERS */
+function displayMembers(list = members) {
 
-function showAddForm() {
-  document.getElementById("addForm").style.display = "block";
-  document.getElementById("nameInput").focus();
+  const chatList = document.getElementById("chatList");
+
+  chatList.innerHTML = "";
+
+  if (list.length === 0) {
+
+    chatList.innerHTML = `
+      <div class="empty">
+        <div style="font-size:50px;">💬</div>
+        <h3>No chats yet</h3>
+        <p>Add a member to start chatting.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  list.forEach((member, index) => {
+
+    const firstLetter =
+      member.name.charAt(0).toUpperCase();
+
+    const chat = document.createElement("div");
+
+    chat.className = "chat";
+
+    chat.onclick = () => openChat(index);
+
+    chat.innerHTML = `
+
+      <div class="avatar">
+        ${firstLetter}
+      </div>
+
+      <div class="chat-info">
+
+        <div class="chat-top">
+
+          <div class="name">
+            ${escapeHTML(member.name)}
+          </div>
+
+          <div class="time">
+            ${member.time || ""}
+          </div>
+
+        </div>
+
+        <div class="last-message">
+          ${escapeHTML(member.lastMessage || "Tap to start chatting")}
+        </div>
+
+      </div>
+    `;
+
+    chatList.appendChild(chat);
+
+  });
 }
 
 
 /* ADD MEMBER */
+function showForm() {
+
+  const form =
+    document.getElementById("memberForm");
+
+  form.style.display =
+    form.style.display === "block"
+      ? "none"
+      : "block";
+}
+
 
 function addMember() {
 
-  const name = document.getElementById("nameInput").value.trim();
-  const phone = document.getElementById("phoneInput").value.trim();
+  const name =
+    document.getElementById("memberName").value.trim();
+
+  const phone =
+    document.getElementById("memberPhone").value.trim();
 
   if (!name || !phone) {
-    alert("Please enter both name and mobile number.");
+
+    alert("Please enter the member name and mobile number.");
+
     return;
   }
 
-  const member = {
-    id: Date.now(),
+  members.push({
+
     name: name,
+
     phone: phone,
-    online: false
-  };
 
-  members.push(member);
+    lastMessage: "New member",
 
-  localStorage.setItem(
-    "jda_members",
-    JSON.stringify(members)
-  );
+    time: new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    }),
 
-  document.getElementById("nameInput").value = "";
-  document.getElementById("phoneInput").value = "";
-
-  document.getElementById("addForm").style.display = "none";
-
-  renderMembers();
-}
-
-
-/* DISPLAY MEMBERS */
-
-function renderMembers() {
-
-  const list = document.getElementById("membersList");
-  const online = document.getElementById("onlineMembers");
-
-  list.innerHTML = "";
-
-  const onlineMembers = members.filter(m => m.online);
-
-  if (onlineMembers.length === 0) {
-    online.innerHTML = "No members online yet.";
-  } else {
-
-    online.innerHTML = onlineMembers.map(m => `
-      <div class="member">
-        <div class="member-name">${escapeHTML(m.name)}</div>
-        <div class="online">● Online</div>
-      </div>
-    `).join("");
-  }
-
-
-  if (members.length === 0) {
-
-    list.innerHTML = `
-      <p class="empty">No members yet.</p>
-    `;
-
-    return;
-  }
-
-
-  members.forEach(member => {
-
-    const div = document.createElement("div");
-
-    div.className = "member";
-
-    div.innerHTML = `
-      <div class="member-top">
-
-        <div>
-          <div class="member-name">
-            ${escapeHTML(member.name)}
-          </div>
-
-          <div class="phone">
-            ${escapeHTML(member.phone)}
-          </div>
-        </div>
-
-        <div class="${member.online ? "online" : "offline"}">
-          ● ${member.online ? "Online" : "Offline"}
-        </div>
-
-      </div>
-
-      <button class="chat-btn"
-        onclick="openChat(${member.id})">
-        💬 Chat
-      </button>
-
-      <button class="delete-btn"
-        onclick="deleteMember(${member.id})">
-        Delete Member
-      </button>
-    `;
-
-    list.appendChild(div);
+    messages: []
 
   });
 
-}
-
-
-/* DELETE MEMBER */
-
-function deleteMember(id) {
-
-  const member = members.find(m => m.id === id);
-
-  if (!member) return;
-
-  if (!confirm("Delete " + member.name + "?")) {
-    return;
-  }
-
-  members = members.filter(m => m.id !== id);
-
   localStorage.setItem(
-    "jda_members",
+    "jdaMembers",
     JSON.stringify(members)
   );
 
-  renderMembers();
+  document.getElementById("memberName").value = "";
+  document.getElementById("memberPhone").value = "";
+
+  document.getElementById("memberForm").style.display = "none";
+
+  displayMembers();
+
 }
 
 
 /* OPEN CHAT */
+function openChat(index) {
 
-function openChat(id) {
+  currentMember = members[index];
 
-  const member = members.find(m => m.id === id);
+  document.getElementById("homeScreen")
+    .style.display = "none";
 
-  if (!member) return;
+  document.getElementById("chatScreen")
+    .style.display = "block";
 
-  currentMember = member;
+  document.getElementById("headerName")
+    .textContent = currentMember.name;
 
-  document.getElementById("homeScreen").style.display = "none";
+  document.getElementById("headerAvatar")
+    .textContent =
+    currentMember.name.charAt(0).toUpperCase();
 
-  document.getElementById("chatScreen").style.display = "block";
+  document.getElementById("headerStatus")
+    .textContent = "offline";
 
-  document.getElementById("chatName").textContent =
-    member.name;
-
-  if (!chats[id]) {
-    chats[id] = [];
-  }
-
-  renderMessages();
+  displayMessages();
 
 }
 
 
 /* CLOSE CHAT */
-
 function closeChat() {
 
-  document.getElementById("chatScreen").style.display = "none";
+  document.getElementById("chatScreen")
+    .style.display = "none";
 
-  document.getElementById("homeScreen").style.display = "block";
+  document.getElementById("homeScreen")
+    .style.display = "block";
 
-  currentMember = null;
-
-}
-
-
-/* SEND MESSAGE */
-
-function sendMessage() {
-
-  if (!currentMember) return;
-
-  const input = document.getElementById("messageInput");
-
-  const text = input.value.trim();
-
-  if (!text) return;
-
-
-  if (!chats[currentMember.id]) {
-    chats[currentMember.id] = [];
-  }
-
-
-  chats[currentMember.id].push({
-    text: text,
-    sender: "me",
-    time: new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    })
-  });
-
-
-  localStorage.setItem(
-    "jda_chats",
-    JSON.stringify(chats)
-  );
-
-
-  input.value = "";
-
-  renderMessages();
+  displayMembers();
 
 }
 
 
 /* DISPLAY MESSAGES */
+function displayMessages() {
 
-function renderMessages() {
+  const container =
+    document.getElementById("messages");
 
-  const box = document.getElementById("messages");
+  container.innerHTML = "";
 
-  const messages = chats[currentMember.id] || [];
+  if (!currentMember.messages ||
+      currentMember.messages.length === 0) {
 
-  box.innerHTML = "";
-
-
-  if (messages.length === 0) {
-
-    box.innerHTML = `
-      <p class="empty" style="text-align:center;">
-        No messages yet. Start the conversation.
-      </p>
+    container.innerHTML = `
+      <div style="
+        text-align:center;
+        color:#777;
+        margin-top:30px;
+        font-size:14px;">
+        🔒 Messages are stored on this device.
+      </div>
     `;
 
     return;
   }
 
+  currentMember.messages.forEach(message => {
 
-  messages.forEach(message => {
-
-    const div = document.createElement("div");
+    const div =
+      document.createElement("div");
 
     div.className =
       "message " +
-      (message.sender === "me"
-        ? "sent"
-        : "received");
+      (message.sent ? "sent" : "received");
 
-    div.innerHTML = `
-      ${escapeHTML(message.text)}
-      <small style="display:block;opacity:.65;margin-top:5px;">
+    div.innerHTML =
+      escapeHTML(message.text) +
+      `<span class="message-time">
         ${message.time}
-      </small>
-    `;
+      </span>`;
 
-    box.appendChild(div);
+    container.appendChild(div);
 
   });
 
+  container.scrollTop =
+    container.scrollHeight;
+}
 
-  box.scrollTop = box.scrollHeight;
 
+/* SEND MESSAGE */
+function sendMessage() {
+
+  const input =
+    document.getElementById("messageInput");
+
+  const text =
+    input.value.trim();
+
+  if (!text || !currentMember) return;
+
+  if (!currentMember.messages) {
+    currentMember.messages = [];
+  }
+
+  const now =
+    new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+  currentMember.messages.push({
+
+    text: text,
+
+    sent: true,
+
+    time: now
+
+  });
+
+  currentMember.lastMessage = text;
+
+  currentMember.time = now;
+
+  const index =
+    members.indexOf(currentMember);
+
+  members[index] = currentMember;
+
+  localStorage.setItem(
+    "jdaMembers",
+    JSON.stringify(members)
+  );
+
+  input.value = "";
+
+  displayMessages();
+
+}
+
+
+/* SEARCH */
+function searchMembers() {
+
+  const query =
+    document.getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+  const results =
+    members.filter(member =>
+      member.name.toLowerCase().includes(query)
+    );
+
+  displayMembers(results);
 }
 
 
 /* SECURITY */
-
 function escapeHTML(text) {
 
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  const div =
+    document.createElement("div");
 
+  div.textContent = text;
+
+  return div.innerHTML;
 }
 
 
 /* START */
-
-renderMembers();
+displayMembers();
 
 </script>
 
 </body>
-        </html>
+  </html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JDA Networks</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    header {
+      background: #172b4d;
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .status {
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    .welcome {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .welcome h1 {
+      margin-bottom: 8px;
+    }
+
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      margin-bottom: 15px;
+    }
+
+    .member {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .member:last-child {
+      border-bottom: none;
+    }
+
+    .online {
+      color: #16a34a;
+      font-weight: bold;
+    }
+
+    .offline {
+      color: #777;
+    }
+
+    button {
+      background: #172b4d;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .empty {
+      color: #777;
+      padding: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">JDA Networks</div>
+    <div class="status">● Connected</div>
+  </header>
+
+  <main>
+
+    <div class="welcome">
+      <h1>Welcome to JDA Networks</h1>
+      <p>Connect with members and chat with people in your network.</p>
+    </div>
+
+    <div class="section">
+      <h2>🟢 Online Members</h2>
+
+      <div id="onlineMembers">
+        <div class="empty">No members online yet.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>👥 Members</h2>
+
+      <div id="members">
+        <div class="empty">Members will appear here.</div>
+      </div>
+
+      <br>
+
+      <button onclick="addMember()">
+        + Add Member
+      </button>
+    </div>
+
+  </main>
+
+  <script>
+    const members = [];
+
+    function displayMembers() {
+      const memberList = document.getElementById("members");
+      const onlineList = document.getElementById("onlineMembers");
+
+      memberList.innerHTML = "";
+      onlineList.innerHTML = "";
+
+      if (members.length === 0) {
+        memberList.innerHTML =
+          '<div class="empty">No members yet.</div>';
+
+        onlineList.innerHTML =
+          '<div class="empty">No members online yet.</div>';
+
+        return;
+      }
+
+      members.forEach(member => {
+
+        const div = document.createElement("div");
+        div.className = "member";
+
+        div.innerHTML = `
+          <div>
+            <strong>${member.name}</strong><br>
+            <small>${member.phone}</small>
+          </div>
+
+          <span class="${member.online ? 'online' : 'offline'}">
+            ${member.online ? '● Online' : '● Offline'}
+          </span>
+        `;
+
+        memberList.appendChild(div);
+
+        if (member.online) {
+          const onlineDiv = div.cloneNode(true);
+          onlineList.appendChild(onlineDiv);
+        }
+      });
+
+      if (!members.some(member => member.online)) {
+        onlineList.innerHTML =
+          '<div class="empty">No members online yet.</div>';
+      }
+    }
+
+    function addMember() {
+      const name = prompt("Enter member name:");
+      const phone = prompt("Enter mobile number:");
+
+      if (!name || !phone) {
+        alert("Please enter both name and mobile number.");
+        return;
+      }
+
+      members.push({
+        name: name,
+        phone: phone,
+        online: false
+      });
+
+      displayMembers();
+    }
+
+    displayMembers();
+  </script>
+
+</body>
+  </html>

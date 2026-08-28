@@ -2,399 +2,622 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>JDA Networks</title>
 
 <style>
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
+:root {
+    --green: #075e54;
+    --green-light: #128c7e;
+    --accent: #25d366;
+    --dark: #0b141a;
+    --dark2: #111b21;
+    --dark3: #202c33;
+    --text: #e9edef;
+    --muted: #8696a0;
+    --line: #27343a;
+}
+
+html,
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #0b141a;
-  color: #e9edef;
-  min-height: 100vh;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--dark);
+    color: var(--text);
+}
+
+button,
+input {
+    font-family: inherit;
+}
+
+button {
+    border: none;
+    cursor: pointer;
 }
 
 /* APP */
+
 .app {
-  max-width: 650px;
-  margin: auto;
-  min-height: 100vh;
-  background: #0b141a;
-  position: relative;
-  overflow-x: hidden;
+    width: 100%;
+    height: 100vh;
+    max-width: 600px;
+    margin: auto;
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
 /* HEADER */
+
 .header {
-  background: #202c33;
-  padding: 18px 18px 12px;
+    background: var(--dark);
+    padding: 18px 18px 10px;
+    flex-shrink: 0;
 }
 
-.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.logo-title {
-  font-size: 28px;
-  font-weight: bold;
+.logo {
+    font-size: 29px;
+    font-weight: 700;
+    letter-spacing: -1px;
 }
 
-.header-icons {
-  display: flex;
-  gap: 22px;
-  align-items: center;
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
 }
 
-.icon {
-  font-size: 25px;
-  cursor: pointer;
+.icon-btn {
+    background: transparent;
+    color: white;
+    font-size: 27px;
+    width: 32px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu {
+    font-size: 30px;
+    line-height: 20px;
 }
 
 /* TABS */
+
 .tabs {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 22px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--dark);
+    margin-top: 14px;
 }
 
 .tab {
-  color: #8696a0;
-  font-weight: bold;
-  font-size: 15px;
-  padding: 12px 18px;
-  cursor: pointer;
+    color: var(--muted);
+    background: transparent;
+    padding: 13px 4px 12px;
+    font-size: 14px;
+    font-weight: 700;
+    position: relative;
 }
 
 .tab.active {
-  color: #25d366;
-  border-bottom: 3px solid #25d366;
+    color: white;
+}
+
+.tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    right: 15%;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 4px;
 }
 
 /* SEARCH */
+
 .search-area {
-  padding: 10px 14px;
-  background: #111b21;
+    background: var(--dark);
+    padding: 10px 12px 12px;
 }
 
-.search {
-  width: 100%;
-  background: #202c33;
-  border: none;
-  outline: none;
-  border-radius: 25px;
-  padding: 13px 18px;
-  color: white;
-  font-size: 16px;
+.search-box {
+    background: var(--dark3);
+    border-radius: 28px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
 }
 
-.search::placeholder {
-  color: #8696a0;
+.search-icon {
+    font-size: 23px;
+    color: var(--muted);
 }
 
-/* CHAT LIST */
-.chat-list {
-  padding-bottom: 145px;
+.search-box input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: white;
+    font-size: 16px;
 }
 
-.chat {
-  display: flex;
-  align-items: center;
-  padding: 13px 16px;
-  gap: 14px;
-  cursor: pointer;
-  border-bottom: 1px solid #182229;
+.search-box input::placeholder {
+    color: var(--muted);
 }
 
-.chat:hover {
-  background: #202c33;
+/* CONTENT */
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--dark);
+    padding-bottom: 92px;
+}
+
+.content::-webkit-scrollbar {
+    width: 3px;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: #39464c;
+}
+
+/* CHAT ROW */
+
+.chat-row {
+    width: 100%;
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    padding: 9px 15px;
+    gap: 13px;
+    background: var(--dark);
+    border-bottom: 1px solid rgba(255,255,255,0.025);
+}
+
+.chat-row:active {
+    background: var(--dark3);
 }
 
 .avatar {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #374045;
-  flex-shrink: 0;
+    width: 57px;
+    height: 57px;
+    min-width: 57px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #344047;
+}
+
+.default-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #37474f;
+    font-size: 23px;
 }
 
 .chat-info {
-  flex: 1;
-  min-width: 0;
+    min-width: 0;
+    flex: 1;
 }
 
 .chat-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
 }
 
 .chat-name {
-  font-size: 17px;
-  font-weight: bold;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    font-size: 17px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.time {
-  color: #8696a0;
-  font-size: 12px;
-  white-space: nowrap;
+.chat-time {
+    color: var(--muted);
+    font-size: 12px;
+    white-space: nowrap;
 }
 
-.message {
-  color: #8696a0;
-  font-size: 14px;
-  margin-top: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.chat-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+    gap: 10px;
+}
+
+.last-message {
+    color: var(--muted);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .unread {
-  background: #25d366;
-  color: #111;
-  min-width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: bold;
-  margin-top: 4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #061b12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
 }
 
 /* EMPTY */
+
 .empty {
-  text-align: center;
-  padding: 100px 25px 50px;
-  color: #8696a0;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
 }
 
 .empty-icon {
-  font-size: 65px;
-  margin-bottom: 15px;
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    background: var(--dark3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    margin-bottom: 20px;
 }
 
 .empty h2 {
-  color: #e9edef;
-  margin-bottom: 8px;
+    color: var(--text);
+    font-size: 21px;
+    margin-bottom: 8px;
 }
 
-/* OUMA BUTTON */
-.ouma-area {
-  position: fixed;
-  bottom: 82px;
-  right: max(18px, calc((100vw - 650px) / 2 + 18px));
-  z-index: 20;
+.empty p {
+    font-size: 15px;
 }
 
-.ouma-button {
-  width: 58px;
-  height: 58px;
-  border-radius: 50%;
-  border: 3px solid #25d366;
-  background: #202c33;
-  padding: 2px;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,.5);
+/* AI */
+
+.ai-section {
+    padding: 10px 14px 5px;
 }
 
-.ouma-button img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
+.ai-card {
+    background: var(--dark2);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.ouma-label {
-  position: absolute;
-  right: 65px;
-  top: 12px;
-  background: #202c33;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  white-space: nowrap;
+.ai-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent);
 }
 
-/* NEW CHAT */
-.new-chat {
-  position: fixed;
-  right: max(18px, calc((100vw - 650px) / 2 + 18px));
-  bottom: 145px;
-  width: 58px;
-  height: 58px;
-  border-radius: 18px;
-  background: #25d366;
-  color: #111;
-  border: none;
-  font-size: 30px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,.45);
-  z-index: 20;
+.ai-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.ai-name {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.ai-status {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.ai-button {
+    background: var(--green-light);
+    color: white;
+    border-radius: 20px;
+    padding: 9px 13px;
+    font-weight: 700;
 }
 
 /* BOTTOM NAV */
+
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(650px, 100%);
-  height: 70px;
-  background: #202c33;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  border-top: 1px solid #303d44;
-  z-index: 30;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 70px;
+    background: #111b21;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    z-index: 10;
 }
 
-.nav-item {
-  text-align: center;
-  color: #8696a0;
-  font-size: 12px;
-  cursor: pointer;
+.bottom-item {
+    background: transparent;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
 }
 
-.nav-icon {
-  font-size: 23px;
-  display: block;
-  margin-bottom: 3px;
+.bottom-item span:first-child {
+    font-size: 23px;
 }
 
-.nav-item.active {
-  color: #25d366;
+.bottom-item.active {
+    color: var(--accent);
 }
 
-/* OUMA CHAT */
-.ouma-chat {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #0b141a;
-  z-index: 100;
+/* FLOATING PLUS */
+
+.fab {
+    position: absolute;
+    right: 18px;
+    bottom: 82px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #052e1c;
+    font-size: 34px;
+    font-weight: 300;
+    box-shadow: 0 5px 18px rgba(0,0,0,.45);
+    z-index: 11;
 }
 
-.ouma-header {
-  background: #202c33;
-  height: 65px;
-  display: flex;
-  align-items: center;
-  padding: 8px 15px;
-  gap: 12px;
+.fab:active {
+    transform: scale(.94);
 }
 
-.back {
-  font-size: 27px;
-  cursor: pointer;
+/* MODAL */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 50;
 }
 
-.ouma-header img {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
+.overlay.show {
+    display: flex;
 }
 
-.ouma-title {
-  font-weight: bold;
-  font-size: 17px;
+.modal {
+    width: 100%;
+    max-width: 600px;
+    background: #202c33;
+    border-radius: 22px 22px 0 0;
+    padding: 22px;
+    animation: slideUp .2s ease;
 }
 
-.ouma-status {
-  color: #25d366;
-  font-size: 12px;
-  margin-top: 3px;
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.modal h2 {
+    font-size: 21px;
+    margin-bottom: 18px;
+}
+
+.modal-option {
+    width: 100%;
+    padding: 16px 5px;
+    background: transparent;
+    color: white;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    font-size: 16px;
+}
+
+.modal-option span {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--green-light);
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.close-modal {
+    margin-top: 15px;
+    width: 100%;
+    padding: 13px;
+    background: #37474f;
+    color: white;
+    border-radius: 25px;
+    font-size: 15px;
+}
+
+/* CHAT SCREEN */
+
+.chat-screen {
+    position: absolute;
+    inset: 0;
+    background: #0b141a;
+    display: none;
+    flex-direction: column;
+    z-index: 40;
+}
+
+.chat-screen.show {
+    display: flex;
+}
+
+.chat-header {
+    height: 67px;
+    background: var(--green);
+    display: flex;
+    align-items: center;
+    padding: 7px 10px;
+    gap: 8px;
+}
+
+.back-btn {
+    background: transparent;
+    color: white;
+    font-size: 28px;
+    padding: 5px;
+}
+
+.chat-header-avatar {
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.chat-header-info {
+    flex: 1;
+}
+
+.chat-header-name {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.chat-header-status {
+    font-size: 12px;
+    color: #d2eee8;
+    margin-top: 3px;
+}
+
+.header-call {
+    color: white;
+    background: transparent;
+    font-size: 22px;
+    padding: 8px;
 }
 
 .messages {
-  height: calc(100vh - 125px);
-  padding: 25px 15px 90px;
-  overflow-y: auto;
-  background:
-    radial-gradient(#182229 1px, transparent 1px);
-  background-size: 20px 20px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px 12px;
+    background:
+        radial-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 16px 16px;
 }
 
-.ai-message {
-  background: #202c33;
-  padding: 12px 15px;
-  border-radius: 8px;
-  max-width: 82%;
-  margin-bottom: 12px;
-  line-height: 1.5;
+.message {
+    max-width: 78%;
+    padding: 8px 10px;
+    border-radius: 9px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    line-height: 1.35;
+    position: relative;
 }
 
-.user-message {
-  background: #005c4b;
-  padding: 12px 15px;
-  border-radius: 8px;
-  max-width: 82%;
-  margin-left: auto;
-  margin-bottom: 12px;
-  line-height: 1.5;
+.message.received {
+    background: #202c33;
+    margin-right: auto;
 }
 
-.chat-input {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(650px, 100%);
-  height: 60px;
-  background: #202c33;
-  padding: 8px;
-  display: flex;
-  gap: 8px;
+.message.sent {
+    background: #005c4b;
+    margin-left: auto;
 }
 
-.chat-input input {
-  flex: 1;
-  border: none;
-  outline: none;
-  border-radius: 25px;
-  padding: 12px 17px;
-  background: #2a3942;
-  color: white;
-  font-size: 15px;
+.message-time {
+    color: #aeb8bd;
+    font-size: 10px;
+    float: right;
+    margin-left: 10px;
+    margin-top: 4px;
 }
 
-.send {
-  width: 45px;
-  border: none;
-  border-radius: 50%;
-  background: #25d366;
-  font-size: 19px;
-  cursor: pointer;
+.message-input-area {
+    background: #202c33;
+    padding: 8px;
+    display: flex;
+    gap: 7px;
+    align-items: center;
 }
 
-/* MOBILE */
-@media(max-width:500px) {
-  .logo-title {
-    font-size: 27px;
-  }
+.message-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: #2a3942;
+    color: white;
+    border-radius: 23px;
+    padding: 12px 16px;
+    font-size: 15px;
+}
 
-  .tab {
-    font-size: 14px;
-  }
+.send-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #06351f;
+    font-size: 21px;
+}
 
-  .chat {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
+/* RESPONSIVE */
+
+@media (min-width: 601px) {
+    .app {
+        border-left: 1px solid #263238;
+        border-right: 1px solid #263238;
+    }
 }
 </style>
 </head>
@@ -403,245 +626,770 @@ body {
 
 <div class="app">
 
-  <!-- HEADER -->
-  <header class="header">
+    <!-- HEADER -->
+    <header class="header">
 
-    <div class="top-bar">
-      <div class="logo-title">JDA Networks</div>
+        <div class="header-top">
 
-      <div class="header-icons">
-        <span class="icon">📷</span>
-        <span class="icon">🔍</span>
-        <span class="icon">⋮</span>
-      </div>
-    </div>
+            <div class="logo">
+                JDA Networks
+            </div>
 
-    <div class="tabs">
-      <div class="tab active">CHATS</div>
-      <div class="tab">UPDATES</div>
-      <div class="tab">COMMUNITIES</div>
-      <div class="tab">CALLS</div>
-    </div>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="focusSearch()">⌕</button>
+                <button class="icon-btn menu" onclick="openMenu()">⋮</button>
+            </div>
 
-  </header>
-
-  <!-- SEARCH -->
-  <div class="search-area">
-    <input
-      class="search"
-      type="text"
-      id="search"
-      placeholder="🔍 Search chats"
-      oninput="searchChats()"
-    >
-  </div>
-
-  <!-- CHATS -->
-  <main class="chat-list" id="chatList">
-
-    <div class="chat" data-name="Ouma Jonathan" onclick="openOuma()">
-
-      <img class="avatar" src="ouma.jpg" alt="Ouma Jonathan">
-
-      <div class="chat-info">
-        <div class="chat-top">
-          <span class="chat-name">Ouma Jonathan</span>
-          <span class="time">AI</span>
         </div>
 
-        <div class="message">
-          🤖 Ask Ouma Jonathan anything
+        <!-- TABS -->
+        <div class="tabs">
+
+            <button class="tab active" onclick="switchTab('chats', this)">
+                CHATS
+            </button>
+
+            <button class="tab" onclick="switchTab('updates', this)">
+                UPDATES
+            </button>
+
+            <button class="tab" onclick="switchTab('communities', this)">
+                GROUPS
+            </button>
+
+            <button class="tab" onclick="switchTab('calls', this)">
+                CALLS
+            </button>
+
         </div>
-      </div>
+
+    </header>
+
+    <!-- SEARCH -->
+    <div class="search-area">
+
+        <div class="search-box">
+
+            <span class="search-icon">⌕</span>
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search chats"
+                oninput="searchChats()"
+            >
+
+        </div>
 
     </div>
 
-    <div class="empty" id="empty">
-      <div class="empty-icon">💬</div>
-      <h2>Your chats</h2>
-      <p>Start a new conversation with your contacts.</p>
-    </div>
+    <!-- CONTENT -->
+    <main class="content" id="content">
 
-  </main>
+        <div id="chatList">
 
-  <!-- NEW CHAT BUTTON -->
-  <button class="new-chat" onclick="newChat()" title="New Chat">
-    +
-  </button>
+            <!-- OUMA JONATHAN -->
+            <div class="chat-row"
+                 onclick="openAI()"
+                 data-name="Ouma Jonathan">
 
-  <!-- OUMA FLOATING BUTTON -->
-  <div class="ouma-area">
+                <img
+                    class="avatar"
+                    src="IMG-20260826-WA0039.jpg"
+                    alt="Ouma Jonathan"
+                >
 
-    <div class="ouma-label">
-      Ouma Jonathan
-    </div>
+                <div class="chat-info">
 
-    <button class="ouma-button" onclick="openOuma()">
-      <img src="ouma.jpg" alt="Ouma Jonathan">
+                    <div class="chat-top">
+
+                        <div class="chat-name">
+                            Ouma Jonathan
+                        </div>
+
+                        <div class="chat-time">
+                            now
+                        </div>
+
+                    </div>
+
+                    <div class="chat-bottom">
+
+                        <div class="last-message">
+                            Ask Ouma Jonathan anything
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SAMPLE CHAT -->
+            <div class="chat-row"
+                 onclick="openChat('JDA Network')"
+                 data-name="JDA Network">
+
+                <div class="avatar default-avatar">
+                    👥
+                </div>
+
+                <div class="chat-info">
+
+                    <div class="chat-top">
+
+                        <div class="chat-name">
+                            JDA Network
+                        </div>
+
+                        <div class="chat-time">
+                            Today
+                        </div>
+
+                    </div>
+
+                    <div class="chat-bottom">
+
+                        <div class="last-message">
+                            Your messages will appear here
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- EMPTY SEARCH -->
+        <div class="empty" id="emptySearch" style="display:none;">
+
+            <div class="empty-icon">
+                🔎
+            </div>
+
+            <h2>No chats found</h2>
+
+            <p>Try searching for another name.</p>
+
+        </div>
+
+        <!-- AI SECTION AT BOTTOM -->
+        <div class="ai-section">
+
+            <div class="ai-card"
+                 onclick="openAI()">
+
+                <img
+                    class="ai-avatar"
+                    src="IMG-20260826-WA0039.jpg"
+                    alt="Ouma Jonathan"
+                >
+
+                <div class="ai-info">
+
+                    <div class="ai-name">
+                        Ouma Jonathan
+                    </div>
+
+                    <div class="ai-status">
+                        AI assistant • Tap to chat
+                    </div>
+
+                </div>
+
+                <button class="ai-button">
+                    Chat
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FLOATING PLUS -->
+    <button class="fab" onclick="openNewChat()" aria-label="New chat">
+        +
     </button>
 
-  </div>
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+
+        <button class="bottom-item active"
+                onclick="bottomTab('chats', this)">
+            <span>▤</span>
+            <span>Chats</span>
+        </button>
+
+        <button class="bottom-item"
+                onclick="bottomTab('updates', this)">
+            <span>◉</span>
+            <span>Updates</span>
+        </button>
+
+        <button class="bottom-item"
+                onclick="bottomTab('groups', this)">
+            <span>♧</span>
+            <span>Groups</span>
+        </button>
+
+        <button class="bottom-item"
+                onclick="bottomTab('calls', this)">
+            <span>☎</span>
+            <span>Calls</span>
+        </button>
+
+    </nav>
+
+    <!-- NEW CHAT MODAL -->
+    <div class="overlay" id="newChatModal">
+
+        <div class="modal">
+
+            <h2>New chat</h2>
+
+            <button class="modal-option" onclick="startNewChat()">
+                <span>👤</span>
+                New contact
+            </button>
+
+            <button class="modal-option" onclick="showLogin()">
+                <span>🔐</span>
+                Sign in to JDA Networks
+            </button>
+
+            <button class="modal-option" onclick="openAI()">
+                <span>🤖</span>
+                Chat with Ouma Jonathan
+            </button>
+
+            <button class="close-modal"
+                    onclick="closeNewChat()">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- SIGN IN MODAL -->
+    <div class="overlay" id="loginModal">
+
+        <div class="modal">
+
+            <h2>Sign in to JDA Networks</h2>
+
+            <input
+                id="loginName"
+                class="message-input"
+                style="width:100%; margin-bottom:10px;"
+                placeholder="Your name"
+            >
+
+            <input
+                id="loginPhone"
+                class="message-input"
+                style="width:100%;"
+                placeholder="Mobile number"
+                type="tel"
+            >
+
+            <button
+                class="ai-button"
+                style="width:100%; margin-top:15px; padding:14px;"
+                onclick="signIn()">
+                Continue
+            </button>
+
+            <button
+                class="close-modal"
+                onclick="closeLogin()">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- CHAT SCREEN -->
+    <div class="chat-screen" id="chatScreen">
+
+        <div class="chat-header">
+
+            <button class="back-btn"
+                    onclick="closeChat()">
+                ‹
+            </button>
+
+            <img
+                id="chatAvatar"
+                class="chat-header-avatar"
+                src="IMG-20260826-WA0039.jpg"
+                alt=""
+            >
+
+            <div class="chat-header-info">
+
+                <div
+                    class="chat-header-name"
+                    id="chatName">
+                    Ouma Jonathan
+                </div>
+
+                <div
+                    class="chat-header-status"
+                    id="chatStatus">
+                    online
+                </div>
+
+            </div>
+
+            <button class="header-call"
+                    onclick="alert('Calling will be connected when the calling backend is added.')">
+                ☎
+            </button>
+
+            <button class="header-call">
+                ⋮
+            </button>
+
+        </div>
+
+        <div class="messages" id="messages">
+
+            <div class="message received">
+                Hello 👋 I'm Ouma Jonathan. How can I help you?
+                <span class="message-time">now</span>
+            </div>
+
+        </div>
+
+        <div class="message-input-area">
+
+            <input
+                id="messageInput"
+                class="message-input"
+                placeholder="Message"
+                onkeydown="handleMessageKey(event)"
+            >
+
+            <button
+                class="send-btn"
+                onclick="sendMessage()">
+                ➤
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
-
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-
-  <div class="nav-item active">
-    <span class="nav-icon">💬</span>
-    Chats
-  </div>
-
-  <div class="nav-item">
-    <span class="nav-icon">⭕</span>
-    Updates
-  </div>
-
-  <div class="nav-item">
-    <span class="nav-icon">👥</span>
-    Communities
-  </div>
-
-  <div class="nav-item">
-    <span class="nav-icon">📞</span>
-    Calls
-  </div>
-
-</nav>
-
-
-<!-- OUMA JONATHAN CHAT -->
-<section class="ouma-chat" id="oumaChat">
-
-  <div class="ouma-header">
-
-    <span class="back" onclick="closeOuma()">‹</span>
-
-    <img src="ouma.jpg" alt="Ouma Jonathan">
-
-    <div>
-      <div class="ouma-title">Ouma Jonathan</div>
-      <div class="ouma-status">online</div>
-    </div>
-
-  </div>
-
-  <div class="messages" id="messages">
-
-    <div class="ai-message">
-      👋 Hello! I'm <b>Ouma Jonathan</b>, the AI assistant inside JDA Networks.
-      <br><br>
-      How can I help you today?
-    </div>
-
-  </div>
-
-  <div class="chat-input">
-
-    <input
-      id="messageInput"
-      type="text"
-      placeholder="Message Ouma Jonathan"
-      onkeydown="if(event.key==='Enter') sendMessage()"
-    >
-
-    <button class="send" onclick="sendMessage()">
-      ➤
-    </button>
-
-  </div>
-
-</section>
 
 
 <script>
 
-/* OPEN OUMA */
-function openOuma() {
-  document.getElementById("oumaChat").style.display = "block";
-}
+/* =========================
+   BASIC NAVIGATION
+========================= */
 
-/* CLOSE OUMA */
-function closeOuma() {
-  document.getElementById("oumaChat").style.display = "none";
-}
+function switchTab(name, button) {
 
-/* SEARCH */
-function searchChats() {
+    document.querySelectorAll(".tab")
+        .forEach(tab => tab.classList.remove("active"));
 
-  const search =
-    document.getElementById("search").value.toLowerCase();
+    button.classList.add("active");
 
-  const chats =
-    document.querySelectorAll(".chat");
+    const input = document.getElementById("searchInput");
 
-  chats.forEach(chat => {
-
-    const name =
-      chat.getAttribute("data-name").toLowerCase();
-
-    if(name.includes(search)) {
-      chat.style.display = "flex";
-    } else {
-      chat.style.display = "none";
+    if (name === "chats") {
+        input.placeholder = "Search chats";
+        showChats();
     }
 
-  });
+    if (name === "updates") {
+        input.placeholder = "Search updates";
+        showEmpty("Updates");
+    }
+
+    if (name === "communities") {
+        input.placeholder = "Search groups";
+        showEmpty("Groups");
+    }
+
+    if (name === "calls") {
+        input.placeholder = "Search calls";
+        showEmpty("Calls");
+    }
 }
 
-/* NEW CHAT */
-function newChat() {
 
-  alert(
-    "New Chat\n\nYour contacts and phone-number system will be connected here."
-  );
+function bottomTab(name, button) {
 
+    document.querySelectorAll(".bottom-item")
+        .forEach(item => item.classList.remove("active"));
+
+    button.classList.add("active");
+
+    if (name === "chats") {
+        showChats();
+    } else {
+        showEmpty(name);
+    }
 }
 
-/* SEND MESSAGE */
+
+function showChats() {
+
+    document.getElementById("chatList").style.display = "block";
+    document.querySelector(".ai-section").style.display = "block";
+    document.getElementById("emptySearch").style.display = "none";
+}
+
+
+function showEmpty(name) {
+
+    document.getElementById("chatList").style.display = "none";
+    document.querySelector(".ai-section").style.display = "none";
+
+    const empty = document.getElementById("emptySearch");
+
+    empty.style.display = "flex";
+
+    empty.querySelector("h2").textContent =
+        "No " + name.toLowerCase() + " yet";
+
+    empty.querySelector("p").textContent =
+        "Your " + name.toLowerCase() + " will appear here.";
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+function focusSearch() {
+
+    document.getElementById("searchInput").focus();
+}
+
+
+function searchChats() {
+
+    const value =
+        document.getElementById("searchInput")
+        .value
+        .toLowerCase()
+        .trim();
+
+    const rows =
+        document.querySelectorAll(".chat-row");
+
+    let found = false;
+
+    rows.forEach(row => {
+
+        const name =
+            row.dataset.name.toLowerCase();
+
+        if (!value || name.includes(value)) {
+
+            row.style.display = "flex";
+            found = true;
+
+        } else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+    document.getElementById("emptySearch").style.display =
+        found ? "none" : "flex";
+}
+
+
+/* =========================
+   NEW CHAT
+========================= */
+
+function openNewChat() {
+
+    document
+        .getElementById("newChatModal")
+        .classList.add("show");
+}
+
+
+function closeNewChat() {
+
+    document
+        .getElementById("newChatModal")
+        .classList.remove("show");
+}
+
+
+function startNewChat() {
+
+    closeNewChat();
+
+    alert(
+        "New contacts will sign in to JDA Networks using their own phone number. Real account registration will be connected to the backend later."
+    );
+}
+
+
+/* =========================
+   SIGN IN
+========================= */
+
+function showLogin() {
+
+    closeNewChat();
+
+    document
+        .getElementById("loginModal")
+        .classList.add("show");
+}
+
+
+function closeLogin() {
+
+    document
+        .getElementById("loginModal")
+        .classList.remove("show");
+}
+
+
+function signIn() {
+
+    const name =
+        document.getElementById("loginName").value.trim();
+
+    const phone =
+        document.getElementById("loginPhone").value.trim();
+
+    if (!name || !phone) {
+
+        alert("Please enter your name and mobile number.");
+
+        return;
+    }
+
+    localStorage.setItem(
+        "jdaUser",
+        JSON.stringify({
+            name: name,
+            phone: phone
+        })
+    );
+
+    closeLogin();
+
+    alert(
+        "Welcome to JDA Networks, " + name + "!"
+    );
+}
+
+
+/* =========================
+   OUMA JONATHAN AI
+========================= */
+
+function openAI() {
+
+    const screen =
+        document.getElementById("chatScreen");
+
+    screen.classList.add("show");
+
+    document.getElementById("chatName")
+        .textContent = "Ouma Jonathan";
+
+    document.getElementById("chatStatus")
+        .textContent = "online";
+
+    document.getElementById("chatAvatar")
+        .src = "IMG-20260826-WA0039.jpg";
+
+    document.getElementById("messageInput")
+        .focus();
+}
+
+
+/* =========================
+   NORMAL CHAT
+========================= */
+
+function openChat(name) {
+
+    document
+        .getElementById("chatScreen")
+        .classList.add("show");
+
+    document
+        .getElementById("chatName")
+        .textContent = name;
+
+    document
+        .getElementById("chatStatus")
+        .textContent = "online";
+
+    document
+        .getElementById("chatAvatar")
+        .src = "IMG-20260826-WA0039.jpg";
+
+    document
+        .getElementById("messages")
+        .innerHTML = `
+            <div class="message received">
+                Welcome to JDA Networks 👋
+                <span class="message-time">now</span>
+            </div>
+        `;
+
+    document
+        .getElementById("messageInput")
+        .focus();
+}
+
+
+function closeChat() {
+
+    document
+        .getElementById("chatScreen")
+        .classList.remove("show");
+}
+
+
+/* =========================
+   MESSAGES
+========================= */
+
+function handleMessageKey(event) {
+
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+}
+
+
 function sendMessage() {
 
-  const input =
-    document.getElementById("messageInput");
+    const input =
+        document.getElementById("messageInput");
 
-  const text =
-    input.value.trim();
+    const text =
+        input.value.trim();
 
-  if(!text) return;
+    if (!text) return;
 
-  const messages =
-    document.getElementById("messages");
+    const messages =
+        document.getElementById("messages");
 
-  const userMessage =
-    document.createElement("div");
+    const sent =
+        document.createElement("div");
 
-  userMessage.className = "user-message";
+    sent.className = "message sent";
 
-  userMessage.textContent = text;
+    sent.innerHTML =
+        escapeHTML(text) +
+        ' <span class="message-time">now ✓✓</span>';
 
-  messages.appendChild(userMessage);
+    messages.appendChild(sent);
 
-  input.value = "";
+    input.value = "";
 
-  messages.scrollTop = messages.scrollHeight;
+    messages.scrollTop =
+        messages.scrollHeight;
 
-  /* Temporary response */
-  setTimeout(() => {
+    /* Ouma Jonathan demo reply */
 
-    const aiMessage =
-      document.createElement("div");
+    if (
+        document
+            .getElementById("chatName")
+            .textContent === "Ouma Jonathan"
+    ) {
 
-    aiMessage.className = "ai-message";
+        setTimeout(() => {
 
-    aiMessage.innerHTML =
-      "I'm Ouma Jonathan 🤖. Your message was received. My real AI connection will be added in the next stage.";
+            const reply =
+                document.createElement("div");
 
-    messages.appendChild(aiMessage);
+            reply.className =
+                "message received";
 
-    messages.scrollTop = messages.scrollHeight;
+            reply.innerHTML =
+                getAIReply(text) +
+                ' <span class="message-time">now</span>';
 
-  }, 700);
+            messages.appendChild(reply);
 
+            messages.scrollTop =
+                messages.scrollHeight;
+
+        }, 700);
+    }
+}
+
+
+function getAIReply(message) {
+
+    const text =
+        message.toLowerCase();
+
+    if (text.includes("hello") ||
+        text.includes("hi") ||
+        text.includes("hlo")) {
+
+        return "Hello 👋 I'm Ouma Jonathan. Nice to hear from you.";
+    }
+
+    if (text.includes("name")) {
+
+        return "My name is Ouma Jonathan, the AI assistant inside JDA Networks.";
+    }
+
+    if (text.includes("help")) {
+
+        return "Of course. Tell me what you need help with and I'll do my best.";
+    }
+
+    if (text.includes("jda")) {
+
+        return "JDA Networks is your messaging platform. 💬";
+    }
+
+    return "I received your message 👍. I'm Ouma Jonathan, and I'm ready to help.";
+}
+
+
+/* =========================
+   SECURITY
+========================= */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+}
+
+
+/* =========================
+   MENU
+========================= */
+
+function openMenu() {
+
+    alert(
+        "JDA Networks\n\nSettings\nPrivacy\nNotifications\nAbout JDA Networks"
+    );
 }
 
 </script>

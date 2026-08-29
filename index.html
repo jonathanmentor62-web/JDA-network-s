@@ -904,7 +904,7 @@ import {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    async function createAccount(email, password) {
+  window.createAccount = async function(email, password) {
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
@@ -917,7 +917,7 @@ import {
     console.error("Signup error:", error.message);
   }
     }
-    async function login(email, password) {
+    window.login = async function(email, password) {
     try {
         const userCredential = await signInWithEmailAndPassword(
             auth,

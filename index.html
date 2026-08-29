@@ -880,5 +880,26 @@ function showMenu() {
 
 </script>
 
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
+    authDomain: "jda-network-fabde.firebaseapp.com",
+    projectId: "jda-network-fabde",
+    storageBucket: "jda-network-fabde.firebasestorage.app",
+    messagingSenderId: "383915852673",
+    appId: "1:383915852673:web:4b185c0387ed0bbad1de80"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+</script>
 </body>
       </html>

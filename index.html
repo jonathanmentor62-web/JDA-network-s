@@ -885,6 +885,7 @@ function showMenu() {
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {
   getAuth,
+    signInWithEmailAndPassword,
   createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
   // TODO: Add SDKs for Firebase products that you want to use
@@ -916,6 +917,45 @@ import {
     console.error("Signup error:", error.message);
   }
     }
+    async function login(email, password) {
+    try {
+        const userCredential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+        );
+
+        console.log("Login successful:", userCredential.user);
+        alert("Login successful!");
+    } catch (error) {
+        console.error("Login error:", error);
+        alert("Login failed: " + error.message);
+    }
+    }
 </script>
-</body>
-      </html>
+    <body><div id="loginBox">
+    <h2>JDA Networks Login</h2>
+
+    <input type="email" id="loginEmail" placeholder="Email address">
+
+    <input type="password" id="loginPassword" placeholder="Password">
+
+    <button onclick="login(
+        document.getElementById('loginEmail').value,
+        document.getElementById('loginPassword').value
+    )">
+        Login with Email
+    </button>
+
+    <p>Don't have an account?</p>
+
+    <button onclick="createAccount(
+        document.getElementById('loginEmail').value,
+        document.getElementById('loginPassword').value
+    )">
+        Create Account
+    </button>
+    </div>
+
+    </body>
+    </html>

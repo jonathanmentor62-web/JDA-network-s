@@ -30,7 +30,6 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
 
-
 /* =========================================================
    GLOBAL VARIABLES
 ========================================================= */
@@ -50,7 +49,6 @@ let unsubApproved = null;
 
 let chatMode = "user";
 
-
 /* =========================================================
    HELPERS
 ========================================================= */
@@ -68,7 +66,6 @@ function toast(message) {
   }, 3000);
 }
 
-
 function showOnly(id) {
   const screens = [
     "authView",
@@ -81,16 +78,15 @@ function showOnly(id) {
     const element = $(screen);
 
     if (element) {
-      element.classList.toggle("hidden", screen !== id);
+      element.classList.toggle("hidden", screen!== id);
     }
   });
 
   $("mobileNav")?.classList.toggle(
     "hidden",
-    id !== "appView"
+    id!== "appView"
   );
 }
-
 
 function esc(value = "") {
   return String(value).replace(
@@ -105,19 +101,17 @@ function esc(value = "") {
   );
 }
 
-
 function initials(name = "JDA") {
   return (
     name
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map(word => word[0])
-      .join("")
-      .toUpperCase() || "J"
+     .trim()
+     .split(/\s+/)
+     .slice(0, 2)
+     .map(word => word[0])
+     .join("")
+     .toUpperCase() || "J"
   );
 }
-
 
 function isOnline(user) {
   if (!user?.lastSeen?.toDate) return false;
@@ -128,7 +122,6 @@ function isOnline(user) {
     90000
   );
 }
-
 
 function avatarHTML(user, size = "avatar") {
   if (user?.photoURL) {
@@ -147,13 +140,11 @@ function avatarHTML(user, size = "avatar") {
   `;
 }
 
-
 function safeFileName(name) {
   return name
-    .replace(/[^a-zA-Z0-9._-]/g, "_")
-    .slice(-100);
+   .replace(/[^a-zA-Z0-9._-]/g, "_")
+   .slice(-100);
 }
-
 
 /* =========================================================
    AUTH TABS
@@ -164,24 +155,23 @@ document.querySelectorAll("[data-auth]").forEach(button => {
   button.onclick = () => {
 
     document
-      .querySelectorAll(".tab")
-      .forEach(tab => tab.classList.remove("active"));
+     .querySelectorAll(".tab")
+     .forEach(tab => tab.classList.remove("active"));
 
     button.classList.add("active");
 
     $("loginForm").classList.toggle(
       "hidden",
-      button.dataset.auth !== "login"
+      button.dataset.auth!== "login"
     );
 
     $("registerForm").classList.toggle(
       "hidden",
-      button.dataset.auth !== "register"
+      button.dataset.auth!== "register"
     );
   };
 
 });
-
 
 /* =========================================================
    REGISTRATION
@@ -232,7 +222,6 @@ $("registerForm").onsubmit = async event => {
       throw new Error("Username is already taken.");
     }
 
-
     /* Create Firebase account */
 
     const credential =
@@ -245,7 +234,6 @@ $("registerForm").onsubmit = async event => {
     const user = credential.user;
 
     let photoURL = "";
-
 
     /* Upload profile photo */
 
@@ -274,14 +262,12 @@ $("registerForm").onsubmit = async event => {
         await getDownloadURL(storageRef);
     }
 
-
     /* Firebase Auth profile */
 
     await updateProfile(user, {
       displayName: name,
       photoURL
     });
-
 
     /* Firestore user */
 
@@ -300,7 +286,6 @@ $("registerForm").onsubmit = async event => {
       }
     );
 
-
     /* Username lookup */
 
     await setDoc(
@@ -309,7 +294,6 @@ $("registerForm").onsubmit = async event => {
         uid: user.uid
       }
     );
-
 
     showOnly("pendingView");
 
@@ -326,7 +310,6 @@ $("registerForm").onsubmit = async event => {
     );
   }
 };
-
 
 /* =========================================================
    LOGIN
@@ -359,7 +342,6 @@ $("loginForm").onsubmit = async event => {
     );
   }
 };
-
 
 function friendlyAuthError(error) {
 
@@ -396,7 +378,6 @@ function friendlyAuthError(error) {
     "Something went wrong."
   );
 }
-
 
 /* =========================================================
    LOGOUT
@@ -437,11 +418,9 @@ async function logout() {
   }
 }
 
-
 $("logoutBtn").onclick = logout;
 $("pendingLogout").onclick = logout;
 $("rejectedLogout").onclick = logout;
-
 
 /* =========================================================
    AUTH STATE
@@ -480,9 +459,8 @@ onAuthStateChanged(
 
       meData = {
         id: userDoc.id,
-        ...userDoc.data()
+       ...userDoc.data()
       };
-
 
       /* Pending */
 
@@ -493,7 +471,6 @@ onAuthStateChanged(
         return;
       }
 
-
       /* Rejected */
 
       if (meData.status === "rejected") {
@@ -502,7 +479,6 @@ onAuthStateChanged(
 
         return;
       }
-
 
       /* Disabled */
 
@@ -517,16 +493,14 @@ onAuthStateChanged(
         return;
       }
 
-
       /* Only approved users enter app */
 
-      if (meData.status !== "approved") {
+      if (meData.status!== "approved") {
 
         showOnly("pendingView");
 
         return;
       }
-
 
       /* Update last seen */
 
@@ -536,7 +510,6 @@ onAuthStateChanged(
           lastSeen: serverTimestamp()
         }
       );
-
 
       /* User avatar */
 
@@ -551,7 +524,6 @@ onAuthStateChanged(
         $("meAvatar").textContent = "";
       }
 
-
       /* Check admin */
 
       const adminDoc =
@@ -561,9 +533,8 @@ onAuthStateChanged(
 
       $("adminNav").classList.toggle(
         "hidden",
-        !adminDoc.exists()
+       !adminDoc.exists()
       );
-
 
       showOnly("appView");
 
@@ -579,7 +550,6 @@ onAuthStateChanged(
     }
   }
 );
-
 
 /* =========================================================
    PAGE NAVIGATION
@@ -629,10 +599,9 @@ const titles = {
 
 };
 
-
 document
-  .querySelectorAll("[data-page]")
-  .forEach(button => {
+ .querySelectorAll("[data-page]")
+ .forEach(button => {
 
     button.onclick = () => {
 
@@ -643,7 +612,6 @@ document
     };
 
   });
-
 
 function renderPage(page) {
 
@@ -659,7 +627,6 @@ function renderPage(page) {
     return;
   }
 
-
   $("pageTitle").textContent =
     titles[page]?.[0] ||
     "JDA Networks";
@@ -667,12 +634,11 @@ function renderPage(page) {
   $("pageSubtitle").textContent =
     titles[page]?.[1] || "";
 
-
   document
-    .querySelectorAll(
+   .querySelectorAll(
       ".nav-item[data-page]"
     )
-    .forEach(item => {
+   .forEach(item => {
 
       item.classList.toggle(
         "active",
@@ -680,7 +646,6 @@ function renderPage(page) {
       );
 
     });
-
 
   const renderers = {
 
@@ -695,12 +660,10 @@ function renderPage(page) {
 
   };
 
-
   if (renderers[page]) {
     renderers[page]();
   }
 }
-
 
 /* =========================================================
    CHATS
@@ -712,7 +675,6 @@ function renderChats() {
     unsubChats();
     unsubChats = null;
   }
-
 
   $("pageContent").innerHTML = `
 
@@ -758,10 +720,8 @@ function renderChats() {
     </div>
   `;
 
-
   $("oumaCard").onclick =
     openOuma;
-
 
   const conversationsQuery =
     query(
@@ -778,7 +738,6 @@ function renderChats() {
       limit(50)
     );
 
-
   unsubChats =
     onSnapshot(
       conversationsQuery,
@@ -788,7 +747,6 @@ function renderChats() {
           $("chatList");
 
         if (!list) return;
-
 
         if (snapshot.empty) {
 
@@ -803,9 +761,7 @@ function renderChats() {
           return;
         }
 
-
         list.innerHTML = "";
-
 
         snapshot.forEach(
           conversationDoc => {
@@ -813,29 +769,25 @@ function renderChats() {
             const conversation =
               conversationDoc.data();
 
-
             const other =
               (conversation.memberProfiles || [])
-                .find(
+               .find(
                   member =>
-                    member.uid !== me.uid
+                    member.uid!== me.uid
                 );
 
-
             if (!other) return;
-
 
             const row =
               document.createElement("div");
 
             row.className = "chat-row";
 
-
             const time =
               conversation.updatedAt?.toDate
-                ? conversation.updatedAt
-                    .toDate()
-                    .toLocaleTimeString(
+               ? conversation.updatedAt
+                   .toDate()
+                   .toLocaleTimeString(
                       [],
                       {
                         hour: "2-digit",
@@ -843,7 +795,6 @@ function renderChats() {
                       }
                     )
                 : "";
-
 
             row.innerHTML = `
 
@@ -869,10 +820,8 @@ function renderChats() {
               </span>
             `;
 
-
             row.onclick =
               () => openChat(other);
-
 
             list.appendChild(row);
 
@@ -891,35 +840,31 @@ function renderChats() {
       }
     );
 
-
   $("chatSearch").oninput =
     filterChats;
 }
-
 
 function filterChats() {
 
   const search =
     $("chatSearch")
-      ?.value
-      .trim()
-      .toLowerCase();
-
+     ?.value
+     .trim()
+     .toLowerCase();
 
   document
-    .querySelectorAll(".chat-row")
-    .forEach(row => {
+   .querySelectorAll(".chat-row")
+   .forEach(row => {
 
       row.style.display =
         row.textContent
-          .toLowerCase()
-          .includes(search)
-          ? "flex"
+         .toLowerCase()
+         .includes(search)
+         ? "flex"
           : "none";
 
     });
 }
-
 
 /* =========================================================
    NETWORK
@@ -956,10 +901,8 @@ function renderNetwork() {
     </div>
   `;
 
-
   $("searchMembers").onclick =
     searchMembers;
-
 
   $("memberSearch").onkeydown =
     event => {
@@ -971,15 +914,13 @@ function renderNetwork() {
     };
 }
 
-
 async function searchMembers() {
 
   const term =
     $("memberSearch")
-      .value
-      .trim()
-      .toLowerCase();
-
+     .value
+     .trim()
+     .toLowerCase();
 
   if (!term) {
 
@@ -989,7 +930,6 @@ async function searchMembers() {
 
     return;
   }
-
 
   try {
 
@@ -1004,15 +944,12 @@ async function searchMembers() {
         limit(100)
       );
 
-
     const snapshot =
       await getDocs(
         membersQuery
       );
 
-
     const members = [];
-
 
     snapshot.forEach(
       memberDoc => {
@@ -1020,20 +957,17 @@ async function searchMembers() {
         const user =
           memberDoc.data();
 
-
         if (
           user.uid === me.uid
         ) {
           return;
         }
 
-
         const name =
           user.name?.toLowerCase() || "";
 
         const username =
           user.username?.toLowerCase() || "";
-
 
         if (
           name.includes(term) ||
@@ -1042,7 +976,7 @@ async function searchMembers() {
 
           members.push({
             id: memberDoc.id,
-            ...user
+           ...user
           });
 
         }
@@ -1050,10 +984,8 @@ async function searchMembers() {
       }
     );
 
-
     const list =
       $("memberList");
-
 
     if (!members.length) {
 
@@ -1066,14 +998,12 @@ async function searchMembers() {
       return;
     }
 
-
     list.innerHTML =
       members
-        .map(user => {
+       .map(user => {
 
           const online =
             isOnline(user);
-
 
           return `
 
@@ -1098,14 +1028,14 @@ async function searchMembers() {
                   <span
                     class="${
                       online
-                        ? "online"
+                       ? "online"
                         : "offline"
                     }">
                   </span>
 
                   ${
                     online
-                      ? "online"
+                     ? "online"
                       : "offline"
                   }
 
@@ -1137,12 +1067,11 @@ async function searchMembers() {
           `;
 
         })
-        .join("");
-
+       .join("");
 
     document
-      .querySelectorAll(".connect")
-      .forEach(button => {
+     .querySelectorAll(".connect")
+     .forEach(button => {
 
         button.onclick =
           event => {
@@ -1157,10 +1086,9 @@ async function searchMembers() {
 
       });
 
-
     document
-      .querySelectorAll(".message")
-      .forEach(button => {
+     .querySelectorAll(".message")
+     .forEach(button => {
 
         button.onclick =
           async event => {
@@ -1176,12 +1104,11 @@ async function searchMembers() {
                 )
               );
 
-
             if (userDoc.exists()) {
 
               openChat({
                 uid: userDoc.id,
-                ...userDoc.data()
+               ...userDoc.data()
               });
 
             }
@@ -1200,7 +1127,6 @@ async function searchMembers() {
   }
 }
 
-
 /* =========================================================
    CONNECT USER
 ========================================================= */
@@ -1210,7 +1136,6 @@ async function connectUser(uid) {
   if (!uid || uid === me.uid) {
     return;
   }
-
 
   try {
 
@@ -1227,7 +1152,6 @@ async function connectUser(uid) {
       }
     );
 
-
     await setDoc(
       doc(
         db,
@@ -1240,7 +1164,6 @@ async function connectUser(uid) {
         createdAt: serverTimestamp()
       }
     );
-
 
     toast(
       "Added to your network."
@@ -1255,7 +1178,6 @@ async function connectUser(uid) {
     );
   }
 }
-
 
 /* =========================================================
    STATUS
@@ -1284,7 +1206,6 @@ function renderStatus() {
     </div>
   `;
 
-
   $("createStatus").onclick =
     () => {
 
@@ -1294,7 +1215,6 @@ function renderStatus() {
 
     };
 }
-
 
 /* =========================================================
    CALLS
@@ -1324,7 +1244,6 @@ function renderCalls() {
     </div>
   `;
 
-
   $("startCall").onclick =
     () => {
 
@@ -1334,7 +1253,6 @@ function renderCalls() {
 
     };
 }
-
 
 /* =========================================================
    NOTIFICATIONS
@@ -1356,7 +1274,6 @@ function renderNotifications() {
     </div>
   `;
 }
-
 
 /* =========================================================
    PROFILE
@@ -1431,11 +1348,9 @@ function renderProfile() {
     </div>
   `;
 
-
   $("savePhoto").onclick =
     saveProfilePhoto;
 }
-
 
 /* =========================================================
    PROFILE PHOTO
@@ -1446,7 +1361,6 @@ async function saveProfilePhoto() {
   const file =
     $("profilePhoto").files[0];
 
-
   if (!file) {
 
     toast(
@@ -1455,7 +1369,6 @@ async function saveProfilePhoto() {
 
     return;
   }
-
 
   if (file.size > 5 * 1024 * 1024) {
 
@@ -1466,7 +1379,6 @@ async function saveProfilePhoto() {
     return;
   }
 
-
   if (!file.type.startsWith("image/")) {
 
     toast(
@@ -1476,7 +1388,6 @@ async function saveProfilePhoto() {
     return;
   }
 
-
   try {
 
     const storageRef =
@@ -1485,18 +1396,15 @@ async function saveProfilePhoto() {
         `profilePhotos/${me.uid}/${Date.now()}_${safeFileName(file.name)}`
       );
 
-
     await uploadBytes(
       storageRef,
       file
     );
 
-
     const url =
       await getDownloadURL(
         storageRef
       );
-
 
     await updateProfile(
       me,
@@ -1504,7 +1412,6 @@ async function saveProfilePhoto() {
         photoURL: url
       }
     );
-
 
     await updateDoc(
       doc(
@@ -1517,17 +1424,13 @@ async function saveProfilePhoto() {
       }
     );
 
-
     meData.photoURL = url;
-
 
     toast(
       "Profile photo updated."
     );
 
-
     renderPage("profile");
-
 
   } catch (error) {
 
@@ -1538,7 +1441,6 @@ async function saveProfilePhoto() {
     );
   }
 }
-
 
 /* =========================================================
    SETTINGS
@@ -1562,7 +1464,6 @@ function renderSettings() {
 
       </div>
 
-
       <div class="card">
 
         <h3>Account</h3>
@@ -1580,11 +1481,9 @@ function renderSettings() {
     </div>
   `;
 
-
   $("settingsLogout").onclick =
     logout;
 }
-
 
 /* =========================================================
    CONVERSATION
@@ -1594,9 +1493,8 @@ async function getOrCreateConversation(other) {
 
   const conversationId =
     [me.uid, other.uid]
-      .sort()
-      .join("_");
-
+     .sort()
+     .join("_");
 
   const conversationRef =
     doc(
@@ -1605,12 +1503,10 @@ async function getOrCreateConversation(other) {
       conversationId
     );
 
-
   const conversationDoc =
     await getDoc(
       conversationRef
     );
-
 
   if (!conversationDoc.exists()) {
 
@@ -1649,10 +1545,8 @@ async function getOrCreateConversation(other) {
 
   }
 
-
   return conversationId;
 }
-
 
 /* =========================================================
    OPEN CHAT
@@ -1664,24 +1558,19 @@ async function openChat(other) {
 
   activeChat = other;
 
-
   $("chatName").textContent =
     other.name;
 
-
   $("chatStatus").innerHTML =
     isOnline(other)
-      ? `<span class="online"></span>online`
+     ? `<span class="online"></span>online`
       : `<span class="offline"></span>offline`;
-
 
   $("chatAvatar").textContent =
     initials(other.name);
 
-
   $("chatAvatar").style.backgroundImage =
     "";
-
 
   if (other.photoURL) {
 
@@ -1691,10 +1580,8 @@ async function openChat(other) {
     $("chatAvatar").textContent = "";
   }
 
-
   $("messageInput").placeholder =
     `Message ${other.name}`;
-
 
   $("messages").innerHTML = `
     <div class="empty">
@@ -1702,11 +1589,9 @@ async function openChat(other) {
     </div>
   `;
 
-
   $("chatModal").classList.remove(
     "hidden"
   );
-
 
   try {
 
@@ -1715,16 +1600,13 @@ async function openChat(other) {
         other
       );
 
-
     activeConversationId =
       conversationId;
-
 
     if (unsubMessages) {
       unsubMessages();
       unsubMessages = null;
     }
-
 
     const messagesQuery =
       query(
@@ -1741,7 +1623,6 @@ async function openChat(other) {
         limit(200)
       );
 
-
     unsubMessages =
       onSnapshot(
         messagesQuery,
@@ -1750,12 +1631,9 @@ async function openChat(other) {
           const messages =
             $("messages");
 
-
           if (!messages) return;
 
-
           messages.innerHTML = "";
-
 
           if (snapshot.empty) {
 
@@ -1769,33 +1647,29 @@ async function openChat(other) {
             return;
           }
 
-
           snapshot.forEach(
             messageDoc => {
 
               const message =
                 messageDoc.data();
 
-
               const bubble =
                 document.createElement(
                   "div"
                 );
 
-
               bubble.className =
                 `bubble ${
                   message.senderId === me.uid
-                    ? "mine"
+                   ? "mine"
                     : ""
                 }`;
 
-
               const time =
                 message.createdAt?.toDate
-                  ? message.createdAt
-                      .toDate()
-                      .toLocaleString(
+                 ? message.createdAt
+                     .toDate()
+                     .toLocaleString(
                         [],
                         {
                           hour: "2-digit",
@@ -1804,7 +1678,6 @@ async function openChat(other) {
                       )
                   : "sending…";
 
-
               bubble.innerHTML = `
                 ${esc(message.text)}
                 <small>
@@ -1812,14 +1685,12 @@ async function openChat(other) {
                 </small>
               `;
 
-
               messages.appendChild(
                 bubble
               );
 
             }
           );
-
 
           messages.scrollTop =
             messages.scrollHeight;
@@ -1845,7 +1716,6 @@ async function openChat(other) {
   }
 }
 
-
 /* =========================================================
    CLOSE CHAT
 ========================================================= */
@@ -1853,13 +1723,11 @@ async function openChat(other) {
 $("closeChat").onclick =
   closeChat;
 
-
 function closeChat() {
 
   $("chatModal").classList.add(
     "hidden"
   );
-
 
   if (unsubMessages) {
 
@@ -1868,14 +1736,12 @@ function closeChat() {
     unsubMessages = null;
   }
 
-
   activeChat = null;
   activeConversationId = null;
   chatMode = "user";
 
   $("messageInput").value = "";
 }
-
 
 /* =========================================================
    SEND MESSAGE
@@ -1886,28 +1752,23 @@ $("messageForm").onsubmit =
 
     event.preventDefault();
 
-
     const text =
       $("messageInput")
-        .value
-        .trim();
-
+       .value
+       .trim();
 
     if (!text) return;
 
-
     if (
-      chatMode !== "user" ||
-      !activeChat ||
-      !activeConversationId
+      chatMode!== "user" ||
+     !activeChat ||
+     !activeConversationId
     ) {
 
       return;
     }
 
-
     $("messageInput").value = "";
-
 
     try {
 
@@ -1925,7 +1786,6 @@ $("messageForm").onsubmit =
           createdAt: serverTimestamp()
         }
       );
-
 
       await updateDoc(
         doc(
@@ -1952,7 +1812,6 @@ $("messageForm").onsubmit =
     }
   };
 
-
 /* =========================================================
    OUMA JONATHAN
 ========================================================= */
@@ -1964,7 +1823,6 @@ function openOuma() {
   activeChat = null;
   activeConversationId = null;
 
-
   if (unsubMessages) {
 
     unsubMessages();
@@ -1972,26 +1830,20 @@ function openOuma() {
     unsubMessages = null;
   }
 
-
   $("chatName").textContent =
     "Ouma Jonathan";
-
 
   $("chatStatus").textContent =
     "AI assistant • online";
 
-
   $("chatAvatar").textContent =
     "O";
-
 
   $("chatAvatar").style.backgroundImage =
     "";
 
-
   $("messageInput").placeholder =
     "Message Ouma Jonathan";
-
 
   $("messages").innerHTML = `
 
@@ -2013,12 +1865,10 @@ function openOuma() {
     </div>
   `;
 
-
   $("chatModal").classList.remove(
     "hidden"
   );
 }
-
 
 /* =========================================================
    ADMIN PANEL
@@ -2046,7 +1896,6 @@ async function renderAdmin() {
 
     </div>
 
-
     <div
       class="card"
       style="margin-top:15px">
@@ -2068,7 +1917,6 @@ async function renderAdmin() {
     </div>
   `;
 
-
   const adminDoc =
     await getDoc(
       doc(
@@ -2077,7 +1925,6 @@ async function renderAdmin() {
         me.uid
       )
     );
-
 
   if (!adminDoc.exists()) {
 
@@ -2088,7 +1935,6 @@ async function renderAdmin() {
     return;
   }
 
-
   /* Remove old listeners */
 
   if (unsubPending) {
@@ -2098,7 +1944,6 @@ async function renderAdmin() {
   if (unsubApproved) {
     unsubApproved();
   }
-
 
   /* Pending users */
 
@@ -2113,7 +1958,6 @@ async function renderAdmin() {
       limit(100)
     );
 
-
   unsubPending =
     onSnapshot(
       pendingQuery,
@@ -2122,38 +1966,32 @@ async function renderAdmin() {
         const container =
           $("pendingUsers");
 
-
         if (!container) return;
-
 
         container.innerHTML =
           snapshot.empty
-            ? `
+           ? `
               <div class="empty">
                 No pending registrations.
               </div>
             `
             : "";
 
-
         snapshot.forEach(
           userDoc => {
 
             const user = {
               id: userDoc.id,
-              ...userDoc.data()
+             ...userDoc.data()
             };
-
 
             const row =
               document.createElement(
                 "div"
               );
 
-
             row.className =
               "user-row";
-
 
             row.innerHTML = `
 
@@ -2188,26 +2026,23 @@ async function renderAdmin() {
               </button>
             `;
 
-
             row
-              .querySelector(".approve")
-              .onclick =
+             .querySelector(".approve")
+             .onclick =
               () =>
                 setUserStatus(
                   user.id,
                   "approved"
                 );
 
-
             row
-              .querySelector(".reject")
-              .onclick =
+             .querySelector(".reject")
+             .onclick =
               () =>
                 setUserStatus(
                   user.id,
                   "rejected"
                 );
-
 
             container.appendChild(
               row
@@ -2218,7 +2053,6 @@ async function renderAdmin() {
 
       }
     );
-
 
   /* Approved users */
 
@@ -2233,7 +2067,6 @@ async function renderAdmin() {
       limit(100)
     );
 
-
   unsubApproved =
     onSnapshot(
       approvedQuery,
@@ -2242,38 +2075,32 @@ async function renderAdmin() {
         const container =
           $("approvedUsers");
 
-
         if (!container) return;
-
 
         container.innerHTML =
           snapshot.empty
-            ? `
+           ? `
               <div class="empty">
                 No approved users.
               </div>
             `
             : "";
 
-
         snapshot.forEach(
           userDoc => {
 
             const user = {
               id: userDoc.id,
-              ...userDoc.data()
+             ...userDoc.data()
             };
-
 
             const row =
               document.createElement(
                 "div"
               );
 
-
             row.className =
               "user-row";
-
 
             row.innerHTML = `
 
@@ -2299,16 +2126,14 @@ async function renderAdmin() {
               </button>
             `;
 
-
             row
-              .querySelector(".disable")
-              .onclick =
+             .querySelector(".disable")
+             .onclick =
               () =>
                 setUserStatus(
                   user.id,
                   "disabled"
                 );
-
 
             container.appendChild(
               row
@@ -2321,7 +2146,6 @@ async function renderAdmin() {
     );
 }
 
-
 /* =========================================================
    ADMIN STATUS CHANGE
 ========================================================= */
@@ -2332,7 +2156,6 @@ async function setUserStatus(
 ) {
 
   if (!uid) return;
-
 
   try {
 
@@ -2351,7 +2174,6 @@ async function setUserStatus(
       }
     );
 
-
     toast(
       `User ${status}.`
     );
@@ -2365,3 +2187,77 @@ async function setUserStatus(
     );
   }
 }
+
+/* =========================================================
+   === ADDED: JDA PHONE APPROVAL NOTIFICATION ===
+   This does NOT change anything above - only adds
+========================================================= */
+
+let adminApprovalListenerStarted = false;
+let lastNotifiedPendingIds = new Set();
+
+function startAdminApprovalPhoneNotify() {
+  if (adminApprovalListenerStarted) return;
+  adminApprovalListenerStarted = true;
+
+  // Request notification permission once
+  if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission().catch(()=>{});
+  }
+
+  const pendingQ = query(collection(db, "users"), where("status", "==", "pending"));
+
+  onSnapshot(pendingQ, (snap) => {
+    snap.docChanges().forEach(change => {
+      if (change.type!== "added") return;
+      const docId = change.doc.id;
+      if (lastNotifiedPendingIds.has(docId)) return;
+      lastNotifiedPendingIds.add(docId);
+
+      const u = change.doc.data();
+      const title = "JDA Needs Your Approval!";
+      const body = `${u.name} @${u.username} - ${u.phone} wants to join`;
+
+      // 1. Vibrate phone
+      try { if (navigator.vibrate) navigator.vibrate([400,150,400,150,600]); } catch(e){}
+
+      // 2. Play beep sound
+      try {
+        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+        audio.volume = 1.0;
+        audio.play().catch(()=>{});
+      } catch(e){}
+
+      // 3. Chrome/Android system notification to your phone
+      try {
+        if ("Notification" in window && Notification.permission === "granted") {
+          const n = new Notification(title, { body, icon: "/favicon.ico" || "" });
+          n.onclick = () => { window.focus(); renderPage("admin"); n.close(); };
+        }
+      } catch(e){}
+
+      // 4. In-app toast + confirm
+      toast(`🔔 NEW: ${u.name} needs approval`);
+      if (meData) {
+        // only show confirm if you are already admin inside app
+        setTimeout(()=>{
+          if (confirm(`🔔 NEW REGISTRATION\n\nName: ${u.name}\nUsername: ${u.username}\nPhone: ${u.phone}\n\nApprove now?`)) {
+            renderPage("admin");
+          }
+        }, 500);
+      }
+    });
+  });
+}
+
+// Auto-start notification listener ONLY when you are admin
+// We hook into existing onAuthStateChanged by polling meData
+setInterval(async () => {
+  if (!me ||!meData) return;
+  try {
+    const adminDoc = await getDoc(doc(db, "admins", me.uid));
+    if (adminDoc.exists()) {
+      startAdminApprovalPhoneNotify();
+    }
+  } catch(e){}
+}, 3000);

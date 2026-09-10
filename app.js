@@ -31,7 +31,7 @@ import { auth, db, storage } from "./firebase.js";
 
 
 // ======================================================
-// JDA NETWORKS - MAIN APP
+// JDA NETWORKS
 // ======================================================
 
 let currentUser = null;
@@ -39,6 +39,7 @@ let currentProfile = null;
 let currentPage = "chats";
 let currentChatUser = null;
 let currentConversationId = null;
+
 let unsubscribeMessages = null;
 let unsubscribeChats = null;
 
@@ -69,7 +70,7 @@ const toast = document.getElementById("toast");
 
 
 // ======================================================
-// HELPERS
+// TOAST
 // ======================================================
 
 function showToast(message) {
@@ -84,20 +85,26 @@ function showToast(message) {
 }
 
 
+// ======================================================
+// HELPERS
+// ======================================================
+
 function escapeHTML(value = "") {
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 
 function initials(name = "J") {
-  const words = name.trim().split(/\s+/);
+  const clean = String(name).trim();
 
-  if (!words.length) return "J";
+  if (!clean) return "J";
+
+  const words = clean.split(/\s+/);
 
   if (words.length === 1) {
     return words[0].slice(0, 2).toUpperCase();
@@ -136,20 +143,64 @@ function showOnly(view) {
     appView,
     mobileNav
   ].forEach(element => {
-    if (element) element.classList.add("hidden");
+    if (element) {
+      element.classList.add("hidden");
+    }
   });
 
-  if (view) view.classList.remove("hidden");
+  if (view) {
+    view.classList.remove("hidden");
+  }
 }
 
 
 // ======================================================
-// FIREBASE AUTH
+// AUTH TABS
+// ======================================================
+
+document.querySelectorAll("[data-auth]").forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    const mode = button.dataset.auth;
+
+    document
+      .querySelectorAll("[data-auth]")
+      .forEach(tab => {
+        tab.classList.toggle(
+          "active",
+          tab.dataset.auth === mode
+        );
+      });
+
+    if (mode === "login") {
+
+      loginForm?.classList.remove("hidden");
+      registerForm?.classList.add("hidden");
+
+    } else {
+
+      loginForm?.classList.add("hidden");
+      registerForm?.classList.remove("hidden");
+    }
+  });
+
+});
+
+
+// ======================================================
+// AUTH STATE
 // ======================================================
 
 onAuthStateChanged(auth, async user => {
 
+  console.log(
+    "Firebase auth state:",
+    user ? user.uid : "signed out"
+  );
+
   if (!user) {
+
     currentUser = null;
     currentProfile = null;
 
@@ -172,34 +223,54 @@ async function loadUserProfile(uid) {
 
   try {
 
-    console.log("Loading JDA profile for UID:", uid);
+    console.log(
+      "Loading profile:",
+      uid
+    );
 
-    const profileRef = doc(db, "users", uid);
-    const profileSnap = await getDoc(profileRef);
+    const profileRef =
+      doc(db, "users", uid);
+
+    const profileSnap =
+      await getDoc(profileRef);
+
 
     if (!profileSnap.exists()) {
 
-      console.error("Profile document does not exist:", uid);
+      console.error(
+        "No user profile document:",
+        uid
+      );
+
+      await signOut(auth);
 
       showOnly(authView);
 
       showToast(
-        "Account profile couldn't be found. Please contact the administrator."
+        "Your account profile could not be found."
       );
 
       return;
     }
+
 
     currentProfile = {
       uid: uid,
       ...profileSnap.data()
     };
 
-    console.log("JDA profile loaded:", currentProfile);
 
-    const status = String(
-      currentProfile.status || "pending"
-    ).toLowerCase();
+    console.log(
+      "Profile:",
+      currentProfile
+    );
+
+
+    const status =
+      String(
+        currentProfile.status || "pending"
+      ).toLowerCase();
+
 
     // --------------------------------------------------
     // REJECTED
@@ -227,6 +298,8 @@ async function loadUserProfile(uid) {
 
       await signOut(auth);
 
+      showOnly(authView);
+
       showToast(
         "This account has been disabled."
       );
@@ -239,7 +312,10 @@ async function loadUserProfile(uid) {
     // PENDING
     // --------------------------------------------------
 
-    if (status !== "approved") {
+    if (
+      status !== "approved" &&
+      status !== "active"
+    ) {
 
       showOnly(pendingView);
 
@@ -253,27 +329,46 @@ async function loadUserProfile(uid) {
 
     showOnly(appView);
 
+
     if (mobileNav) {
       mobileNav.classList.remove("hidden");
     }
 
-    await updatePresence();
+
+    updateMeAvatar();
+
 
     await checkAdmin();
 
+
+    try {
+      await updatePresence(false);
+    } catch (error) {
+      console.warn(
+        "Presence error:",
+        error
+      );
+    }
+
+
     renderPage("chats");
+
+
+    console.log(
+      "JDA Networks application opened."
+    );
 
   } catch (error) {
 
     console.error(
-      "Profile loading error:",
+      "LOAD PROFILE ERROR:",
       error
     );
 
     showOnly(authView);
 
     showToast(
-      "Unable to load your account profile."
+      "Unable to load your account. Please try again."
     );
   }
 }
@@ -283,17 +378,45 @@ async function loadUserProfile(uid) {
 // LOGIN
 // ======================================================
 
-if (loginForm) {
-
-  loginForm.addEventListener("submit", async event => {
+loginForm?.addEventListener(
+  "submit",
+  async event => {
 
     event.preventDefault();
 
     const email =
-      document.getElementById("loginEmail").value.trim();
+      document
+        .getElementById("loginEmail")
+        ?.value
+        .trim();
 
     const password =
-      document.getElementById("loginPassword").value;
+      document
+        .getElementById("loginPassword")
+        ?.value;
+
+
+    if (!email || !password) {
+
+      showToast(
+        "Enter your email and password."
+      );
+
+      return;
+    }
+
+
+    const button =
+      loginForm.querySelector(
+        "button[type='submit']"
+      );
+
+
+    if (button) {
+      button.disabled = true;
+      button.textContent = "Logging in...";
+    }
+
 
     try {
 
@@ -303,61 +426,113 @@ if (loginForm) {
         password
       );
 
-      showToast("Login successful.");
+      /*
+        IMPORTANT:
+        Do NOT reload the page here.
+
+        onAuthStateChanged() will automatically
+        load the profile and open the application.
+      */
+
+      showToast(
+        "Login successful."
+      );
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "LOGIN ERROR:",
+        error
+      );
 
-      showToast(getAuthError(error));
+      showToast(
+        getAuthError(error)
+      );
+
+    } finally {
+
+      if (button) {
+        button.disabled = false;
+        button.textContent = "Log in";
+      }
     }
-  });
-}
+  }
+);
 
 
 // ======================================================
 // REGISTRATION
 // ======================================================
 
-if (registerForm) {
-
-  registerForm.addEventListener("submit", async event => {
+registerForm?.addEventListener(
+  "submit",
+  async event => {
 
     event.preventDefault();
 
+
     const name =
-      document.getElementById("regName").value.trim();
+      document
+        .getElementById("regName")
+        ?.value
+        .trim();
 
     const phone =
-      document.getElementById("regPhone").value.trim();
+      document
+        .getElementById("regPhone")
+        ?.value
+        .trim();
 
     const username =
-      document.getElementById("regUsername").value.trim();
+      document
+        .getElementById("regUsername")
+        ?.value
+        .trim();
 
     const email =
-      document.getElementById("regEmail").value.trim();
+      document
+        .getElementById("regEmail")
+        ?.value
+        .trim();
 
     const password =
-      document.getElementById("regPassword").value;
+      document
+        .getElementById("regPassword")
+        ?.value;
 
     const photoInput =
       document.getElementById("regPhoto");
 
+
+    if (!name || !phone || !username || !email || !password) {
+
+      showToast(
+        "Please complete all required fields."
+      );
+
+      return;
+    }
+
+
+    const usernameClean =
+      username.toLowerCase();
+
+
     try {
 
-      // ----------------------------------------------
       // Check username
-      // ----------------------------------------------
 
       const usernameRef =
         doc(
           db,
           "usernames",
-          username.toLowerCase()
+          usernameClean
         );
+
 
       const usernameSnap =
         await getDoc(usernameRef);
+
 
       if (usernameSnap.exists()) {
 
@@ -369,9 +544,7 @@ if (registerForm) {
       }
 
 
-      // ----------------------------------------------
-      // Create Firebase Authentication account
-      // ----------------------------------------------
+      // Create Firebase account
 
       const credential =
         await createUserWithEmailAndPassword(
@@ -380,22 +553,25 @@ if (registerForm) {
           password
         );
 
-      const uid = credential.user.uid;
+
+      const uid =
+        credential.user.uid;
 
 
-      // ----------------------------------------------
-      // Optional profile photo
-      // ----------------------------------------------
+      // Upload optional photo
 
       let photoURL = "";
+
 
       if (
         photoInput &&
         photoInput.files &&
-        photoInput.files.length > 0
+        photoInput.files.length
       ) {
 
-        const file = photoInput.files[0];
+        const file =
+          photoInput.files[0];
+
 
         if (file.size > 5 * 1024 * 1024) {
 
@@ -406,6 +582,7 @@ if (registerForm) {
           return;
         }
 
+
         if (!file.type.startsWith("image/")) {
 
           showToast(
@@ -415,25 +592,28 @@ if (registerForm) {
           return;
         }
 
+
         const photoRef =
           ref(
             storage,
             `profilePhotos/${uid}/profile`
           );
 
+
         await uploadBytes(
           photoRef,
           file
         );
 
+
         photoURL =
-          await getDownloadURL(photoRef);
+          await getDownloadURL(
+            photoRef
+          );
       }
 
 
-      // ----------------------------------------------
-      // Create user profile
-      // ----------------------------------------------
+      // Create profile
 
       await setDoc(
         doc(db, "users", uid),
@@ -442,40 +622,39 @@ if (registerForm) {
           display: name,
           name: name,
           phone: phone,
-          username: username,
+          username: usernameClean,
           email: email,
           photoURL: photoURL,
           status: "pending",
           created: serverTimestamp(),
-          lastSeen: serverTimestamp()
+          lastSeen: serverTimestamp(),
+          online: false
         }
       );
 
 
-      // ----------------------------------------------
       // Reserve username
-      // ----------------------------------------------
 
       await setDoc(
         usernameRef,
         {
           uid: uid,
-          username: username,
+          username: usernameClean,
           created: serverTimestamp()
         }
       );
 
 
+      showOnly(pendingView);
+
       showToast(
         "Registration submitted for approval."
       );
 
-      showOnly(pendingView);
-
     } catch (error) {
 
       console.error(
-        "Registration error:",
+        "REGISTRATION ERROR:",
         error
       );
 
@@ -483,17 +662,19 @@ if (registerForm) {
         getAuthError(error)
       );
     }
-  });
-}
+  }
+);
 
 
 // ======================================================
-// AUTH ERROR MESSAGES
+// AUTH ERRORS
 // ======================================================
 
 function getAuthError(error) {
 
-  const code = error?.code || "";
+  const code =
+    error?.code || "";
+
 
   switch (code) {
 
@@ -516,10 +697,14 @@ function getAuthError(error) {
       return "Incorrect password.";
 
     case "auth/too-many-requests":
-      return "Too many attempts. Please try again later.";
+      return "Too many attempts. Try again later.";
+
+    case "auth/network-request-failed":
+      return "Network error. Check your internet connection.";
 
     default:
-      return error?.message || "Something went wrong.";
+      return error?.message ||
+        "Something went wrong.";
   }
 }
 
@@ -532,18 +717,33 @@ async function logout() {
 
   try {
 
-    if (currentUser) {
-      await updatePresence(true);
-    }
+    await updatePresence(true);
 
     await signOut(auth);
 
     currentUser = null;
     currentProfile = null;
 
+    if (unsubscribeChats) {
+      unsubscribeChats();
+      unsubscribeChats = null;
+    }
+
+    if (unsubscribeMessages) {
+      unsubscribeMessages();
+      unsubscribeMessages = null;
+    }
+
+    chatModal?.classList.add("hidden");
+
+    showOnly(authView);
+
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "LOGOUT ERROR:",
+      error
+    );
 
     showToast(
       "Unable to log out."
@@ -554,56 +754,71 @@ async function logout() {
 
 document
   .getElementById("logoutBtn")
-  ?.addEventListener("click", logout);
+  ?.addEventListener(
+    "click",
+    logout
+  );
 
 document
   .getElementById("pendingLogout")
-  ?.addEventListener("click", logout);
+  ?.addEventListener(
+    "click",
+    logout
+  );
 
 document
   .getElementById("rejectedLogout")
-  ?.addEventListener("click", logout);
+  ?.addEventListener(
+    "click",
+    logout
+  );
 
 
 // ======================================================
-// ADMIN CHECK
+// ADMIN
 // ======================================================
 
 async function checkAdmin() {
 
   if (!currentUser) return false;
 
+
   try {
 
-    const adminRef =
-      doc(
-        db,
-        "admins",
-        currentUser.uid
+    const adminSnap =
+      await getDoc(
+        doc(
+          db,
+          "admins",
+          currentUser.uid
+        )
       );
 
-    const adminSnap =
-      await getDoc(adminRef);
 
     const isAdmin =
       adminSnap.exists();
 
+
     if (adminNav) {
 
-      if (isAdmin) {
-        adminNav.classList.remove("hidden");
-      } else {
-        adminNav.classList.add("hidden");
-      }
+      adminNav.classList.toggle(
+        "hidden",
+        !isAdmin
+      );
     }
+
 
     return isAdmin;
 
   } catch (error) {
 
     console.error(
-      "Admin check failed:",
+      "ADMIN CHECK ERROR:",
       error
+    );
+
+    adminNav?.classList.add(
+      "hidden"
     );
 
     return false;
@@ -619,10 +834,15 @@ async function updatePresence(logout = false) {
 
   if (!currentUser) return;
 
+
   try {
 
     await updateDoc(
-      doc(db, "users", currentUser.uid),
+      doc(
+        db,
+        "users",
+        currentUser.uid
+      ),
       {
         online: !logout,
         lastSeen: serverTimestamp()
@@ -663,6 +883,7 @@ document
 function renderPage(page) {
 
   currentPage = page;
+
 
   document
     .querySelectorAll("[data-page]")
@@ -709,7 +930,7 @@ function renderPage(page) {
 
     settings: [
       "Settings",
-      "Manage your JDA Networks account"
+      "Manage your account"
     ],
 
     admin: [
@@ -720,18 +941,19 @@ function renderPage(page) {
 
 
   const title =
-    titles[page] || [
-      "JDA Networks",
-      ""
-    ];
+    titles[page] ||
+    ["JDA Networks", ""];
 
 
   if (pageTitle) {
-    pageTitle.textContent = title[0];
+    pageTitle.textContent =
+      title[0];
   }
 
+
   if (pageSubtitle) {
-    pageSubtitle.textContent = title[1];
+    pageSubtitle.textContent =
+      title[1];
   }
 
 
@@ -779,22 +1001,25 @@ function renderPage(page) {
 // AVATAR
 // ======================================================
 
-function avatarHTML(profile, size = "") {
+function avatarHTML(profile, extraClass = "") {
 
   const name =
     profile?.display ||
     profile?.name ||
+    profile?.username ||
     "J";
+
 
   const photo =
     profile?.photoURL ||
     profile?.photo ||
     "";
 
+
   if (photo) {
 
     return `
-      <div class="avatar ${size}">
+      <div class="avatar ${extraClass}">
         <img
           src="${escapeHTML(photo)}"
           alt="${escapeHTML(name)}"
@@ -803,8 +1028,9 @@ function avatarHTML(profile, size = "") {
     `;
   }
 
+
   return `
-    <div class="avatar ${size}">
+    <div class="avatar ${extraClass}">
       ${escapeHTML(initials(name))}
     </div>
   `;
@@ -812,33 +1038,48 @@ function avatarHTML(profile, size = "") {
 
 
 // ======================================================
-// CHATS
+// CHATS PAGE
 // ======================================================
 
 function renderChats() {
 
   pageContent.innerHTML = `
+
     <div class="search-box">
       <input
         id="chatSearch"
         type="search"
-        placeholder="Search chats"
+        placeholder="Search chats..."
       >
     </div>
 
     <div id="chatList" class="list">
-      <div class="empty-state">
+
+      <div class="empty">
         Loading conversations...
       </div>
+
     </div>
 
-    <div class="ai-card" id="oumaCard">
-      <div class="ai-avatar">O</div>
+    <button
+      id="oumaCard"
+      class="ai-card"
+      type="button"
+    >
+
+      <div class="ai-avatar">
+        O
+      </div>
+
       <div>
         <strong>Ouma Jonathan</strong>
-        <p>Ask Ouma Jonathan anything</p>
+
+        <p>
+          Ask Ouma Jonathan anything
+        </p>
       </div>
-    </div>
+
+    </button>
   `;
 
 
@@ -862,8 +1103,12 @@ function loadChats() {
 
   if (!currentUser) return;
 
+
   const chatsRef =
-    collection(db, "conversations");
+    collection(
+      db,
+      "conversations"
+    );
 
 
   const q =
@@ -889,7 +1134,10 @@ function loadChats() {
       async snapshot => {
 
         const chatList =
-          document.getElementById("chatList");
+          document.getElementById(
+            "chatList"
+          );
+
 
         if (!chatList) return;
 
@@ -897,9 +1145,12 @@ function loadChats() {
         if (snapshot.empty) {
 
           chatList.innerHTML = `
-            <div class="empty-state">
+            <div class="empty">
               <h3>No chats yet</h3>
-              <p>Find someone in your Network and start a conversation.</p>
+              <p>
+                Find someone in your Network
+                and start a conversation.
+              </p>
             </div>
           `;
 
@@ -917,10 +1168,13 @@ function loadChats() {
           const data =
             chatDoc.data();
 
+
           const otherUid =
             data.members?.find(
-              uid => uid !== currentUser.uid
+              uid =>
+                uid !== currentUser.uid
             );
+
 
           if (!otherUid) continue;
 
@@ -936,9 +1190,8 @@ function loadChats() {
                 )
               );
 
-            if (
-              userSnap.exists()
-            ) {
+
+            if (userSnap.exists()) {
 
               chats.push({
                 id: chatDoc.id,
@@ -953,7 +1206,7 @@ function loadChats() {
           } catch (error) {
 
             console.warn(
-              "Could not load chat user:",
+              "Chat user error:",
               error
             );
           }
@@ -963,7 +1216,7 @@ function loadChats() {
         if (!chats.length) {
 
           chatList.innerHTML = `
-            <div class="empty-state">
+            <div class="empty">
               No conversations found.
             </div>
           `;
@@ -981,29 +1234,39 @@ function loadChats() {
               chat.profile.username ||
               "User";
 
+
             return `
               <button
                 class="chat-row"
-                data-chat-user="${escapeHTML(chat.profile.uid)}"
+                type="button"
+                data-chat-user="${escapeHTML(
+                  chat.profile.uid
+                )}"
               >
+
                 ${avatarHTML(chat.profile)}
 
                 <div class="row-main">
-                  <strong>
-                    ${escapeHTML(name)}
-                  </strong>
 
-                  <span>
+                  <b>
+                    ${escapeHTML(name)}
+                  </b>
+
+                  <small>
                     ${escapeHTML(
                       chat.data.lastMessage ||
                       "Start chatting"
                     )}
-                  </span>
+                  </small>
+
                 </div>
 
                 <small>
-                  ${formatTime(chat.data.updatedAt)}
+                  ${formatTime(
+                    chat.data.updatedAt
+                  )}
                 </small>
+
               </button>
             `;
 
@@ -1011,7 +1274,9 @@ function loadChats() {
 
 
         document
-          .querySelectorAll("[data-chat-user]")
+          .querySelectorAll(
+            "[data-chat-user]"
+          )
           .forEach(button => {
 
             button.addEventListener(
@@ -1029,17 +1294,20 @@ function loadChats() {
       error => {
 
         console.error(
-          "Chat listener error:",
+          "CHAT LIST ERROR:",
           error
         );
 
         const chatList =
-          document.getElementById("chatList");
+          document.getElementById(
+            "chatList"
+          );
+
 
         if (chatList) {
 
           chatList.innerHTML = `
-            <div class="empty-state">
+            <div class="empty">
               Unable to load chats.
             </div>
           `;
@@ -1058,16 +1326,22 @@ function renderNetwork() {
   pageContent.innerHTML = `
 
     <div class="search-box">
+
       <input
         id="memberSearch"
+        class="search-input"
         type="search"
         placeholder="Search by name or username..."
       >
+
     </div>
 
-    <div id="memberResults" class="list">
+    <div
+      id="memberResults"
+      class="list"
+    >
 
-      <div class="empty-state">
+      <div class="empty">
         Search for JDA Networks members.
       </div>
 
@@ -1082,6 +1356,7 @@ function renderNetwork() {
 
 
   let timer;
+
 
   input?.addEventListener(
     "input",
@@ -1110,16 +1385,18 @@ async function searchMembers(term) {
       "memberResults"
     );
 
+
   if (!results) return;
 
 
-  term = term.trim().toLowerCase();
+  term =
+    term.trim().toLowerCase();
 
 
   if (!term) {
 
     results.innerHTML = `
-      <div class="empty-state">
+      <div class="empty">
         Search for JDA Networks members.
       </div>
     `;
@@ -1129,7 +1406,7 @@ async function searchMembers(term) {
 
 
   results.innerHTML = `
-    <div class="empty-state">
+    <div class="empty">
       Searching...
     </div>
   `;
@@ -1141,7 +1418,11 @@ async function searchMembers(term) {
       await getDocs(
         query(
           collection(db, "users"),
-          where("status", "==", "approved"),
+          where(
+            "status",
+            "in",
+            ["approved", "active"]
+          ),
           limit(100)
         )
       );
@@ -1162,6 +1443,7 @@ async function searchMembers(term) {
             return false;
           }
 
+
           const name =
             String(
               profile.display ||
@@ -1169,11 +1451,13 @@ async function searchMembers(term) {
               ""
             ).toLowerCase();
 
+
           const username =
             String(
               profile.username ||
               ""
             ).toLowerCase();
+
 
           return (
             name.includes(term) ||
@@ -1185,7 +1469,7 @@ async function searchMembers(term) {
     if (!matches.length) {
 
       results.innerHTML = `
-        <div class="empty-state">
+        <div class="empty">
           No approved member found.
         </div>
       `;
@@ -1203,6 +1487,7 @@ async function searchMembers(term) {
           profile.username ||
           "JDA Member";
 
+
         return `
           <div class="member-row">
 
@@ -1210,21 +1495,24 @@ async function searchMembers(term) {
 
             <div class="row-main">
 
-              <strong>
+              <b>
                 ${escapeHTML(name)}
-              </strong>
+              </b>
 
-              <span>
+              <small>
                 @${escapeHTML(
                   profile.username || ""
                 )}
-              </span>
+              </small>
 
             </div>
 
             <button
               class="primary small-btn"
-              data-message-user="${escapeHTML(profile.uid)}"
+              type="button"
+              data-message-user="${escapeHTML(
+                profile.uid
+              )}"
             >
               Message
             </button>
@@ -1236,12 +1524,16 @@ async function searchMembers(term) {
 
 
     document
-      .querySelectorAll("[data-message-user]")
+      .querySelectorAll(
+        "[data-message-user]"
+      )
       .forEach(button => {
 
         button.addEventListener(
           "click",
-          () => {
+          event => {
+
+            event.stopPropagation();
 
             openChat(
               button.dataset.messageUser
@@ -1254,12 +1546,13 @@ async function searchMembers(term) {
   } catch (error) {
 
     console.error(
-      "Member search error:",
+      "SEARCH ERROR:",
       error
     );
 
+
     results.innerHTML = `
-      <div class="empty-state">
+      <div class="empty">
         Unable to search members.
       </div>
     `;
@@ -1272,6 +1565,19 @@ async function searchMembers(term) {
 // ======================================================
 
 async function openChat(otherUid) {
+
+  if (!currentUser) return;
+
+
+  if (otherUid === currentUser.uid) {
+
+    showToast(
+      "You cannot chat with yourself."
+    );
+
+    return;
+  }
+
 
   try {
 
@@ -1295,9 +1601,32 @@ async function openChat(otherUid) {
     }
 
 
+    const profile =
+      userSnap.data();
+
+
+    const status =
+      String(
+        profile.status || ""
+      ).toLowerCase();
+
+
+    if (
+      status !== "approved" &&
+      status !== "active"
+    ) {
+
+      showToast(
+        "This member is not available."
+      );
+
+      return;
+    }
+
+
     currentChatUser = {
       uid: otherUid,
-      ...userSnap.data()
+      ...profile
     };
 
 
@@ -1318,8 +1647,8 @@ async function openChat(otherUid) {
           currentUser.uid,
           otherUid
         ],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt:
+          serverTimestamp()
       },
       {
         merge: true
@@ -1327,37 +1656,51 @@ async function openChat(otherUid) {
     );
 
 
-    const chatName =
+    const name =
       currentChatUser.display ||
       currentChatUser.name ||
       currentChatUser.username ||
       "Chat";
 
 
-    document.getElementById(
-      "chatName"
-    ).textContent = chatName;
+    const nameElement =
+      document.getElementById(
+        "chatName"
+      );
 
 
-    document.getElementById(
-      "chatStatus"
-    ).textContent =
-      currentChatUser.online
-        ? "online"
-        : "offline";
+    const statusElement =
+      document.getElementById(
+        "chatStatus"
+      );
 
 
-    const chatAvatar =
+    if (nameElement) {
+      nameElement.textContent =
+        name;
+    }
+
+
+    if (statusElement) {
+
+      statusElement.textContent =
+        currentChatUser.online
+          ? "online"
+          : "offline";
+    }
+
+
+    const avatar =
       document.getElementById(
         "chatAvatar"
       );
 
 
-    if (chatAvatar) {
+    if (avatar) {
 
       if (currentChatUser.photoURL) {
 
-        chatAvatar.innerHTML = `
+        avatar.innerHTML = `
           <img
             src="${escapeHTML(
               currentChatUser.photoURL
@@ -1368,8 +1711,8 @@ async function openChat(otherUid) {
 
       } else {
 
-        chatAvatar.textContent =
-          initials(chatName);
+        avatar.textContent =
+          initials(name);
       }
     }
 
@@ -1381,11 +1724,10 @@ async function openChat(otherUid) {
 
     listenToMessages();
 
-
   } catch (error) {
 
     console.error(
-      "Open chat error:",
+      "OPEN CHAT ERROR:",
       error
     );
 
@@ -1410,6 +1752,7 @@ document
         "hidden"
       );
 
+
       if (unsubscribeMessages) {
 
         unsubscribeMessages();
@@ -1418,6 +1761,7 @@ document
           null;
       }
 
+
       currentChatUser = null;
       currentConversationId = null;
     }
@@ -1425,7 +1769,7 @@ document
 
 
 // ======================================================
-// LISTEN TO MESSAGES
+// MESSAGES
 // ======================================================
 
 function listenToMessages() {
@@ -1450,7 +1794,10 @@ function listenToMessages() {
   const q =
     query(
       messagesRef,
-      orderBy("createdAt", "asc"),
+      orderBy(
+        "createdAt",
+        "asc"
+      ),
       limit(200)
     );
 
@@ -1466,7 +1813,7 @@ function listenToMessages() {
         if (snapshot.empty) {
 
           messagesBox.innerHTML = `
-            <div class="empty-state">
+            <div class="empty">
               No messages yet. Say hello 👋
             </div>
           `;
@@ -1481,6 +1828,7 @@ function listenToMessages() {
 
               const message =
                 messageDoc.data();
+
 
               const mine =
                 message.senderId ===
@@ -1502,1021 +1850,4 @@ function listenToMessages() {
 
                     <small>
                       ${formatTime(
-                        message.createdAt
-                      )}
-                    </small>
-
-                  </div>
-
-                </div>
-              `;
-
-            }
-          ).join("");
-
-
-        messagesBox.scrollTop =
-          messagesBox.scrollHeight;
-      },
-      error => {
-
-        console.error(
-          "Message listener error:",
-          error
-        );
-
-        showToast(
-          "Unable to load messages."
-        );
-      }
-    );
-}
-
-
-// ======================================================
-// SEND MESSAGE
-// ======================================================
-
-document
-  .getElementById("messageForm")
-  ?.addEventListener(
-    "submit",
-    async event => {
-
-      event.preventDefault();
-
-
-      const input =
-        document.getElementById(
-          "messageInput"
-        );
-
-
-      const text =
-        input?.value.trim();
-
-
-      if (!text) return;
-
-
-      if (
-        !currentUser ||
-        !currentConversationId ||
-        !currentChatUser
-      ) {
-
-        showToast(
-          "Open a chat first."
-        );
-
-        return;
-      }
-
-
-      try {
-
-        await addDoc(
-          collection(
-            db,
-            "conversations",
-            currentConversationId,
-            "messages"
-          ),
-          {
-            senderId: currentUser.uid,
-            receiverId:
-              currentChatUser.uid,
-            text: text,
-            createdAt:
-              serverTimestamp()
-          }
-        );
-
-
-        await updateDoc(
-          doc(
-            db,
-            "conversations",
-            currentConversationId
-          ),
-          {
-            lastMessage: text,
-            lastSenderId:
-              currentUser.uid,
-            updatedAt:
-              serverTimestamp()
-          }
-        );
-
-
-        input.value = "";
-
-      } catch (error) {
-
-        console.error(
-          "Send message error:",
-          error
-        );
-
-        showToast(
-          "Message could not be sent."
-        );
-      }
-    }
-  );
-
-
-// ======================================================
-// OUMA JONATHAN
-// ======================================================
-
-function openOumaJonathan() {
-
-  currentChatUser = null;
-  currentConversationId = null;
-
-
-  document.getElementById(
-    "chatName"
-  ).textContent =
-    "Ouma Jonathan";
-
-
-  document.getElementById(
-    "chatStatus"
-  ).textContent =
-    "AI assistant • online";
-
-
-  document.getElementById(
-    "chatAvatar"
-  ).textContent = "O";
-
-
-  if (messagesBox) {
-
-    messagesBox.innerHTML = `
-
-      <div class="message theirs">
-
-        <div class="bubble">
-
-          Hello 👋 I'm Ouma Jonathan.
-          How can I help you today?
-
-        </div>
-
-      </div>
-
-    `;
-  }
-
-
-  chatModal?.classList.remove(
-    "hidden"
-  );
-
-
-  showToast(
-    "Ouma Jonathan is ready."
-  );
-}
-
-
-// ======================================================
-// PROFILE
-// ======================================================
-
-function renderProfile() {
-
-  const name =
-    currentProfile?.display ||
-    currentProfile?.name ||
-    "JDA Member";
-
-
-  pageContent.innerHTML = `
-
-    <div class="profile-card">
-
-      ${avatarHTML(
-        currentProfile || {},
-        "large"
-      )}
-
-      <h2>
-        ${escapeHTML(name)}
-      </h2>
-
-      <p class="muted">
-        @${escapeHTML(
-          currentProfile?.username || ""
-        )}
-      </p>
-
-      <p>
-        ${escapeHTML(
-          currentProfile?.email || ""
-        )}
-      </p>
-
-      <p>
-        ${escapeHTML(
-          currentProfile?.phone || ""
-        )}
-      </p>
-
-    </div>
-
-    <div class="card">
-
-      <h3>Change profile photo</h3>
-
-      <input
-        id="profilePhotoInput"
-        type="file"
-        accept="image/*"
-      >
-
-      <button
-        id="uploadProfilePhoto"
-        class="primary"
-      >
-        Upload photo
-      </button>
-
-    </div>
-  `;
-
-
-  document
-    .getElementById(
-      "uploadProfilePhoto"
-    )
-    ?.addEventListener(
-      "click",
-      uploadProfilePhoto
-    );
-}
-
-
-// ======================================================
-// UPLOAD PROFILE PHOTO
-// ======================================================
-
-async function uploadProfilePhoto() {
-
-  const input =
-    document.getElementById(
-      "profilePhotoInput"
-    );
-
-
-  if (
-    !input ||
-    !input.files ||
-    !input.files.length
-  ) {
-
-    showToast(
-      "Choose a photo first."
-    );
-
-    return;
-  }
-
-
-  const file =
-    input.files[0];
-
-
-  if (file.size > 5 * 1024 * 1024) {
-
-    showToast(
-      "Photo must be smaller than 5 MB."
-    );
-
-    return;
-  }
-
-
-  if (!file.type.startsWith("image/")) {
-
-    showToast(
-      "Please choose an image."
-    );
-
-    return;
-  }
-
-
-  try {
-
-    const photoRef =
-      ref(
-        storage,
-        `profilePhotos/${currentUser.uid}/profile`
-      );
-
-
-    await uploadBytes(
-      photoRef,
-      file
-    );
-
-
-    const photoURL =
-      await getDownloadURL(
-        photoRef
-      );
-
-
-    await updateDoc(
-      doc(
-        db,
-        "users",
-        currentUser.uid
-      ),
-      {
-        photoURL: photoURL
-      }
-    );
-
-
-    currentProfile.photoURL =
-      photoURL;
-
-
-    showToast(
-      "Profile photo updated."
-    );
-
-
-    renderProfile();
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    showToast(
-      "Unable to upload photo."
-    );
-  }
-}
-
-
-// ======================================================
-// SETTINGS
-// ======================================================
-
-function renderSettings() {
-
-  pageContent.innerHTML = `
-
-    <div class="card">
-
-      <h3>Account</h3>
-
-      <p>
-        <strong>Email:</strong>
-        ${escapeHTML(
-          currentProfile?.email || ""
-        )}
-      </p>
-
-      <p>
-        <strong>Status:</strong>
-        ${escapeHTML(
-          currentProfile?.status || ""
-        )}
-      </p>
-
-    </div>
-
-    <div class="card">
-
-      <h3>Privacy & Security</h3>
-
-      <p class="muted">
-        Keep your account information secure.
-      </p>
-
-    </div>
-
-    <div class="card">
-
-      <button
-        id="settingsLogout"
-        class="secondary"
-      >
-        Log out
-      </button>
-
-    </div>
-  `;
-
-
-  document
-    .getElementById(
-      "settingsLogout"
-    )
-    ?.addEventListener(
-      "click",
-      logout
-    );
-}
-
-
-// ======================================================
-// STATUS
-// ======================================================
-
-function renderStatus() {
-
-  pageContent.innerHTML = `
-
-    <div class="card">
-
-      <h3>Status</h3>
-
-      <p>
-        Status and stories will appear here.
-      </p>
-
-      <p class="muted">
-        Your JDA Networks status system can be
-        expanded with photos, videos and text updates.
-      </p>
-
-    </div>
-  `;
-}
-
-
-// ======================================================
-// CALLS
-// ======================================================
-
-function renderCalls() {
-
-  pageContent.innerHTML = `
-
-    <div class="card">
-
-      <h3>Calls</h3>
-
-      <p>
-        Your calls will appear here.
-      </p>
-
-      <p class="muted">
-        Voice and video calling can be connected
-        to this section.
-      </p>
-
-    </div>
-  `;
-}
-
-
-// ======================================================
-// NOTIFICATIONS
-// ======================================================
-
-function renderNotifications() {
-
-  pageContent.innerHTML = `
-
-    <div class="card">
-
-      <h3>Notifications</h3>
-
-      <p>
-        You have no new notifications.
-      </p>
-
-    </div>
-  `;
-}
-
-
-// ======================================================
-// ADMIN PANEL
-// ======================================================
-
-async function renderAdmin() {
-
-  const isAdmin =
-    await checkAdmin();
-
-
-  if (!isAdmin) {
-
-    pageContent.innerHTML = `
-
-      <div class="card">
-
-        <h3>Access denied</h3>
-
-        <p>
-          You are not authorized to access
-          the JDA Networks administrator area.
-        </p>
-
-      </div>
-    `;
-
-    return;
-  }
-
-
-  pageContent.innerHTML = `
-
-    <div class="card">
-
-      <h3>Registration approvals</h3>
-
-      <p class="muted">
-        Review new JDA Networks registrations.
-      </p>
-
-    </div>
-
-    <div id="pendingUsers">
-
-      <div class="empty-state">
-        Loading pending registrations...
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <h3>Approved members</h3>
-
-      <div id="approvedUsers">
-        Loading...
-      </div>
-
-    </div>
-  `;
-
-
-  loadPendingUsers();
-  loadApprovedUsers();
-}
-
-
-// ======================================================
-// PENDING USERS
-// ======================================================
-
-async function loadPendingUsers() {
-
-  const box =
-    document.getElementById(
-      "pendingUsers"
-    );
-
-
-  if (!box) return;
-
-
-  try {
-
-    const snapshot =
-      await getDocs(
-        query(
-          collection(db, "users"),
-          where("status", "==", "pending"),
-          limit(100)
-        )
-      );
-
-
-    if (snapshot.empty) {
-
-      box.innerHTML = `
-        <div class="empty-state">
-          No pending registrations 🎉
-        </div>
-      `;
-
-      return;
-    }
-
-
-    box.innerHTML =
-      snapshot.docs.map(
-        userDoc => {
-
-          const user = {
-            uid: userDoc.id,
-            ...userDoc.data()
-          };
-
-
-          const name =
-            user.display ||
-            user.name ||
-            "New member";
-
-
-          return `
-
-            <div class="member-row">
-
-              ${avatarHTML(user)}
-
-              <div class="row-main">
-
-                <strong>
-                  ${escapeHTML(name)}
-                </strong>
-
-                <span>
-                  @${escapeHTML(
-                    user.username || ""
-                  )}
-                </span>
-
-                <small>
-                  ${escapeHTML(
-                    user.email || ""
-                  )}
-                </small>
-
-                <small>
-                  ${escapeHTML(
-                    user.phone || ""
-                  )}
-                </small>
-
-              </div>
-
-              <div class="admin-actions">
-
-                <button
-                  class="primary small-btn"
-                  data-approve="${escapeHTML(user.uid)}"
-                >
-                  Approve
-                </button>
-
-                <button
-                  class="secondary small-btn"
-                  data-reject="${escapeHTML(user.uid)}"
-                >
-                  Reject
-                </button>
-
-              </div>
-
-            </div>
-          `;
-
-        }
-      ).join("");
-
-
-    document
-      .querySelectorAll(
-        "[data-approve]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => approveUser(
-            button.dataset.approve
-          )
-        );
-      });
-
-
-    document
-      .querySelectorAll(
-        "[data-reject]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => rejectUser(
-            button.dataset.reject
-          )
-        );
-      });
-
-
-  } catch (error) {
-
-    console.error(
-      "Pending users error:",
-      error
-    );
-
-    box.innerHTML = `
-      <div class="empty-state">
-        Unable to load pending registrations.
-      </div>
-    `;
-  }
-}
-
-
-// ======================================================
-// APPROVE USER
-// ======================================================
-
-async function approveUser(uid) {
-
-  if (!currentUser) return;
-
-
-  const isAdmin =
-    await checkAdmin();
-
-
-  if (!isAdmin) {
-
-    showToast(
-      "Administrator access required."
-    );
-
-    return;
-  }
-
-
-  try {
-
-    await updateDoc(
-      doc(
-        db,
-        "users",
-        uid
-      ),
-      {
-        status: "approved",
-        approvedAt:
-          serverTimestamp(),
-        approvedBy:
-          currentUser.uid
-      }
-    );
-
-
-    showToast(
-      "Registration approved."
-    );
-
-
-    loadPendingUsers();
-    loadApprovedUsers();
-
-
-  } catch (error) {
-
-    console.error(
-      "Approve error:",
-      error
-    );
-
-    showToast(
-      "Unable to approve registration."
-    );
-  }
-}
-
-
-// ======================================================
-// REJECT USER
-// ======================================================
-
-async function rejectUser(uid) {
-
-  if (!currentUser) return;
-
-
-  const isAdmin =
-    await checkAdmin();
-
-
-  if (!isAdmin) {
-
-    showToast(
-      "Administrator access required."
-    );
-
-    return;
-  }
-
-
-  try {
-
-    await updateDoc(
-      doc(
-        db,
-        "users",
-        uid
-      ),
-      {
-        status: "rejected",
-        rejectedAt:
-          serverTimestamp(),
-        rejectedBy:
-          currentUser.uid
-      }
-    );
-
-
-    showToast(
-      "Registration rejected."
-    );
-
-
-    loadPendingUsers();
-    loadApprovedUsers();
-
-
-  } catch (error) {
-
-    console.error(
-      "Reject error:",
-      error
-    );
-
-    showToast(
-      "Unable to reject registration."
-    );
-  }
-}
-
-
-// ======================================================
-// APPROVED USERS
-// ======================================================
-
-async function loadApprovedUsers() {
-
-  const box =
-    document.getElementById(
-      "approvedUsers"
-    );
-
-
-  if (!box) return;
-
-
-  try {
-
-    const snapshot =
-      await getDocs(
-        query(
-          collection(db, "users"),
-          where("status", "==", "approved"),
-          limit(100)
-        )
-      );
-
-
-    if (snapshot.empty) {
-
-      box.innerHTML =
-        "No approved members.";
-
-      return;
-    }
-
-
-    box.innerHTML =
-      snapshot.docs.map(
-        userDoc => {
-
-          const user = {
-            uid: userDoc.id,
-            ...userDoc.data()
-          };
-
-
-          return `
-
-            <div class="member-row">
-
-              ${avatarHTML(user)}
-
-              <div class="row-main">
-
-                <strong>
-                  ${escapeHTML(
-                    user.display ||
-                    user.name ||
-                    "Member"
-                  )}
-                </strong>
-
-                <span>
-                  @${escapeHTML(
-                    user.username || ""
-                  )}
-                </span>
-
-              </div>
-
-            </div>
-          `;
-
-        }
-      ).join("");
-
-
-  } catch (error) {
-
-    console.error(
-      "Approved users error:",
-      error
-    );
-
-    box.innerHTML =
-      "Unable to load approved members.";
-  }
-}
-
-
-// ======================================================
-// ME AVATAR
-// ======================================================
-
-function updateMeAvatar() {
-
-  const avatar =
-    document.getElementById(
-      "meAvatar"
-    );
-
-
-  if (!avatar) return;
-
-
-  const name =
-    currentProfile?.display ||
-    currentProfile?.name ||
-    "J";
-
-
-  if (currentProfile?.photoURL) {
-
-    avatar.innerHTML = `
-      <img
-        src="${escapeHTML(
-          currentProfile.photoURL
-        )}"
-        alt=""
-      >
-    `;
-
-  } else {
-
-    avatar.textContent =
-      initials(name);
-  }
-}
-
-
-// ======================================================
-// KEEP PRESENCE ALIVE
-// ======================================================
-
-setInterval(
-  () => {
-
-    if (
-      currentUser &&
-      currentProfile?.status === "approved"
-    ) {
-
-      updatePresence();
-    }
-
-  },
-  60000
-);
-
-
-// ======================================================
-// INITIAL UI
-// ======================================================
-
-if (auth.currentUser) {
-  currentUser = auth.currentUser;
-}
-
-
-// ======================================================
-// DEBUG MESSAGE
-// ======================================================
-
-console.log(
-  "JDA Networks app.js loaded successfully."
-);
+                       

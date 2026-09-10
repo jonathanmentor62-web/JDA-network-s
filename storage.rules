@@ -1,32 +1,35 @@
 rules_version = '2';
-
 service firebase.storage {
-
   match /b/{bucket}/o {
 
     function signedIn() {
       return request.auth != null;
     }
 
+    function isSuperAdmin() {
+      return signedIn() && request.auth.token.email == "jonathanmentor62@gmail.com";
+    }
 
     // =========================
-    // PROFILE PHOTOS
+    // PROFILE PHOTOS - FIXED
     // =========================
 
-    match /profilePhotos/{uid}/{fileName} {
-
-      // Signed-in users can view profile photos.
-      allow read:
-        if signedIn();
-
-
-      // A user can upload only to their own profile-photo folder.
-      //
-      // Maximum file size: 5 MB
-      // Only image files are allowed.
+    // FIX 1: Allow upload to profilePhotos/UID (your app.js uses this)
+    match /profilePhotos/{uid} {
+      allow read: if true;
       allow write:
         if signedIn()
         && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+
+    // FIX 2: Also allow profilePhotos/UID/filename (for future)
+    match /profilePhotos/{uid}/{fileName} {
+      allow read: if true;
+      allow write:
+        if signedIn()
+        && (request.auth.uid == uid || isSuperAdmin())
         && request.resource.size < 5 * 1024 * 1024
         && request.resource.contentType.matches('image/.*');
     }

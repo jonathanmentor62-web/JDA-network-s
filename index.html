@@ -2,70 +2,69 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JDA Networks - Apex Style</title>
+<title>JDA Networks - Apex Exact</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#0a0a0a;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
-#monitor{width:95vw;max-width:800px;aspect-ratio:16/9;background:#101010;border-radius:12px;padding:8px;box-shadow:0 0 80px rgba(59,130,246,0.5);position:relative}
-#screen{width:100%;height:68%;background:#3B82F6;position:relative;overflow:hidden;border-radius:8px}
-#code{height:32%;background:#1e1e1e;color:#d4d4d4;font-family:monospace;font-size:10px;padding:8px;overflow:hidden;line-height:1.4}
+*{margin:0;padding:0;box-sizing:border-box}
+body{margin:0;background:#3B82F6;height:100vh;width:100vw;overflow:hidden;display:flex;justify-content:center;align-items:center;font-family:Arial, sans-serif}
+#stage{position:relative;width:100%;height:100%;background:#5B8DEF;overflow:hidden}
 
-/* CHARACTERS */
-.char{position:absolute;bottom:20px;width:60px;height:90px;transition:all 0.5s;z-index:5}
-.char.head{width:22px;height:22px;background:#ffdbac;border-radius:50%;margin:auto}
-.char.body{width:30px;height:35px;background:white;margin:-2px auto 0;border-radius:6px}
-.char.legs{width:30px;height:30px;margin:auto;display:flex;gap:6px}
-.char.leg{width:10px;height:28px;background:#2d3748;border-radius:4px}
-#guy1{left:-80px;background:transparent} #guy1.body{background:#e2e8f0}
-#guy2{right:-80px} #guy2.body{background:#f7fafc}
+/* MAN */
+#man{position:absolute;bottom:80px;left:-100px;width:70px;z-index:10;transition:left 0.1s linear}
+.head{width:26px;height:26px;background:#FDDCB5;border-radius:50%;margin:0 auto;position:relative}
+.head::after{content:'';position:absolute;top:2px;left:4px;width:18px;height:10px;background:#2b2b2b;border-radius:50% 50% 0 0}
+.body{width:32px;height:38px;background:#FFFFFF;margin:-2px auto 0;border-radius:8px 8px 4px 4px;position:relative}
+.arm{position:absolute;width:10px;height:28px;background:#FDDCB5;border-radius:5px;top:6px}
+.arm.left{left:-8px;transform-origin:top;transform:rotate(-20deg)}.arm.right{right:-8px;transform:rotate(20deg)}
+.legs{display:flex;justify-content:center;gap:8px;margin-top:-2px}
+.leg{width:12px;height:32px;background:#2E3A4E;border-radius:4px;position:relative}
+.leg::after{content:'';position:absolute;bottom:-6px;left:-2px;width:16px;height:6px;background:#1a1a1a;border-radius:3px}
 
-/* FORM BOX CARRIED */
-#carriedBox{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:50px;height:35px;background:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#3B82F6;opacity:0;z-index:4;box-shadow:0 10px 20px rgba(0,0,0,0.3)}
+/* BAG */
+#bag{position:absolute;width:36px;height:28px;background:#C27A2E;border-radius:4px;bottom:18px;left:16px;z-index:5;box-shadow:inset -3px -3px 0 rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:14px}
+#bag::before{content:'';position:absolute;top:-6px;left:6px;width:24px;height:6px;background:#8B5A20;border-radius:3px 3px 0 0}
 
-/* FINAL FORM */
-#finalForm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:white;width:220px;padding:14px;border-radius:12px;text-align:center;z-index:10;box-shadow:0 20px 50px rgba(0,0,0,0.5)}
-#finalForm.show{animation:popForm 0.6s forwards cubic-bezier(0.175,0.885,0.32,1.275)}
-@keyframes popForm{to{transform:translate(-50%,-50%) scale(1)}}
-#finalForm input{width:100%;padding:8px;border-radius:6px;border:1px solid #ddd;margin-top:8px;font-size:11px}
-#finalForm button{width:100%;background:#10b981;color:white;border:none;padding:8px;border-radius:6px;margin-top:10px;font-weight:bold;cursor:pointer}
+/* FORM */
+#formBox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);background:white;width:320px;padding:20px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.4);z-index:20;opacity:0}
+#formBox.pop{animation:pop 0.7s forwards cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(0);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
 
-/* ANIMATIONS */
-@keyframes walkInLeft{to{left:38%}}
-@keyframes walkInRight{to{right:38%}}
-@keyframes kneel{0%{height:90px}50%{height:55px;bottom:10px}100%{height:90px;bottom:20px}}
-@keyframes boxDrop{0%{opacity:1;bottom:40px}100%{opacity:0;bottom:20px;transform:translateX(-50%) scale(0.2)}}
-.walkL{animation:walkInLeft 1.2s forwards}
-.walkR{animation:walkInRight 1.2s forwards}
-.kneel{animation:kneel 0.8s forwards}
-.drop{animation:boxDrop 0.5s forwards}
+#formBox input{width:100%;padding:12px;margin-top:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;outline:none}
+#formBox input:focus{border-color:#5B8DEF}
+#formBox button{width:100%;margin-top:14px;background:#22C55E;color:white;border:none;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer}
+
+/* Walk animation */
+.walking.leg:nth-child(1){animation:step 0.3s infinite alternate}
+.walking.leg:nth-child(2){animation:step 0.3s infinite alternate-reverse}
+@keyframes step{0%{transform:rotate(-15deg)}100%{transform:rotate(15deg)}}
+.walking.arm.left{animation:armSwing 0.3s infinite alternate}
+.walking.arm.right{animation:armSwing 0.3s infinite alternate-reverse}
+@keyframes armSwing{0%{transform:rotate(-30deg)}100%{transform:rotate(20deg)}}
+.kneeling{height:60px!important;bottom:60px!important}
+.kneeling.leg{height:18px}
+.kneeling #bag{bottom:5px;left:20px}
 </style>
 </head>
 <body>
-<div id="monitor">
-  <div id="screen">
-    <div id="guy1" class="char"><div class="head"></div><div class="body"></div><div class="legs"><div class="leg"></div><div class="leg"></div></div></div>
-    <div id="guy2" class="char"><div class="head"></div><div class="body"></div><div class="legs"><div class="leg"></div><div class="leg"></div></div></div>
-    <div id="carriedBox">JDA</div>
-
-    <div id="finalForm">
-      <div style="width:30px;height:30px;background:#3B82F6;color:white;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-weight:900">J</div>
-      <h4 style="margin:6px 0 2px;font-size:12px">Register now</h4>
-      <p style="font-size:8px;color:gray">Real JDA only • Photo must</p>
-      <input id="realName" placeholder="Real Name (No nickname)" />
-      <input id="jdaNumber" placeholder="JDA Number JD-2025-XXXX" />
-      <input type="file" id="photoInput" accept="image/*" style="font-size:8px;padding:4px" />
-      <div id="photoPreview" style="margin-top:6px"></div>
-      <button id="registerBtn">Register & Go Live</button>
+<div id="stage">
+  <div id="man" class="walking">
+    <div class="head"></div>
+    <div class="body">
+      <div class="arm left"></div>
+      <div class="arm right"></div>
+      <div id="bag">JDA</div>
     </div>
+    <div class="legs"><div class="leg"></div><div class="leg"></div></div>
   </div>
-  <div id="code">
-    &lt;form class="login-form"&gt;<br>
-    &nbsp;&nbsp;&lt;h2&gt;Register now&lt;/h2&gt;<br>
-    &nbsp;&nbsp;&lt;input type="text" placeholder="Real Name" required&gt;<br>
-    &nbsp;&nbsp;&lt;input type="text" placeholder="JDA Number" required&gt;<br>
-    &nbsp;&nbsp;&lt;input type="file" accept="image/*"&gt;<br>
-    &nbsp;&nbsp;&lt;button type="submit"&gt;Register & Go Live&lt;/button&gt;<br>
-    &lt;/form&gt;
+
+  <div id="formBox">
+    <h3 style="text-align:center">Register now</h3>
+    <p style="text-align:center;font-size:11px;color:gray;margin:4px 0 10px">Real name • JDA Number • Photo MUST</p>
+    <input id="realName" placeholder="Real Name (No nickname)" />
+    <input id="jdaNumber" placeholder="JDA Number JD-2025-XXXX" />
+    <input type="file" id="photoInput" accept="image/*" />
+    <div id="preview" style="text-align:center;margin-top:8px"></div>
+    <button id="registerBtn">Register</button>
+    <p style="text-align:center;font-size:9px;color:#aaa;margin-top:8px">Once only • Admin approves</p>
   </div>
 </div>
 
@@ -73,28 +72,68 @@ body{background:#0a0a0a;display:flex;justify-content:center;align-items:center;m
 import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { db } from "./firebase.js";
 
-const g1=document.getElementById('guy1'), g2=document.getElementById('guy2'), box=document.getElementById('carriedBox'), form=document.getElementById('finalForm');
+const man = document.getElementById('man');
+const bag = document.getElementById('bag');
+const form = document.getElementById('formBox');
+let x = -100;
+let phase = 0; // 0 walk in, 1 kneel, 2 drop, 3 form pop, 4 walk out
 
-// APEX SEQUENCE - EXACT LIKE TIKTOK
-setTimeout(()=>{ g1.classList.add('walkL'); g2.classList.add('walkR'); box.style.opacity='1'; },300);
-setTimeout(()=>{ g1.classList.add('kneel'); box.classList.add('drop'); },1600);
-setTimeout(()=>{ form.classList.add('show'); },2200);
-setTimeout(()=>{ g1.style.left='-80px'; g2.style.right='-80px'; },3200);
+// EXACT LIKE VIDEO - Man walks with bag from left to center
+const walkIn = setInterval(()=>{
+  x += 3;
+  man.style.left = x + 'px';
+  if(x >= (window.innerWidth/2 - 35)){
+    clearInterval(walkIn);
+    // Kneel down like video
+    man.classList.remove('walking');
+    man.classList.add('kneeling');
+    setTimeout(()=>{
+      // Place bag down - detach bag to floor
+      const floorBag = bag.cloneNode(true);
+      floorBag.id = 'floorBag';
+      floorBag.style.position = 'absolute';
+      floorBag.style.left = (window.innerWidth/2 - 18) + 'px';
+      floorBag.style.bottom = '80px';
+      floorBag.style.transition = 'all 0.5s';
+      document.getElementById('stage').appendChild(floorBag);
+      bag.style.opacity = '0';
 
-// JDA LOGIC - Real Name + Photo MUST
+      setTimeout(()=>{
+        man.classList.remove('kneeling');
+        // Bag expands to form - EXACT like TikTok
+        floorBag.style.transform = 'scale(8)';
+        floorBag.style.opacity = '0';
+        setTimeout(()=>{ form.classList.add('pop'); floorBag.remove(); },400);
+
+        // Man walks out to right
+        setTimeout(()=>{
+          let x2 = window.innerWidth/2 - 35;
+          const walkOut = setInterval(()=>{
+            x2 += 4;
+            man.style.left = x2 + 'px';
+            man.classList.add('walking');
+            if(x2 > window.innerWidth+100) clearInterval(walkOut);
+          },16);
+        },800);
+      },400);
+    },700);
+  }
+},16);
+
+// JDA LOGIC
 let photoBase64="";
 document.getElementById('photoInput').addEventListener('change',e=>{
-  const file=e.target.files[0]; if(!file) return;
-  const r=new FileReader(); r.onload=ev=>{ photoBase64=ev.target.result; document.getElementById('photoPreview').innerHTML=`<img src="${photoBase64}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #10b981">`; }; r.readAsDataURL(file);
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=ev=>{photoBase64=ev.target.result; document.getElementById('preview').innerHTML=`<img src="${photoBase64}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid #22C55E">`;}; r.readAsDataURL(f);
 });
 document.getElementById('registerBtn').addEventListener('click',async()=>{
   const realName=document.getElementById('realName').value.trim();
   const jdaNumber=document.getElementById('jdaNumber').value.trim().toUpperCase();
-  if(!realName||!jdaNumber||!photoBase64){alert("Boss! Real Name + JDA Number + Photo MUST!");return;}
+  if(!realName||!jdaNumber||!photoBase64){alert("Real Name + JDA Number + Photo MUST Boss!");return;}
   if(!jdaNumber.startsWith("JD-")){alert("Must start with JD-");return;}
   const btn=document.getElementById('registerBtn'); btn.innerText="Sending..."; btn.disabled=true;
-  const q=query(collection(db,"jda_users_v2"),where("jdaNumber","==",jdaNumber)); const snap=await getDocs(q);
-  if(!snap.empty){alert("JDA Number already used! Once only!"); btn.innerText="Register & Go Live"; btn.disabled=false; return;}
+  const q=query(collection(db,"jda_users_v2"),where("jdaNumber","==",jdaNumber)); const s=await getDocs(q);
+  if(!s.empty){alert("JDA Number used once only!"); btn.innerText="Register"; btn.disabled=false; return;}
   await addDoc(collection(db,"jda_users_v2"),{realName,jdaNumber,profilePhoto:photoBase64,status:"pending",createdAt:new Date()});
   alert("✓ Sent to Admin!"); location.reload();
 });

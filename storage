@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service firebase.storage {
+
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+
+    // =========================
+    // PROFILE PHOTOS
+    // =========================
+
+    match /profilePhotos/{uid}/{fileName} {
+
+      // Signed-in users can view profile photos.
+      allow read:
+        if signedIn();
+
+
+      // A user can upload only to their own profile-photo folder.
+      //
+      // Maximum file size: 5 MB
+      // Only image files are allowed.
+      allow write:
+        if signedIn()
+        && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}

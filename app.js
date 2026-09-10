@@ -1,7 +1,7 @@
-// FINAL JDA NETWORKS - 100% WORKING FOR YOUR HTML - PROJECT FABDE
+// FINAL JDA NETWORKS - CLEAN - NO UNDEFINED - PROJECT FABDE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy, where, addDoc, serverTimestamp, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy, where, addDoc, serverTimestamp, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
@@ -16,7 +16,6 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// VIEWS
 const authView = document.getElementById('authView');
 const appView = document.getElementById('appView');
 const pendingView = document.getElementById('pendingView');
@@ -27,8 +26,6 @@ const pageTitle = document.getElementById('pageTitle');
 const pageSubtitle = document.getElementById('pageSubtitle');
 const meAvatar = document.getElementById('meAvatar');
 const adminNav = document.getElementById('adminNav');
-
-// FORMS
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 
@@ -65,7 +62,6 @@ function showApp() {
   loadPage(currentPage);
 }
 
-// TABS LOGIN / REGISTER
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -80,7 +76,6 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// AUTH STATE
 onAuthStateChanged(auth, async (user) => {
   if (!user) { showAuth(); return; }
   try {
@@ -108,20 +103,15 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// LOGIN - FIXED FOR loginEmail / loginPassword
 loginForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = document.getElementById('loginEmail')?.value?.trim();
   const password = document.getElementById('loginPassword')?.value;
   if (!email ||!password) return alert("Enter email and password");
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (err) {
-    alert("Login failed: " + err.message);
-  }
+  try { await signInWithEmailAndPassword(auth, email, password); }
+  catch (err) { alert("Login failed: " + err.message); }
 });
 
-// REGISTER
 registerForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const fullName = document.getElementById('regName')?.value?.trim();
@@ -139,23 +129,16 @@ registerForm?.addEventListener('submit', async (e) => {
       role: isAdmin? "admin" : "member", createdAt: serverTimestamp()
     });
     alert(isAdmin? "Admin created!" : "Registration submitted! Waiting for approval.");
-  } catch (err) {
-    alert("Register failed: " + err.message);
-  }
+  } catch (err) { alert("Register failed: " + err.message); }
 });
 
-// LOGOUT
 document.getElementById('logoutBtn')?.addEventListener('click', async () => { await signOut(auth); });
 document.getElementById('pendingLogout')?.addEventListener('click', async () => { await signOut(auth); });
 document.getElementById('rejectedLogout')?.addEventListener('click', async () => { await signOut(auth); });
 
-// NAVIGATION
 function setActiveNav(page) {
-  document.querySelectorAll('.nav-item').forEach(b => {
-    b.classList.toggle('active', b.dataset.page === page);
-  });
+  document.querySelectorAll('.nav-item').forEach(b => { b.classList.toggle('active', b.dataset.page === page); });
 }
-
 document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
   btn.addEventListener('click', () => {
     currentPage = btn.dataset.page;
@@ -173,28 +156,28 @@ async function loadPage(page) {
     pageContent.innerHTML = '<p style="padding:20px;color:#666">Loading chats...</p>';
     try {
       const usersSnap = await getDocs(query(collection(db, "users"), where("status", "==", "approved")));
-      if (usersSnap.empty) {
-        pageContent.innerHTML = '<div style="padding:30px;text-align:center"><h3>No approved users yet</h3><p style="color:#666">When users are approved they will appear here.<br>Old chats are in project 2e6f8, this is new project fabde.</p></div>';
-        return;
-      }
       let html = '<div style="display:flex;flex-direction:column;gap:5px;padding:10px">';
+      let count = 0;
       usersSnap.forEach(d => {
         const u = d.data();
+        if (!u.email) return; // SKIP broken docs
         if (u.uid === auth.currentUser?.uid) return;
-        html += `<div class="chat-item" data-uid="${u.uid}" data-name="${u.displayName||u.username}" style="background:white;padding:15px;border-radius:12px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.08)">
-          <div style="width:45px;height:45px;background:#168f61;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px">${(u.displayName||u.username||'U')[0].toUpperCase()}</div>
-          <div style="flex:1"><b>${u.displayName||u.username}</b><br><small style="color:#666">${u.email} • ${u.username}</small></div>
-          <span style="color:#168f61">💬</span>
+        count++;
+        const name = u.displayName || u.fullName || u.username || u.email.split('@')[0];
+        const email = u.email;
+        const uname = u.username || email.split('@')[0];
+        html += `<div class="chat-item" data-uid="${u.uid}" data-name="${name}" style="background:white;padding:15px;border-radius:12px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.08)">
+          <div style="width:45px;height:45px;background:#168f61;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px">${name[0].toUpperCase()}</div>
+          <div style="flex:1"><b>${name}</b><br><small style="color:#666">${email} • @${uname}</small></div><span style="color:#168f61">💬</span>
         </div>`;
       });
       html += '</div>';
+      if (count === 0) html = '<div style="padding:30px;text-align:center"><h3>No other approved users</h3><p>Go to Network to see all members</p></div>';
       pageContent.innerHTML = html;
       pageContent.querySelectorAll('.chat-item').forEach(el => {
         el.addEventListener('click', () => openChat(el.dataset.uid, el.dataset.name));
       });
-    } catch (e) {
-      pageContent.innerHTML = `<p style="color:red;padding:20px">Error: ${e.message}</p>`;
-    }
+    } catch (e) { pageContent.innerHTML = `<p style="color:red;padding:20px">Error: ${e.message}</p>`; }
   }
   else if (page === 'network') {
     if (pageSubtitle) pageSubtitle.textContent = 'All members';
@@ -202,11 +185,23 @@ async function loadPage(page) {
     try {
       const snap = await getDocs(collection(db, "users"));
       let html = '<div style="padding:10px;display:grid;gap:10px">';
+      let validCount = 0;
       snap.forEach(d => {
         const u = d.data();
-        html += `<div style="background:white;padding:15px;border-radius:12px"><b>${u.displayName||u.username}</b> <small style="color:${u.status==='approved'?'green':'orange'}">(${u.status})</small><br><small>${u.email}</small></div>`;
+        if (!u.email) return; // SKIP broken undefined docs - THIS FIXES YOUR BUG
+        validCount++;
+        const name = u.displayName || u.fullName || u.username || u.email.split('@')[0];
+        const username = u.username || u.email.split('@')[0];
+        const status = u.status || 'pending';
+        const color = status==='approved'?'green': status==='pending'?'orange':'red';
+        html += `<div style="background:white;padding:15px;border-radius:12px;display:flex;justify-content:space-between;align-items:center">
+          <div><b>${name}</b> <small style="color:${color}">(${status})</small><br><small style="color:#666">@${username} • ${u.email}</small></div>
+          ${auth.currentUser?.uid!== u.uid && currentUserData?.role==='admin' && status!=='approved'? `<button onclick="deleteUserDoc('${d.id}')" style="background:#ff4444;color:white;border:none;padding:5px 10px;border-radius:5px">Delete</button>` : ''}
+        </div>`;
       });
       html += '</div>';
+      if (validCount===0) html = '<p style="padding:20px">No users yet</p>';
+      else html = `<div style="padding:10px"><small style="color:#666">Found ${validCount} valid users (broken docs hidden)</small></div>` + html;
       pageContent.innerHTML = html;
     } catch(e) { pageContent.innerHTML = e.message; }
   }
@@ -215,11 +210,14 @@ async function loadPage(page) {
     pageContent.innerHTML = '<p style="padding:20px">Loading pending...</p>';
     try {
       const snap = await getDocs(query(collection(db, "users"), where("status", "==", "pending")));
-      if (snap.empty) { pageContent.innerHTML = '<p style="padding:20px">No pending users 🎉</p>'; return; }
+      let validPending = [];
+      snap.forEach(d => { if (d.data().email) validPending.push(d); });
+      if (validPending.length===0) { pageContent.innerHTML = '<p style="padding:20px">No pending users 🎉</p>'; return; }
       let html = '<div style="padding:10px;display:flex;flex-direction:column;gap:10px">';
-      snap.forEach(d => {
+      validPending.forEach(d => {
         const u = d.data();
-        html += `<div style="background:white;padding:15px;border-radius:12px"><b>${u.displayName}</b> (${u.username})<br><small>${u.email} | ${u.phone||''}</small><br><div style="margin-top:10px;display:flex;gap:10px"><button class="primary" onclick="approveUser('${d.id}')" style="padding:8px 15px;background:#168f61;color:white;border:none;border-radius:6px;cursor:pointer">Approve</button><button onclick="rejectUser('${d.id}')" style="padding:8px 15px;background:#ff4444;color:white;border:none;border-radius:6px;cursor:pointer">Reject</button></div></div>`;
+        const name = u.displayName || u.fullName || u.username || u.email;
+        html += `<div style="background:white;padding:15px;border-radius:12px"><b>${name}</b> (${u.username||''})<br><small>${u.email} | ${u.phone||''}</small><br><div style="margin-top:10px;display:flex;gap:10px"><button class="primary" onclick="approveUser('${d.id}')" style="padding:8px 15px;background:#168f61;color:white;border:none;border-radius:6px;cursor:pointer">Approve</button><button onclick="rejectUser('${d.id}')" style="padding:8px 15px;background:#ff4444;color:white;border:none;border-radius:6px;cursor:pointer">Reject</button><button onclick="deleteUserDoc('${d.id}')" style="padding:8px 10px;background:#666;color:white;border:none;border-radius:6px">Delete</button></div></div>`;
       });
       html += '</div>';
       pageContent.innerHTML = html;
@@ -230,18 +228,10 @@ async function loadPage(page) {
   }
 }
 
-window.approveUser = async (uid) => {
-  await updateDoc(doc(db, "users", uid), { status: "approved" });
-  alert("Approved!");
-  loadPage('admin');
-};
-window.rejectUser = async (uid) => {
-  await updateDoc(doc(db, "users", uid), { status: "rejected" });
-  alert("Rejected");
-  loadPage('admin');
-};
+window.approveUser = async (uid) => { await updateDoc(doc(db, "users", uid), { status: "approved" }); alert("Approved!"); loadPage('admin'); };
+window.rejectUser = async (uid) => { await updateDoc(doc(db, "users", uid), { status: "rejected" }); alert("Rejected"); loadPage('admin'); };
+window.deleteUserDoc = async (uid) => { if(confirm("Delete this user doc permanently?")){ await deleteDoc(doc(db,"users",uid)); alert("Deleted"); loadPage(currentPage); } };
 
-// CHAT MODAL
 const chatModal = document.getElementById('chatModal');
 const closeChatBtn = document.getElementById('closeChat');
 const chatNameEl = document.getElementById('chatName');
@@ -258,12 +248,11 @@ window.openChat = async (partnerUid, partnerName) => {
   if (chatNameEl) chatNameEl.textContent = partnerName;
   chatModal?.classList.remove('hidden');
   if (messagesEl) messagesEl.innerHTML = '<p style="padding:20px;color:#666">Loading messages...</p>';
-
-  // Listen messages
   const q = query(collection(db, "chats", currentChatId, "messages"), orderBy("createdAt", "asc"));
   onSnapshot(q, (snap) => {
     if (!messagesEl) return;
     messagesEl.innerHTML = '';
+    if (snap.empty) { messagesEl.innerHTML = '<p style="padding:20px;color:#999;text-align:center">No messages yet. Say hi!</p>'; return; }
     snap.forEach(d => {
       const m = d.data();
       const isMe = m.senderId === myUid;
@@ -277,7 +266,6 @@ window.openChat = async (partnerUid, partnerName) => {
 };
 
 closeChatBtn?.addEventListener('click', () => chatModal?.classList.add('hidden'));
-
 messageForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   const text = messageInput?.value?.trim();
@@ -289,4 +277,4 @@ messageForm?.addEventListener('submit', async (e) => {
   } catch (err) { alert(err.message); }
 });
 
-console.log("JDA Networks FINAL FABDE Loaded - loginEmail fix!");
+console.log("JDA Networks CLEAN FABDE Loaded - undefined fixed!");

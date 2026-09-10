@@ -2,32 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JDA Networks</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 body{
-  font-family:Arial,Helvetica,sans-serif;
+  font-family:Arial,sans-serif;
   background:#0b141a;
   color:#e9edef;
   height:100vh;
   overflow:hidden;
 }
 
-button,input{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-  border:0;
-}
+button,input{font:inherit}
+button{cursor:pointer;border:0}
 
 .app{
   height:100vh;
@@ -36,13 +26,14 @@ button{
 }
 
 /* HEADER */
+
 .header{
   height:64px;
   background:#202c33;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 16px;
+  padding:0 15px;
   border-bottom:1px solid #303b41;
 }
 
@@ -57,30 +48,29 @@ button{
   height:42px;
   border-radius:50%;
   object-fit:cover;
-  background:#25d366;
 }
 
-.brand-text h1{
+.brand h1{
   font-size:19px;
 }
 
-.brand-text p{
-  font-size:11px;
+.brand p{
   color:#8696a0;
+  font-size:11px;
   margin-top:3px;
 }
 
 .header-actions{
   display:flex;
-  gap:8px;
+  gap:4px;
 }
 
 .icon{
-  width:42px;
-  height:42px;
-  border-radius:50%;
+  width:40px;
+  height:40px;
   background:transparent;
   color:#e9edef;
+  border-radius:50%;
   font-size:20px;
 }
 
@@ -89,6 +79,7 @@ button{
 }
 
 /* MAIN */
+
 .main{
   flex:1;
   display:flex;
@@ -96,6 +87,7 @@ button{
 }
 
 /* SIDEBAR */
+
 .sidebar{
   width:390px;
   background:#111b21;
@@ -109,13 +101,13 @@ button{
 }
 
 .search-box{
+  height:42px;
   background:#202c33;
   border-radius:9px;
-  height:42px;
   display:flex;
   align-items:center;
-  padding:0 13px;
   gap:10px;
+  padding:0 13px;
 }
 
 .search-box span{
@@ -124,34 +116,36 @@ button{
 
 .search-box input{
   flex:1;
-  background:transparent;
   border:0;
   outline:0;
-  color:#e9edef;
+  background:transparent;
+  color:#fff;
 }
 
 .search-box input::placeholder{
   color:#8696a0;
 }
 
-/* FILTERS */
-.filters{
-  padding:0 10px 9px;
-  overflow-x:auto;
+.filters,
+.classes{
   display:flex;
   gap:7px;
+  overflow-x:auto;
+  padding:0 10px 9px;
 }
 
-.filters::-webkit-scrollbar{
+.filters::-webkit-scrollbar,
+.classes::-webkit-scrollbar{
   display:none;
 }
 
-.filter{
+.filter,
+.class-btn{
+  white-space:nowrap;
+  border-radius:18px;
   background:#202c33;
   color:#aebac1;
   padding:7px 13px;
-  border-radius:18px;
-  white-space:nowrap;
   font-size:12px;
 }
 
@@ -160,23 +154,8 @@ button{
   color:#53d98b;
 }
 
-.classes{
-  padding:0 10px 10px;
-  display:flex;
-  gap:6px;
-  overflow-x:auto;
-}
-
-.classes::-webkit-scrollbar{
-  display:none;
-}
-
 .class-btn{
-  min-width:58px;
-  background:#202c33;
-  color:#aebac1;
-  padding:6px 8px;
-  border-radius:15px;
+  padding:6px 10px;
   font-size:11px;
 }
 
@@ -186,25 +165,18 @@ button{
 }
 
 /* CHAT LIST */
+
 .list{
   flex:1;
   overflow-y:auto;
-}
-
-.list::-webkit-scrollbar{
-  width:5px;
-}
-
-.list::-webkit-scrollbar-thumb{
-  background:#26343b;
 }
 
 .chat{
   height:72px;
   display:flex;
   align-items:center;
-  padding:8px 14px;
   gap:12px;
+  padding:8px 14px;
   border-bottom:1px solid #202c33;
 }
 
@@ -240,62 +212,36 @@ button{
 }
 
 .chat-time{
-  color:#8696a0;
   font-size:10px;
+  color:#8696a0;
 }
 
 .chat-bottom{
   margin-top:5px;
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
 }
 
 .last-message{
-  color:#8696a0;
   font-size:12px;
+  color:#8696a0;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-.unread{
-  background:#25d366;
-  color:#071b11;
-  min-width:20px;
-  height:20px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:10px;
-  font-weight:bold;
-}
-
-/* EMPTY */
-.empty{
-  text-align:center;
-  padding:50px 20px;
-  color:#8696a0;
-}
-
-.empty-icon{
-  font-size:45px;
-  margin-bottom:12px;
-}
-
 /* CONTENT */
+
 .content{
   flex:1;
   background:#0b141a;
+  position:relative;
+}
+
+.welcome{
+  height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
-}
-
-.welcome{
-  max-width:500px;
   padding:30px;
 }
 
@@ -313,12 +259,137 @@ button{
 }
 
 .welcome p{
+  max-width:500px;
   color:#8696a0;
   line-height:1.6;
   font-size:14px;
 }
 
+/* CONVERSATION */
+
+.conversation{
+  position:absolute;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  background:#0b141a;
+}
+
+.conversation.show{
+  display:flex;
+}
+
+.chat-header{
+  height:64px;
+  background:#202c33;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 12px;
+  border-bottom:1px solid #303b41;
+}
+
+.back{
+  width:38px;
+  height:38px;
+  background:transparent;
+  color:#fff;
+  font-size:23px;
+}
+
+.chat-header-info{
+  flex:1;
+}
+
+.chat-header-name{
+  font-weight:bold;
+  font-size:15px;
+}
+
+.chat-header-status{
+  color:#8696a0;
+  font-size:10px;
+  margin-top:3px;
+}
+
+.messages{
+  flex:1;
+  overflow-y:auto;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.messages::-webkit-scrollbar{
+  width:5px;
+}
+
+.messages::-webkit-scrollbar-thumb{
+  background:#26343b;
+}
+
+.message{
+  max-width:75%;
+  padding:8px 10px 6px;
+  border-radius:8px;
+  position:relative;
+  font-size:14px;
+  line-height:1.4;
+  word-break:break-word;
+}
+
+.message.me{
+  align-self:flex-end;
+  background:#005c4b;
+  border-top-right-radius:2px;
+}
+
+.message.them{
+  align-self:flex-start;
+  background:#202c33;
+  border-top-left-radius:2px;
+}
+
+.message-time{
+  color:#8696a0;
+  font-size:9px;
+  margin-left:8px;
+  float:right;
+  padding-top:4px;
+}
+
+.message-form{
+  min-height:62px;
+  background:#202c33;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px;
+}
+
+.message-input{
+  flex:1;
+  background:#111b21;
+  border:0;
+  outline:0;
+  border-radius:22px;
+  padding:11px 15px;
+  color:#fff;
+}
+
+.send{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:#25d366;
+  color:#071b11;
+  font-size:19px;
+  font-weight:bold;
+}
+
 /* FLOAT BUTTON */
+
 .new-chat{
   position:fixed;
   right:28px;
@@ -333,6 +404,7 @@ button{
 }
 
 /* MOBILE NAV */
+
 .bottom-nav{
   display:none;
   height:62px;
@@ -357,6 +429,7 @@ button{
 }
 
 /* MODAL */
+
 .modal{
   position:fixed;
   inset:0;
@@ -393,14 +466,13 @@ button{
 }
 
 .close{
-  background:#2a3942;
-  color:#e9edef;
   width:35px;
   height:35px;
   border-radius:50%;
+  background:#2a3942;
+  color:#fff;
 }
 
-/* NETWORK SEARCH */
 .network-search{
   display:flex;
   gap:8px;
@@ -409,26 +481,26 @@ button{
 .network-search input{
   flex:1;
   background:#111b21;
-  color:#fff;
   border:1px solid #37454c;
   border-radius:8px;
   padding:11px;
-  outline:none;
+  color:#fff;
+  outline:0;
 }
 
 .network-search button{
   background:#25d366;
   color:#071b11;
-  border-radius:8px;
   padding:0 15px;
+  border-radius:8px;
   font-weight:bold;
 }
 
 .result{
   margin-top:12px;
-  padding:12px;
   background:#111b21;
   border-radius:12px;
+  padding:12px;
   display:flex;
   align-items:center;
   gap:12px;
@@ -457,7 +529,19 @@ button{
   font-weight:bold;
 }
 
+.empty{
+  text-align:center;
+  padding:50px 20px;
+  color:#8696a0;
+}
+
+.empty-icon{
+  font-size:42px;
+  margin-bottom:12px;
+}
+
 /* PROFILE */
+
 .profile{
   text-align:center;
 }
@@ -495,7 +579,7 @@ button{
 }
 
 .detail:last-child{
-  border-bottom:0;
+  border:0;
 }
 
 .detail-label{
@@ -508,6 +592,7 @@ button{
 }
 
 /* TOAST */
+
 .toast{
   position:fixed;
   left:50%;
@@ -519,27 +604,23 @@ button{
   border-radius:10px;
   display:none;
   z-index:100;
-  box-shadow:0 5px 20px #0008;
 }
 
 .toast.show{
   display:block;
 }
 
-/* RESPONSIVE */
+/* MOBILE */
+
 @media(max-width:700px){
 
   .header{
     height:60px;
   }
 
-  .brand-text h1{
-    font-size:17px;
-  }
-
   .sidebar{
     width:100%;
-    border-right:0;
+    border:0;
   }
 
   .content{
@@ -550,24 +631,26 @@ button{
     display:flex;
   }
 
-  .main{
-    flex:1;
-  }
-
   .new-chat{
     right:18px;
     bottom:78px;
   }
 
-  .sidebar{
-    padding-bottom:0;
+  .conversation{
+    position:fixed;
+    z-index:40;
+    top:0;
+    bottom:62px;
+    left:0;
+    right:0;
   }
-}
 
-@media(min-width:701px){
+  .conversation.show{
+    display:flex;
+  }
 
-  .sidebar{
-    max-width:390px;
+  .message{
+    max-width:85%;
   }
 }
 </style>
@@ -577,1309 +660,602 @@ button{
 
 <div class="app">
 
-  <!-- HEADER -->
-  <header class="header">
+<!-- HEADER -->
 
-    <div class="brand">
+<header class="header">
 
-      <!-- If your logo has another filename, change this -->
-      <img src="./logo.png" class="logo" id="headerLogo">
+  <div class="brand">
 
-      <div class="brand-text">
-        <h1>JDA Networks</h1>
-        <p id="onlineText">Connecting...</p>
-      </div>
+    <img
+      src="./logo.png"
+      class="logo"
+      id="headerLogo"
+    >
+
+    <div>
+      <h1>JDA Networks</h1>
+      <p id="onlineText">Connecting...</p>
+    </div>
+
+  </div>
+
+  <div class="header-actions">
+
+    <button
+      class="icon"
+      id="networkBtn"
+    >👥</button>
+
+    <button
+      class="icon"
+      id="notificationBtn"
+    >🔔</button>
+
+    <button
+      class="icon"
+      id="profileBtn"
+    >👤</button>
+
+    <button
+      class="icon"
+      id="menuBtn"
+    >⋮</button>
+
+  </div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+<!-- SIDEBAR -->
+
+<section class="sidebar">
+
+  <div class="search">
+
+    <div class="search-box">
+
+      <span>🔍</span>
+
+      <input
+        id="chatSearch"
+        placeholder="Search chats"
+      >
 
     </div>
 
-    <div class="header-actions">
+  </div>
 
-      <button class="icon" id="networkBtn" title="Network">
-        👥
-      </button>
 
-      <button class="icon" id="notificationBtn" title="Notifications">
-        🔔
-      </button>
+  <div class="filters">
 
-      <button class="icon" id="profileBtn" title="Profile">
-        👤
-      </button>
+    <button
+      class="filter active"
+      data-filter="all"
+    >
+      All
+    </button>
 
-      <button class="icon" id="menuBtn" title="Menu">
-        ⋮
-      </button>
+    <button
+      class="filter"
+      data-filter="unread"
+    >
+      Unread
+    </button>
+
+    <button
+      class="filter"
+      data-filter="favorites"
+    >
+      Favorites
+    </button>
+
+    <button
+      class="filter"
+      data-filter="class"
+    >
+      Class
+    </button>
+
+  </div>
+
+
+  <div class="classes">
+
+    <button
+      class="class-btn active"
+      data-class="all"
+    >All</button>
+
+    <button
+      class="class-btn"
+      data-class="Form One"
+    >Form 1</button>
+
+    <button
+      class="class-btn"
+      data-class="Form Two"
+    >Form 2</button>
+
+    <button
+      class="class-btn"
+      data-class="Form Three"
+    >Form 3</button>
+
+    <button
+      class="class-btn"
+      data-class="Form Four"
+    >Form 4</button>
+
+    <button
+      class="class-btn"
+      data-class="Form Five"
+    >Form 5</button>
+
+    <button
+      class="class-btn"
+      data-class="Form Six"
+    >Form 6</button>
+
+  </div>
+
+
+  <div
+    class="list"
+    id="chatList"
+  >
+
+    <div class="empty">
+
+      <div class="empty-icon">
+        💬
+      </div>
+
+      Loading JDA Network...
 
     </div>
 
-  </header>
+  </div>
+
+</section>
 
 
-  <!-- MAIN -->
-  <main class="main">
+<!-- DESKTOP CONTENT -->
 
-    <section class="sidebar">
+<section class="content">
 
-      <!-- SEARCH -->
-      <div class="search">
+  <div
+    class="welcome"
+    id="welcomeScreen"
+  >
 
-        <div class="search-box">
+    <div>
 
-          <span>🔍</span>
+      <img
+        src="./logo.png"
+        class="welcome-logo"
+      >
 
-          <input
-            id="chatSearch"
-            type="text"
-            placeholder="Search chats"
-          >
+      <h2>JDA Networks</h2>
 
-        </div>
+      <p>
+        Select a member to start a private
+        conversation.
+      </p>
 
-      </div>
+    </div>
 
-
-      <!-- MAIN FILTERS -->
-      <div class="filters">
-
-        <button class="filter active" data-filter="all">
-          All
-        </button>
-
-        <button class="filter" data-filter="unread">
-          Unread
-        </button>
-
-        <button class="filter" data-filter="favorites">
-          Favorites
-        </button>
-
-        <button class="filter" data-filter="class">
-          Class
-        </button>
-
-      </div>
+  </div>
 
 
-      <!-- FORM FILTERS -->
-      <div class="classes">
+  <!-- CONVERSATION -->
 
-        <button class="class-btn active" data-class="all">
-          All
-        </button>
+  <div
+    class="conversation"
+    id="conversation"
+  >
 
-        <button class="class-btn" data-class="Form One">
-          Form 1
-        </button>
+    <div class="chat-header">
 
-        <button class="class-btn" data-class="Form Two">
-          Form 2
-        </button>
+      <button
+        class="back"
+        id="backBtn"
+      >
+        ←
+      </button>
 
-        <button class="class-btn" data-class="Form Three">
-          Form 3
-        </button>
+      <img
+        class="avatar"
+        id="chatAvatar"
+        src="./logo.png"
+      >
 
-        <button class="class-btn" data-class="Form Four">
-          Form 4
-        </button>
+      <div class="chat-header-info">
 
-        <button class="class-btn" data-class="Form Five">
-          Form 5
-        </button>
-
-        <button class="class-btn" data-class="Form Six">
-          Form 6
-        </button>
-
-      </div>
-
-
-      <!-- CHAT LIST -->
-      <div class="list" id="chatList">
-
-        <div class="empty">
-
-          <div class="empty-icon">
-            💬
-          </div>
-
-          <p>Loading your chats...</p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- DESKTOP CONTENT -->
-    <section class="content">
-
-      <div class="welcome">
-
-        <img
-          src="./logo.png"
-          class="welcome-logo"
-          id="welcomeLogo"
+        <div
+          class="chat-header-name"
+          id="chatName"
         >
+          Member
+        </div>
 
-        <h2>JDA Networks</h2>
-
-        <p>
-          Select a conversation to start messaging.
-          Connect with approved students and staff
-          across Joy Dominion Academy.
-        </p>
+        <div
+          class="chat-header-status"
+          id="chatStatus"
+        >
+          JDA Networks member
+        </div>
 
       </div>
 
-    </section>
-
-  </main>
+    </div>
 
 
-  <!-- MOBILE NAV -->
-  <nav class="bottom-nav">
+    <div
+      class="messages"
+      id="messages"
+    >
 
-    <button class="bottom-item active">
-      <div>💬</div>
-      Chats
-    </button>
-
-    <button class="bottom-item" id="mobileNetwork">
-      <div>👥</div>
-      Network
-    </button>
-
-    <button class="bottom-item" id="mobileNotifications">
-      <div>🔔</div>
-      Alerts
-    </button>
-
-    <button class="bottom-item" id="mobileProfile">
-      <div>👤</div>
-      Profile
-    </button>
-
-  </nav>
+    </div>
 
 
-  <!-- NEW CHAT -->
-  <button class="new-chat" id="newChatBtn">
-    ✎
+    <form
+      class="message-form"
+      id="messageForm"
+    >
+
+      <input
+        class="message-input"
+        id="messageInput"
+        autocomplete="off"
+        placeholder="Type a message"
+      >
+
+      <button
+        class="send"
+        type="submit"
+      >
+        ➤
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<!-- MOBILE NAV -->
+
+<nav class="bottom-nav">
+
+  <button class="bottom-item active">
+    <div>💬</div>
+    Chats
   </button>
 
-
-  <!-- NETWORK MODAL -->
-  <div class="modal" id="networkModal">
-
-    <div class="modal-card">
-
-      <div class="modal-header">
-
-        <h2>JDA Network</h2>
-
-        <button class="close" data-close="networkModal">
-          ✕
-        </button>
-
-      </div>
-
-      <div class="network-search">
-
-        <input
-          id="networkInput"
-          type="text"
-          placeholder="Search name or JDA number"
-        >
-
-        <button id="networkSearchBtn">
-          Search
-        </button>
-
-      </div>
-
-      <div id="networkResults"></div>
-
-    </div>
-
-  </div>
-
-
-  <!-- PROFILE MODAL -->
-  <div class="modal" id="profileModal">
-
-    <div class="modal-card">
-
-      <div class="modal-header">
-
-        <h2>My Profile</h2>
-
-        <button class="close" data-close="profileModal">
-          ✕
-        </button>
-
-      </div>
-
-      <div class="profile">
-
-        <img
-          id="profilePhoto"
-          class="profile-photo"
-          src="./logo.png"
-        >
-
-        <div
-          id="profileName"
-          class="profile-name"
-        >
-          Loading...
-        </div>
-
-        <div
-          id="profileNumber"
-          class="profile-number"
-        >
-        </div>
-
-        <div class="profile-details">
-
-          <div class="detail">
-
-            <div class="detail-label">
-              ACCOUNT TYPE
-            </div>
-
-            <div
-              class="detail-value"
-              id="profileType"
-            >
-              -
-            </div>
-
-          </div>
-
-
-          <div class="detail" id="classDetail">
-
-            <div class="detail-label">
-              CLASS
-            </div>
-
-            <div
-              class="detail-value"
-              id="profileClass"
-            >
-              -
-            </div>
-
-          </div>
-
-
-          <div class="detail" id="streamDetail">
-
-            <div class="detail-label">
-              STREAM
-            </div>
-
-            <div
-              class="detail-value"
-              id="profileStream"
-            >
-              -
-            </div>
-
-          </div>
-
-
-          <div class="detail" id="departmentDetail">
-
-            <div class="detail-label">
-              DEPARTMENT
-            </div>
-
-            <div
-              class="detail-value"
-              id="profileDepartment"
-            >
-              -
-            </div>
-
-          </div>
-
-
-          <div class="detail">
-
-            <div class="detail-label">
-              EMAIL
-            </div>
-
-            <div
-              class="detail-value"
-              id="profileEmail"
-            >
-              -
-            </div>
-
-          </div>
-
-        </div>
-
-        <button
-          id="logoutBtn"
-          style="
-            margin-top:20px;
-            width:100%;
-            padding:13px;
-            border-radius:10px;
-            background:#d9534f;
-            color:white;
-            font-weight:bold;
-          "
-        >
-          Log out
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- NOTIFICATIONS -->
-  <div class="modal" id="notificationModal">
-
-    <div class="modal-card">
-
-      <div class="modal-header">
-
-        <h2>Notifications</h2>
-
-        <button class="close" data-close="notificationModal">
-          ✕
-        </button>
-
-      </div>
-
-      <div id="notifications">
-
-        <div class="empty">
-
-          <div class="empty-icon">
-            🔔
-          </div>
-
-          <p>No notifications yet.</p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- MENU -->
-  <div class="modal" id="menuModal">
-
-    <div class="modal-card">
-
-      <div class="modal-header">
-
-        <h2>JDA Networks</h2>
-
-        <button class="close" data-close="menuModal">
-          ✕
-        </button>
-
-      </div>
+  <button
+    class="bottom-item"
+    id="mobileNetwork"
+  >
+    <div>👥</div>
+    Network
+  </button>
+
+  <button
+    class="bottom-item"
+    id="mobileNotifications"
+  >
+    <div>🔔</div>
+    Alerts
+  </button>
+
+  <button
+    class="bottom-item"
+    id="mobileProfile"
+  >
+    <div>👤</div>
+    Profile
+  </button>
+
+</nav>
+
+
+<button
+  class="new-chat"
+  id="newChatBtn"
+>
+  ✎
+</button>
+
+
+<!-- NETWORK MODAL -->
+
+<div
+  class="modal"
+  id="networkModal"
+>
+
+  <div class="modal-card">
+
+    <div class="modal-header">
+
+      <h2>JDA Network</h2>
 
       <button
-        id="menuProfile"
-        style="
-          width:100%;
-          padding:14px;
-          background:#111b21;
-          color:#fff;
-          border-radius:10px;
-          text-align:left;
-          margin-bottom:8px;
-        "
+        class="close"
+        data-close="networkModal"
       >
-        👤 Profile
-      </button>
-
-      <button
-        id="menuNetwork"
-        style="
-          width:100%;
-          padding:14px;
-          background:#111b21;
-          color:#fff;
-          border-radius:10px;
-          text-align:left;
-          margin-bottom:8px;
-        "
-      >
-        👥 Network
-      </button>
-
-      <button
-        id="menuLogout"
-        style="
-          width:100%;
-          padding:14px;
-          background:#3a2020;
-          color:#ff7777;
-          border-radius:10px;
-          text-align:left;
-        "
-      >
-        🚪 Log out
+        ✕
       </button>
 
     </div>
 
+    <div class="network-search">
+
+      <input
+        id="networkInput"
+        placeholder="Search name or JDA number"
+      >
+
+      <button id="networkSearchBtn">
+        Search
+      </button>
+
+    </div>
+
+    <div id="networkResults"></div>
+
   </div>
-
-
-  <div class="toast" id="toast"></div>
 
 </div>
 
 
-<script type="module">
+<!-- PROFILE MODAL -->
 
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+<div
+  class="modal"
+  id="profileModal"
+>
 
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+  <div class="modal-card">
 
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  limit,
-  doc,
-  getDoc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+    <div class="modal-header">
 
+      <h2>My Profile</h2>
 
-/* FIREBASE */
-
-const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
-
-  authDomain:
-    "jda-network-fabde.firebaseapp.com",
-
-  projectId:
-    "jda-network-fabde",
-
-  storageBucket:
-    "jda-network-fabde.firebasestorage.app",
-
-  messagingSenderId:
-    "383915852673",
-
-  appId:
-    "1:383915852673:web:4b185c0387ed0bbad1de80"
-
-};
-
-
-const app = initializeApp(firebaseConfig);
-
-const auth = getAuth(app);
-
-const db = getFirestore(app);
-
-
-/* STATE */
-
-let currentUser = null;
-
-let currentProfile = null;
-
-let selectedFilter = "all";
-
-let selectedClass = "all";
-
-let allUsers = [];
-
-
-/* ELEMENTS */
-
-const chatList =
-  document.getElementById("chatList");
-
-const onlineText =
-  document.getElementById("onlineText");
-
-const toast =
-  document.getElementById("toast");
-
-
-/* TOAST */
-
-function showToast(message){
-
-  toast.textContent = message;
-
-  toast.classList.add("show");
-
-  setTimeout(()=>{
-    toast.classList.remove("show");
-  },3000);
-
-}
-
-
-/* MODALS */
-
-function openModal(id){
-
-  document
-    .getElementById(id)
-    .classList.add("show");
-
-}
-
-function closeModal(id){
-
-  document
-    .getElementById(id)
-    .classList.remove("show");
-
-}
-
-
-document
-  .querySelectorAll("[data-close]")
-  .forEach(button=>{
-
-    button.addEventListener("click",()=>{
-
-      closeModal(
-        button.dataset.close
-      );
-
-    });
-
-  });
-
-
-/* PROFILE */
-
-function displayProfile(){
-
-  if(!currentProfile) return;
-
-  document.getElementById("profileName")
-    .textContent =
-    currentProfile.realName || "Member";
-
-  document.getElementById("profileNumber")
-    .textContent =
-    currentProfile.jdaNumber || "";
-
-  document.getElementById("profileType")
-    .textContent =
-    currentProfile.accountType || "-";
-
-  document.getElementById("profileEmail")
-    .textContent =
-    currentProfile.email || currentUser.email || "-";
-
-  const photo =
-    currentProfile.profilePhoto;
-
-  if(photo){
-
-    document.getElementById("profilePhoto")
-      .src = photo;
-
-    document.getElementById("headerLogo")
-      .src = photo;
-
-  }
-
-  if(
-    currentProfile.accountType === "student"
-  ){
-
-    document.getElementById("profileClass")
-      .textContent =
-      currentProfile.class || "-";
-
-    document.getElementById("profileStream")
-      .textContent =
-      currentProfile.stream || "-";
-
-    document.getElementById("departmentDetail")
-      .style.display = "none";
-
-  }else{
-
-    document.getElementById("classDetail")
-      .style.display = "none";
-
-    document.getElementById("streamDetail")
-      .style.display = "none";
-
-    document.getElementById("profileDepartment")
-      .textContent =
-      currentProfile.department || "-";
-
-  }
-
-}
-
-
-/* LOAD PROFILE */
-
-async function loadProfile(){
-
-  const ref =
-    doc(
-      db,
-      "users",
-      currentUser.uid
-    );
-
-  const snap =
-    await getDoc(ref);
-
-  if(!snap.exists()){
-
-    showToast(
-      "Your JDA profile was not found."
-    );
-
-    await signOut(auth);
-
-    location.href="./index.html";
-
-    return;
-
-  }
-
-  currentProfile =
-    snap.data();
-
-  /*
-    IMPORTANT:
-    Only approved members enter
-    the main network.
-  */
-
-  if(
-    !["approved","active"]
-      .includes(currentProfile.status)
-  ){
-
-    await signOut(auth);
-
-    location.href="./index.html";
-
-    return;
-
-  }
-
-  displayProfile();
-
-  onlineText.textContent =
-    "Online • Approved member";
-
-}
-
-
-/* AUTH */
-
-onAuthStateChanged(
-  auth,
-  async user=>{
-
-    if(!user){
-
-      location.href="./index.html";
-
-      return;
-
-    }
-
-    currentUser = user;
-
-    try{
-
-      await loadProfile();
-
-      await loadNetwork();
-
-      await loadChats();
-
-    }catch(error){
-
-      console.error(error);
-
-      showToast(
-        "Could not load JDA Networks."
-      );
-
-    }
-
-  }
-);
-
-
-/* NETWORK */
-
-async function loadNetwork(){
-
-  try{
-
-    const q =
-      query(
-        collection(db,"users"),
-        where("status","==","approved"),
-        limit(100)
-      );
-
-    const snap =
-      await getDocs(q);
-
-    allUsers =
-      snap.docs
-        .map(d=>({
-          id:d.id,
-          ...d.data()
-        }))
-        .filter(
-          u=>u.uid !== currentUser.uid
-        );
-
-  }catch(error){
-
-    console.error(
-      "Network error:",
-      error
-    );
-
-  }
-
-}
-
-
-/* NETWORK SEARCH */
-
-document
-  .getElementById("networkSearchBtn")
-  .addEventListener(
-    "click",
-    searchNetwork
-  );
-
-
-document
-  .getElementById("networkInput")
-  .addEventListener(
-    "keydown",
-    e=>{
-
-      if(e.key==="Enter"){
-        searchNetwork();
-      }
-
-    }
-  );
-
-
-function searchNetwork(){
-
-  const text =
-    document
-      .getElementById("networkInput")
-      .value
-      .trim()
-      .toLowerCase();
-
-  const results =
-    document.getElementById(
-      "networkResults"
-    );
-
-  results.innerHTML = "";
-
-  if(!text){
-
-    results.innerHTML =
-      `<div class="empty">
-        Enter a name or JDA number.
-      </div>`;
-
-    return;
-
-  }
-
-  const found =
-    allUsers.filter(user=>{
-
-      const name =
-        (user.realName || "")
-          .toLowerCase();
-
-      const number =
-        (user.jdaNumber || "")
-          .toLowerCase();
-
-      return(
-        name.includes(text) ||
-        number.includes(text)
-      );
-
-    });
-
-  if(!found.length){
-
-    results.innerHTML =
-      `<div class="empty">
-        No approved member found.
-      </div>`;
-
-    return;
-
-  }
-
-  found.forEach(user=>{
-
-    const row =
-      document.createElement("div");
-
-    row.className="result";
-
-    row.innerHTML=`
-
-      <img
-        class="avatar"
-        src="${user.profilePhoto || "./logo.png"}"
+      <button
+        class="close"
+        data-close="profileModal"
       >
-
-      <div class="result-info">
-
-        <div class="result-name">
-          ${escapeHTML(user.realName || "Member")}
-        </div>
-
-        <div class="result-meta">
-          ${escapeHTML(
-            user.accountType || ""
-          )}
-          •
-          ${escapeHTML(
-            user.jdaNumber || ""
-          )}
-        </div>
-
-      </div>
-
-      <button class="message-btn">
-        Message
+        ✕
       </button>
-    `;
 
-    row
-      .querySelector(".message-btn")
-      .addEventListener(
-        "click",
-        ()=>startConversation(user)
-      );
+    </div>
 
-    results.appendChild(row);
-
-  });
-
-}
-
-
-/* START CHAT */
-
-async function startConversation(user){
-
-  /*
-    We will connect this button to
-    the full Firestore messaging system
-    in the next stage.
-  */
-
-  showToast(
-    "Opening chat with " +
-    user.realName
-  );
-
-  closeModal("networkModal");
-
-  /*
-    Temporary desktop/mobile notice.
-    The actual conversation screen
-    comes next.
-  */
-
-}
-
-
-/* CHATS */
-
-async function loadChats(){
-
-  /*
-    For now we show approved network
-    members when no conversations
-    have been created yet.
-
-    Real conversation/message loading
-    will be connected in the next file.
-  */
-
-  renderChats(allUsers);
-
-}
-
-
-function renderChats(users){
-
-  chatList.innerHTML="";
-
-  let filtered = [...users];
-
-  if(selectedClass !== "all"){
-
-    filtered =
-      filtered.filter(
-        user =>
-          user.class === selectedClass
-      );
-
-  }
-
-  const search =
-    document
-      .getElementById("chatSearch")
-      .value
-      .trim()
-      .toLowerCase();
-
-  if(search){
-
-    filtered =
-      filtered.filter(user=>{
-
-        const name =
-          (user.realName || "")
-            .toLowerCase();
-
-        const number =
-          (user.jdaNumber || "")
-            .toLowerCase();
-
-        return(
-          name.includes(search) ||
-          number.includes(search)
-        );
-
-      });
-
-  }
-
-  if(!filtered.length){
-
-    chatList.innerHTML = `
-
-      <div class="empty">
-
-        <div class="empty-icon">
-          👥
-        </div>
-
-        <p>
-          No members found.
-        </p>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  filtered.forEach(user=>{
-
-    const row =
-      document.createElement("div");
-
-    row.className="chat";
-
-    row.innerHTML=`
+    <div class="profile">
 
       <img
-        class="avatar"
-        src="${user.profilePhoto || "./logo.png"}"
+        id="profilePhoto"
+        class="profile-photo"
+        src="./logo.png"
       >
 
-      <div class="chat-info">
+      <div
+        id="profileName"
+        class="profile-name"
+      >
+        Loading...
+      </div>
 
-        <div class="chat-top">
+      <div
+        id="profileNumber"
+        class="profile-number"
+      ></div>
 
-          <div class="chat-name">
-            ${escapeHTML(
-              user.realName || "Member"
-            )}
+      <div class="profile-details">
+
+        <div class="detail">
+
+          <div class="detail-label">
+            ACCOUNT TYPE
           </div>
 
-          <div class="chat-time">
-            ${escapeHTML(
-              user.accountType || ""
-            )}
-          </div>
+          <div
+            class="detail-value"
+            id="profileType"
+          >-</div>
 
         </div>
 
-        <div class="chat-bottom">
 
-          <div class="last-message">
-            ${
-              user.accountType === "student"
-              ? escapeHTML(
-                  (user.class || "") +
-                  " • " +
-                  (user.stream || "")
-                )
-              : escapeHTML(
-                  user.department || "Staff"
-                )
-            }
+        <div
+          class="detail"
+          id="classDetail"
+        >
+
+          <div class="detail-label">
+            CLASS
           </div>
+
+          <div
+            class="detail-value"
+            id="profileClass"
+          >-</div>
+
+        </div>
+
+
+        <div
+          class="detail"
+          id="streamDetail"
+        >
+
+          <div class="detail-label">
+            STREAM
+          </div>
+
+          <div
+            class="detail-value"
+            id="profileStream"
+          >-</div>
+
+        </div>
+
+
+        <div
+          class="detail"
+          id="departmentDetail"
+        >
+
+          <div class="detail-label">
+            DEPARTMENT
+          </div>
+
+          <div
+            class="detail-value"
+            id="profileDepartment"
+          >-</div>
+
+        </div>
+
+
+        <div class="detail">
+
+          <div class="detail-label">
+            EMAIL
+          </div>
+
+          <div
+            class="detail-value"
+            id="profileEmail"
+          >-</div>
 
         </div>
 
       </div>
-    `;
 
-    row.addEventListener(
-      "click",
-      ()=>startConversation(user)
-    );
 
-    chatList.appendChild(row);
+      <button
+        id="logoutBtn"
+        style="
+          margin-top:20px;
+          width:100%;
+          padding:13px;
+          border-radius:10px;
+          background:#d9534f;
+          color:white;
+          font-weight:bold;
+        "
+      >
+        Log out
+      </button>
 
-  });
+    </div>
 
-}
+  </div>
 
+</div>
 
-/* CHAT SEARCH */
 
-document
-  .getElementById("chatSearch")
-  .addEventListener(
-    "input",
-    ()=>{
-      renderChats(allUsers);
-    }
-  );
+<!-- NOTIFICATIONS -->
 
+<div
+  class="modal"
+  id="notificationModal"
+>
 
-/* FILTERS */
+  <div class="modal-card">
 
-document
-  .querySelectorAll(".filter")
-  .forEach(button=>{
+    <div class="modal-header">
 
-    button.addEventListener(
-      "click",
-      ()=>{
+      <h2>Notifications</h2>
 
-        document
-          .querySelectorAll(".filter")
-          .forEach(
-            b=>b.classList.remove("active")
-          );
+      <button
+        class="close"
+        data-close="notificationModal"
+      >
+        ✕
+      </button>
 
-        button.classList.add("active");
+    </div>
 
-        selectedFilter =
-          button.dataset.filter;
+    <div class="empty">
 
-        renderChats(allUsers);
+      <div class="empty-icon">
+        🔔
+      </div>
 
-      }
-    );
+      No notifications yet.
 
-  });
+    </div>
 
+  </div>
 
-/* CLASS FILTER */
+</div>
 
-document
-  .querySelectorAll(".class-btn")
-  .forEach(button=>{
 
-    button.addEventListener(
-      "click",
-      ()=>{
+<!-- MENU -->
 
-        document
-          .querySelectorAll(".class-btn")
-          .forEach(
-            b=>b.classList.remove("active")
-          );
+<div
+  class="modal"
+  id="menuModal"
+>
 
-        button.classList.add("active");
+  <div class="modal-card">
 
-        selectedClass =
-          button.dataset.class;
+    <div class="modal-header">
 
-        renderChats(allUsers);
+      <h2>JDA Networks</h2>
 
-      }
-    );
+      <button
+        class="close"
+        data-close="menuModal"
+      >
+        ✕
+      </button>
 
-  });
+    </div>
 
+    <button
+      id="menuProfile"
+      style="
+        width:100%;
+        padding:14px;
+        background:#111b21;
+        color:#fff;
+        border-radius:10px;
+        text-align:left;
+        margin-bottom:8px;
+      "
+    >
+      👤 Profile
+    </button>
 
-/* BUTTONS */
-
-document
-  .getElementById("networkBtn")
-  .onclick =
-  ()=>openModal("networkModal");
-
-
-document
-  .getElementById("mobileNetwork")
-  .onclick =
-  ()=>openModal("networkModal");
-
-
-document
-  .getElementById("profileBtn")
-  .onclick =
-  ()=>openModal("profileModal");
-
-
-document
-  .getElementById("mobileProfile")
-  .onclick =
-  ()=>openModal("profileModal");
-
-
-document
-  .getElementById("notificationBtn")
-  .onclick =
-  ()=>openModal("notificationModal");
-
-
-document
-  .getElementById("mobileNotifications")
-  .onclick =
-  ()=>openModal("notificationModal");
-
-
-document
-  .getElementById("menuBtn")
-  .onclick =
-  ()=>openModal("menuModal");
-
-
-document
-  .getElementById("newChatBtn")
-  .onclick =
-  ()=>openModal("networkModal");
-
-
-/* MENU */
-
-document
-  .getElementById("menuProfile")
-  .onclick =
-  ()=>{
-    closeModal("menuModal");
-    openModal("profileModal");
-  };
-
-
-document
-  .getElementById("menuNetwork")
-  .onclick =
-  ()=>{
-    closeModal("menuModal");
-    openModal("networkModal");
-  };
-
-
-document
-  .getElementById("menuLogout")
-  .onclick =
-  logout;
-
-
-/* LOGOUT */
-
-document
-  .getElementById("logoutBtn")
-  .onclick =
-  logout;
-
-
-async function logout(){
-
-  try{
-
-    await signOut(auth);
-
-    location.href="./index.html";
-
-  }catch(error){
-
-    console.error(error);
-
-    showToast(
-      "Logout failed."
-    );
-
-  }
-
-}
-
-
-/* HTML SECURITY */
-
-function escapeHTML(value){
-
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-
-}
-
-</script>
-
-</body>
-</html>
+    <button
+      id="menuNetwork"
+      style="
+        width:100%;
+        padding:14px;
+        background:#111b21;
+        color:#fff;
+        border-radius:10px;
+        text-align:left;
+        margin-bottom:8px;
+      "
+    >
+      👥 Network
+    </button>
+
+    <button
+      id="menuLogout"
+      style="
+        width:100%;
+        padding:14px;
+        background:#3a2020;
+        color:#ff777

@@ -1,103 +1,253 @@
 rules_version = '2';
+
 service cloud.firestore {
+
   match /databases/{database}/documents {
+
+    /* =========================
+       BASIC FUNCTIONS
+    ========================= */
 
     function signedIn() {
       return request.auth != null;
     }
 
     function isSuperAdmin() {
-      return signedIn() && request.auth.token.email == "jonathanmentor62@gmail.com";
-    }
-
-    function approved() {
       return signedIn()
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status in ["approved", "active"];
+        && request.auth.token.email
+        == "jonathanmentor62@gmail.com";
     }
 
-    function admin() {
-      return isSuperAdmin() || (signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    function isAdmin() {
+      return isSuperAdmin()
+        || (
+          signedIn()
+          && exists(
+            /databases/$(database)/documents/admins/$(request.auth.uid)
+          )
+        );
     }
 
-    // =========================
-    // USERS
-    // =========================
+    function isApproved() {
+      return signedIn()
+        && exists(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        )
+        && get(
+          /databases/$(database)/documents/users/$(request.auth.uid)
+        ).data.status == "approved";
+    }
+
+
+    /* =========================
+       USERS
+       ========================= */
+
     match /users/{uid} {
-      // FIXED: Allow pending OR active on create (was only pending - causing block)
+
+      /*
+       * A person may create ONLY their
+       * own registration.
+       *
+       * They MUST start as pending.
+       */
       allow create:
         if signedIn()
         && request.auth.uid == uid
         && request.resource.data.uid == uid
-        && request.resource.data.status in ["pending", "active", "approved"];
+        && request.resource.data.status == "pending"
+        && request.resource.data.approved == false;
 
-      // FIXED: Allow anyone signed in to read for registration check + admin
+
+      /*
+       * Approved members can see member
+       * profiles.
+       *
+       * Admins can see everything.
+       */
       allow read:
-        if signedIn();
+        if isAdmin()
+        || isApproved();
 
-      // FIXED: Admin + SuperAdmin can update
+
+      /*
+       * NORMAL MEMBERS CANNOT change
+       * their identity/status.
+       *
+       * Admin controls approval.
+       */
       allow update:
-        if admin() || isSuperAdmin()
+        if isAdmin()
         || (
-          signedIn()
+          isApproved()
           && request.auth.uid == uid
-          && request.resource.data.uid == resource.data.uid
+
+          /*
+           * Identity fields cannot be changed
+           * by the member.
+           */
+          && request.resource.data.realName
+             == resource.data.realName
+
+          && request.resource.data.jdaNumber
+             == resource.data.jdaNumber
+
+          && request.resource.data.accountType
+             == resource.data.accountType
+
+          && request.resource.data.status
+             == resource.data.status
+
+          && request.resource.data.approved
+             == resource.data.approved
         );
 
+
+      /*
+       * Only admins can delete users.
+       */
       allow delete:
-        if admin() || isSuperAdmin();
+        if isAdmin();
     }
 
-    // =========================
-    // USERNAMES - FIXED MAJOR BUG HERE!
-    // =========================
-    match /usernames/{username} {
-      // FIXED: Allow public read to check if username exists BEFORE login
-      allow read: if true;
 
-      // FIXED: Allow creation right after auth (before user doc)
-      allow create:
-        if signedIn()
-        && request.resource.data.uid == request.auth.uid;
+    /* =========================
+       ADMINS
+       ========================= */
 
-      allow update, delete:
-        if admin() || isSuperAdmin();
-    }
-
-    // =========================
-    // ADMINS - FIXED BOOTSTRAP
-    // =========================
     match /admins/{uid} {
+
       allow read:
         if signedIn();
 
-      // FIXED: First admin (you) can create yourself!
+      /*
+       * Only the super admin can create
+       * another admin record.
+       */
       allow create:
-        if isSuperAdmin() && request.auth.uid == uid;
+        if isSuperAdmin();
 
-      allow write:
-        if admin() || isSuperAdmin();
+      allow update, delete:
+        if isSuperAdmin();
     }
 
-    // =========================
-    // CONNECTIONS
-    // =========================
-    match /connections/{connectionId} {
-      allow read, create, delete:
-        if signedIn();
-    }
 
-    // =========================
-    // CONVERSATIONS
-    // =========================
+    /* =========================
+       CONVERSATIONS
+       ========================= */
+
     match /conversations/{conversationId} {
-      allow read, create, update, delete:
-        if signedIn();
+
+      /*
+       * The conversation ID is built from
+       * two user UIDs sorted alphabetically.
+       *
+       * This check makes sure the current
+       * user is actually one of them.
+       */
+      allow read, create, update:
+        if isApproved()
+        && (
+          conversationId.matches(
+            ".*" + request.auth.uid + ".*"
+          )
+        );
+
+
+      allow delete:
+        if isAdmin();
+
+
+      /* =========================
+         MESSAGES
+         ========================= */
 
       match /messages/{messageId} {
-        allow read, create, update, delete:
-          if signedIn();
+
+        /*
+         * Approved users can read messages
+         * in their own conversation.
+         */
+        allow read:
+          if isApproved()
+          && (
+            resource.data.senderId
+            == request.auth.uid
+            ||
+            resource.data.receiverId
+            == request.auth.uid
+          );
+
+
+        /*
+         * New message:
+         * sender MUST be the logged-in user.
+         */
+        allow create:
+          if isApproved()
+          && request.resource.data.senderId
+             == request.auth.uid
+          && request.resource.data.receiverId
+             != request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 5000;
+
+
+        /*
+         * Messages cannot be edited by normal
+         * users.
+         */
+        allow update:
+          if false;
+
+
+        /*
+         * Only admins can delete messages.
+         */
+        allow delete:
+          if isAdmin();
       }
     }
+
+
+    /* =========================
+       CONNECTIONS
+       ========================= */
+
+    match /connections/{connectionId} {
+
+      allow read, create, delete:
+        if isApproved();
+    }
+
+
+    /* =========================
+       NOTIFICATIONS
+       ========================= */
+
+    match /notifications/{notificationId} {
+
+      allow read:
+        if isApproved()
+        && resource.data.userId
+           == request.auth.uid;
+
+      /*
+       * Notifications should be generated
+       * by trusted server/admin processes.
+       */
+      allow create:
+        if isAdmin();
+
+      allow update:
+        if isApproved()
+        && resource.data.userId
+           == request.auth.uid;
+
+      allow delete:
+        if isAdmin();
+    }
+
   }
 }

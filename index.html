@@ -2,1244 +2,579 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+  <title>JDA Networks</title>
 
-  <title>JDA Networks · Live Registration</title>
+  <link rel="stylesheet" href="./style.css">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont,
-                   "Segoe UI", Roboto, Arial, sans-serif;
-    }
+    /* JDA welcome / registration layer */
 
     body {
-      background: #4A7CFF;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      user-select: none;
+      background: #0b141a;
+      color: #fff;
     }
 
-    #stage {
-      width: 100%;
-      height: 100%;
-      background: #4A7CFF;
-      position: relative;
-      overflow: hidden;
-
-      background-image:
-        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-
-      background-size: 42px 42px;
-    }
-
-    /* =========================
-       WALKING MAN
-       ========================= */
-
-    #manWrap {
-      position: absolute;
-      bottom: 20px;
-      left: -300px;
-      width: 280px;
-      height: 480px;
-      z-index: 10;
-      will-change: left, transform;
-    }
-
-    #manWrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 15px 20px rgba(0,0,0,0.30));
-    }
-
-    #manWrap.walking {
-      animation: walkBob 0.35s infinite alternate;
-    }
-
-    @keyframes walkBob {
-      from {
-        transform: translateY(0);
-      }
-
-      to {
-        transform: translateY(-6px);
-      }
-    }
-
-    /* =========================
-       BAG
-       ========================= */
-
-    #floorBag {
-      position: absolute;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-
-      width: 110px;
-      height: 75px;
-
-      background: #6B4226;
-      border-radius: 8px;
-
-      display: none;
+    .jda-page {
+      min-height: 100vh;
+      display: flex;
       align-items: center;
       justify-content: center;
-
-      color: #F5E6D3;
-      font-weight: 900;
-      font-size: 20px;
-
-      letter-spacing: 2px;
-
-      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-      border: 2px solid #8B5E3C;
-
-      z-index: 5;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top, #17352d 0%, #0b141a 45%, #071014 100%);
     }
 
-    #floorBag span {
-      font-weight: 900;
-      font-size: 18px;
-      color: #F5E6D3;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    .jda-box {
+      width: min(430px, 100%);
+      background: #111d24;
+      border: 1px solid #26353d;
+      border-radius: 26px;
+      padding: 28px 22px;
+      box-shadow: 0 20px 70px rgba(0,0,0,.45);
     }
 
-    /* =========================
-       REGISTRATION FORM
-       ========================= */
-
-    #formBox {
-      position: absolute;
-
-      top: 50%;
-      left: 50%;
-
-      transform: translate(-50%, -50%) scale(0);
-
-      background: white;
-
-      width: 350px;
-      max-width: 92vw;
-
-      border-radius: 24px;
-
-      padding: 26px 24px;
-
-      box-shadow:
-        0 30px 80px rgba(0,0,0,0.5);
-
-      z-index: 20;
-
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #formBox.show {
-      animation:
-        pop 0.8s cubic-bezier(0.175,0.885,0.32,1.275)
-        forwards;
-
-      pointer-events: auto;
-    }
-
-    @keyframes pop {
-
-      0% {
-        transform: translate(-50%,-50%) scale(0);
-        opacity: 0;
-      }
-
-      60% {
-        transform: translate(-50%,-50%) scale(1.1);
-        opacity: 1;
-      }
-
-      100% {
-        transform: translate(-50%,-50%) scale(1);
-        opacity: 1;
-      }
-    }
-
-    #formBox h2 {
-      text-align: center;
-      font-size: 21px;
-      font-weight: 750;
-      color: #1e293b;
-    }
-
-    .subhead {
-      text-align: center;
-
-      font-size: 11px;
-      color: #6b7280;
-
-      margin: 6px 0 12px;
-
-      font-weight: 600;
-
-      background: #f1f5f9;
-
-      padding: 7px 10px;
-
-      border-radius: 40px;
-
-      width: 100%;
-    }
-
-    #formBox input {
-      width: 100%;
-
-      padding: 13px 14px;
-
-      border:
-        1.5px solid #e5e7eb;
-
-      border-radius: 12px;
-
-      margin-top: 10px;
-
-      font-size: 14px;
-
-      outline: none;
-
-      background: #fafbfc;
-
-      transition:
-        border 0.2s,
-        box-shadow 0.2s;
-    }
-
-    #formBox input:focus {
-      border-color: #4A7CFF;
-
-      box-shadow:
-        0 0 0 3px rgba(74,124,255,0.18);
-
-      background: white;
-    }
-
-    #formBox input[type="file"] {
-      padding: 9px 0;
-
-      border: none;
-
-      background: transparent;
-
-      font-size: 13px;
-
-      color: #374151;
-    }
-
-    /* =========================
-       PHOTO PREVIEW
-       ========================= */
-
-    #preview {
-      text-align: center;
-
-      margin-top: 8px;
-
-      min-height: 40px;
-
+    .jda-logo {
+      width: 76px;
+      height: 76px;
+      border-radius: 22px;
+      margin: 0 auto 18px;
       display: flex;
-
+      align-items: center;
       justify-content: center;
+      background: #25d366;
+      color: #06140d;
+      font-size: 34px;
+      font-weight: 900;
     }
 
-    #preview img {
-      width: 70px;
-      height: 70px;
-
-      border-radius: 50%;
-
-      object-fit: cover;
-
-      border: 3px solid #10b981;
-
-      box-shadow:
-        0 4px 10px rgba(0,0,0,0.12);
+    .jda-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0;
     }
 
-    /* =========================
-       REGISTER BUTTON
-       ========================= */
+    .jda-subtitle {
+      text-align: center;
+      color: #91a3ad;
+      font-size: 14px;
+      margin: 8px 0 25px;
+    }
 
-    #registerBtn {
+    .account-choice {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .account-btn {
+      background: #202c33;
+      color: #d9e2e7;
+      border: 1px solid #34434b;
+      border-radius: 16px;
+      padding: 18px 10px;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    .account-btn .emoji {
+      display: block;
+      font-size: 27px;
+      margin-bottom: 7px;
+    }
+
+    .account-btn.selected {
+      background: #0f6f4b;
+      border-color: #25d366;
+      color: #fff;
+      box-shadow: 0 0 0 2px rgba(37,211,102,.12);
+    }
+
+    .continue-btn,
+    .register-btn,
+    .login-btn {
       width: 100%;
-
-      background: #10b981;
-
-      color: white;
-
-      border: none;
-
+      border-radius: 14px;
       padding: 14px;
-
-      border-radius: 12px;
-
-      margin-top: 18px;
-
-      font-weight: 750;
-
-      font-size: 16px;
-
-      cursor: pointer;
-
-      box-shadow:
-        0 6px 14px rgba(16,185,129,0.35);
-
-      transition:
-        background 0.15s,
-        transform 0.1s;
+      font-weight: 800;
+      background: #25d366;
+      color: #06140d;
+      margin-top: 5px;
     }
 
-    #registerBtn:hover {
-      background: #0da271;
-    }
-
-    #registerBtn:active {
-      transform: scale(0.97);
-    }
-
-    #registerBtn:disabled {
-      background: #9ca3af;
-
-      box-shadow: none;
-
+    .continue-btn:disabled,
+    .register-btn:disabled,
+    .login-btn:disabled {
+      opacity: .55;
       cursor: not-allowed;
     }
 
-    /* =========================
-       LIVE DOT
-       ========================= */
-
-    .live-dot {
-      display: inline-block;
-
-      width: 8px;
-      height: 8px;
-
-      background: #ef4444;
-
-      border-radius: 50%;
-
-      margin-right: 6px;
-
-      animation: pulse 1.4s infinite;
-    }
-
-    @keyframes pulse {
-
-      0% {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: 0.4;
-        transform: scale(0.9);
-      }
-
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    /* =========================
-       STATUS MESSAGE
-       ========================= */
-
-    #message {
+    .form-section {
       display: none;
+    }
 
-      margin-top: 12px;
+    .form-section.active {
+      display: block;
+    }
 
-      padding: 10px;
+    .back-btn {
+      background: transparent;
+      color: #25d366;
+      padding: 5px 0 15px;
+      font-weight: 700;
+    }
 
-      border-radius: 10px;
+    .form-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
 
-      font-size: 12px;
+    .form-description {
+      color: #91a3ad;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
 
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      color: #dce5e9;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: 1px solid #34434b;
+      background: #202c33;
+      color: #fff;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: #25d366;
+      box-shadow: 0 0 0 2px rgba(37,211,102,.12);
+    }
+
+    .photo-area {
       text-align: center;
-
-      font-weight: 600;
+      margin-bottom: 18px;
     }
 
-    #message.success {
-      display: block;
-
-      background: #dcfce7;
-
-      color: #166534;
+    .photo-preview {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      background: #202c33;
+      border: 2px dashed #52636c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #8799a3;
+      font-size: 12px;
     }
 
-    #message.error {
-      display: block;
-
-      background: #fee2e2;
-
-      color: #991b1b;
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
-    /* =========================
-       MOBILE
-       ========================= */
+    .photo-label {
+      display: inline-block;
+      color: #25d366;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
 
-    @media (max-width:480px) {
+    #photoInput {
+      display: none;
+    }
 
-      #manWrap {
-        width: 220px;
-        height: 380px;
+    .notice {
+      background: #18272d;
+      border-left: 3px solid #25d366;
+      padding: 11px;
+      border-radius: 9px;
+      color: #aebdc4;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .status {
+      min-height: 20px;
+      text-align: center;
+      font-size: 13px;
+      margin-top: 13px;
+      color: #91a3ad;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 18px;
+      color: #91a3ad;
+      font-size: 13px;
+    }
+
+    .login-link button {
+      background: transparent;
+      color: #25d366;
+      font-weight: 700;
+      padding: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media(max-width:380px) {
+      .jda-box {
+        padding: 23px 16px;
       }
 
-      #formBox {
-        width: 340px;
-        padding: 21px 18px;
-      }
-
-      #floorBag {
-        width: 90px;
-        height: 62px;
+      .jda-title {
+        font-size: 24px;
       }
     }
-
   </style>
 </head>
 
 <body>
 
-<div id="stage">
+  <main class="jda-page">
 
-  <!-- WALKING PERSON -->
-  <div id="manWrap">
+    <section class="jda-box">
 
-    <img
-      id="manImg"
-      src="./man-walk.png"
-      alt="JDA Networks"
-    >
+      <!-- =========================
+           ACCOUNT TYPE
+      ========================== -->
 
-  </div>
+      <div id="accountStep">
 
+        <div class="jda-logo">JDA</div>
 
-  <!-- JDA BAG -->
-  <div id="floorBag">
-    <span>JDA</span>
-  </div>
+        <h1 class="jda-title">Welcome to JDA Networks</h1>
 
+        <p class="jda-subtitle">
+          Choose your account type to continue
+        </p>
 
-  <!-- REGISTRATION -->
-  <div id="formBox">
+        <div class="account-choice">
 
-    <h2>
-      <span class="live-dot"></span>
-      Register now
-    </h2>
+          <button
+            type="button"
+            class="account-btn"
+            id="studentChoice"
+          >
+            <span class="emoji">🎓</span>
+            Student
+          </button>
 
-    <div class="subhead">
-      ⚡ Real Name · JDA Number · Photo MUST
-    </div>
+          <button
+            type="button"
+            class="account-btn"
+            id="staffChoice"
+          >
+            <span class="emoji">👨‍🏫</span>
+            Staff
+          </button>
 
+        </div>
 
-    <input
-      id="realName"
-      type="text"
-      placeholder="Real Name (No nickname)"
-      autocomplete="name"
-    >
+        <button
+          type="button"
+          class="continue-btn"
+          id="continueBtn"
+          disabled
+        >
+          Continue
+        </button>
 
+        <div class="login-link">
+          Already approved?
+          <button type="button" id="showLoginBtn">Log in</button>
+        </div>
 
-    <input
-      id="jdaNumber"
-      type="text"
-      placeholder="JDA Number JD-2025-1234"
-      maxlength="13"
-      style="
-        font-family: monospace;
-        text-transform: uppercase;
-      "
-      autocomplete="off"
-    >
+      </div>
 
 
-    <input
-      type="file"
-      id="photoInput"
-      accept="image/jpeg,image/png,image/webp"
-    >
+      <!-- =========================
+           REGISTRATION
+      ========================== -->
 
+      <div id="registrationStep" class="form-section">
 
-    <div id="preview"></div>
+        <button
+          type="button"
+          class="back-btn"
+          id="backBtn"
+        >
+          ← Back
+        </button>
 
+        <h2 class="form-title" id="registrationTitle">
+          Student Registration
+        </h2>
 
-    <button id="registerBtn">
-      Register & Go Live
-    </button>
+        <p class="form-description">
+          Enter your real information. Nicknames are not allowed.
+        </p>
 
+        <form id="registrationForm">
 
-    <div id="message"></div>
+          <!-- PHOTO -->
 
-  </div>
+          <div class="photo-area">
 
-</div>
+            <div class="photo-preview" id="photoPreview">
+              Photo
+            </div>
 
+            <label class="photo-label" for="photoInput">
+              📷 Add profile photo
+            </label>
 
-<script type="module">
+            <input
+              type="file"
+              id="photoInput"
+              accept="image/jpeg,image/png,image/webp"
+              required
+            >
 
-  /* =========================================================
-     FIREBASE
-     ========================================================= */
+          </div>
 
-  import {
-    initializeApp
-  } from
-  "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
+          <!-- NAME -->
 
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    query,
-    where,
-    getDocs,
-    serverTimestamp
-  } from
-  "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+          <div class="field">
 
+            <label for="realName">
+              Full real name *
+            </label>
 
-  import {
-    getStorage,
-    ref,
-    uploadBytes,
-    getDownloadURL
-  } from
-  "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+            <input
+              id="realName"
+              type="text"
+              placeholder="Enter your full real name"
+              autocomplete="name"
+              required
+            >
 
+          </div>
 
-  /* =========================================================
-     YOUR REAL FIREBASE CONFIG
-     ========================================================= */
 
-  const firebaseConfig = {
+          <!-- JDA NUMBER -->
 
-    apiKey:
-      "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
+          <div class="field">
 
-    authDomain:
-      "jda-network-fabde.firebaseapp.com",
+            <label for="jdaNumber">
+              JDA Networks number *
+            </label>
 
-    projectId:
-      "jda-network-fabde",
+            <input
+              id="jdaNumber"
+              type="tel"
+              placeholder="+256 771 234 567"
+              autocomplete="tel"
+              required
+            >
 
-    storageBucket:
-      "jda-network-fabde.firebasestorage.app",
+          </div>
 
-    messagingSenderId:
-      "383915852673",
 
-    appId:
-      "1:383915852673:web:4b185c0387ed0bbad1de80"
+          <!-- STUDENT FIELDS -->
 
-  };
+          <div id="studentFields">
 
+            <div class="field">
 
-  /* =========================================================
-     INITIALIZE FIREBASE
-     ========================================================= */
+              <label for="studentClass">
+                Class *
+              </label>
 
-  const app = initializeApp(firebaseConfig);
+              <select id="studentClass">
 
-  const db = getFirestore(app);
+                <option value="">
+                  Select class
+                </option>
 
-  const storage = getStorage(app);
+                <option value="Form One">Form One</option>
+                <option value="Form Two">Form Two</option>
+                <option value="Form Three">Form Three</option>
+                <option value="Form Four">Form Four</option>
+                <option value="Form Five">Form Five</option>
+                <option value="Form Six">Form Six</option>
 
+              </select>
 
-  console.log(
-    "🔥 JDA Networks Firebase connected"
-  );
+            </div>
 
 
-  /* =========================================================
-     ELEMENTS
-     ========================================================= */
+            <div class="field">
 
-  const manWrap =
-    document.getElementById("manWrap");
+              <label for="studentStream">
+                Stream *
+              </label>
 
-  const manImg =
-    document.getElementById("manImg");
+              <select id="studentStream">
 
-  const floorBag =
-    document.getElementById("floorBag");
+                <option value="">
+                  Select stream
+                </option>
 
-  const formBox =
-    document.getElementById("formBox");
+                <option value="Blue">Blue</option>
+                <option value="Green">Green</option>
 
-  const realName =
-    document.getElementById("realName");
+              </select>
 
-  const jdaNumber =
-    document.getElementById("jdaNumber");
+            </div>
 
-  const photoInput =
-    document.getElementById("photoInput");
+          </div>
 
-  const preview =
-    document.getElementById("preview");
 
-  const registerBtn =
-    document.getElementById("registerBtn");
+          <!-- STAFF FIELDS -->
 
-  const message =
-    document.getElementById("message");
+          <div id="staffFields" class="hidden">
 
+            <div class="field">
 
-  /* =========================================================
-     MESSAGE FUNCTION
-     ========================================================= */
+              <label for="department">
+                Department *
+              </label>
 
-  function showMessage(text, type) {
+              <input
+                id="department"
+                type="text"
+                placeholder="Enter your department"
+              >
 
-    message.textContent = text;
+            </div>
 
-    message.className = type;
+          </div>
 
-  }
 
+          <div class="notice">
+            Your registration will remain <b>pending</b> until an
+            administrator checks your real name, photo and registration
+            information and approves your account.
+          </div>
 
-  /* =========================================================
-     PHOTO PREVIEW
-     ========================================================= */
 
-  let selectedPhoto = null;
+          <button
+            type="submit"
+            class="register-btn"
+            id="registerBtn"
+          >
+            Submit Registration
+          </button>
 
+          <div
+            class="status"
+            id="registrationStatus"
+          ></div>
 
-  photoInput.addEventListener(
-    "change",
-    function(event) {
+        </form>
 
-      const file =
-        event.target.files[0];
+      </div>
 
 
-      if (!file) {
+      <!-- =========================
+           LOGIN
+      ========================== -->
 
-        selectedPhoto = null;
+      <div id="loginStep" class="form-section">
 
-        preview.innerHTML = "";
+        <button
+          type="button"
+          class="back-btn"
+          id="loginBackBtn"
+        >
+          ← Back
+        </button>
 
-        return;
-      }
+        <h2 class="form-title">
+          JDA Networks Login
+        </h2>
 
+        <p class="form-description">
+          Login using the email and password connected to your approved account.
+        </p>
 
-      /* Maximum 5 MB */
+        <form id="loginForm">
 
-      if (file.size > 5 * 1024 * 1024) {
+          <div class="field">
 
-        alert(
-          "Photo is too large. Please choose a photo under 5 MB."
-        );
+            <label for="loginEmail">
+              Email *
+            </label>
 
-        photoInput.value = "";
+            <input
+              id="loginEmail"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            >
 
-        selectedPhoto = null;
+          </div>
 
-        preview.innerHTML = "";
+          <div class="field">
 
-        return;
-      }
+            <label for="loginPassword">
+              Password *
+            </label>
 
+            <input
+              id="loginPassword"
+              type="password"
+              placeholder="Password"
+              autocomplete="current-password"
+              required
+            >
 
-      selectedPhoto = file;
+          </div>
 
+          <button
+            type="submit"
+            class="login-btn"
+            id="loginBtn"
+          >
+            Log in
+          </button>
 
-      const reader =
-        new FileReader();
+          <div
+            class="status"
+            id="loginStatus"
+          ></div>
 
+        </form>
 
-      reader.onload =
-        function(e) {
+      </div>
 
-          preview.innerHTML =
-            `<img src="${e.target.result}"
-                  alt="Profile preview">`;
+    </section>
 
-        };
+  </main>
 
 
-      reader.readAsDataURL(file);
-
-    }
-  );
-
-
-  /* =========================================================
-     JDA NUMBER FORMAT
-     ========================================================= */
-
-  jdaNumber.addEventListener(
-    "input",
-    function() {
-
-      this.value =
-        this.value.toUpperCase();
-
-    }
-  );
-
-
-  /* =========================================================
-     REGISTRATION
-     ========================================================= */
-
-  registerBtn.addEventListener(
-    "click",
-    async function() {
-
-      const name =
-        realName.value.trim();
-
-
-      const jda =
-        jdaNumber.value.trim().toUpperCase();
-
-
-      /* -------------------------
-         VALIDATION
-         ------------------------- */
-
-      if (!name) {
-
-        showMessage(
-          "Please enter your real name.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      if (!jda) {
-
-        showMessage(
-          "Please enter your JDA Number.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      const jdaPattern =
-        /^JD-\d{4}-\d{4}$/;
-
-
-      if (!jdaPattern.test(jda)) {
-
-        showMessage(
-          "JDA Number must look like JD-2025-1234.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      if (!selectedPhoto) {
-
-        showMessage(
-          "Please select your profile photo.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      /* -------------------------
-         DISABLE BUTTON
-         ------------------------- */
-
-      registerBtn.disabled = true;
-
-      registerBtn.textContent =
-        "Checking JDA Number...";
-
-
-      try {
-
-        /* =====================================================
-           CHECK DUPLICATE JDA NUMBER
-           ===================================================== */
-
-        const existingQuery =
-          query(
-            collection(db, "jda_users_v2"),
-            where("jdaNumber", "==", jda)
-          );
-
-
-        const existing =
-          await getDocs(existingQuery);
-
-
-        if (!existing.empty) {
-
-          showMessage(
-            "This JDA Number is already registered.",
-            "error"
-          );
-
-          registerBtn.disabled = false;
-
-          registerBtn.textContent =
-            "Register & Go Live";
-
-          return;
-        }
-
-
-        /* =====================================================
-           UPLOAD PHOTO TO FIREBASE STORAGE
-           ===================================================== */
-
-        registerBtn.textContent =
-          "Uploading photo...";
-
-
-        const safeName =
-          name
-            .replace(/[^a-zA-Z0-9]/g, "_")
-            .substring(0, 30);
-
-
-        const fileExtension =
-          selectedPhoto.name
-            .split(".")
-            .pop();
-
-
-        const storagePath =
-          `jda_profiles/${jda}_${safeName}.${fileExtension}`;
-
-
-        const photoRef =
-          ref(storage, storagePath);
-
-
-        await uploadBytes(
-          photoRef,
-          selectedPhoto
-        );
-
-
-        /* =====================================================
-           GET PHOTO URL
-           ===================================================== */
-
-        registerBtn.textContent =
-          "Creating account...";
-
-
-        const photoURL =
-          await getDownloadURL(photoRef);
-
-
-        /* =====================================================
-           SAVE REGISTRATION TO FIRESTORE
-           ===================================================== */
-
-        await addDoc(
-          collection(db, "jda_users_v2"),
-          {
-
-            realName: name,
-
-            jdaNumber: jda,
-
-            profilePhoto: photoURL,
-
-            status: "pending",
-
-            approved: false,
-
-            createdAt: serverTimestamp(),
-
-            updatedAt: serverTimestamp()
-
-          }
-        );
-
-
-        /* =====================================================
-           SUCCESS
-           ===================================================== */
-
-        showMessage(
-          "✓ Registration sent! Your account is waiting for admin approval.",
-          "success"
-        );
-
-
-        registerBtn.textContent =
-          "Registration Submitted";
-
-
-        registerBtn.disabled = true;
-
-
-        realName.disabled = true;
-
-        jdaNumber.disabled = true;
-
-        photoInput.disabled = true;
-
-
-        /* Give the user time to read message */
-
-        setTimeout(
-          function() {
-
-            alert(
-              "✓ JDA Networks registration successful!\n\n" +
-              "Your registration has been sent to the admin.\n\n" +
-              "You can use JDA Networks after your account is approved."
-            );
-
-          },
-          500
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "JDA registration error:",
-          error
-        );
-
-
-        let errorText =
-          "Registration failed.";
-
-
-        if (
-          error.code ===
-          "storage/unauthorized"
-        ) {
-
-          errorText =
-            "Photo upload was blocked by Firebase Storage rules.";
-
-        } else if (
-          error.code ===
-          "permission-denied"
-        ) {
-
-          errorText =
-            "Firebase Firestore permission denied.";
-
-        } else if (
-          error.code ===
-          "storage/quota-exceeded"
-        ) {
-
-          errorText =
-            "Firebase Storage quota has been exceeded.";
-
-        } else if (
-          error.message
-        ) {
-
-          errorText =
-            error.message;
-
-        }
-
-
-        showMessage(
-          "⚠️ " + errorText,
-          "error"
-        );
-
-
-        registerBtn.disabled = false;
-
-        registerBtn.textContent =
-          "Register & Go Live";
-
-      }
-
-    }
-  );
-
-
-  /* =========================================================
-     ANIMATION
-     ========================================================= */
-
-  let x = -300;
-
-  const targetX =
-    window.innerWidth / 2 - 140;
-
-
-  manWrap.classList.add(
-    "walking"
-  );
-
-
-  const walkIn =
-    setInterval(
-      function() {
-
-        x += 5;
-
-        manWrap.style.left =
-          x + "px";
-
-
-        if (x >= targetX) {
-
-          clearInterval(walkIn);
-
-
-          /* Kneel */
-
-          manWrap.classList.remove(
-            "walking"
-          );
-
-
-          manImg.src =
-            "./man-kneel.png";
-
-
-          manWrap.style.transform =
-            "scale(1.1)";
-
-
-          manWrap.style.bottom =
-            "10px";
-
-
-          setTimeout(
-            function() {
-
-              /* Put down bag */
-
-              floorBag.style.display =
-                "flex";
-
-
-              floorBag.style.left =
-                (targetX + 90) + "px";
-
-
-              floorBag.style.transform =
-                "translateX(0)";
-
-
-              floorBag.style.bottom =
-                "80px";
-
-
-              setTimeout(
-                function() {
-
-                  /* Stand */
-
-                  manImg.src =
-                    "./man-walk.png";
-
-
-                  manWrap.style.transform =
-                    "scale(1)";
-
-
-                  manWrap.style.bottom =
-                    "20px";
-
-
-                  setTimeout(
-                    function() {
-
-                      /* Bag becomes form */
-
-                      floorBag.style.transition =
-                        "all 0.6s cubic-bezier(0.175,0.885,0.32,1.275)";
-
-
-                      floorBag.style.transform =
-                        "translateX(-50%) scale(3.5)";
-
-
-                      floorBag.style.opacity =
-                        "0";
-
-
-                      floorBag.style.left =
-                        "50%";
-
-
-                      setTimeout(
-                        function() {
-
-                          formBox.classList.add(
-                            "show"
-                          );
-
-
-                          floorBag.style.display =
-                            "none";
-
-
-                          /* Walk out */
-
-                          let x2 =
-                            targetX;
-
-
-                          manWrap.classList.add(
-                            "walking"
-                          );
-
-
-                          const walkOut =
-                            setInterval(
-                              function() {
-
-                                x2 += 6;
-
-                                manWrap.style.left =
-                                  x2 + "px";
-
-
-                                if (
-                                  x2 >
-                                  window.innerWidth + 100
-                                ) {
-
-                                  clearInterval(
-                                    walkOut
-                                  );
-
-
-                                  manWrap.style.display =
-                                    "none";
-
-                                }
-
-                              },
-                              16
-                            );
-
-                        },
-                        400
-                      );
-
-                    },
-                    600
-                  );
-
-                },
-                500
-              );
-
-            },
-            900
-          );
-
-        }
-
-      },
-      16
-    );
-
-
-  /* =========================================================
-     IMAGE FALLBACKS
-     ========================================================= */
-
-  const walkImage =
-    new Image();
-
-  walkImage.src =
-    "./man-walk.png";
-
-
-  walkImage.onerror =
-    function() {
-
-      manImg.src =
-        "data:image/svg+xml;utf8," +
-        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400'>" +
-        "<circle cx='100' cy='70' r='28' fill='%23333'/>" +
-        "<rect x='70' y='105' width='60' height='120' rx='20' fill='%23444'/>" +
-        "<rect x='50' y='230' width='35' height='110' rx='15' fill='%23222'/>" +
-        "<rect x='115' y='230' width='35' height='110' rx='15' fill='%23222'/>" +
-        "</svg>";
-
-    };
-
-
-  /* =========================================================
-     FORM FAILSAFE
-     ========================================================= */
-
-  setTimeout(
-    function() {
-
-      if (
-        !formBox.classList.contains(
-          "show"
-        )
-      ) {
-
-        formBox.classList.add(
-          "show"
-        );
-
-        floorBag.style.display =
-          "none";
-
-        manWrap.style.display =
-          "none";
-
-      }
-
-    },
-    10000
-  );
-
-
-  /* =========================================================
-     PREVENT MOBILE SCROLL
-     ========================================================= */
-
-  document.body.addEventListener(
-    "touchmove",
-    function(e) {
-
-      e.preventDefault();
-
-    },
-    {
-      passive: false
-    }
-  );
-
-</script>
+  <script type="module" src="./app.js"></script>
 
 </body>
 </html>

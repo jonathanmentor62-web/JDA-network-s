@@ -1,62 +1,49 @@
-"use client";
-// DIRECT LIVE LINKS - Put this in app.js Boss!
-const LIVE_ANIMATION_CDN = "https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web@latest/dist/dotlottie-web.mjs";
+// JDA Networks - LIVE Renovated - Real Only
+import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "./firebase.js";
 
-import { useState, useEffect } from "react";
+const realNameInput = document.getElementById("realName");
+const jdaNumberInput = document.getElementById("jdaNumber");
+const photoInput = document.getElementById("photoInput");
+const preview = document.getElementById("photoPreview");
+const btn = document.getElementById("registerBtn");
+let photoBase64 = "";
 
-export default function App() {
-  const [showForm, setShowForm] = useState(false);
-  
-  useEffect(()=>{
-    // Load live animation CDN
-    const script = document.createElement("script");
-    script.src = LIVE_ANIMATION_CDN;
-    script.type = "module";
-    document.head.appendChild(script);
-    
-    // Make form live playing like TikTok after 0.8 sec
-    setTimeout(()=> setShowForm(true), 800);
-  },[]);
+photoInput.addEventListener("change", (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    photoBase64 = ev.target.result;
+    preview.innerHTML = `<img src="${photoBase64}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #25D366"/>`;
+  };
+  reader.readAsDataURL(file);
+});
 
-  return (
-    <div style={{background:"#3B82F6", minHeight:"100vh", display:"flex", justifyContent:"center", alignItems:"center"}}>
-      
-      {/* LIVE CHARACTERS - Using direct link */}
-      <div style={{position:"absolute", left:"20px", top:"80px", fontSize:"40px", animation:"bounce 1s infinite"}}>
-        🧑‍💻
-      </div>
+btn.addEventListener("click", async ()=>{
+  const realName = realNameInput.value.trim();
+  const jdaNumber = jdaNumberInput.value.trim().toUpperCase();
 
-      {/* YOUR REGISTRATION FORM - LIVE */}
-      <div style={{
-        background:"white", 
-        padding:"24px", 
-        borderRadius:"20px", 
-        width:"320px",
-        transform: showForm ? "scale(1)" : "scale(0)",
-        transition:"0.7s",
-        boxShadow:"0 20px 60px rgba(0,0,0,0.4)"
-      }}>
-        <h2 style={{textAlign:"center", fontWeight:"900"}}>JDA Networks</h2>
-        <p style={{textAlign:"center", fontSize:"11px", color:"gray"}}>Live Registration</p>
-        
-        <input placeholder="Real Name (No nickname)" required 
-          style={{width:"100%", background:"#f1f5f9", padding:"12px", borderRadius:"12px", marginTop:"16px", border:"none"}} />
-        
-        <input placeholder="JDA Number JD-2025-XXXX" required
-          style={{width:"100%", background:"#f1f5f9", padding:"12px", borderRadius:"12px", marginTop:"12px", border:"none"}} />
-        
-        <label style={{width:"100%", border:"2px dashed #ccc", borderRadius:"12px", padding:"16px", display:"flex", flexDirection:"column", alignItems:"center", marginTop:"12px", cursor:"pointer"}}>
-          <span style={{fontSize:"24px"}}>📸</span>
-          <span style={{fontSize:"11px", fontWeight:"bold"}}>Profile Photo MUST</span>
-          <input type="file" accept="image/*" required style={{display:"none"}} />
-        </label>
-        
-        <button style={{width:"100%", background:"black", color:"white", padding:"12px", borderRadius:"12px", marginTop:"16px", fontWeight:"bold"}}>
-          Register & Go Live
-        </button>
-      </div>
+  if(!realName ||!jdaNumber ||!photoBase64){
+    alert("Boss! Real Name + JDA Number + Photo MUST! No nickname!");
+    return;
+  }
+  if(!jdaNumber.startsWith("JD-")){
+    alert("JDA Number must start with JD- Example: JD-2025-1234");
+    return;
+  }
+  btn.innerText = "Sending..."; btn.disabled = true;
 
-      <style>{`@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}`}</style>
-    </div>
-  );
-}
+  // Once only check
+  const q = query(collection(db,"jda_users_v2"), where("jdaNumber","==",jdaNumber));
+  const snap = await getDocs(q);
+  if(!snap.empty){ alert("This JDA Number already used! Once only Boss!"); btn.innerText="Register & Go Live 🚀"; btn.disabled=false; return; }
+
+  await addDoc(collection(db,"jda_users_v2"),{
+    realName, jdaNumber, profilePhoto: photoBase64,
+    status:"pending", createdAt: new Date()
+  });
+  alert("✓ Sent to Admin! Wait approval!");
+  realNameInput.value=""; jdaNumberInput.value=""; photoBase64=""; preview.innerHTML="";
+  btn.innerText="Register & Go Live 🚀"; btn.disabled=false;
+});

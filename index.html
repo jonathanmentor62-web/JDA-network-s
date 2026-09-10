@@ -2,35 +2,102 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JDA Networks - Live</title>
+<title>JDA Networks - Apex Style</title>
 <style>
-body{margin:0;background:#3B82F6;min-height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif;overflow:hidden}
-.char{position:absolute;font-size:50px;animation:bounce 1s infinite}
-.c1{top:60px;left:20px}.c2{top:60px;right:20px;animation-delay:0.3s}
-.card{background:white;width:340px;border-radius:28px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,0.4);z-index:10;animation:pop 0.6s ease}
-input{width:100%;background:#F1F5F9;border:none;padding:14px;border-radius:12px;margin-top:12px;box-sizing:border-box;outline:none}
-label{margin-top:12px;border:2px dashed #ccc;border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:center;cursor:pointer;background:#F8FAFC}
-button{width:100%;background:black;color:white;padding:14px;border:none;border-radius:12px;margin-top:16px;font-weight:bold;cursor:pointer}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0a0a0a;display:flex;justify-content:center;align-items:center;min-height:100vh;overflow:hidden}
+#monitor{width:95vw;max-width:800px;aspect-ratio:16/9;background:#101010;border-radius:12px;padding:8px;box-shadow:0 0 80px rgba(59,130,246,0.5);position:relative}
+#screen{width:100%;height:68%;background:#3B82F6;position:relative;overflow:hidden;border-radius:8px}
+#code{height:32%;background:#1e1e1e;color:#d4d4d4;font-family:monospace;font-size:10px;padding:8px;overflow:hidden;line-height:1.4}
+
+/* CHARACTERS */
+.char{position:absolute;bottom:20px;width:60px;height:90px;transition:all 0.5s;z-index:5}
+.char.head{width:22px;height:22px;background:#ffdbac;border-radius:50%;margin:auto}
+.char.body{width:30px;height:35px;background:white;margin:-2px auto 0;border-radius:6px}
+.char.legs{width:30px;height:30px;margin:auto;display:flex;gap:6px}
+.char.leg{width:10px;height:28px;background:#2d3748;border-radius:4px}
+#guy1{left:-80px;background:transparent} #guy1.body{background:#e2e8f0}
+#guy2{right:-80px} #guy2.body{background:#f7fafc}
+
+/* FORM BOX CARRIED */
+#carriedBox{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);width:50px;height:35px;background:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#3B82F6;opacity:0;z-index:4;box-shadow:0 10px 20px rgba(0,0,0,0.3)}
+
+/* FINAL FORM */
+#finalForm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:white;width:220px;padding:14px;border-radius:12px;text-align:center;z-index:10;box-shadow:0 20px 50px rgba(0,0,0,0.5)}
+#finalForm.show{animation:popForm 0.6s forwards cubic-bezier(0.175,0.885,0.32,1.275)}
+@keyframes popForm{to{transform:translate(-50%,-50%) scale(1)}}
+#finalForm input{width:100%;padding:8px;border-radius:6px;border:1px solid #ddd;margin-top:8px;font-size:11px}
+#finalForm button{width:100%;background:#10b981;color:white;border:none;padding:8px;border-radius:6px;margin-top:10px;font-weight:bold;cursor:pointer}
+
+/* ANIMATIONS */
+@keyframes walkInLeft{to{left:38%}}
+@keyframes walkInRight{to{right:38%}}
+@keyframes kneel{0%{height:90px}50%{height:55px;bottom:10px}100%{height:90px;bottom:20px}}
+@keyframes boxDrop{0%{opacity:1;bottom:40px}100%{opacity:0;bottom:20px;transform:translateX(-50%) scale(0.2)}}
+.walkL{animation:walkInLeft 1.2s forwards}
+.walkR{animation:walkInRight 1.2s forwards}
+.kneel{animation:kneel 0.8s forwards}
+.drop{animation:boxDrop 0.5s forwards}
 </style>
 </head>
 <body>
-<div class="char c1">🧑‍💻</div>
-<div class="char c2">👩‍💻</div>
-<div class="card">
-<div style="width:60px;height:60px;background:#25D366;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:auto;color:white;font-weight:900;font-size:30px">J</div>
-<h2 style="text-align:center;margin:10px 0 0">JDA Networks</h2>
-<p style="text-align:center;font-size:10px;color:gray;margin:0">LIVE • NO SCHOOL • REAL ONLY</p>
-<input id="realName" placeholder="Real Name (No nickname)" />
-<input id="jdaNumber" placeholder="JDA Number JD-2025-XXXX" style="font-family:monospace" />
-<label>
-<div id="photoPreview" style="text-align:center">📸<br><b style="font-size:11px">Profile Photo MUST</b><br><span style="font-size:9px;color:red">No photo = No approval</span></div>
-<input type="file" id="photoInput" accept="image/*" style="display:none" />
-</label>
-<button id="registerBtn">Register & Go Live 🚀</button>
-<p style="font-size:8px;text-align:center;color:#aaa;margin-top:10px">Once only • Real photo • Admin approves</p>
+<div id="monitor">
+  <div id="screen">
+    <div id="guy1" class="char"><div class="head"></div><div class="body"></div><div class="legs"><div class="leg"></div><div class="leg"></div></div></div>
+    <div id="guy2" class="char"><div class="head"></div><div class="body"></div><div class="legs"><div class="leg"></div><div class="leg"></div></div></div>
+    <div id="carriedBox">JDA</div>
+
+    <div id="finalForm">
+      <div style="width:30px;height:30px;background:#3B82F6;color:white;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 auto;font-weight:900">J</div>
+      <h4 style="margin:6px 0 2px;font-size:12px">Register now</h4>
+      <p style="font-size:8px;color:gray">Real JDA only • Photo must</p>
+      <input id="realName" placeholder="Real Name (No nickname)" />
+      <input id="jdaNumber" placeholder="JDA Number JD-2025-XXXX" />
+      <input type="file" id="photoInput" accept="image/*" style="font-size:8px;padding:4px" />
+      <div id="photoPreview" style="margin-top:6px"></div>
+      <button id="registerBtn">Register & Go Live</button>
+    </div>
+  </div>
+  <div id="code">
+    &lt;form class="login-form"&gt;<br>
+    &nbsp;&nbsp;&lt;h2&gt;Register now&lt;/h2&gt;<br>
+    &nbsp;&nbsp;&lt;input type="text" placeholder="Real Name" required&gt;<br>
+    &nbsp;&nbsp;&lt;input type="text" placeholder="JDA Number" required&gt;<br>
+    &nbsp;&nbsp;&lt;input type="file" accept="image/*"&gt;<br>
+    &nbsp;&nbsp;&lt;button type="submit"&gt;Register & Go Live&lt;/button&gt;<br>
+    &lt;/form&gt;
+  </div>
 </div>
-<script type="module" src="./app.js"></script>
+
+<script type="module">
+import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db } from "./firebase.js";
+
+const g1=document.getElementById('guy1'), g2=document.getElementById('guy2'), box=document.getElementById('carriedBox'), form=document.getElementById('finalForm');
+
+// APEX SEQUENCE - EXACT LIKE TIKTOK
+setTimeout(()=>{ g1.classList.add('walkL'); g2.classList.add('walkR'); box.style.opacity='1'; },300);
+setTimeout(()=>{ g1.classList.add('kneel'); box.classList.add('drop'); },1600);
+setTimeout(()=>{ form.classList.add('show'); },2200);
+setTimeout(()=>{ g1.style.left='-80px'; g2.style.right='-80px'; },3200);
+
+// JDA LOGIC - Real Name + Photo MUST
+let photoBase64="";
+document.getElementById('photoInput').addEventListener('change',e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const r=new FileReader(); r.onload=ev=>{ photoBase64=ev.target.result; document.getElementById('photoPreview').innerHTML=`<img src="${photoBase64}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #10b981">`; }; r.readAsDataURL(file);
+});
+document.getElementById('registerBtn').addEventListener('click',async()=>{
+  const realName=document.getElementById('realName').value.trim();
+  const jdaNumber=document.getElementById('jdaNumber').value.trim().toUpperCase();
+  if(!realName||!jdaNumber||!photoBase64){alert("Boss! Real Name + JDA Number + Photo MUST!");return;}
+  if(!jdaNumber.startsWith("JD-")){alert("Must start with JD-");return;}
+  const btn=document.getElementById('registerBtn'); btn.innerText="Sending..."; btn.disabled=true;
+  const q=query(collection(db,"jda_users_v2"),where("jdaNumber","==",jdaNumber)); const snap=await getDocs(q);
+  if(!snap.empty){alert("JDA Number already used! Once only!"); btn.innerText="Register & Go Live"; btn.disabled=false; return;}
+  await addDoc(collection(db,"jda_users_v2"),{realName,jdaNumber,profilePhoto:photoBase64,status:"pending",createdAt:new Date()});
+  alert("✓ Sent to Admin!"); location.reload();
+});
+</script>
 </body>
 </html>

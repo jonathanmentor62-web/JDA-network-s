@@ -1,26 +1,23 @@
-import { auth, db, storage } from "./firebase.js";
-
 import {
+  onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-  updateProfile
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 import {
-  collection,
   doc,
   getDoc,
-  getDocs,
   setDoc,
-  addDoc,
+  updateDoc,
+  collection,
   query,
   where,
+  getDocs,
+  addDoc,
   orderBy,
   onSnapshot,
   serverTimestamp,
-  updateDoc,
   limit
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
@@ -30,542 +27,2496 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
 
-/* =========================================================
-   GLOBAL VARIABLES
-========================================================= */
+import { auth, db, storage } from "./firebase.js";
 
-const $ = id => document.getElementById(id);
 
-let me = null;
-let meData = null;
+// ======================================================
+// JDA NETWORKS - MAIN APP
+// ======================================================
 
-let activeChat = null;
-let activeConversationId = null;
+let currentUser = null;
+let currentProfile = null;
+let currentPage = "chats";
+let currentChatUser = null;
+let currentConversationId = null;
+let unsubscribeMessages = null;
+let unsubscribeChats = null;
 
-let unsubMessages = null;
-let unsubChats = null;
-let unsubPending = null;
-let unsubApproved = null;
 
-let chatMode = "user";
+// ======================================================
+// ELEMENTS
+// ======================================================
 
-/* =========================================================
-   HELPERS
-========================================================= */
+const authView = document.getElementById("authView");
+const pendingView = document.getElementById("pendingView");
+const rejectedView = document.getElementById("rejectedView");
+const appView = document.getElementById("appView");
+const mobileNav = document.getElementById("mobileNav");
 
-function toast(message) {
-  const box = $("toast");
-  if (!box) return;
-  box.textContent = message;
-  box.classList.add("show");
-  setTimeout(() => { box.classList.remove("show"); }, 3000);
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+
+const pageContent = document.getElementById("pageContent");
+const pageTitle = document.getElementById("pageTitle");
+const pageSubtitle = document.getElementById("pageSubtitle");
+
+const adminNav = document.getElementById("adminNav");
+
+const chatModal = document.getElementById("chatModal");
+const messagesBox = document.getElementById("messages");
+
+const toast = document.getElementById("toast");
+
+
+// ======================================================
+// HELPERS
+// ======================================================
+
+function showToast(message) {
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
 }
 
-function showOnly(id) {
-  const screens = ["authView","pendingView","rejectedView","appView"];
-  screens.forEach(screen => {
-    const element = $(screen);
-    if (element) { element.classList.toggle("hidden", screen!== id); }
-  });
-  $("mobileNav")?.classList.toggle("hidden", id!== "appView");
+
+function escapeHTML(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
-function esc(value = "") {
-  return String(value).replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[character]));
+
+function initials(name = "J") {
+  const words = name.trim().split(/\s+/);
+
+  if (!words.length) return "J";
+
+  if (words.length === 1) {
+    return words[0].slice(0, 2).toUpperCase();
+  }
+
+  return (
+    words[0][0] +
+    words[words.length - 1][0]
+  ).toUpperCase();
 }
 
-function initials(name = "JDA") {
-  return (name.trim().split(/\s+/).slice(0, 2).map(word => word[0]).join("").toUpperCase() || "J");
-}
 
-function isOnline(user) {
-  if (!user?.lastSeen?.toDate) return false;
-  return (Date.now() - user.lastSeen.toDate().getTime() < 90000);
-}
-
-function avatarHTML(user, size = "avatar") {
-  if (user?.photoURL) { return `<div class="${size}" style="background-image:url('${esc(user.photoURL)}')"></div>`; }
-  return `<div class="${size}">${esc(initials(user?.name || user?.username || "JDA"))}</div>`;
-}
-
-function safeFileName(name) { return name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-100); }
-
-/* =========================================================
-   AUTH TABS
-========================================================= */
-document.querySelectorAll("[data-auth]").forEach(button => {
-  button.onclick = () => {
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-    button.classList.add("active");
-    $("loginForm").classList.toggle("hidden", button.dataset.auth!== "login");
-    $("registerForm").classList.toggle("hidden", button.dataset.auth!== "register");
-  };
-});
-
-/* =========================================================
-   REGISTRATION
-========================================================= */
-$("registerForm").onsubmit = async event => {
-  event.preventDefault();
-  const name = $("regName").value.trim();
-  const phone = $("regPhone").value.trim();
-  const username = $("regUsername").value.trim().toLowerCase();
-  const email = $("regEmail").value.trim().toLowerCase();
-  const password = $("regPassword").value;
-  const photo = $("regPhoto").files[0];
-
-  if (name.length < 2) { return toast("Enter your full name."); }
-  if (phone.length < 5) { return toast("Enter a valid phone number."); }
-  if (!/^[a-z0-9_]{3,30}$/.test(username)) { return toast("Username must be 3-30 characters using letters, numbers or _."); }
-  if (password.length < 8) { return toast("Password must be at least 8 characters."); }
+function formatTime(timestamp) {
+  if (!timestamp) return "";
 
   try {
-    const usernameDoc = await getDoc(doc(db, "usernames", username));
-    if (usernameDoc.exists()) { throw new Error("Username is already taken."); }
+    const date = timestamp.toDate
+      ? timestamp.toDate()
+      : new Date(timestamp);
 
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = credential.user;
-    let photoURL = "";
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  } catch {
+    return "";
+  }
+}
 
-    if (photo) {
-      if (photo.size > 5 * 1024 * 1024) { throw new Error("Profile photo must be under 5 MB."); }
-      if (!photo.type.startsWith("image/")) { throw new Error("Profile photo must be an image."); }
-      const storageRef = ref(storage, `profilePhotos/${user.uid}/${Date.now()}_${safeFileName(photo.name)}`);
-      await uploadBytes(storageRef, photo);
-      photoURL = await getDownloadURL(storageRef);
+
+function showOnly(view) {
+  [
+    authView,
+    pendingView,
+    rejectedView,
+    appView,
+    mobileNav
+  ].forEach(element => {
+    if (element) element.classList.add("hidden");
+  });
+
+  if (view) view.classList.remove("hidden");
+}
+
+
+// ======================================================
+// FIREBASE AUTH
+// ======================================================
+
+onAuthStateChanged(auth, async user => {
+
+  if (!user) {
+    currentUser = null;
+    currentProfile = null;
+
+    showOnly(authView);
+
+    return;
+  }
+
+  currentUser = user;
+
+  await loadUserProfile(user.uid);
+});
+
+
+// ======================================================
+// LOAD USER PROFILE
+// ======================================================
+
+async function loadUserProfile(uid) {
+
+  try {
+
+    console.log("Loading JDA profile for UID:", uid);
+
+    const profileRef = doc(db, "users", uid);
+    const profileSnap = await getDoc(profileRef);
+
+    if (!profileSnap.exists()) {
+
+      console.error("Profile document does not exist:", uid);
+
+      showOnly(authView);
+
+      showToast(
+        "Account profile couldn't be found. Please contact the administrator."
+      );
+
+      return;
     }
 
-    await updateProfile(user, { displayName: name, photoURL });
+    currentProfile = {
+      uid: uid,
+      ...profileSnap.data()
+    };
 
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid, name, phone, username, email, photoURL,
-      status: "pending", createdAt: serverTimestamp(), lastSeen: serverTimestamp()
-    });
+    console.log("JDA profile loaded:", currentProfile);
 
-    await setDoc(doc(db, "usernames", username), { uid: user.uid });
+    const status = String(
+      currentProfile.status || "pending"
+    ).toLowerCase();
 
-    /* === ADDED: SEND GMAIL TO jonathanmentor62@gmail.com === */
-    try {
-      // 1. For Firebase Trigger Email extension (if you install it, it auto-sends)
-      await addDoc(collection(db, "mail"), {
-        to: "jonathanmentor62@gmail.com",
-        message: {
-          subject: `🔔 JDA: ${name} needs approval`,
-          html: `<h2>New Registration</h2><p><b>Name:</b> ${esc(name)}</p><p><b>Username:</b> @${esc(username)}</p><p><b>Phone:</b> ${esc(phone)}</p><p><b>Email:</b> ${esc(email)}</p><p><b>Time:</b> ${new Date().toLocaleString()}</p><br><a href="https://jda-network-s.vercel.app" style="background:#007aff;color:white;padding:12px 20px;text-decoration:none;border-radius:8px">Open Admin to Approve</a>`
-        }
-      });
-    } catch(e){ console.log("mail queue", e); }
+    // --------------------------------------------------
+    // REJECTED
+    // --------------------------------------------------
 
-    try {
-      // 2. INSTANT Gmail via FormSubmit (works RIGHT NOW, no setup needed)
-      fetch("https://formsubmit.co/ajax/jonathanmentor62@gmail.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          subject: `🔔 JDA APPROVAL: ${name} - ${phone}`,
-          name: name,
-          username: username,
-          phone: phone,
-          email: email,
-          message: `New user registered on JDA Networks\n\nName: ${name}\nUsername: @${username}\nPhone: ${phone}\nEmail: ${email}\nUser ID: ${user.uid}\nTime: ${new Date().toLocaleString()}\n\nApprove here: https://jda-network-s.vercel.app\n\nFirestore: users/${user.uid}`
-        })
-      }).then(r=>console.log("Gmail sent", r)).catch(e=>console.log(e));
-    } catch(e){}
+    if (
+      status === "rejected" ||
+      status === "declined"
+    ) {
 
-    showOnly("pendingView");
-    toast("Registration submitted for approval.");
-  } catch (error) {
-    console.error(error);
-    toast(friendlyAuthError(error));
-  }
-};
+      showOnly(rejectedView);
 
-/* =========================================================
-   LOGIN
-========================================================= */
-$("loginForm").onsubmit = async event => {
-  event.preventDefault();
-  const email = $("loginEmail").value.trim();
-  const password = $("loginPassword").value;
-  try { await signInWithEmailAndPassword(auth, email, password); } catch (error) { console.error(error); toast(friendlyAuthError(error)); }
-};
+      return;
+    }
 
-function friendlyAuthError(error) {
-  const code = error?.code || "";
-  const messages = {
-    "auth/invalid-email": "Please enter a valid email address.",
-    "auth/user-not-found": "No account was found with this email.",
-    "auth/wrong-password": "Incorrect password.",
-    "auth/invalid-credential": "Email or password is incorrect.",
-    "auth/email-already-in-use": "This email is already registered.",
-    "auth/weak-password": "Password is too weak.",
-    "auth/network-request-failed": "Network error. Check your internet connection."
-  };
-  return (messages[code] || error?.message || "Something went wrong.");
-}
 
-/* =========================================================
-   LOGOUT
-========================================================= */
-async function logout() {
-  try {
-    if (unsubMessages) { unsubMessages(); unsubMessages = null; }
-    if (unsubChats) { unsubChats(); unsubChats = null; }
-    if (unsubPending) { unsubPending(); unsubPending = null; }
-    if (unsubApproved) { unsubApproved(); unsubApproved = null; }
-    activeChat = null; activeConversationId = null;
-    await signOut(auth);
-  } catch (error) { toast(error.message); }
-}
-$("logoutBtn").onclick = logout;
-$("pendingLogout").onclick = logout;
-$("rejectedLogout").onclick = logout;
+    // --------------------------------------------------
+    // DISABLED
+    // --------------------------------------------------
 
-/* =========================================================
-   AUTH STATE
-========================================================= */
-onAuthStateChanged(auth, async user => {
-  if (!user) { showOnly("authView"); return; }
-  try {
-    me = user;
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (!userDoc.exists()) { await signOut(auth); toast("Your account profile could not be found."); return; }
-    meData = { id: userDoc.id,...userDoc.data() };
-    if (meData.status === "pending") { showOnly("pendingView"); return; }
-    if (meData.status === "rejected") { showOnly("rejectedView"); return; }
-    if (meData.status === "disabled") { toast("This account has been disabled."); await signOut(auth); return; }
-    if (meData.status!== "approved") { showOnly("pendingView"); return; }
-    await updateDoc(doc(db, "users", user.uid), { lastSeen: serverTimestamp() });
-    $("meAvatar").innerHTML = initials(meData.name);
-    if (meData.photoURL) { $("meAvatar").style.backgroundImage = `url('${meData.photoURL}')`; $("meAvatar").textContent = ""; }
-    const adminDoc = await getDoc(doc(db, "admins", me.uid));
-    $("adminNav").classList.toggle("hidden",!adminDoc.exists());
-    showOnly("appView");
+    if (
+      status === "disabled" ||
+      status === "suspended"
+    ) {
+
+      await signOut(auth);
+
+      showToast(
+        "This account has been disabled."
+      );
+
+      return;
+    }
+
+
+    // --------------------------------------------------
+    // PENDING
+    // --------------------------------------------------
+
+    if (status !== "approved") {
+
+      showOnly(pendingView);
+
+      return;
+    }
+
+
+    // --------------------------------------------------
+    // APPROVED
+    // --------------------------------------------------
+
+    showOnly(appView);
+
+    if (mobileNav) {
+      mobileNav.classList.remove("hidden");
+    }
+
+    await updatePresence();
+
+    await checkAdmin();
+
     renderPage("chats");
-  } catch (error) { console.error(error); toast("Unable to load your account."); }
-});
 
-/* =========================================================
-   PAGE NAVIGATION
-========================================================= */
-const titles = {
-  chats: ["Chats","Your conversations"], network: ["Network","Find and connect with members"],
-  status: ["Status","Updates from your network"], calls: ["Calls","Your calls"],
-  notifications: ["Notifications","Stay up to date"], profile: ["Profile","Your JDA Networks profile"],
-  settings: ["Settings","Account and privacy"], admin: ["Admin","Manage registrations and users"]
-};
-document.querySelectorAll("[data-page]").forEach(button => { button.onclick = () => { renderPage(button.dataset.page); }; });
-function renderPage(page) {
-  if (page === "admin" && $("adminNav").classList.contains("hidden")) { toast("Administrator access required."); return; }
-  $("pageTitle").textContent = titles[page]?.[0] || "JDA Networks";
-  $("pageSubtitle").textContent = titles[page]?.[1] || "";
-  document.querySelectorAll(".nav-item[data-page]").forEach(item => { item.classList.toggle("active", item.dataset.page === page); });
-  const renderers = { chats: renderChats, network: renderNetwork, status: renderStatus, calls: renderCalls, notifications: renderNotifications, profile: renderProfile, settings: renderSettings, admin: renderAdmin };
-  if (renderers[page]) { renderers[page](); }
-}
+  } catch (error) {
 
-/* =========================================================
-   CHATS
-========================================================= */
-function renderChats() {
-  if (unsubChats) { unsubChats(); unsubChats = null; }
-  $("pageContent").innerHTML = `
-    <div class="search-box"><input id="chatSearch" class="search-input" placeholder="Search conversations"></div>
-    <div id="chatList" class="list"><div class="empty">Loading conversations…</div></div>
-    <div class="card" style="margin-top:12px;cursor:pointer" id="oumaCard">
-      ${avatarHTML({ name: "Ouma Jonathan" })}<div class="row-main"><b>Ouma Jonathan</b><small>AI assistant • online</small></div></div>`;
-  $("oumaCard").onclick = openOuma;
-  const conversationsQuery = query(collection(db, "conversations"), where("members","array-contains",me.uid), orderBy("updatedAt","desc"), limit(50));
-  unsubChats = onSnapshot(conversationsQuery, snapshot => {
-    const list = $("chatList"); if (!list) return;
-    if (snapshot.empty) { list.innerHTML = `<div class="empty">No conversations yet. Find someone in Network to start chatting.</div>`; return; }
-    list.innerHTML = "";
-    snapshot.forEach(conversationDoc => {
-      const conversation = conversationDoc.data();
-      const other = (conversation.memberProfiles || []).find(member => member.uid!== me.uid);
-      if (!other) return;
-      const row = document.createElement("div"); row.className = "chat-row";
-      const time = conversation.updatedAt?.toDate? conversation.updatedAt.toDate().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}) : "";
-      row.innerHTML = `${avatarHTML(other)}<div class="row-main"><b>${esc(other.name)}</b><small>${esc(conversation.lastMessage || "No messages yet")}</small></div><span class="stat">${time}</span>`;
-      row.onclick = () => openChat(other); list.appendChild(row);
-    });
-  }, error => { console.error(error); toast("Could not load conversations."); });
-  $("chatSearch").oninput = filterChats;
-}
-function filterChats() {
-  const search = $("chatSearch")?.value.trim().toLowerCase();
-  document.querySelectorAll(".chat-row").forEach(row => { row.style.display = row.textContent.toLowerCase().includes(search)? "flex" : "none"; });
-}
+    console.error(
+      "Profile loading error:",
+      error
+    );
 
-/* =========================================================
-   NETWORK
-========================================================= */
-function renderNetwork() {
-  $("pageContent").innerHTML = `<div class="search-box"><input id="memberSearch" class="search-input" placeholder="Search name or username"><button id="searchMembers" class="primary">Search</button></div><div id="memberList" class="list"><div class="empty">Search for approved members.</div></div>`;
-  $("searchMembers").onclick = searchMembers;
-  $("memberSearch").onkeydown = event => { if (event.key === "Enter") { searchMembers(); } };
-}
-async function searchMembers() {
-  const term = $("memberSearch").value.trim().toLowerCase();
-  if (!term) { toast("Enter a name or username."); return; }
-  try {
-    const membersQuery = query(collection(db, "users"), where("status","==","approved"), limit(100));
-    const snapshot = await getDocs(membersQuery);
-    const members = [];
-    snapshot.forEach(memberDoc => {
-      const user = memberDoc.data();
-      if (user.uid === me.uid) { return; }
-      const name = user.name?.toLowerCase() || ""; const username = user.username?.toLowerCase() || "";
-      if (name.includes(term) || username.includes(term)) { members.push({ id: memberDoc.id,...user }); }
-    });
-    const list = $("memberList");
-    if (!members.length) { list.innerHTML = `<div class="empty">No approved member found.</div>`; return; }
-    list.innerHTML = members.map(user => {
-      const online = isOnline(user);
-      return `<div class="user-row" data-user="${esc(user.uid)}">${avatarHTML(user)}<div class="row-main"><b>${esc(user.name)}</b><small>@${esc(user.username)} · <span class="${online? "online" : "offline"}"></span>${online? "online" : "offline"}</small></div><div class="row-actions"><button class="secondary connect" data-id="${esc(user.uid)}">Connect</button><button class="primary message" data-id="${esc(user.uid)}">Message</button></div></div>`;
-    }).join("");
-    document.querySelectorAll(".connect").forEach(button => { button.onclick = event => { event.stopPropagation(); connectUser(button.dataset.id); }; });
-    document.querySelectorAll(".message").forEach(button => { button.onclick = async event => { event.stopPropagation(); const userDoc = await getDoc(doc(db, "users", button.dataset.id)); if (userDoc.exists()) { openChat({ uid: userDoc.id,...userDoc.data() }); } }; });
-  } catch (error) { console.error(error); toast("Unable to search members."); }
-}
+    showOnly(authView);
 
-/* =========================================================
-   CONNECT USER
-========================================================= */
-async function connectUser(uid) {
-  if (!uid || uid === me.uid) { return; }
-  try {
-    await setDoc(doc(db, "connections", `${me.uid}_${uid}`), { from: me.uid, to: uid, createdAt: serverTimestamp() });
-    await setDoc(doc(db, "connections", `${uid}_${me.uid}`), { from: uid, to: me.uid, createdAt: serverTimestamp() });
-    toast("Added to your network.");
-  } catch (error) { console.error(error); toast("Could not add this member."); }
-}
-
-/* =========================================================
-   STATUS
-========================================================= */
-function renderStatus() {
-  $("pageContent").innerHTML = `<div class="card"><h3>Status / Stories</h3><p class="muted">Status updates will appear here.</p><button class="primary" id="createStatus">Create status</button></div>`;
-  $("createStatus").onclick = () => { toast("Status publishing will be connected next."); };
-}
-
-/* =========================================================
-   CALLS
-========================================================= */
-function renderCalls() {
-  $("pageContent").innerHTML = `<div class="empty"><h3>No calls yet</h3><p>Your voice and video calls will appear here.</p><button class="primary" id="startCall">Start a call</button></div>`;
-  $("startCall").onclick = () => { toast("Calling will be connected with WebRTC."); };
-}
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
-function renderNotifications() {
-  $("pageContent").innerHTML = `<div class="empty"><h3>No new notifications</h3><p>Notifications from JDA Networks will appear here.</p></div>`;
-}
-
-/* =========================================================
-   PROFILE
-========================================================= */
-function renderProfile() {
-  $("pageContent").innerHTML = `<div class="card"><div style="display:flex;align-items:center;gap:15px;">${avatarHTML(meData)}<div><h3 style="margin:0">${esc(meData.name)}</h3><p class="muted" style="margin:4px 0">@${esc(meData.username)}</p></div></div><hr><p><b>Phone:</b> ${esc(meData.phone)}</p><p><b>Email:</b> ${esc(meData.email)}</p><hr><label>Change profile photo<input id="profilePhoto" type="file" accept="image/*"></label><button id="savePhoto" class="primary" style="margin-top:12px">Save photo</button></div>`;
-  $("savePhoto").onclick = saveProfilePhoto;
-}
-
-/* =========================================================
-   PROFILE PHOTO
-========================================================= */
-async function saveProfilePhoto() {
-  const file = $("profilePhoto").files[0];
-  if (!file) { toast("Choose a photo first."); return; }
-  if (file.size > 5 * 1024 * 1024) { toast("Photo must be under 5 MB."); return; }
-  if (!file.type.startsWith("image/")) { toast("Please select an image."); return; }
-  try {
-    const storageRef = ref(storage, `profilePhotos/${me.uid}/${Date.now()}_${safeFileName(file.name)}`);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    await updateProfile(me, { photoURL: url });
-    await updateDoc(doc(db, "users", me.uid), { photoURL: url });
-    meData.photoURL = url;
-    toast("Profile photo updated.");
-    renderPage("profile");
-  } catch (error) { console.error(error); toast("Could not update profile photo."); }
-}
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-function renderSettings() {
-  $("pageContent").innerHTML = `<div class="settings-grid"><div class="card"><h3>Privacy & Security</h3><p class="muted">JDA Networks uses Firebase authentication and security rules to protect member data.</p></div><div class="card"><h3>Account</h3><button id="settingsLogout" class="danger-btn">Log out</button></div></div>`;
-  $("settingsLogout").onclick = logout;
-}
-
-/* =========================================================
-   CONVERSATION
-========================================================= */
-async function getOrCreateConversation(other) {
-  const conversationId = [me.uid, other.uid].sort().join("_");
-  const conversationRef = doc(db, "conversations", conversationId);
-  const conversationDoc = await getDoc(conversationRef);
-  if (!conversationDoc.exists()) {
-    await setDoc(conversationRef, {
-      members: [me.uid, other.uid],
-      memberProfiles: [
-        { uid: me.uid, name: meData.name, username: meData.username, photoURL: meData.photoURL || "" },
-        { uid: other.uid, name: other.name, username: other.username, photoURL: other.photoURL || "" }
-      ],
-      lastMessage: "", updatedAt: serverTimestamp()
-    });
+    showToast(
+      "Unable to load your account profile."
+    );
   }
-  return conversationId;
 }
 
-/* =========================================================
-   OPEN CHAT
-========================================================= */
-async function openChat(other) {
-  chatMode = "user"; activeChat = other;
-  $("chatName").textContent = other.name;
-  $("chatStatus").innerHTML = isOnline(other)? `<span class="online"></span>online` : `<span class="offline"></span>offline`;
-  $("chatAvatar").textContent = initials(other.name);
-  $("chatAvatar").style.backgroundImage = "";
-  if (other.photoURL) { $("chatAvatar").style.backgroundImage = `url('${esc(other.photoURL)}')`; $("chatAvatar").textContent = ""; }
-  $("messageInput").placeholder = `Message ${other.name}`;
-  $("messages").innerHTML = `<div class="empty">Loading messages…</div>`;
-  $("chatModal").classList.remove("hidden");
+
+// ======================================================
+// LOGIN
+// ======================================================
+
+if (loginForm) {
+
+  loginForm.addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    const email =
+      document.getElementById("loginEmail").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+    try {
+
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      showToast("Login successful.");
+
+    } catch (error) {
+
+      console.error(error);
+
+      showToast(getAuthError(error));
+    }
+  });
+}
+
+
+// ======================================================
+// REGISTRATION
+// ======================================================
+
+if (registerForm) {
+
+  registerForm.addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    const name =
+      document.getElementById("regName").value.trim();
+
+    const phone =
+      document.getElementById("regPhone").value.trim();
+
+    const username =
+      document.getElementById("regUsername").value.trim();
+
+    const email =
+      document.getElementById("regEmail").value.trim();
+
+    const password =
+      document.getElementById("regPassword").value;
+
+    const photoInput =
+      document.getElementById("regPhoto");
+
+    try {
+
+      // ----------------------------------------------
+      // Check username
+      // ----------------------------------------------
+
+      const usernameRef =
+        doc(
+          db,
+          "usernames",
+          username.toLowerCase()
+        );
+
+      const usernameSnap =
+        await getDoc(usernameRef);
+
+      if (usernameSnap.exists()) {
+
+        showToast(
+          "That username is already taken."
+        );
+
+        return;
+      }
+
+
+      // ----------------------------------------------
+      // Create Firebase Authentication account
+      // ----------------------------------------------
+
+      const credential =
+        await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+      const uid = credential.user.uid;
+
+
+      // ----------------------------------------------
+      // Optional profile photo
+      // ----------------------------------------------
+
+      let photoURL = "";
+
+      if (
+        photoInput &&
+        photoInput.files &&
+        photoInput.files.length > 0
+      ) {
+
+        const file = photoInput.files[0];
+
+        if (file.size > 5 * 1024 * 1024) {
+
+          showToast(
+            "Profile photo must be smaller than 5 MB."
+          );
+
+          return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+
+          showToast(
+            "Please select an image."
+          );
+
+          return;
+        }
+
+        const photoRef =
+          ref(
+            storage,
+            `profilePhotos/${uid}/profile`
+          );
+
+        await uploadBytes(
+          photoRef,
+          file
+        );
+
+        photoURL =
+          await getDownloadURL(photoRef);
+      }
+
+
+      // ----------------------------------------------
+      // Create user profile
+      // ----------------------------------------------
+
+      await setDoc(
+        doc(db, "users", uid),
+        {
+          uid: uid,
+          display: name,
+          name: name,
+          phone: phone,
+          username: username,
+          email: email,
+          photoURL: photoURL,
+          status: "pending",
+          created: serverTimestamp(),
+          lastSeen: serverTimestamp()
+        }
+      );
+
+
+      // ----------------------------------------------
+      // Reserve username
+      // ----------------------------------------------
+
+      await setDoc(
+        usernameRef,
+        {
+          uid: uid,
+          username: username,
+          created: serverTimestamp()
+        }
+      );
+
+
+      showToast(
+        "Registration submitted for approval."
+      );
+
+      showOnly(pendingView);
+
+    } catch (error) {
+
+      console.error(
+        "Registration error:",
+        error
+      );
+
+      showToast(
+        getAuthError(error)
+      );
+    }
+  });
+}
+
+
+// ======================================================
+// AUTH ERROR MESSAGES
+// ======================================================
+
+function getAuthError(error) {
+
+  const code = error?.code || "";
+
+  switch (code) {
+
+    case "auth/email-already-in-use":
+      return "That email is already registered.";
+
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+
+    case "auth/weak-password":
+      return "Password must be at least 8 characters.";
+
+    case "auth/invalid-credential":
+      return "Incorrect email or password.";
+
+    case "auth/user-not-found":
+      return "Account not found.";
+
+    case "auth/wrong-password":
+      return "Incorrect password.";
+
+    case "auth/too-many-requests":
+      return "Too many attempts. Please try again later.";
+
+    default:
+      return error?.message || "Something went wrong.";
+  }
+}
+
+
+// ======================================================
+// LOGOUT
+// ======================================================
+
+async function logout() {
+
   try {
-    const conversationId = await getOrCreateConversation(other);
-    activeConversationId = conversationId;
-    if (unsubMessages) { unsubMessages(); unsubMessages = null; }
-    const messagesQuery = query(collection(db, "conversations", conversationId, "messages"), orderBy("createdAt","asc"), limit(200));
-    unsubMessages = onSnapshot(messagesQuery, snapshot => {
-      const messages = $("messages"); if (!messages) return; messages.innerHTML = "";
-      if (snapshot.empty) { messages.innerHTML = `<div class="empty">No messages yet. Say hello 👋</div>`; return; }
-      snapshot.forEach(messageDoc => {
-        const message = messageDoc.data();
-        const bubble = document.createElement("div");
-        bubble.className = `bubble ${message.senderId === me.uid? "mine" : ""}`;
-        const time = message.createdAt?.toDate? message.createdAt.toDate().toLocaleString([],{hour:"2-digit",minute:"2-digit"}) : "sending…";
-        bubble.innerHTML = `${esc(message.text)}<small>${time}</small>`;
-        messages.appendChild(bubble);
+
+    if (currentUser) {
+      await updatePresence(true);
+    }
+
+    await signOut(auth);
+
+    currentUser = null;
+    currentProfile = null;
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Unable to log out."
+    );
+  }
+}
+
+
+document
+  .getElementById("logoutBtn")
+  ?.addEventListener("click", logout);
+
+document
+  .getElementById("pendingLogout")
+  ?.addEventListener("click", logout);
+
+document
+  .getElementById("rejectedLogout")
+  ?.addEventListener("click", logout);
+
+
+// ======================================================
+// ADMIN CHECK
+// ======================================================
+
+async function checkAdmin() {
+
+  if (!currentUser) return false;
+
+  try {
+
+    const adminRef =
+      doc(
+        db,
+        "admins",
+        currentUser.uid
+      );
+
+    const adminSnap =
+      await getDoc(adminRef);
+
+    const isAdmin =
+      adminSnap.exists();
+
+    if (adminNav) {
+
+      if (isAdmin) {
+        adminNav.classList.remove("hidden");
+      } else {
+        adminNav.classList.add("hidden");
+      }
+    }
+
+    return isAdmin;
+
+  } catch (error) {
+
+    console.error(
+      "Admin check failed:",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+// ======================================================
+// PRESENCE
+// ======================================================
+
+async function updatePresence(logout = false) {
+
+  if (!currentUser) return;
+
+  try {
+
+    await updateDoc(
+      doc(db, "users", currentUser.uid),
+      {
+        online: !logout,
+        lastSeen: serverTimestamp()
+      }
+    );
+
+  } catch (error) {
+
+    console.warn(
+      "Presence update failed:",
+      error
+    );
+  }
+}
+
+
+// ======================================================
+// NAVIGATION
+// ======================================================
+
+document
+  .querySelectorAll("[data-page]")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const page =
+          button.dataset.page;
+
+        renderPage(page);
+      }
+    );
+  });
+
+
+function renderPage(page) {
+
+  currentPage = page;
+
+  document
+    .querySelectorAll("[data-page]")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.page === page
+      );
+    });
+
+
+  const titles = {
+
+    chats: [
+      "Chats",
+      "Your conversations"
+    ],
+
+    network: [
+      "Network",
+      "Find people on JDA Networks"
+    ],
+
+    status: [
+      "Status",
+      "Updates from your network"
+    ],
+
+    calls: [
+      "Calls",
+      "Your calls"
+    ],
+
+    notifications: [
+      "Notifications",
+      "Your JDA Networks notifications"
+    ],
+
+    profile: [
+      "Profile",
+      "Your account"
+    ],
+
+    settings: [
+      "Settings",
+      "Manage your JDA Networks account"
+    ],
+
+    admin: [
+      "Admin",
+      "Manage registrations"
+    ]
+  };
+
+
+  const title =
+    titles[page] || [
+      "JDA Networks",
+      ""
+    ];
+
+
+  if (pageTitle) {
+    pageTitle.textContent = title[0];
+  }
+
+  if (pageSubtitle) {
+    pageSubtitle.textContent = title[1];
+  }
+
+
+  switch (page) {
+
+    case "chats":
+      renderChats();
+      break;
+
+    case "network":
+      renderNetwork();
+      break;
+
+    case "status":
+      renderStatus();
+      break;
+
+    case "calls":
+      renderCalls();
+      break;
+
+    case "notifications":
+      renderNotifications();
+      break;
+
+    case "profile":
+      renderProfile();
+      break;
+
+    case "settings":
+      renderSettings();
+      break;
+
+    case "admin":
+      renderAdmin();
+      break;
+
+    default:
+      renderChats();
+  }
+}
+
+
+// ======================================================
+// AVATAR
+// ======================================================
+
+function avatarHTML(profile, size = "") {
+
+  const name =
+    profile?.display ||
+    profile?.name ||
+    "J";
+
+  const photo =
+    profile?.photoURL ||
+    profile?.photo ||
+    "";
+
+  if (photo) {
+
+    return `
+      <div class="avatar ${size}">
+        <img
+          src="${escapeHTML(photo)}"
+          alt="${escapeHTML(name)}"
+        >
+      </div>
+    `;
+  }
+
+  return `
+    <div class="avatar ${size}">
+      ${escapeHTML(initials(name))}
+    </div>
+  `;
+}
+
+
+// ======================================================
+// CHATS
+// ======================================================
+
+function renderChats() {
+
+  pageContent.innerHTML = `
+    <div class="search-box">
+      <input
+        id="chatSearch"
+        type="search"
+        placeholder="Search chats"
+      >
+    </div>
+
+    <div id="chatList" class="list">
+      <div class="empty-state">
+        Loading conversations...
+      </div>
+    </div>
+
+    <div class="ai-card" id="oumaCard">
+      <div class="ai-avatar">O</div>
+      <div>
+        <strong>Ouma Jonathan</strong>
+        <p>Ask Ouma Jonathan anything</p>
+      </div>
+    </div>
+  `;
+
+
+  document
+    .getElementById("oumaCard")
+    ?.addEventListener(
+      "click",
+      openOumaJonathan
+    );
+
+
+  loadChats();
+}
+
+
+// ======================================================
+// LOAD CHATS
+// ======================================================
+
+function loadChats() {
+
+  if (!currentUser) return;
+
+  const chatsRef =
+    collection(db, "conversations");
+
+
+  const q =
+    query(
+      chatsRef,
+      where(
+        "members",
+        "array-contains",
+        currentUser.uid
+      ),
+      limit(50)
+    );
+
+
+  if (unsubscribeChats) {
+    unsubscribeChats();
+  }
+
+
+  unsubscribeChats =
+    onSnapshot(
+      q,
+      async snapshot => {
+
+        const chatList =
+          document.getElementById("chatList");
+
+        if (!chatList) return;
+
+
+        if (snapshot.empty) {
+
+          chatList.innerHTML = `
+            <div class="empty-state">
+              <h3>No chats yet</h3>
+              <p>Find someone in your Network and start a conversation.</p>
+            </div>
+          `;
+
+          return;
+        }
+
+
+        const chats = [];
+
+
+        for (
+          const chatDoc of snapshot.docs
+        ) {
+
+          const data =
+            chatDoc.data();
+
+          const otherUid =
+            data.members?.find(
+              uid => uid !== currentUser.uid
+            );
+
+          if (!otherUid) continue;
+
+
+          try {
+
+            const userSnap =
+              await getDoc(
+                doc(
+                  db,
+                  "users",
+                  otherUid
+                )
+              );
+
+            if (
+              userSnap.exists()
+            ) {
+
+              chats.push({
+                id: chatDoc.id,
+                profile: {
+                  uid: otherUid,
+                  ...userSnap.data()
+                },
+                data: data
+              });
+            }
+
+          } catch (error) {
+
+            console.warn(
+              "Could not load chat user:",
+              error
+            );
+          }
+        }
+
+
+        if (!chats.length) {
+
+          chatList.innerHTML = `
+            <div class="empty-state">
+              No conversations found.
+            </div>
+          `;
+
+          return;
+        }
+
+
+        chatList.innerHTML =
+          chats.map(chat => {
+
+            const name =
+              chat.profile.display ||
+              chat.profile.name ||
+              chat.profile.username ||
+              "User";
+
+            return `
+              <button
+                class="chat-row"
+                data-chat-user="${escapeHTML(chat.profile.uid)}"
+              >
+                ${avatarHTML(chat.profile)}
+
+                <div class="row-main">
+                  <strong>
+                    ${escapeHTML(name)}
+                  </strong>
+
+                  <span>
+                    ${escapeHTML(
+                      chat.data.lastMessage ||
+                      "Start chatting"
+                    )}
+                  </span>
+                </div>
+
+                <small>
+                  ${formatTime(chat.data.updatedAt)}
+                </small>
+              </button>
+            `;
+
+          }).join("");
+
+
+        document
+          .querySelectorAll("[data-chat-user]")
+          .forEach(button => {
+
+            button.addEventListener(
+              "click",
+              () => {
+
+                openChat(
+                  button.dataset.chatUser
+                );
+              }
+            );
+          });
+
+      },
+      error => {
+
+        console.error(
+          "Chat listener error:",
+          error
+        );
+
+        const chatList =
+          document.getElementById("chatList");
+
+        if (chatList) {
+
+          chatList.innerHTML = `
+            <div class="empty-state">
+              Unable to load chats.
+            </div>
+          `;
+        }
+      }
+    );
+}
+
+
+// ======================================================
+// NETWORK
+// ======================================================
+
+function renderNetwork() {
+
+  pageContent.innerHTML = `
+
+    <div class="search-box">
+      <input
+        id="memberSearch"
+        type="search"
+        placeholder="Search by name or username..."
+      >
+    </div>
+
+    <div id="memberResults" class="list">
+
+      <div class="empty-state">
+        Search for JDA Networks members.
+      </div>
+
+    </div>
+  `;
+
+
+  const input =
+    document.getElementById(
+      "memberSearch"
+    );
+
+
+  let timer;
+
+  input?.addEventListener(
+    "input",
+    () => {
+
+      clearTimeout(timer);
+
+      timer =
+        setTimeout(
+          () => searchMembers(input.value),
+          350
+        );
+    }
+  );
+}
+
+
+// ======================================================
+// SEARCH MEMBERS
+// ======================================================
+
+async function searchMembers(term) {
+
+  const results =
+    document.getElementById(
+      "memberResults"
+    );
+
+  if (!results) return;
+
+
+  term = term.trim().toLowerCase();
+
+
+  if (!term) {
+
+    results.innerHTML = `
+      <div class="empty-state">
+        Search for JDA Networks members.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  results.innerHTML = `
+    <div class="empty-state">
+      Searching...
+    </div>
+  `;
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        query(
+          collection(db, "users"),
+          where("status", "==", "approved"),
+          limit(100)
+        )
+      );
+
+
+    const matches =
+      snapshot.docs
+        .map(docSnap => ({
+          uid: docSnap.id,
+          ...docSnap.data()
+        }))
+        .filter(profile => {
+
+          if (
+            profile.uid ===
+            currentUser.uid
+          ) {
+            return false;
+          }
+
+          const name =
+            String(
+              profile.display ||
+              profile.name ||
+              ""
+            ).toLowerCase();
+
+          const username =
+            String(
+              profile.username ||
+              ""
+            ).toLowerCase();
+
+          return (
+            name.includes(term) ||
+            username.includes(term)
+          );
+        });
+
+
+    if (!matches.length) {
+
+      results.innerHTML = `
+        <div class="empty-state">
+          No approved member found.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    results.innerHTML =
+      matches.map(profile => {
+
+        const name =
+          profile.display ||
+          profile.name ||
+          profile.username ||
+          "JDA Member";
+
+        return `
+          <div class="member-row">
+
+            ${avatarHTML(profile)}
+
+            <div class="row-main">
+
+              <strong>
+                ${escapeHTML(name)}
+              </strong>
+
+              <span>
+                @${escapeHTML(
+                  profile.username || ""
+                )}
+              </span>
+
+            </div>
+
+            <button
+              class="primary small-btn"
+              data-message-user="${escapeHTML(profile.uid)}"
+            >
+              Message
+            </button>
+
+          </div>
+        `;
+
+      }).join("");
+
+
+    document
+      .querySelectorAll("[data-message-user]")
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            openChat(
+              button.dataset.messageUser
+            );
+          }
+        );
       });
-      messages.scrollTop = messages.scrollHeight;
-    }, error => { console.error(error); toast("Could not load messages."); });
-  } catch (error) { console.error(error); toast("Could not open conversation."); }
+
+
+  } catch (error) {
+
+    console.error(
+      "Member search error:",
+      error
+    );
+
+    results.innerHTML = `
+      <div class="empty-state">
+        Unable to search members.
+      </div>
+    `;
+  }
 }
 
-/* =========================================================
-   CLOSE CHAT
-========================================================= */
-$("closeChat").onclick = closeChat;
-function closeChat() {
-  $("chatModal").classList.add("hidden");
-  if (unsubMessages) { unsubMessages(); unsubMessages = null; }
-  activeChat = null; activeConversationId = null; chatMode = "user"; $("messageInput").value = "";
-}
 
-/* =========================================================
-   SEND MESSAGE
-========================================================= */
-$("messageForm").onsubmit = async event => {
-  event.preventDefault();
-  const text = $("messageInput").value.trim();
-  if (!text) return;
-  if (chatMode!== "user" ||!activeChat ||!activeConversationId) { return; }
-  $("messageInput").value = "";
+// ======================================================
+// OPEN CHAT
+// ======================================================
+
+async function openChat(otherUid) {
+
   try {
-    await addDoc(collection(db, "conversations", activeConversationId, "messages"), { senderId: me.uid, receiverId: activeChat.uid, text, createdAt: serverTimestamp() });
-    await updateDoc(doc(db, "conversations", activeConversationId), { lastMessage: text, updatedAt: serverTimestamp() });
-  } catch (error) { console.error(error); $("messageInput").value = text; toast("Message could not be sent."); }
-};
 
-/* =========================================================
-   OUMA JONATHAN
-========================================================= */
-function openOuma() {
-  chatMode = "ouma"; activeChat = null; activeConversationId = null;
-  if (unsubMessages) { unsubMessages(); unsubMessages = null; }
-  $("chatName").textContent = "Ouma Jonathan";
-  $("chatStatus").textContent = "AI assistant • online";
-  $("chatAvatar").textContent = "O";
-  $("chatAvatar").style.backgroundImage = "";
-  $("messageInput").placeholder = "Message Ouma Jonathan";
-  $("messages").innerHTML = `<div class="bubble"><b>Ouma Jonathan</b><br><br>Hello 👋 I'm Ouma Jonathan.<br><br>I'm your JDA Networks AI assistant. How can I help you today?</div>`;
-  $("chatModal").classList.remove("hidden");
+    const userSnap =
+      await getDoc(
+        doc(
+          db,
+          "users",
+          otherUid
+        )
+      );
+
+
+    if (!userSnap.exists()) {
+
+      showToast(
+        "This member could not be found."
+      );
+
+      return;
+    }
+
+
+    currentChatUser = {
+      uid: otherUid,
+      ...userSnap.data()
+    };
+
+
+    currentConversationId =
+      [currentUser.uid, otherUid]
+        .sort()
+        .join("_");
+
+
+    await setDoc(
+      doc(
+        db,
+        "conversations",
+        currentConversationId
+      ),
+      {
+        members: [
+          currentUser.uid,
+          otherUid
+        ],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      },
+      {
+        merge: true
+      }
+    );
+
+
+    const chatName =
+      currentChatUser.display ||
+      currentChatUser.name ||
+      currentChatUser.username ||
+      "Chat";
+
+
+    document.getElementById(
+      "chatName"
+    ).textContent = chatName;
+
+
+    document.getElementById(
+      "chatStatus"
+    ).textContent =
+      currentChatUser.online
+        ? "online"
+        : "offline";
+
+
+    const chatAvatar =
+      document.getElementById(
+        "chatAvatar"
+      );
+
+
+    if (chatAvatar) {
+
+      if (currentChatUser.photoURL) {
+
+        chatAvatar.innerHTML = `
+          <img
+            src="${escapeHTML(
+              currentChatUser.photoURL
+            )}"
+            alt=""
+          >
+        `;
+
+      } else {
+
+        chatAvatar.textContent =
+          initials(chatName);
+      }
+    }
+
+
+    chatModal?.classList.remove(
+      "hidden"
+    );
+
+
+    listenToMessages();
+
+
+  } catch (error) {
+
+    console.error(
+      "Open chat error:",
+      error
+    );
+
+    showToast(
+      "Unable to open this chat."
+    );
+  }
 }
 
-/* =========================================================
-   ADMIN PANEL
-========================================================= */
+
+// ======================================================
+// CLOSE CHAT
+// ======================================================
+
+document
+  .getElementById("closeChat")
+  ?.addEventListener(
+    "click",
+    () => {
+
+      chatModal?.classList.add(
+        "hidden"
+      );
+
+      if (unsubscribeMessages) {
+
+        unsubscribeMessages();
+
+        unsubscribeMessages =
+          null;
+      }
+
+      currentChatUser = null;
+      currentConversationId = null;
+    }
+  );
+
+
+// ======================================================
+// LISTEN TO MESSAGES
+// ======================================================
+
+function listenToMessages() {
+
+  if (!currentConversationId) return;
+
+
+  if (unsubscribeMessages) {
+    unsubscribeMessages();
+  }
+
+
+  const messagesRef =
+    collection(
+      db,
+      "conversations",
+      currentConversationId,
+      "messages"
+    );
+
+
+  const q =
+    query(
+      messagesRef,
+      orderBy("createdAt", "asc"),
+      limit(200)
+    );
+
+
+  unsubscribeMessages =
+    onSnapshot(
+      q,
+      snapshot => {
+
+        if (!messagesBox) return;
+
+
+        if (snapshot.empty) {
+
+          messagesBox.innerHTML = `
+            <div class="empty-state">
+              No messages yet. Say hello 👋
+            </div>
+          `;
+
+          return;
+        }
+
+
+        messagesBox.innerHTML =
+          snapshot.docs.map(
+            messageDoc => {
+
+              const message =
+                messageDoc.data();
+
+              const mine =
+                message.senderId ===
+                currentUser.uid;
+
+
+              return `
+                <div class="message ${
+                  mine
+                    ? "mine"
+                    : "theirs"
+                }">
+
+                  <div class="bubble">
+
+                    ${escapeHTML(
+                      message.text || ""
+                    )}
+
+                    <small>
+                      ${formatTime(
+                        message.createdAt
+                      )}
+                    </small>
+
+                  </div>
+
+                </div>
+              `;
+
+            }
+          ).join("");
+
+
+        messagesBox.scrollTop =
+          messagesBox.scrollHeight;
+      },
+      error => {
+
+        console.error(
+          "Message listener error:",
+          error
+        );
+
+        showToast(
+          "Unable to load messages."
+        );
+      }
+    );
+}
+
+
+// ======================================================
+// SEND MESSAGE
+// ======================================================
+
+document
+  .getElementById("messageForm")
+  ?.addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      const input =
+        document.getElementById(
+          "messageInput"
+        );
+
+
+      const text =
+        input?.value.trim();
+
+
+      if (!text) return;
+
+
+      if (
+        !currentUser ||
+        !currentConversationId ||
+        !currentChatUser
+      ) {
+
+        showToast(
+          "Open a chat first."
+        );
+
+        return;
+      }
+
+
+      try {
+
+        await addDoc(
+          collection(
+            db,
+            "conversations",
+            currentConversationId,
+            "messages"
+          ),
+          {
+            senderId: currentUser.uid,
+            receiverId:
+              currentChatUser.uid,
+            text: text,
+            createdAt:
+              serverTimestamp()
+          }
+        );
+
+
+        await updateDoc(
+          doc(
+            db,
+            "conversations",
+            currentConversationId
+          ),
+          {
+            lastMessage: text,
+            lastSenderId:
+              currentUser.uid,
+            updatedAt:
+              serverTimestamp()
+          }
+        );
+
+
+        input.value = "";
+
+      } catch (error) {
+
+        console.error(
+          "Send message error:",
+          error
+        );
+
+        showToast(
+          "Message could not be sent."
+        );
+      }
+    }
+  );
+
+
+// ======================================================
+// OUMA JONATHAN
+// ======================================================
+
+function openOumaJonathan() {
+
+  currentChatUser = null;
+  currentConversationId = null;
+
+
+  document.getElementById(
+    "chatName"
+  ).textContent =
+    "Ouma Jonathan";
+
+
+  document.getElementById(
+    "chatStatus"
+  ).textContent =
+    "AI assistant • online";
+
+
+  document.getElementById(
+    "chatAvatar"
+  ).textContent = "O";
+
+
+  if (messagesBox) {
+
+    messagesBox.innerHTML = `
+
+      <div class="message theirs">
+
+        <div class="bubble">
+
+          Hello 👋 I'm Ouma Jonathan.
+          How can I help you today?
+
+        </div>
+
+      </div>
+
+    `;
+  }
+
+
+  chatModal?.classList.remove(
+    "hidden"
+  );
+
+
+  showToast(
+    "Ouma Jonathan is ready."
+  );
+}
+
+
+// ======================================================
+// PROFILE
+// ======================================================
+
+function renderProfile() {
+
+  const name =
+    currentProfile?.display ||
+    currentProfile?.name ||
+    "JDA Member";
+
+
+  pageContent.innerHTML = `
+
+    <div class="profile-card">
+
+      ${avatarHTML(
+        currentProfile || {},
+        "large"
+      )}
+
+      <h2>
+        ${escapeHTML(name)}
+      </h2>
+
+      <p class="muted">
+        @${escapeHTML(
+          currentProfile?.username || ""
+        )}
+      </p>
+
+      <p>
+        ${escapeHTML(
+          currentProfile?.email || ""
+        )}
+      </p>
+
+      <p>
+        ${escapeHTML(
+          currentProfile?.phone || ""
+        )}
+      </p>
+
+    </div>
+
+    <div class="card">
+
+      <h3>Change profile photo</h3>
+
+      <input
+        id="profilePhotoInput"
+        type="file"
+        accept="image/*"
+      >
+
+      <button
+        id="uploadProfilePhoto"
+        class="primary"
+      >
+        Upload photo
+      </button>
+
+    </div>
+  `;
+
+
+  document
+    .getElementById(
+      "uploadProfilePhoto"
+    )
+    ?.addEventListener(
+      "click",
+      uploadProfilePhoto
+    );
+}
+
+
+// ======================================================
+// UPLOAD PROFILE PHOTO
+// ======================================================
+
+async function uploadProfilePhoto() {
+
+  const input =
+    document.getElementById(
+      "profilePhotoInput"
+    );
+
+
+  if (
+    !input ||
+    !input.files ||
+    !input.files.length
+  ) {
+
+    showToast(
+      "Choose a photo first."
+    );
+
+    return;
+  }
+
+
+  const file =
+    input.files[0];
+
+
+  if (file.size > 5 * 1024 * 1024) {
+
+    showToast(
+      "Photo must be smaller than 5 MB."
+    );
+
+    return;
+  }
+
+
+  if (!file.type.startsWith("image/")) {
+
+    showToast(
+      "Please choose an image."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    const photoRef =
+      ref(
+        storage,
+        `profilePhotos/${currentUser.uid}/profile`
+      );
+
+
+    await uploadBytes(
+      photoRef,
+      file
+    );
+
+
+    const photoURL =
+      await getDownloadURL(
+        photoRef
+      );
+
+
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        currentUser.uid
+      ),
+      {
+        photoURL: photoURL
+      }
+    );
+
+
+    currentProfile.photoURL =
+      photoURL;
+
+
+    showToast(
+      "Profile photo updated."
+    );
+
+
+    renderProfile();
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Unable to upload photo."
+    );
+  }
+}
+
+
+// ======================================================
+// SETTINGS
+// ======================================================
+
+function renderSettings() {
+
+  pageContent.innerHTML = `
+
+    <div class="card">
+
+      <h3>Account</h3>
+
+      <p>
+        <strong>Email:</strong>
+        ${escapeHTML(
+          currentProfile?.email || ""
+        )}
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        ${escapeHTML(
+          currentProfile?.status || ""
+        )}
+      </p>
+
+    </div>
+
+    <div class="card">
+
+      <h3>Privacy & Security</h3>
+
+      <p class="muted">
+        Keep your account information secure.
+      </p>
+
+    </div>
+
+    <div class="card">
+
+      <button
+        id="settingsLogout"
+        class="secondary"
+      >
+        Log out
+      </button>
+
+    </div>
+  `;
+
+
+  document
+    .getElementById(
+      "settingsLogout"
+    )
+    ?.addEventListener(
+      "click",
+      logout
+    );
+}
+
+
+// ======================================================
+// STATUS
+// ======================================================
+
+function renderStatus() {
+
+  pageContent.innerHTML = `
+
+    <div class="card">
+
+      <h3>Status</h3>
+
+      <p>
+        Status and stories will appear here.
+      </p>
+
+      <p class="muted">
+        Your JDA Networks status system can be
+        expanded with photos, videos and text updates.
+      </p>
+
+    </div>
+  `;
+}
+
+
+// ======================================================
+// CALLS
+// ======================================================
+
+function renderCalls() {
+
+  pageContent.innerHTML = `
+
+    <div class="card">
+
+      <h3>Calls</h3>
+
+      <p>
+        Your calls will appear here.
+      </p>
+
+      <p class="muted">
+        Voice and video calling can be connected
+        to this section.
+      </p>
+
+    </div>
+  `;
+}
+
+
+// ======================================================
+// NOTIFICATIONS
+// ======================================================
+
+function renderNotifications() {
+
+  pageContent.innerHTML = `
+
+    <div class="card">
+
+      <h3>Notifications</h3>
+
+      <p>
+        You have no new notifications.
+      </p>
+
+    </div>
+  `;
+}
+
+
+// ======================================================
+// ADMIN PANEL
+// ======================================================
+
 async function renderAdmin() {
-  $("pageContent").innerHTML = `<div class="card"><h3>Pending registrations</h3><div id="pendingUsers" class="list"><div class="empty">Loading…</div></div></div><div class="card" style="margin-top:15px"><h3>Approved users</h3><div id="approvedUsers" class="list"><div class="empty">Loading…</div></div></div>`;
-  const adminDoc = await getDoc(doc(db, "admins", me.uid));
-  if (!adminDoc.exists()) { toast("Administrator access required."); return; }
-  if (unsubPending) { unsubPending(); }
-  if (unsubApproved) { unsubApproved(); }
-  const pendingQuery = query(collection(db, "users"), where("status","==","pending"), limit(100));
-  unsubPending = onSnapshot(pendingQuery, snapshot => {
-    const container = $("pendingUsers"); if (!container) return;
-    container.innerHTML = snapshot.empty? `<div class="empty">No pending registrations.</div>` : "";
-    snapshot.forEach(userDoc => {
-      const user = { id: userDoc.id,...userDoc.data() };
-      const row = document.createElement("div"); row.className = "user-row";
-      row.innerHTML = `${avatarHTML(user)}<div class="row-main"><b>${esc(user.name)}</b><small>@${esc(user.username)} · ${esc(user.phone)}</small></div><button class="primary approve">Approve</button><button class="danger-btn reject">Reject</button>`;
-      row.querySelector(".approve").onclick = () => setUserStatus(user.id, "approved");
-      row.querySelector(".reject").onclick = () => setUserStatus(user.id, "rejected");
-      container.appendChild(row);
-    });
-  });
-  const approvedQuery = query(collection(db, "users"), where("status","==","approved"), limit(100));
-  unsubApproved = onSnapshot(approvedQuery, snapshot => {
-    const container = $("approvedUsers"); if (!container) return;
-    container.innerHTML = snapshot.empty? `<div class="empty">No approved users.</div>` : "";
-    snapshot.forEach(userDoc => {
-      const user = { id: userDoc.id,...userDoc.data() };
-      const row = document.createElement("div"); row.className = "user-row";
-      row.innerHTML = `${avatarHTML(user)}<div class="row-main"><b>${esc(user.name)}</b><small>@${esc(user.username)}</small></div><button class="danger-btn disable">Disable</button>`;
-      row.querySelector(".disable").onclick = () => setUserStatus(user.id, "disabled");
-      container.appendChild(row);
-    });
-  });
+
+  const isAdmin =
+    await checkAdmin();
+
+
+  if (!isAdmin) {
+
+    pageContent.innerHTML = `
+
+      <div class="card">
+
+        <h3>Access denied</h3>
+
+        <p>
+          You are not authorized to access
+          the JDA Networks administrator area.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  pageContent.innerHTML = `
+
+    <div class="card">
+
+      <h3>Registration approvals</h3>
+
+      <p class="muted">
+        Review new JDA Networks registrations.
+      </p>
+
+    </div>
+
+    <div id="pendingUsers">
+
+      <div class="empty-state">
+        Loading pending registrations...
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <h3>Approved members</h3>
+
+      <div id="approvedUsers">
+        Loading...
+      </div>
+
+    </div>
+  `;
+
+
+  loadPendingUsers();
+  loadApprovedUsers();
 }
 
-/* =========================================================
-   ADMIN STATUS CHANGE
-========================================================= */
-async function setUserStatus(uid, status) {
-  if (!uid) return;
+
+// ======================================================
+// PENDING USERS
+// ======================================================
+
+async function loadPendingUsers() {
+
+  const box =
+    document.getElementById(
+      "pendingUsers"
+    );
+
+
+  if (!box) return;
+
+
   try {
-    await updateDoc(doc(db, "users", uid), { status, reviewedAt: serverTimestamp(), reviewedBy: me.uid });
-    toast(`User ${status}.`);
-  } catch (error) { console.error(error); toast("Could not update user status."); }
+
+    const snapshot =
+      await getDocs(
+        query(
+          collection(db, "users"),
+          where("status", "==", "pending"),
+          limit(100)
+        )
+      );
+
+
+    if (snapshot.empty) {
+
+      box.innerHTML = `
+        <div class="empty-state">
+          No pending registrations 🎉
+        </div>
+      `;
+
+      return;
+    }
+
+
+    box.innerHTML =
+      snapshot.docs.map(
+        userDoc => {
+
+          const user = {
+            uid: userDoc.id,
+            ...userDoc.data()
+          };
+
+
+          const name =
+            user.display ||
+            user.name ||
+            "New member";
+
+
+          return `
+
+            <div class="member-row">
+
+              ${avatarHTML(user)}
+
+              <div class="row-main">
+
+                <strong>
+                  ${escapeHTML(name)}
+                </strong>
+
+                <span>
+                  @${escapeHTML(
+                    user.username || ""
+                  )}
+                </span>
+
+                <small>
+                  ${escapeHTML(
+                    user.email || ""
+                  )}
+                </small>
+
+                <small>
+                  ${escapeHTML(
+                    user.phone || ""
+                  )}
+                </small>
+
+              </div>
+
+              <div class="admin-actions">
+
+                <button
+                  class="primary small-btn"
+                  data-approve="${escapeHTML(user.uid)}"
+                >
+                  Approve
+                </button>
+
+                <button
+                  class="secondary small-btn"
+                  data-reject="${escapeHTML(user.uid)}"
+                >
+                  Reject
+                </button>
+
+              </div>
+
+            </div>
+          `;
+
+        }
+      ).join("");
+
+
+    document
+      .querySelectorAll(
+        "[data-approve]"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => approveUser(
+            button.dataset.approve
+          )
+        );
+      });
+
+
+    document
+      .querySelectorAll(
+        "[data-reject]"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => rejectUser(
+            button.dataset.reject
+          )
+        );
+      });
+
+
+  } catch (error) {
+
+    console.error(
+      "Pending users error:",
+      error
+    );
+
+    box.innerHTML = `
+      <div class="empty-state">
+        Unable to load pending registrations.
+      </div>
+    `;
+  }
 }
 
-/* =========================================================
-   === ADDED: PHONE + GMAIL NOTIFICATIONS ===
-========================================================= */
-let adminApprovalListenerStarted = false;
-let lastNotifiedPendingIds = new Set();
-function startAdminApprovalPhoneNotify() {
-  if (adminApprovalListenerStarted) return;
-  adminApprovalListenerStarted = true;
-  if ("Notification" in window && Notification.permission === "default") { Notification.requestPermission().catch(()=>{}); }
-  const pendingQ = query(collection(db, "users"), where("status", "==", "pending"));
-  onSnapshot(pendingQ, (snap) => {
-    snap.docChanges().forEach(change => {
-      if (change.type!== "added") return;
-      const docId = change.doc.id;
-      if (lastNotifiedPendingIds.has(docId)) return;
-      lastNotifiedPendingIds.add(docId);
-      const u = change.doc.data();
-      try { if (navigator.vibrate) navigator.vibrate([400,150,400,150,600]); } catch(e){}
-      try { const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg"); audio.volume = 1.0; audio.play().catch(()=>{}); } catch(e){}
-      try { if ("Notification" in window && Notification.permission === "granted") { const n = new Notification("JDA Needs Your Approval!", { body: `${u.name} @${u.username} - ${u.phone} wants to join` }); n.onclick = () => { window.focus(); renderPage("admin"); n.close(); }; } } catch(e){}
-      toast(`🔔 NEW: ${u.name} needs approval`);
-    });
-  });
+
+// ======================================================
+// APPROVE USER
+// ======================================================
+
+async function approveUser(uid) {
+
+  if (!currentUser) return;
+
+
+  const isAdmin =
+    await checkAdmin();
+
+
+  if (!isAdmin) {
+
+    showToast(
+      "Administrator access required."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        uid
+      ),
+      {
+        status: "approved",
+        approvedAt:
+          serverTimestamp(),
+        approvedBy:
+          currentUser.uid
+      }
+    );
+
+
+    showToast(
+      "Registration approved."
+    );
+
+
+    loadPendingUsers();
+    loadApprovedUsers();
+
+
+  } catch (error) {
+
+    console.error(
+      "Approve error:",
+      error
+    );
+
+    showToast(
+      "Unable to approve registration."
+    );
+  }
 }
-setInterval(async () => {
-  if (!me ||!meData) return;
-  try { const adminDoc = await getDoc(doc(db, "admins", me.uid)); if (adminDoc.exists()) { startAdminApprovalPhoneNotify(); } } catch(e){}
-}, 3000);
+
+
+// ======================================================
+// REJECT USER
+// ======================================================
+
+async function rejectUser(uid) {
+
+  if (!currentUser) return;
+
+
+  const isAdmin =
+    await checkAdmin();
+
+
+  if (!isAdmin) {
+
+    showToast(
+      "Administrator access required."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    await updateDoc(
+      doc(
+        db,
+        "users",
+        uid
+      ),
+      {
+        status: "rejected",
+        rejectedAt:
+          serverTimestamp(),
+        rejectedBy:
+          currentUser.uid
+      }
+    );
+
+
+    showToast(
+      "Registration rejected."
+    );
+
+
+    loadPendingUsers();
+    loadApprovedUsers();
+
+
+  } catch (error) {
+
+    console.error(
+      "Reject error:",
+      error
+    );
+
+    showToast(
+      "Unable to reject registration."
+    );
+  }
+}
+
+
+// ======================================================
+// APPROVED USERS
+// ======================================================
+
+async function loadApprovedUsers() {
+
+  const box =
+    document.getElementById(
+      "approvedUsers"
+    );
+
+
+  if (!box) return;
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        query(
+          collection(db, "users"),
+          where("status", "==", "approved"),
+          limit(100)
+        )
+      );
+
+
+    if (snapshot.empty) {
+
+      box.innerHTML =
+        "No approved members.";
+
+      return;
+    }
+
+
+    box.innerHTML =
+      snapshot.docs.map(
+        userDoc => {
+
+          const user = {
+            uid: userDoc.id,
+            ...userDoc.data()
+          };
+
+
+          return `
+
+            <div class="member-row">
+
+              ${avatarHTML(user)}
+
+              <div class="row-main">
+
+                <strong>
+                  ${escapeHTML(
+                    user.display ||
+                    user.name ||
+                    "Member"
+                  )}
+                </strong>
+
+                <span>
+                  @${escapeHTML(
+                    user.username || ""
+                  )}
+                </span>
+
+              </div>
+
+            </div>
+          `;
+
+        }
+      ).join("");
+
+
+  } catch (error) {
+
+    console.error(
+      "Approved users error:",
+      error
+    );
+
+    box.innerHTML =
+      "Unable to load approved members.";
+  }
+}
+
+
+// ======================================================
+// ME AVATAR
+// ======================================================
+
+function updateMeAvatar() {
+
+  const avatar =
+    document.getElementById(
+      "meAvatar"
+    );
+
+
+  if (!avatar) return;
+
+
+  const name =
+    currentProfile?.display ||
+    currentProfile?.name ||
+    "J";
+
+
+  if (currentProfile?.photoURL) {
+
+    avatar.innerHTML = `
+      <img
+        src="${escapeHTML(
+          currentProfile.photoURL
+        )}"
+        alt=""
+      >
+    `;
+
+  } else {
+
+    avatar.textContent =
+      initials(name);
+  }
+}
+
+
+// ======================================================
+// KEEP PRESENCE ALIVE
+// ======================================================
+
+setInterval(
+  () => {
+
+    if (
+      currentUser &&
+      currentProfile?.status === "approved"
+    ) {
+
+      updatePresence();
+    }
+
+  },
+  60000
+);
+
+
+// ======================================================
+// INITIAL UI
+// ======================================================
+
+if (auth.currentUser) {
+  currentUser = auth.currentUser;
+}
+
+
+// ======================================================
+// DEBUG MESSAGE
+// ======================================================
+
+console.log(
+  "JDA Networks app.js loaded successfully."
+);

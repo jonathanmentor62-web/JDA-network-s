@@ -3,102 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>JDA Networks - FIXED AUTO APPROVAL</title>
+<title>JDA Networks</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;padding:0;width:100%;min-height:100%;font-family:Arial,sans-serif;background:#0b141a;color:#fff}body{overflow-x:hidden}button,input{font-family:inherit}button{cursor:pointer;border:0;-webkit-tap-highlight-color:transparent}.hidden{display:none!important}.header{height:64px;background:#202c33;display:flex;align-items:center;justify-content:space-between;padding:0 15px;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:10px}.brand img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#374952}.brand-title{font-size:18px;font-weight:bold}.header-buttons{display:flex;gap:8px}.icon-btn{width:40px;height:40px;border-radius:50%;background:#374952;color:white;font-size:18px}.container{width:100%;max-width:900px;margin:auto;padding-bottom:100px}.search{padding:12px}.search input{width:100%;padding:13px 17px;border:0;outline:0;border-radius:25px;background:#202c33;color:white;font-size:14px}.search input::placeholder{color:#8696a0}.filters{display:flex;gap:8px;overflow-x:auto;padding:0 12px 12px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}.filter{white-space:nowrap;padding:9px 15px;border-radius:18px;background:#202c33;color:#aebac1;font-size:13px;flex-shrink:0}.filter.active{background:#25d366;color:#07130b}.section{padding:10px 15px;color:#8696a0;font-size:13px;font-weight:bold}.member{display:flex;align-items:center;gap:13px;padding:12px 15px;border-bottom:1px solid #202c33;cursor:pointer;min-height:77px}.member:active{background:#202c33}.member img{width:52px;height:52px;border-radius:50%;object-fit:cover;background:#202c33;flex-shrink:0}.member-info{flex:1;min-width:0}.member-name{font-weight:bold;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.member-detail{color:#8696a0;font-size:12px;margin-top:4px}.status{width:9px;height:9px;border-radius:50%;background:#25d366;flex-shrink:0}.empty{text-align:center;padding:45px 20px;color:#667781;font-size:14px}.loading{text-align:center;padding:35px 20px;color:#8696a0}.error-box{margin:20px 15px;padding:14px;border-radius:12px;background:#3b2024;color:#ff9b9b;font-size:13px;line-height:1.5}.bottom{position:fixed;bottom:0;left:0;right:0;height:65px;background:#202c33;display:flex;justify-content:space-around;align-items:center;z-index:20}.nav{background:none;color:#8696a0;font-size:11px;text-align:center;min-width:75px}.nav span{display:block;font-size:20px;margin-bottom:2px}.nav.active{color:#25d366}.new-chat{position:fixed;right:20px;bottom:82px;width:55px;height:55px;border-radius:18px;background:#25d366;color:#07130b;font-size:25px;z-index:15;box-shadow:0 4px 15px rgba(0,0,0,.3)}.chat{display:none;position:fixed;inset:0;background:#0b141a;z-index:50}.chat.open{display:block}.chat-header{height:64px;background:#202c33;display:flex;align-items:center;gap:10px;padding:0 12px}.back{background:none;color:white;font-size:25px;padding:5px 8px}.chat-header img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#374952}.chat-user{flex:1;min-width:0}.chat-user strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-user small{color:#8696a0}.messages{position:absolute;top:64px;bottom:65px;left:0;right:0;overflow-y:auto;padding:15px 10px 20px;background:#0b141a}.message{max-width:78%;padding:9px 12px;margin:5px 0;border-radius:9px;font-size:14px;line-height:1.35;word-wrap:break-word}.message.mine{margin-left:auto;background:#005c4b}.message.theirs{margin-right:auto;background:#202c33}.message-time{display:block;color:#b2c0c8;font-size:9px;text-align:right;margin-top:4px}.message-form{position:absolute;bottom:0;left:0;right:0;height:65px;background:#202c33;display:flex;gap:8px;align-items:center;padding:8px}.message-form input{flex:1;min-width:0;border:0;outline:0;border-radius:24px;background:#111b21;color:white;padding:13px 16px}.send{width:45px;height:45px;border-radius:50%;background:#25d366;color:#07130b;font-size:18px;flex-shrink:0}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:80;align-items:flex-end;justify-content:center}.modal.open{display:flex}.modal-card{width:100%;max-width:600px;background:#202c33;border-radius:20px 20px 0 0;padding:25px;max-height:85vh;overflow-y:auto}.profile-center{text-align:center}.profile-center img{width:100px;height:100px;border-radius:50%;object-fit:cover;background:#111b21}.profile-name{font-size:21px;font-weight:bold;margin-top:12px}.profile-info{color:#8696a0;margin-top:8px;line-height:1.5}.close{width:100%;margin-top:20px;padding:13px;border-radius:25px;background:#374952;color:white}.logout{width:100%;margin-top:10px;padding:13px;border-radius:25px;background:#3b2024;color:#ff9b9b;font-weight:bold}.startup{position:fixed;inset:0;background:#0b141a;z-index:200;display:flex;align-items:center;justify-content:center;padding:25px}.startup.hidden{display:none}.startup-box{width:100%;max-width:420px;text-align:center;background:#202c33;padding:30px 22px;border-radius:20px}.startup-box h2{margin:0 0 10px}.startup-box p{color:#8696a0;line-height:1.5;font-size:14px}.startup-btn{width:100%;padding:14px;margin-top:15px;border-radius:25px;background:#25d366;color:#07130b;font-weight:bold}#profilePhotoInput{display:none}
+*{box-sizing:border-box}html,body{margin:0;padding:0;width:100%;min-height:100%;font-family:Arial,sans-serif;background:#0b141a;color:#fff}body{overflow-x:hidden}.header{height:64px;background:#202c33;display:flex;align-items:center;justify-content:space-between;padding:0 15px;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:10px}.brand-title{font-size:18px;font-weight:bold}.icon-btn{width:40px;height:40px;border-radius:50%;background:#374952;color:white;font-size:18px;border:0}.container{width:100%;max-width:900px;margin:auto;padding-bottom:100px}.search{padding:12px}.search input{width:100%;padding:13px 17px;border:0;outline:0;border-radius:25px;background:#202c33;color:white;font-size:14px}.filters{display:flex;gap:8px;overflow-x:auto;padding:0 12px 12px}.filter{white-space:nowrap;padding:9px 15px;border-radius:18px;background:#202c33;color:#aebac1;font-size:13px;flex-shrink:0;border:0}.filter.active{background:#25d366;color:#07130b}.section{padding:10px 15px;color:#8696a0;font-size:13px;font-weight:bold}.member{display:flex;align-items:center;gap:13px;padding:12px 15px;border-bottom:1px solid #202c33;cursor:pointer;min-height:77px}.member img{width:52px;height:52px;border-radius:50%;object-fit:cover;background:#202c33;flex-shrink:0}.member-info{flex:1;min-width:0}.member-name{font-weight:bold;font-size:15px}.member-detail{color:#8696a0;font-size:12px;margin-top:4px}.status{width:9px;height:9px;border-radius:50%;background:#25d366}.empty{text-align:center;padding:45px 20px;color:#667781}.loading{text-align:center;padding:35px;color:#8696a0}.error-box{margin:20px 15px;padding:14px;border-radius:12px;background:#3b2024;color:#ff9b9b;font-size:13px}.bottom{position:fixed;bottom:0;left:0;right:0;height:65px;background:#202c33;display:flex;justify-content:space-around;align-items:center;z-index:20}.nav{background:none;color:#8696a0;font-size:11px;text-align:center;min-width:75px;border:0}.nav span{display:block;font-size:20px}.nav.active{color:#25d366}.new-chat{position:fixed;right:20px;bottom:82px;width:55px;height:55px;border-radius:18px;background:#25d366;color:#07130b;font-size:25px;z-index:15;border:0}.chat{display:none;position:fixed;inset:0;background:#0b141a;z-index:50}.chat.open{display:block}.chat-header{height:64px;background:#202c33;display:flex;align-items:center;gap:10px;padding:0 12px}.back{background:none;color:white;font-size:25px;padding:5px 8px;border:0}.chat-header img{width:42px;height:42px;border-radius:50%}.chat-user{flex:1}.messages{position:absolute;top:64px;bottom:65px;left:0;right:0;overflow-y:auto;padding:15px 10px;background:#0b141a}.message{max-width:78%;padding:9px 12px;margin:5px 0;border-radius:9px;font-size:14px;word-wrap:break-word}.message.mine{margin-left:auto;background:#005c4b}.message.theirs{margin-right:auto;background:#202c33}.message-time{display:block;color:#b2c0c8;font-size:9px;text-align:right;margin-top:4px}.message-form{position:absolute;bottom:0;left:0;right:0;height:65px;background:#202c33;display:flex;gap:8px;align-items:center;padding:8px}.message-form input{flex:1;border:0;outline:0;border-radius:24px;background:#111b21;color:white;padding:13px 16px}.send{width:45px;height:45px;border-radius:50%;background:#25d366;color:#07130b;font-size:18px;flex-shrink:0;border:0}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:80;align-items:flex-end;justify-content:center}.modal.open{display:flex}.modal-card{width:100%;max-width:600px;background:#202c33;border-radius:20px 20px 0 0;padding:25px;max-height:85vh;overflow-y:auto}.profile-center{text-align:center}.profile-center img{width:100px;height:100px;border-radius:50%}.profile-name{font-size:21px;font-weight:bold;margin-top:12px}.profile-info{color:#8696a0;margin-top:8px;line-height:1.5}.close{width:100%;margin-top:20px;padding:13px;border-radius:25px;background:#374952;color:white;border:0}.logout{width:100%;margin-top:10px;padding:13px;border-radius:25px;background:#3b2024;color:#ff9b9b;font-weight:bold;border:0}.startup{position:fixed;inset:0;background:#0b141a;z-index:200;display:flex;align-items:center;justify-content:center;padding:25px}.startup.hidden{display:none!important}.startup-box{width:100%;max-width:420px;text-align:center;background:#202c33;padding:30px 22px;border-radius:20px}.startup-btn{width:100%;padding:14px;margin-top:15px;border-radius:25px;background:#25d366;color:#07130b;font-weight:bold;border:0}
 </style>
 </head>
 <body>
-<div id="startup" class="startup"><div class="startup-box"><h2>JDA Networks</h2><p id="startupText">Checking your account...</p><button id="startupButton" class="startup-btn hidden" type="button">Go to Login</button></div></div>
-<header class="header"><div class="brand"><img src="./logo.png" alt="JDA Networks" onerror="this.style.display='none'"><div class="brand-title">JDA Networks</div></div><div class="header-buttons"><button class="icon-btn hidden" id="adminBtn" type="button">🛡️</button><button class="icon-btn" id="profileBtn" type="button">👤</button></div></header>
-<main class="container"><div class="search"><input id="searchInput" type="text" placeholder="Search JDA Networks" autocomplete="off"></div><div class="filters"><button class="filter active" data-filter="all" type="button">All</button><button class="filter" data-filter="student" type="button">Students</button><button class="filter" data-filter="staff" type="button">Staff</button><button class="filter" data-filter="Form One" type="button">Form One</button><button class="filter" data-filter="Form Two" type="button">Form Two</button><button class="filter" data-filter="Form Three" type="button">Form Three</button><button class="filter" data-filter="Form Four" type="button">Form Four</button><button class="filter" data-filter="Form Five" type="button">Form Five</button><button class="filter" data-filter="Form Six" type="button">Form Six</button></div><div class="section" id="sectionTitle">JDA NETWORK MEMBERS</div><div id="members"><div class="loading">Loading JDA Network members...</div></div></main>
+<div id="startup" class="startup"><div class="startup-box"><h2>JDA Networks</h2><p id="startupText">Checking your account...</p><p id="debug" style="font-size:10px;color:#667781;margin-top:10px"></p><button id="startupButton" class="startup-btn" style="display:none" type="button">Go to Login</button><button id="forceBtn" class="startup-btn" style="display:none;background:#374952;color:white;margin-top:10px" type="button">Force Fix My Account</button></div></div>
+<header class="header"><div class="brand"><div class="brand-title">JDA Networks</div></div><div style="display:flex;gap:8px"><button class="icon-btn" id="adminBtn" style="display:none" type="button">🛡️</button><button class="icon-btn" id="profileBtn" type="button">👤</button></div></header>
+<main class="container"><div class="search"><input id="searchInput" type="text" placeholder="Search JDA Networks"></div><div class="filters"><button class="filter active" data-filter="all" type="button">All</button><button class="filter" data-filter="student" type="button">Students</button><button class="filter" data-filter="staff" type="button">Staff</button></div><div class="section" id="sectionTitle">JDA NETWORK MEMBERS</div><div id="members"><div class="loading">Loading members...</div></div></main>
 <button class="new-chat" id="newChat" type="button">✎</button>
 <nav class="bottom"><button class="nav active" id="chatNav" type="button"><span>💬</span>Chats</button><button class="nav" id="networkBtn" type="button"><span>👥</span>Network</button></nav>
-<div id="chat" class="chat"><header class="chat-header"><button class="back" id="closeChat" type="button">←</button><img id="chatPhoto" alt=""><div class="chat-user"><strong id="chatName">Chat</strong><small id="chatStatus">JDA Networks</small></div></header><div id="messages" class="messages"><div class="loading">Loading messages...</div></div><form id="messageForm" class="message-form"><input id="messageInput" type="text" placeholder="Type a message" maxlength="5000" autocomplete="off"><button class="send" type="submit">➤</button></form></div>
-<div id="profileModal" class="modal"><div class="modal-card"><div class="profile-center"><img id="myPhoto" alt="Profile photo"><div id="myName" class="profile-name">JDA Member</div><div id="myInfo" class="profile-info">Loading...</div></div><button id="closeProfile" class="close" type="button">Close</button><button id="logoutBtn" class="logout" type="button">Logout</button></div></div>
+<div id="chat" class="chat"><header class="chat-header"><button class="back" id="closeChat" type="button">←</button><img id="chatPhoto"><div class="chat-user"><strong id="chatName">Chat</strong><small id="chatStatus"></small></div></header><div id="messages" class="messages"></div><form id="messageForm" class="message-form"><input id="messageInput" type="text" placeholder="Type a message"><button class="send" type="submit">➤</button></form></div>
+<div id="profileModal" class="modal"><div class="modal-card"><div class="profile-center"><img id="myPhoto"><div id="myName" class="profile-name"></div><div id="myInfo" class="profile-info"></div></div><button id="closeProfile" class="close" type="button">Close</button><button id="logoutBtn" class="logout" type="button">Logout & Clear Data</button></div></div>
+
 <script type="module">
-import { auth, db } from "./firebase.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { collection, query, where, getDocs, getDoc, doc, setDoc, addDoc, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-const startup=document.getElementById("startup"),startupText=document.getElementById("startupText"),startupButton=document.getElementById("startupButton"),membersEl=document.getElementById("members"),searchInput=document.getElementById("searchInput"),filters=document.querySelectorAll(".filter"),sectionTitle=document.getElementById("sectionTitle"),adminBtn=document.getElementById("adminBtn"),profileBtn=document.getElementById("profileBtn"),profileModal=document.getElementById("profileModal"),closeProfile=document.getElementById("closeProfile"),logoutBtn=document.getElementById("logoutBtn"),myPhoto=document.getElementById("myPhoto"),myName=document.getElementById("myName"),myInfo=document.getElementById("myInfo"),newChat=document.getElementById("newChat"),networkBtn=document.getElementById("networkBtn"),chatNav=document.getElementById("chatNav"),chat=document.getElementById("chat"),closeChat=document.getElementById("closeChat"),chatPhoto=document.getElementById("chatPhoto"),chatName=document.getElementById("chatName"),chatStatus=document.getElementById("chatStatus"),messagesEl=document.getElementById("messages"),messageForm=document.getElementById("messageForm"),messageInput=document.getElementById("messageInput");
-let currentUser=null,currentProfile=null,allMembers=[],currentFilter="all",currentChatUser=null,unsubscribeMessages=null,contactMode=false;
-const SUPER_ADMIN="jonathanmentor62@gmail.com";
-const DEFAULT_PHOTO="data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" fill="#202c33"/><circle cx="60" cy="43" r="22" fill="#6b7c85"/><path d="M25 105c4-24 18-37 35-37s31 13 35 37" fill="#6b7c85"/></svg>`);
-function safe(v){return String(v??"");}
-function escapeHTML(v){return safe(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
-function photoUrl(url){if(typeof url==="string"&&(url.startsWith("http://")||url.startsWith("https://")))return url;return DEFAULT_PHOTO;}
-function getMemberClass(m){return safe(m.class||m.studentClass||"").trim();}
-function getMemberDetail(m){if(m.accountType==="student"){const c=getMemberClass(m),s=safe(m.stream).trim();if(c&&s)return c+" • "+s;if(c)return c;return"Student";}const d=safe(m.department).trim();return d?`Staff • ${d}`:"Staff";}
-function renderMembers(){
- contactMode=false;sectionTitle.textContent="JDA NETWORK MEMBERS";
- const term=searchInput.value.trim().toLowerCase();
- let filtered=[...allMembers];
- if(currentFilter!=="all")filtered=filtered.filter(member=>{if(currentFilter==="student")return member.accountType==="student";if(currentFilter==="staff")return member.accountType==="staff";return getMemberClass(member)===currentFilter;});
- if(term)filtered=filtered.filter(member=>safe(member.realName).toLowerCase().includes(term)||safe(member.jdaNumber).toLowerCase().includes(term)||safe(member.department).toLowerCase().includes(term)||getMemberClass(member).toLowerCase().includes(term));
- if(!filtered.length){membersEl.innerHTML=`<div class="empty">No approved JDA Network members found.<br><small style="color:#8696a0">Found ${allMembers.length} total approved - try filter All</small></div>`;return;}
- membersEl.innerHTML=filtered.map(member=>{const name=safe(member.realName).trim()||"Unknown";const photo=photoUrl(member.photoURL||member.photoUrl||member.photo);return`<div class="member" data-uid="${escapeHTML(member.uid)}"><img src="${escapeHTML(photo)}" alt="" onerror="this.onerror=null;this.src='${DEFAULT_PHOTO}'"><div class="member-info"><div class="member-name">${escapeHTML(name)}</div><div class="member-detail">${escapeHTML(getMemberDetail(member))}</div></div><div class="status"></div></div>`;}).join("");
- membersEl.querySelectorAll(".member").forEach(el=>{el.addEventListener("click",function(){const uid=this.dataset.uid;const member=allMembers.find(item=>item.uid===uid);if(member)openChat(member);});});
-}
-async function loadMembers(){
- membersEl.innerHTML=`<div class="loading">Loading JDA Network members...</div>`;
- try{
-  let usersSnap, membersSnap;
-  try{ usersSnap=await getDocs(query(collection(db,"users"),where("status","==","approved"))); }catch(e){ usersSnap={docs:[]}; }
-  try{ membersSnap=await getDocs(query(collection(db,"members"),where("status","==","approved"))); }catch(e){ membersSnap={docs:[]}; }
-  const uniqueMembers=new Map();
-  [...usersSnap.docs, ...membersSnap.docs].forEach(item=>{
-   const data=item.data();
-   const uid=data.uid||item.id;
-   const realName=safe(data.realName||data.fullName||data.displayName||data.username||data.name).trim();
-   if(!realName) return;
-   if(uniqueMembers.has(uid)) return;
-   uniqueMembers.set(uid,{id:item.id,uid:uid,...data,realName:realName});
-  });
-  allMembers=Array.from(uniqueMembers.values());
-  if(currentUser) allMembers=allMembers.filter(member=>member.uid!==currentUser.uid);
-  allMembers.sort((a,b)=>safe(a.realName).localeCompare(safe(b.realName)));
-  renderMembers();
- }catch(error){
-  membersEl.innerHTML=`<div class="error-box"><strong>Could not load members.</strong><br>${escapeHTML(error?.message||"")}</div>`;
- }
-}
-async function checkAdmin(){
- adminBtn.classList.add("hidden");
- if(!currentUser) return false;
- if(safe(currentUser.email).toLowerCase()===SUPER_ADMIN.toLowerCase()){adminBtn.classList.remove("hidden");return true;}
- try{const adminDoc=await getDoc(doc(db,"admins",currentUser.uid));if(adminDoc.exists()){adminBtn.classList.remove("hidden");return true;}}catch(e){}
- return false;
-}
-profileBtn.addEventListener("click",()=>{
- if(!currentProfile){alert("Profile still loading.");return;}
- myPhoto.src=photoUrl(currentProfile.photoURL);myPhoto.onerror=function(){this.onerror=null;this.src=DEFAULT_PHOTO;};
- myName.textContent=currentProfile.realName||"JDA Member";
- myInfo.innerHTML=`<strong>${escapeHTML(currentProfile.accountType==="student"?"Student":"Staff")}</strong><br>${escapeHTML(getMemberDetail(currentProfile))}<br>JDA Number: ${escapeHTML(currentProfile.jdaNumber||"")}<br>Email: ${escapeHTML(currentProfile.email||currentUser?.email||"")}`;
- profileModal.classList.add("open");
-});
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs, getDoc, doc, setDoc, addDoc, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
+  authDomain: "jda-network-fabde.firebaseapp.com",
+  projectId: "jda-network-fabde",
+  storageBucket: "jda-network-fabde.firebasestorage.app",
+  messagingSenderId: "383915852673",
+  appId: "1:383915852673:web:4b185c0387ed0bbad1de80"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const startup=document.getElementById("startup"),startupText=document.getElementById("startupText"),debug=document.getElementById("debug"),startupButton=document.getElementById("startupButton"),forceBtn=document.getElementById("forceBtn"),membersEl=document.getElementById("members"),searchInput=document.getElementById("searchInput"),filters=document.querySelectorAll(".filter"),sectionTitle=document.getElementById("sectionTitle"),adminBtn=document.getElementById("adminBtn"),profileBtn=document.getElementById("profileBtn"),profileModal=document.getElementById("profileModal"),closeProfile=document.getElementById("closeProfile"),logoutBtn=document.getElementById("logoutBtn"),myPhoto=document.getElementById("myPhoto"),myName=document.getElementById("myName"),myInfo=document.getElementById("myInfo"),newChat=document.getElementById("newChat"),networkBtn=document.getElementById("networkBtn"),chatNav=document.getElementById("chatNav"),chat=document.getElementById("chat"),closeChat=document.getElementById("closeChat"),chatPhoto=document.getElementById("chatPhoto"),chatName=document.getElementById("chatName"),chatStatus=document.getElementById("chatStatus"),messagesEl=document.getElementById("messages"),messageForm=document.getElementById("messageForm"),messageInput=document.getElementById("messageInput");
+
+let currentUser=null,currentProfile=null,allMembers=[],currentFilter="all",currentChatUser=null,unsubscribeMessages=null;
+const DEFAULT_PHOTO="data:image/svg+xml;charset=UTF-8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#202c33"/><circle cx="60" cy="43" r="22" fill="#6b7c85"/><path d="M25 105c4-24 18-37 35-37s31 13 35 37" fill="#6b7c85"/></svg>`);
+function escapeHTML(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");}
+function photoUrl(u){return (typeof u==="string"&&(u.startsWith("http://")||u.startsWith("https://")))?u:DEFAULT_PHOTO;}
+function getDetail(m){if(m.accountType==="student"){const c=m.class||m.studentClass||"";return c?c:"Student";}return m.department?`Staff • ${m.department}`:"Staff";}
+function renderMembers(){const term=searchInput.value.trim().toLowerCase();let filtered=[...allMembers];if(currentFilter!=="all")filtered=filtered.filter(m=>m.accountType===currentFilter);if(term)filtered=filtered.filter(m=>(m.realName||"").toLowerCase().includes(term));if(!filtered.length){membersEl.innerHTML=`<div class="empty">No members</div>`;return;}membersEl.innerHTML=filtered.map(m=>`<div class="member" data-uid="${m.uid}"><img src="${escapeHTML(photoUrl(m.photoURL))}" onerror="this.src='${DEFAULT_PHOTO}'"><div class="member-info"><div class="member-name">${escapeHTML(m.realName||"Unknown")}</div><div class="member-detail">${escapeHTML(getDetail(m))}</div></div><div class="status"></div></div>`).join("");membersEl.querySelectorAll(".member").forEach(el=>{el.addEventListener("click",()=>{const mem=allMembers.find(x=>x.uid===el.dataset.uid);if(mem)openChat(mem);});});}
+async function loadMembers(){try{let snap;try{snap=await getDocs(query(collection(db,"users"),where("status","==","approved")));}catch(e){snap={docs:[]};}const map=new Map();snap.docs.forEach(d=>{const data=d.data();const uid=data.uid||d.id;if(!data.realName)return;if(map.has(uid))return;map.set(uid,{uid,...data});});allMembers=Array.from(map.values()).filter(m=>m.uid!==currentUser.uid);allMembers.sort((a,b)=>(a.realName||"").localeCompare(b.realName||""));renderMembers();}catch(e){membersEl.innerHTML=`<div class="error-box">${escapeHTML(e.message)}</div>`;}}
+function getConvId(a,b){return[a,b].sort().join("_");}
+async function openChat(member){if(!member)return;currentChatUser=member;chatPhoto.src=photoUrl(member.photoURL);chatName.textContent=member.realName;chatStatus.textContent=getDetail(member);chat.classList.add("open");messagesEl.innerHTML=`<div class="loading">Loading...</div>`;if(unsubscribeMessages){unsubscribeMessages();}const id=getConvId(currentUser.uid,member.uid);try{const ref=doc(db,"conversations",id);const s=await getDoc(ref);if(!s.exists()){await setDoc(ref,{participantIds:[currentUser.uid,member.uid],createdAt:serverTimestamp(),updatedAt:serverTimestamp(),lastMessage:""});}const q=query(collection(db,"conversations",id,"messages"),orderBy("createdAt","asc"));unsubscribeMessages=onSnapshot(q,sn=>{if(sn.empty){messagesEl.innerHTML=`<div class="empty">No messages yet</div>`;return;}messagesEl.innerHTML="";sn.forEach(d=>{const m=d.data();const mine=m.senderId===currentUser.uid;const b=document.createElement("div");b.className="message "+(mine?"mine":"theirs");b.innerHTML=`<div>${escapeHTML(m.text)}</div>`;messagesEl.appendChild(b);});messagesEl.scrollTop=messagesEl.scrollHeight;});}catch(e){messagesEl.innerHTML=`<div class="error-box">${escapeHTML(e.message)}</div>`;}}
+closeChat.addEventListener("click",()=>{chat.classList.remove("open");if(unsubscribeMessages)unsubscribeMessages();});
+messageForm.addEventListener("submit",async e=>{e.preventDefault();const txt=messageInput.value.trim();if(!txt||!currentChatUser)return;const id=getConvId(currentUser.uid,currentChatUser.uid);messageInput.disabled=true;try{await addDoc(collection(db,"conversations",id,"messages"),{senderId:currentUser.uid,receiverId:currentChatUser.uid,text:txt,createdAt:serverTimestamp()});await setDoc(doc(db,"conversations",id),{updatedAt:serverTimestamp(),lastMessage:txt},{merge:true});messageInput.value="";}catch(err){alert(err.message);}messageInput.disabled=false;});
+filters.forEach(b=>{b.addEventListener("click",()=>{filters.forEach(x=>x.classList.remove("active"));b.classList.add("active");currentFilter=b.dataset.filter;renderMembers();});});
+searchInput.addEventListener("input",renderMembers);
+profileBtn.addEventListener("click",()=>{if(!currentProfile)return;myPhoto.src=photoUrl(currentProfile.photoURL);myName.textContent=currentProfile.realName;myInfo.innerHTML=`${escapeHTML(currentProfile.accountType)}<br>${escapeHTML(getDetail(currentProfile))}<br>${escapeHTML(currentProfile.email||"")}`;profileModal.classList.add("open");});
 closeProfile.addEventListener("click",()=>profileModal.classList.remove("open"));
-profileModal.addEventListener("click",e=>{if(e.target===profileModal)profileModal.classList.remove("open");});
-logoutBtn.addEventListener("click",async()=>{try{await signOut(auth);window.location.href="./index.html";}catch(error){alert("Logout failed:\n\n"+error.message);}});
-adminBtn.addEventListener("click",()=>{window.location.href="./admin.html";});
-newChat.addEventListener("click",()=>{chatNav.classList.add("active");networkBtn.classList.remove("active");contactMode=false;renderMembers();searchInput.focus();});
-function getConversationId(uid1,uid2){return[uid1,uid2].sort().join("_");}
-async function openChat(member){
- if(!currentUser||!member||!member.uid) return;
- if(member.uid===currentUser.uid){alert("You cannot chat with yourself.");return;}
- currentChatUser=member;chatPhoto.src=photoUrl(member.photoURL);chatPhoto.onerror=function(){this.onerror=null;this.src=DEFAULT_PHOTO;};chatName.textContent=member.realName;chatStatus.textContent=getMemberDetail(member);chat.classList.add("open");messagesEl.innerHTML=`<div class="loading">Loading messages...</div>`;
- if(unsubscribeMessages){unsubscribeMessages();unsubscribeMessages=null;}
- const conversationId=getConversationId(currentUser.uid,member.uid);
+logoutBtn.addEventListener("click",async()=>{localStorage.clear();sessionStorage.clear();await signOut(auth);location.href="./index.html";});
+newChat.addEventListener("click",()=>{searchInput.focus();});
+adminBtn.addEventListener("click",()=>location.href="./admin.html");
+
+// TIMEOUT - NEVER STUCK AGAIN
+let didFinish=false;
+const timeout=setTimeout(()=>{
+ if(didFinish) return;
+ debug.textContent="Timeout after 7s - Firebase not responding";
+ startupText.innerHTML=`<b style="color:#ff9b9b">⚠️ Timeout - Stuck Detected</b><br><br>Firebase not responding.<br>Tap Force Fix`;
+ startupButton.style.display="block";
+ startupButton.textContent="Go to Login (Clear Data)";
+ startupButton.onclick=()=>{localStorage.clear();sessionStorage.clear();location.href="./index.html";};
+ forceBtn.style.display="block";
+},7000);
+
+onAuthStateChanged(auth,async user=>{
+ debug.textContent="Auth: "+(user?user.email:"null");
+ if(!user){
+  clearTimeout(timeout);didFinish=true;
+  startupText.textContent="Not logged in";
+  startupButton.style.display="block";
+  startupButton.textContent="Go to Login";
+  startupButton.onclick=()=>location.href="./index.html";
+  return;
+ }
+ currentUser=user;
+ startupText.textContent="Checking profile: "+user.email;
+ forceBtn.style.display="block";
+ forceBtn.textContent="Force Approve Me";
+ forceBtn.onclick=async()=>{
+  startupText.textContent="Force approving "+user.email+"...";
+  try{
+   await setDoc(doc(db,"users",user.uid),{
+    uid:user.uid,email:user.email,realName:user.displayName||user.email.split('@')[0],status:"approved",approved:true,accountType:"student",class:"Form One",createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+   },{merge:true});
+   startupText.innerHTML="✅ FORCED APPROVED!<br>"+user.email;
+   setTimeout(()=>location.reload(),1500);
+  }catch(e){startupText.textContent="Force error: "+e.message;debug.textContent=e.code;}
+ };
+
  try{
-  const conversationRef=doc(db,"conversations",conversationId);const conversationSnap=await getDoc(conversationRef);
-  if(!conversationSnap.exists()){await setDoc(conversationRef,{participantIds:[currentUser.uid,member.uid],createdAt:serverTimestamp(),updatedAt:serverTimestamp(),lastMessage:""});}
-  const messagesQuery=query(collection(db,"conversations",conversationId,"messages"),orderBy("createdAt","asc"));
-  unsubscribeMessages=onSnapshot(messagesQuery,snapshot=>{
-   if(snapshot.empty){messagesEl.innerHTML=`<div class="empty">No messages yet.<br>Send the first message.</div>`;return;}
-   messagesEl.innerHTML="";snapshot.forEach(messageDoc=>{const message=messageDoc.data();const mine=message.senderId===currentUser.uid;const bubble=document.createElement("div");bubble.className="message "+(mine?"mine":"theirs");bubble.innerHTML=`<div>${escapeHTML(message.text)}</div><span class="message-time">${escapeHTML(message.createdAt?.toDate?message.createdAt.toDate().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}):"")}</span>`;messagesEl.appendChild(bubble);});messagesEl.scrollTop=messagesEl.scrollHeight;
-  },error=>{messagesEl.innerHTML=`<div class="error-box">Unable to load messages.<br>${escapeHTML(error.message||"")}</div>`;});
-  setTimeout(()=>messageInput.focus(),250);
- }catch(error){messagesEl.innerHTML=`<div class="error-box"><strong>Could not open this chat.</strong><br>${escapeHTML(error.message||"")}</div>`;}
-}
-closeChat.addEventListener("click",()=>{chat.classList.remove("open");currentChatUser=null;if(unsubscribeMessages){unsubscribeMessages();unsubscribeMessages=null;}messageInput.value="";});
-messageForm.addEventListener("submit",async event=>{
- event.preventDefault();if(!currentUser||!currentChatUser) return
+  const snap=await getDoc(doc(db,"users",user.uid));
+  debug.textContent="Profile exists: "+snap.exists();
+  if(!snap.exists()){
+   await setDoc(doc(db,"users",user.uid),{
+    uid:user.uid,email:user.email,realName:user.displayName||user.email.split('@')[0],jdaNumber:"",accountType:"student",class:"Form One",status:"pending",approved:false,createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+   });
+   clearTimeout(timeout);didFinish=true;
+   startupText.innerHTML=`✅ Profile Created!<br><br><b>${escapeHTML(user.email)}</b><br>is PENDING APPROVAL<br><br>Admin will approve you`;
+   startupButton.style.display="block";
+   startupButton.textContent="Back to Login";
+   startupButton.onclick=()=>location.href="./index.html";
+   return;
+  }
+  currentProfile={id:snap.id,...snap.data()};
+  if(currentProfile.status!=="approved"){
+   clearTimeout(timeout);didFinish=true;
+   startupText.innerHTML=`⏳ Waiting Approval<br><br><b>${escapeHTML(currentProfile.email||user.email)}</b><br>Status: ${escapeHTML(currentProfile.status)}`;
+   startupButton.style.display="block";
+   startupButton.textContent="Back to Login";
+   startupButton.onclick=()=>location.href="./index.html";
+   forceBtn.style.display="block";
+   return;
+  }
+  // APPROVED
+  clearTimeout(timeout);didFinish=true;
+  startup.classList.add("hidden");
+  if((user.email||"").toLowerCase()==="jonathanmentor62@gmail.com")adminBtn.style.display="block";
+  else{try{const a=await getDoc(doc(db,"admins",user.uid));if(a.exists())adminBtn.style.display="block";}catch{}}
+  await loadMembers();
+ }catch(e){
+  clearTimeout(timeout);didFinish=true;
+  startupText.innerHTML=`<b>Error:</b> ${escapeHTML(e.message)}<br><code>${escapeHTML(e.code||"")}</code>`;
+  debug.textContent=e.stack||"";
+  startupButton.style.display="block";
+  startupButton.textContent="Clear & Go Login";
+  startupButton.onclick=()=>{localStorage.clear();sessionStorage.clear();location.href="./index.html";};
+  forceBtn.style.display="block";
+ }
+});
+</script>
+</body>
+</html>

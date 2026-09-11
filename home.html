@@ -10,9 +10,9 @@
 
 body{
   margin:0;
-  font-family:Arial,sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:#0b141a;
-  color:white;
+  color:#fff;
 }
 
 button,input{
@@ -22,6 +22,10 @@ button,input{
 button{
   cursor:pointer;
   border:0;
+}
+
+.hidden{
+  display:none!important;
 }
 
 .header{
@@ -71,7 +75,7 @@ button{
 .container{
   max-width:900px;
   margin:auto;
-  padding-bottom:80px;
+  padding-bottom:85px;
 }
 
 .search{
@@ -86,6 +90,7 @@ button{
   border-radius:25px;
   background:#202c33;
   color:white;
+  font-size:14px;
 }
 
 .search input::placeholder{
@@ -97,14 +102,20 @@ button{
   gap:8px;
   overflow-x:auto;
   padding:0 12px 12px;
+  scrollbar-width:none;
+}
+
+.filters::-webkit-scrollbar{
+  display:none;
 }
 
 .filter{
   white-space:nowrap;
-  padding:8px 15px;
+  padding:9px 15px;
   border-radius:18px;
   background:#202c33;
   color:#aebac1;
+  font-size:13px;
 }
 
 .filter.active{
@@ -128,7 +139,7 @@ button{
   cursor:pointer;
 }
 
-.member:hover{
+.member:active{
   background:#202c33;
 }
 
@@ -137,6 +148,7 @@ button{
   height:52px;
   border-radius:50%;
   object-fit:cover;
+  background:#202c33;
 }
 
 .member-info{
@@ -147,6 +159,9 @@ button{
 .member-name{
   font-weight:bold;
   font-size:15px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .member-detail{
@@ -160,12 +175,30 @@ button{
   height:9px;
   border-radius:50%;
   background:#25d366;
+  flex-shrink:0;
 }
 
 .empty{
   text-align:center;
   padding:45px 20px;
   color:#667781;
+  font-size:14px;
+}
+
+.loading{
+  text-align:center;
+  padding:35px 20px;
+  color:#8696a0;
+}
+
+.error-box{
+  margin:20px 15px;
+  padding:14px;
+  border-radius:12px;
+  background:#3b2024;
+  color:#ff9b9b;
+  font-size:13px;
+  line-height:1.5;
 }
 
 .bottom{
@@ -186,6 +219,7 @@ button{
   color:#8696a0;
   font-size:11px;
   text-align:center;
+  min-width:75px;
 }
 
 .nav span{
@@ -234,7 +268,7 @@ button{
   background:none;
   color:white;
   font-size:25px;
-  padding:5px;
+  padding:5px 8px;
 }
 
 .chat-header img{
@@ -246,10 +280,14 @@ button{
 
 .chat-user{
   flex:1;
+  min-width:0;
 }
 
 .chat-user strong{
   display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .chat-user small{
@@ -289,7 +327,7 @@ button{
 
 .message-time{
   display:block;
-  color:#8696a0;
+  color:#b2c0c8;
   font-size:9px;
   text-align:right;
   margin-top:4px;
@@ -345,6 +383,8 @@ button{
   background:#202c33;
   border-radius:20px 20px 0 0;
   padding:25px;
+  max-height:85vh;
+  overflow-y:auto;
 }
 
 .profile-center{
@@ -356,6 +396,7 @@ button{
   height:100px;
   border-radius:50%;
   object-fit:cover;
+  background:#111b21;
 }
 
 .profile-name{
@@ -367,26 +408,44 @@ button{
 .profile-info{
   color:#8696a0;
   margin-top:8px;
+  line-height:1.5;
+}
+
+.profile-action{
+  width:100%;
+  padding:13px;
+  border-radius:25px;
+  background:#25d366;
+  color:#06130b;
+  font-weight:bold;
+  margin-top:15px;
 }
 
 .close{
   width:100%;
-  margin-top:20px;
+  margin-top:10px;
   padding:13px;
   border-radius:25px;
   background:#374952;
   color:white;
 }
 
+.logout{
+  width:100%;
+  margin-top:10px;
+  padding:13px;
+  border-radius:25px;
+  background:#3b2024;
+  color:#ff9b9b;
+  font-weight:bold;
+}
+
 @media(min-width:700px){
   .bottom{
     left:50%;
     transform:translateX(-50%);
+    width:100%;
     max-width:900px;
-  }
-
-  .new-chat{
-    right:30px;
   }
 }
 </style>
@@ -394,125 +453,1541 @@ button{
 
 <body>
 
-<!-- HEADER -->
+<!-- =========================
+     MAIN HOME
+========================= -->
 
-<header class="header">
+<div id="homePage">
 
-  <div class="brand">
+  <header class="header">
+
+    <div class="brand">
+
+      <img
+        src="./logo.png"
+        alt="JDA Networks"
+        onerror="this.style.display='none'"
+      >
+
+      <div class="brand-title">
+        JDA Networks
+      </div>
+
+    </div>
+
+    <div class="header-buttons">
+
+      <button
+        class="icon-btn hidden"
+        id="adminBtn"
+        type="button"
+        title="Admin"
+      >
+        🛡️
+      </button>
+
+      <button
+        class="icon-btn"
+        id="profileBtn"
+        type="button"
+        title="Profile"
+      >
+        👤
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <div class="search">
+
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Search JDA Networks"
+        autocomplete="off"
+      >
+
+    </div>
+
+
+    <div class="filters">
+
+      <button class="filter active" data-filter="all">
+        All
+      </button>
+
+      <button class="filter" data-filter="student">
+        Students
+      </button>
+
+      <button class="filter" data-filter="staff">
+        Staff
+      </button>
+
+      <button class="filter" data-filter="Form One">
+        Form One
+      </button>
+
+      <button class="filter" data-filter="Form Two">
+        Form Two
+      </button>
+
+      <button class="filter" data-filter="Form Three">
+        Form Three
+      </button>
+
+      <button class="filter" data-filter="Form Four">
+        Form Four
+      </button>
+
+      <button class="filter" data-filter="Form Five">
+        Form Five
+      </button>
+
+      <button class="filter" data-filter="Form Six">
+        Form Six
+      </button>
+
+    </div>
+
+
+    <div class="section">
+      JDA NETWORK MEMBERS
+    </div>
+
+
+    <div id="members">
+
+      <div class="loading">
+        Loading JDA Network members...
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <button
+    class="new-chat"
+    id="newChat"
+    type="button"
+    title="New chat"
+  >
+    ✎
+  </button>
+
+
+  <nav class="bottom">
+
+    <button
+      class="nav active"
+      id="chatNav"
+      type="button"
+    >
+      <span>💬</span>
+      Chats
+    </button>
+
+    <button
+      class="nav"
+      id="networkBtn"
+      type="button"
+    >
+      <span>👥</span>
+      Network
+    </button>
+
+  </nav>
+
+</div>
+
+
+<!-- =========================
+     CHAT
+========================= -->
+
+<div id="chat" class="chat">
+
+  <header class="chat-header">
+
+    <button
+      class="back"
+      id="closeChat"
+      type="button"
+    >
+      ←
+    </button>
 
     <img
-      src="./logo.png"
-      onerror="this.style.display='none'"
+      id="chatPhoto"
+      alt=""
     >
 
-    <div class="brand-title">
-      JDA Networks
+    <div class="chat-user">
+
+      <strong id="chatName">
+        Chat
+      </strong>
+
+      <small id="chatStatus">
+        JDA Networks
+      </small>
+
+    </div>
+
+  </header>
+
+
+  <div id="messages" class="messages">
+
+    <div class="loading">
+      Loading messages...
     </div>
 
   </div>
 
-  <div class="header-buttons">
 
-    <button
-      class="icon-btn"
-      id="adminBtn"
-      style="display:none"
-    >
-      🛡️
-    </button>
-
-    <button
-      class="icon-btn"
-      id="profileBtn"
-    >
-      👤
-    </button>
-
-  </div>
-
-</header>
-
-
-<!-- MAIN -->
-
-<main class="container">
-
-  <div class="search">
+  <form id="messageForm" class="message-form">
 
     <input
-      id="searchInput"
+      id="messageInput"
       type="text"
-      placeholder="Search JDA Networks"
+      placeholder="Type a message"
+      maxlength="5000"
+      autocomplete="off"
     >
 
+    <button
+      class="send"
+      type="submit"
+    >
+      ➤
+    </button>
+
+  </form>
+
+</div>
+
+
+<!-- =========================
+     PROFILE MODAL
+========================= -->
+
+<div id="profileModal" class="modal">
+
+  <div class="modal-card">
+
+    <div class="profile-center">
+
+      <img
+        id="myPhoto"
+        alt="Profile photo"
+      >
+
+      <div
+        id="myName"
+        class="profile-name"
+      >
+        JDA Member
+      </div>
+
+      <div
+        id="myInfo"
+        class="profile-info"
+      >
+        Loading...
+      </div>
+
+    </div>
+
+
+    <button
+      id="closeProfile"
+      class="close"
+      type="button"
+    >
+      Close
+    </button>
+
+
+    <button
+      id="logoutBtn"
+      class="logout"
+      type="button"
+    >
+      Logout
+    </button>
+
   </div>
 
-
-  <div class="filters">
-
-    <button class="filter active" data-filter="all">
-      All
-    </button>
-
-    <button class="filter" data-filter="student">
-      Students
-    </button>
-
-    <button class="filter" data-filter="staff">
-      Staff
-    </button>
-
-    <button class="filter" data-filter="Form One">
-      Form One
-    </button>
-
-    <button class="filter" data-filter="Form Two">
-      Form Two
-    </button>
-
-    <button class="filter" data-filter="Form Three">
-      Form Three
-    </button>
-
-    <button class="filter" data-filter="Form Four">
-      Form Four
-    </button>
-
-    <button class="filter" data-filter="Form Five">
-      Form Five
-    </button>
-
-    <button class="filter" data-filter="Form Six">
-      Form Six
-    </button>
-
-  </div>
+</div>
 
 
-  <div class="section">
-    JDA NETWORK MEMBERS
-  </div>
+<script type="module">
 
-  <div id="members"></div>
+/* =========================
+   FIREBASE
+========================= */
 
-</main>
+import {
+  auth,
+  db
+} from "./firebase.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  doc,
+  setDoc,
+  addDoc,
+  onSnapshot,
+  orderBy,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-<!-- NEW CHAT -->
+/* =========================
+   ELEMENTS
+========================= */
 
-<button class="new-chat" id="newChat">
-  ✎
-</button>
+const membersEl =
+  document.getElementById("members");
+
+const searchInput =
+  document.getElementById("searchInput");
+
+const filters =
+  document.querySelectorAll(".filter");
+
+const adminBtn =
+  document.getElementById("adminBtn");
+
+const profileBtn =
+  document.getElementById("profileBtn");
+
+const profileModal =
+  document.getElementById("profileModal");
+
+const closeProfile =
+  document.getElementById("closeProfile");
+
+const logoutBtn =
+  document.getElementById("logoutBtn");
+
+const myPhoto =
+  document.getElementById("myPhoto");
+
+const myName =
+  document.getElementById("myName");
+
+const myInfo =
+  document.getElementById("myInfo");
+
+const newChat =
+  document.getElementById("newChat");
+
+const networkBtn =
+  document.getElementById("networkBtn");
+
+const chatNav =
+  document.getElementById("chatNav");
+
+const chat =
+  document.getElementById("chat");
+
+const closeChat =
+  document.getElementById("closeChat");
+
+const chatPhoto =
+  document.getElementById("chatPhoto");
+
+const chatName =
+  document.getElementById("chatName");
+
+const chatStatus =
+  document.getElementById("chatStatus");
+
+const messagesEl =
+  document.getElementById("messages");
+
+const messageForm =
+  document.getElementById("messageForm");
+
+const messageInput =
+  document.getElementById("messageInput");
 
 
-<!-- BOTTOM NAV -->
+/* =========================
+   STATE
+========================= */
 
-<nav class="bottom">
+let currentUser = null;
 
-  <button class="nav active">
-    <span>💬</span>
-    Chats
-  </button>
+let currentProfile = null;
 
-  <button class="nav" id="networkBtn">
-    <span>👥</span>
+let allMembers = [];
+
+let currentFilter = "all";
+
+let currentChatUser = null;
+
+let unsubscribeMessages = null;
+
+
+/* =========================
+   DEFAULT IMAGE
+========================= */
+
+const DEFAULT_PHOTO =
+  "data:image/svg+xml;charset=UTF-8," +
+  encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="120"
+         height="120"
+         viewBox="0 0 120 120">
+      <rect width="120" height="120" fill="#202c33"/>
+      <circle cx="60" cy="43" r="22" fill="#6b7c85"/>
+      <path d="M25 105c4-24 18-37 35-37s31 13 35 37"
+            fill="#6b7c85"/>
+    </svg>
+  `);
+
+
+/* =========================
+   UTILITY
+========================= */
+
+function safe(value){
+
+  return String(value ?? "");
+
+}
+
+
+function escapeHTML(value){
+
+  return safe(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function photoUrl(url){
+
+  return url && url.startsWith("http")
+    ? url
+    : DEFAULT_PHOTO;
+
+}
+
+
+function formatTime(timestamp){
+
+  if(!timestamp){
+    return "";
+  }
+
+  try{
+
+    const date =
+      timestamp.toDate
+        ? timestamp.toDate()
+        : new Date(timestamp);
+
+    return date.toLocaleTimeString(
+      [],
+      {
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    );
+
+  }catch{
+
+    return "";
+
+  }
+
+}
+
+
+/* =========================
+   FILTER MEMBERS
+========================= */
+
+function renderMembers(){
+
+  const term =
+    searchInput.value
+      .trim()
+      .toLowerCase();
+
+
+  let filtered =
+    allMembers.filter(member => {
+
+      if(member.uid === currentUser?.uid){
+        return true;
+      }
+
+      return true;
+
+    });
+
+
+  if(currentFilter !== "all"){
+
+    filtered =
+      filtered.filter(member => {
+
+        if(currentFilter === "student"){
+
+          return member.accountType === "student";
+
+        }
+
+
+        if(currentFilter === "staff"){
+
+          return member.accountType === "staff";
+
+        }
+
+
+        return member.class === currentFilter;
+
+      });
+
+  }
+
+
+  if(term){
+
+    filtered =
+      filtered.filter(member => {
+
+        const name =
+          safe(member.realName).toLowerCase();
+
+        const number =
+          safe(member.jdaNumber).toLowerCase();
+
+        const email =
+          safe(member.email).toLowerCase();
+
+        const department =
+          safe(member.department).toLowerCase();
+
+        return (
+          name.includes(term) ||
+          number.includes(term) ||
+          email.includes(term) ||
+          department.includes(term)
+        );
+
+      });
+
+  }
+
+
+  if(!filtered.length){
+
+    membersEl.innerHTML = `
+      <div class="empty">
+        No approved JDA Network members found.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  membersEl.innerHTML = filtered
+    .map(member => {
+
+      let detail = "";
+
+      if(member.accountType === "student"){
+
+        detail =
+          `${safe(member.class)} • ${safe(member.stream)}`;
+
+      }else{
+
+        detail =
+          `Staff • ${safe(member.department)}`;
+
+      }
+
+
+      return `
+        <div
+          class="member"
+          data-uid="${escapeHTML(member.uid)}"
+        >
+
+          <img
+            src="${escapeHTML(photoUrl(member.photoURL))}"
+            alt=""
+            onerror="this.src='${escapeHTML(DEFAULT_PHOTO)}'"
+          >
+
+          <div class="member-info">
+
+            <div class="member-name">
+              ${escapeHTML(member.realName)}
+            </div>
+
+            <div class="member-detail">
+              ${escapeHTML(detail)}
+            </div>
+
+          </div>
+
+          ${
+            member.uid !== currentUser?.uid
+              ? `<div class="status"></div>`
+              : `<div></div>`
+          }
+
+        </div>
+      `;
+
+    })
+    .join("");
+
+
+  membersEl
+    .querySelectorAll(".member")
+    .forEach(element => {
+
+      element.addEventListener(
+        "click",
+        function(){
+
+          const uid =
+            this.dataset.uid;
+
+          const member =
+            allMembers.find(
+              item => item.uid === uid
+            );
+
+          if(!member){
+            return;
+          }
+
+
+          if(uid === currentUser?.uid){
+
+            showMyProfile();
+            return;
+
+          }
+
+
+          openChat(member);
+
+        }
+      );
+
+    });
+
+}
+
+
+/* =========================
+   LOAD MEMBERS
+========================= */
+
+async function loadMembers(){
+
+  membersEl.innerHTML = `
+    <div class="loading">
+      Loading JDA Network members...
+    </div>
+  `;
+
+
+  try{
+
+    const usersQuery =
+      query(
+        collection(db,"users"),
+        where("status","==","approved")
+      );
+
+
+    const snapshot =
+      await getDocs(usersQuery);
+
+
+    allMembers =
+      snapshot.docs.map(item => ({
+        id:item.id,
+        ...item.data()
+      }));
+
+
+    allMembers.sort(
+      (a,b) =>
+        safe(a.realName)
+          .localeCompare(
+            safe(b.realName)
+          )
+    );
+
+
+    renderMembers();
+
+  }catch(error){
+
+    console.error(
+      "Member loading error:",
+      error
+    );
+
+
+    membersEl.innerHTML = `
+      <div class="error-box">
+        <strong>Could not load JDA Network members.</strong><br><br>
+        ${escapeHTML(
+          error?.message ||
+          "Please check your Firebase connection and Firestore rules."
+        )}
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function showMyProfile(){
+
+  if(!currentProfile){
+    return;
+  }
+
+
+  myPhoto.src =
+    photoUrl(currentProfile.photoURL);
+
+
+  myName.textContent =
+    currentProfile.realName ||
+    "JDA Member";
+
+
+  if(currentProfile.accountType === "student"){
+
+    myInfo.innerHTML =
+      `JDA Number: ${escapeHTML(currentProfile.jdaNumber)}<br>` +
+      `${escapeHTML(currentProfile.class)} • ` +
+      `${escapeHTML(currentProfile.stream)}<br>` +
+      `Email: ${escapeHTML(currentProfile.email)}`;
+
+  }else{
+
+    myInfo.innerHTML =
+      `JDA Number: ${escapeHTML(currentProfile.jdaNumber)}<br>` +
+      `Department: ${escapeHTML(currentProfile.department)}<br>` +
+      `Email: ${escapeHTML(currentProfile.email)}`;
+
+  }
+
+
+  profileModal.style.display =
+    "flex";
+
+}
+
+
+profileBtn.addEventListener(
+  "click",
+  showMyProfile
+);
+
+
+closeProfile.addEventListener(
+  "click",
+  function(){
+
+    profileModal.style.display =
+      "none";
+
+  }
+);
+
+
+profileModal.addEventListener(
+  "click",
+  function(event){
+
+    if(event.target === profileModal){
+
+      profileModal.style.display =
+        "none";
+
+    }
+
+  }
+);
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+logoutBtn.addEventListener(
+  "click",
+  async function(){
+
+    try{
+
+      await signOut(auth);
+
+    }catch(error){
+
+      console.error(
+        "Logout error:",
+        error
+      );
+
+      alert(
+        "Could not log out. Please try again."
+      );
+
+    }
+
+  }
+);
+
+
+/* =========================
+   FILTER BUTTONS
+========================= */
+
+filters.forEach(button => {
+
+  button.addEventListener(
+    "click",
+    function(){
+
+      filters.forEach(
+        item =>
+          item.classList.remove("active")
+      );
+
+
+      this.classList.add("active");
+
+      currentFilter =
+        this.dataset.filter;
+
+      renderMembers();
+
+    }
+  );
+
+});
+
+
+/* =========================
+   SEARCH
+========================= */
+
+searchInput.addEventListener(
+  "input",
+  renderMembers
+);
+
+
+/* =========================
+   NETWORK BUTTON
+========================= */
+
+networkBtn.addEventListener(
+  "click",
+  function(){
+
+    chatNav.classList.remove("active");
+
+    networkBtn.classList.add("active");
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }
+);
+
+
+chatNav.addEventListener(
+  "click",
+  function(){
+
+    networkBtn.classList.remove("active");
+
+    chatNav.classList.add("active");
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }
+);
+
+
+/* =========================
+   NEW CHAT
+========================= */
+
+newChat.addEventListener(
+  "click",
+  function(){
+
+    searchInput.focus();
+
+    document.querySelector(
+      ".section"
+    ).scrollIntoView({
+      behavior:"smooth"
+    });
+
+  }
+);
+
+
+/* =========================
+   CHAT ID
+========================= */
+
+function conversationId(uid1,uid2){
+
+  return [uid1,uid2]
+    .sort()
+    .join("_");
+
+}
+
+
+/* =========================
+   OPEN CHAT
+========================= */
+
+async function openChat(member){
+
+  currentChatUser =
+    member;
+
+
+  chatPhoto.src =
+    photoUrl(member.photoURL);
+
+
+  chatPhoto.onerror =
+    function(){
+      this.src =
+        DEFAULT_PHOTO;
+    };
+
+
+  chatName.textContent =
+    member.realName;
+
+
+  chatStatus.textContent =
+    member.accountType === "student"
+      ? `${safe(member.class)} • ${safe(member.stream)}`
+      : `Staff • ${safe(member.department)}`;
+
+
+  chat.style.display =
+    "block";
+
+
+  document.body.style.overflow =
+    "hidden";
+
+
+  messagesEl.innerHTML = `
+    <div class="loading">
+      Loading messages...
+    </div>
+  `;
+
+
+  if(unsubscribeMessages){
+
+    unsubscribeMessages();
+
+    unsubscribeMessages = null;
+
+  }
+
+
+  const id =
+    conversationId(
+      currentUser.uid,
+      member.uid
+    );
+
+
+  try{
+
+    const conversationRef =
+      doc(
+        db,
+        "conversations",
+        id
+      );
+
+
+    const conversationSnap =
+      await getDoc(conversationRef);
+
+
+    if(!conversationSnap.exists()){
+
+      await setDoc(
+        conversationRef,
+        {
+          participantIds:[
+            currentUser.uid,
+            member.uid
+          ],
+          createdAt:serverTimestamp(),
+          updatedAt:serverTimestamp()
+        }
+      );
+
+    }
+
+
+    const messagesQuery =
+      query(
+        collection(
+          db,
+          "conversations",
+          id,
+          "messages"
+        ),
+        orderBy(
+          "createdAt",
+          "asc"
+        )
+      );
+
+
+    unsubscribeMessages =
+      onSnapshot(
+        messagesQuery,
+        function(snapshot){
+
+          if(snapshot.empty){
+
+            messagesEl.innerHTML = `
+              <div class="empty">
+                No messages yet.<br>
+                Send the first message.
+              </div>
+            `;
+
+            return;
+
+          }
+
+
+          messagesEl.innerHTML =
+            snapshot.docs
+              .map(item => {
+
+                const message =
+                  item.data();
+
+                const mine =
+                  message.senderId ===
+                  currentUser.uid;
+
+
+                return `
+                  <div
+                    class="message ${
+                      mine
+                        ? "mine"
+                        : "theirs"
+                    }"
+                  >
+
+                    ${escapeHTML(message.text)}
+
+                    <span class="message-time">
+                      ${escapeHTML(
+                        formatTime(
+                          message.createdAt
+                        )
+                      )}
+                    </span>
+
+                  </div>
+                `;
+
+              })
+              .join("");
+
+
+          messagesEl.scrollTop =
+            messagesEl.scrollHeight;
+
+        },
+        function(error){
+
+          console.error(
+            "Message listener error:",
+            error
+          );
+
+
+          messagesEl.innerHTML = `
+            <div class="error-box">
+              Could not load messages.<br><br>
+              ${escapeHTML(
+                error?.message ||
+                "Please try again."
+              )}
+            </div>
+          `;
+
+        }
+      );
+
+
+  }catch(error){
+
+    console.error(
+      "Open chat error:",
+      error
+    );
+
+
+    messagesEl.innerHTML = `
+      <div class="error-box">
+        Could not open this chat.<br><br>
+        ${escapeHTML(
+          error?.message ||
+          "Please try again."
+        )}
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================
+   CLOSE CHAT
+========================= */
+
+closeChat.addEventListener(
+  "click",
+  function(){
+
+    chat.style.display =
+      "none";
+
+
+    document.body.style.overflow =
+      "";
+
+
+    if(unsubscribeMessages){
+
+      unsubscribeMessages();
+
+      unsubscribeMessages = null;
+
+    }
+
+
+    currentChatUser =
+      null;
+
+  }
+);
+
+
+/* =========================
+   SEND MESSAGE
+========================= */
+
+messageForm.addEventListener(
+  "submit",
+  async function(event){
+
+    event.preventDefault();
+
+
+    if(!currentUser ||
+       !currentChatUser){
+
+      return;
+
+    }
+
+
+    const text =
+      messageInput.value
+        .trim();
+
+
+    if(!text){
+      return;
+    }
+
+
+    if(text.length > 5000){
+
+      alert(
+        "Message is too long."
+      );
+
+      return;
+
+    }
+
+
+    const sendButton =
+      messageForm.querySelector(
+        ".send"
+      );
+
+
+    sendButton.disabled =
+      true;
+
+
+    try{
+
+      const id =
+        conversationId(
+          currentUser.uid,
+          currentChatUser.uid
+        );
+
+
+      const conversationRef =
+        doc(
+          db,
+          "conversations",
+          id
+        );
+
+
+      const conversationSnap =
+        await getDoc(
+          conversationRef
+        );
+
+
+      if(!conversationSnap.exists()){
+
+        await setDoc(
+          conversationRef,
+          {
+            participantIds:[
+              currentUser.uid,
+              currentChatUser.uid
+            ],
+            createdAt:serverTimestamp(),
+            updatedAt:serverTimestamp()
+          }
+        );
+
+      }else{
+
+        await setDoc(
+          conversationRef,
+          {
+            updatedAt:serverTimestamp()
+          },
+          {
+            merge:true
+          }
+        );
+
+      }
+
+
+      await addDoc(
+        collection(
+          db,
+          "conversations",
+          id,
+          "messages"
+        ),
+        {
+          senderId:
+            currentUser.uid,
+
+          receiverId:
+            currentChatUser.uid,
+
+          text:text,
+
+          createdAt:
+            serverTimestamp()
+        }
+      );
+
+
+      messageInput.value =
+        "";
+
+
+    }catch(error){
+
+      console.error(
+        "Send message error:",
+        error
+      );
+
+
+      alert(
+        error?.message ||
+        "Could not send message."
+      );
+
+    }finally{
+
+      sendButton.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+/* =========================
+   ADMIN CHECK
+========================= */
+
+async function checkAdmin(){
+
+  if(!currentUser){
+    return;
+  }
+
+
+  const SUPER_ADMIN =
+    "jonathanmentor62@gmail.com";
+
+
+  if(
+    currentUser.email?.toLowerCase() ===
+    SUPER_ADMIN.toLowerCase()
+  ){
+
+    adminBtn.classList.remove(
+      "hidden"
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    const adminSnap =
+      await getDoc(
+        doc(
+          db,
+          "admins",
+          currentUser.uid
+        )
+      );
+
+
+    if(adminSnap.exists()){
+
+      adminBtn.classList.remove(
+        "hidden"
+      );
+
+    }
+
+  }catch(error){
+
+    console.warn(
+      "Admin check failed:",
+      error
+    );
+
+  }
+
+}
+
+
+adminBtn.addEventListener(
+  "click",
+  function(){
+
+    window.location.href =
+      "./admin.html";
+
+  }
+);
+
+
+/* =========================
+   AUTH
+========================= */
+
+onAuthStateChanged(
+  auth,
+  async function(user){
+
+    if(!user){
+
+      window.location.href =
+        "./index.html";
+
+      return;
+
+    }
+
+
+    currentUser =
+      user;
+
+
+    try{
+
+      const userRef =
+        doc(
+          db,
+          "users",
+          user.uid
+        );
+
+
+      const userSnap =
+        await getDoc(
+          userRef
+        );
+
+
+      if(!userSnap.exists()){
+
+        await signOut(auth);
+
+        window.location.href =
+          "./index.html";
+
+        return;
+
+      }
+
+
+      currentProfile =
+        userSnap.data();
+
+
+      if(
+        currentProfile.status !==
+        "approved"
+      ){
+
+        await signOut(auth);
+
+        window.location.href =
+          "./index.html";
+
+        return;
+
+      }
+
+
+      checkAdmin();
+
+      await loadMembers();
+
+
+    }catch(error){
+
+      console.error(
+        "Home authentication error:",
+        error
+      );
+
+
+      membersEl.innerHTML = `
+        <div class="error-box">
+
+          <strong>
+            JDA Networks could not load.
+          </strong>
+
+          <br><br>
+
+          ${escapeHTML(
+            error?.message ||
+            "Please refresh and try again."
+          )}
+
+        </div>
+      `;
+
+    }
+
+  }
+);
+
+
+/* =========================
+   GLOBAL ERROR LOG
+========================= */
+
+window.addEventListener(
+  "error",
+  function(event){
+
+    console.error(
+      "JDA Networks error:",
+      event.error ||
+      event.message
+    );
+
+  }
+);
+
+</script>
+
+</body>
+</html>

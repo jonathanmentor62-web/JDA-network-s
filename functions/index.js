@@ -618,7 +618,7 @@ exports.notifyNewRegistration = onDocumentCreated(
 
       console.log(
         "REGISTRATION NOTIFICATION COMPLETE"
-      );
+      ); 
 
       console.log(
         "Registration UID:",

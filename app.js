@@ -1,6 +1,6 @@
 // ============================================================
 // JDA NETWORKS — FIREBASE APP
-// FULL CHAT + MEMBER DIRECTORY
+// WHATSAPP-STYLE CHAT SYSTEM + MEMBER DIRECTORY
 // ============================================================
 
 import {
@@ -118,9 +118,41 @@ function formatTime(timestamp) {
   const date =
     new Date(seconds * 1000);
 
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit"
+  const now =
+    new Date();
+
+  const sameDay =
+    date.toDateString() ===
+    now.toDateString();
+
+  if (sameDay) {
+
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+  }
+
+  const yesterday =
+    new Date();
+
+  yesterday.setDate(
+    yesterday.getDate() - 1
+  );
+
+  if (
+    date.toDateString() ===
+    yesterday.toDateString()
+  ) {
+
+    return "Yesterday";
+
+  }
+
+  return date.toLocaleDateString([], {
+    day: "2-digit",
+    month: "short"
   });
 
 }
@@ -209,6 +241,7 @@ onAuthStateChanged(
       );
 
       return;
+
     }
 
 
@@ -250,10 +283,8 @@ onAuthStateChanged(
       };
 
 
-      /*
-        ONLY APPROVED MEMBERS
-        CAN USE THE APP.
-      */
+      // ONLY APPROVED MEMBERS
+      // CAN USE THE APP.
 
       if (
         currentProfile.status !== "approved" &&
@@ -278,7 +309,6 @@ onAuthStateChanged(
         "JDA authentication error:",
         error
       );
-
 
       showError(
         "JDA Networks could not load your account.\n\n" +
@@ -382,6 +412,10 @@ async function loadMembers() {
 
     renderDirectory();
 
+    // Refresh chat list in case
+    // members loaded after conversations.
+    renderChats();
+
   }
   catch(error) {
 
@@ -425,7 +459,9 @@ function sortMembers() {
 function listenForMembers() {
 
   if (unsubscribeMembers) {
+
     unsubscribeMembers();
+
   }
 
 
@@ -478,6 +514,8 @@ function listenForMembers() {
 
         renderDirectory();
 
+        renderChats();
+
       },
 
       error => {
@@ -494,13 +532,15 @@ function listenForMembers() {
 
 
 // ============================================================
-// CONVERSATIONS
+// REAL-TIME CONVERSATIONS
 // ============================================================
 
 function listenForConversations() {
 
   if (unsubscribeConversations) {
+
     unsubscribeConversations();
+
   }
 
 
@@ -522,7 +562,7 @@ function listenForConversations() {
     onSnapshot(
       conversationsQuery,
 
-      async snapshot => {
+      snapshot => {
 
         conversations =
           snapshot.docs.map(
@@ -532,6 +572,8 @@ function listenForConversations() {
             })
           );
 
+
+        // NEWEST CONVERSATIONS FIRST
 
         conversations.sort(
           (a, b) =>
@@ -544,7 +586,7 @@ function listenForConversations() {
         );
 
 
-        await renderChats();
+        renderChats();
 
       },
 
@@ -553,6 +595,11 @@ function listenForConversations() {
         console.error(
           "Conversation listener error:",
           error
+        );
+
+        showError(
+          "Chats could not be loaded.\n\n" +
+          error.message
         );
 
       }
@@ -583,20 +630,23 @@ async function getOtherParticipant(
 
 
   if (!otherId) {
+
     return null;
+
   }
 
 
   const cached =
     members.find(
       member =>
-        member.id ===
-        otherId
+        member.id === otherId
     );
 
 
   if (cached) {
+
     return cached;
+
   }
 
 
@@ -613,7 +663,9 @@ async function getOtherParticipant(
 
 
     if (!snap.exists()) {
+
       return null;
+
     }
 
 
@@ -625,7 +677,10 @@ async function getOtherParticipant(
   }
   catch(error) {
 
-    console.error(error);
+    console.error(
+      "Other participant error:",
+      error
+    );
 
     return null;
 
@@ -635,7 +690,7 @@ async function getOtherParticipant(
 
 
 // ============================================================
-// CHAT LIST
+// WHATSAPP-STYLE CHAT LIST
 // ============================================================
 
 async function renderChats() {
@@ -688,6 +743,7 @@ async function renderChats() {
           background:#25d366;
           color:#062b1d;
           font-weight:700;
+          cursor:pointer;
         "
       >
         ✎ Start chatting
@@ -713,6 +769,8 @@ async function renderChats() {
   }
 
 
+  // Render each conversation.
+
   for (
     const conversation of
     conversations
@@ -724,7 +782,11 @@ async function renderChats() {
       );
 
 
-    if (!person) continue;
+    if (!person) {
+
+      continue;
+
+    }
 
 
     const row =
@@ -737,14 +799,39 @@ async function renderChats() {
       "jda-chat-row";
 
 
+    row.dataset.name =
+      (
+        person.realName ||
+        ""
+      ).toLowerCase();
+
+
     row.style.cssText = `
       display:flex;
       align-items:center;
-      gap:13px;
+      gap:12px;
       padding:12px 16px;
       cursor:pointer;
-      border-bottom:1px solid rgba(255,255,255,.04);
+      min-height:72px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      transition:background .15s ease;
     `;
+
+
+    row.onmouseenter = () => {
+
+      row.style.background =
+        "rgba(255,255,255,.04)";
+
+    };
+
+
+    row.onmouseleave = () => {
+
+      row.style.background =
+        "transparent";
+
+    };
 
 
     const onlineDot =
@@ -753,12 +840,48 @@ async function renderChats() {
         : "#667781";
 
 
+    const lastMessage =
+      conversation.lastMessage ||
+      "Start chatting";
+
+
+    const lastTime =
+      formatTime(
+        conversation.updatedAt
+      );
+
+
     row.innerHTML = `
 
-      ${avatarHTML(
-        person,
-        52
-      )}
+      <div
+        style="
+          position:relative;
+          width:52px;
+          height:52px;
+          flex-shrink:0;
+        "
+      >
+
+        ${avatarHTML(
+          person,
+          52
+        )}
+
+        <span
+          style="
+            position:absolute;
+            right:0;
+            bottom:1px;
+            width:12px;
+            height:12px;
+            border-radius:50%;
+            background:${onlineDot};
+            border:2px solid #111b21;
+          "
+        ></span>
+
+      </div>
+
 
       <div
         style="
@@ -771,6 +894,7 @@ async function renderChats() {
           style="
             display:flex;
             justify-content:space-between;
+            align-items:center;
             gap:8px;
           "
         >
@@ -779,6 +903,7 @@ async function renderChats() {
             style="
               color:#e9edef;
               font-size:16px;
+              font-weight:500;
               white-space:nowrap;
               overflow:hidden;
               text-overflow:ellipsis;
@@ -790,15 +915,17 @@ async function renderChats() {
             )}
           </strong>
 
+
           <span
             style="
               color:#8696a0;
               font-size:11px;
               white-space:nowrap;
+              flex-shrink:0;
             "
           >
-            ${formatTime(
-              conversation.updatedAt
+            ${escapeHTML(
+              lastTime
             )}
           </span>
 
@@ -807,32 +934,32 @@ async function renderChats() {
 
         <div
           style="
-            color:#8696a0;
-            font-size:14px;
+            display:flex;
+            align-items:center;
             margin-top:5px;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
+            gap:5px;
           "
         >
-          ${escapeHTML(
-            conversation.lastMessage ||
-            "Start chatting"
-          )}
+
+          <span
+            style="
+              color:#8696a0;
+              font-size:14px;
+              white-space:nowrap;
+              overflow:hidden;
+              text-overflow:ellipsis;
+              display:block;
+              flex:1;
+            "
+          >
+            ${escapeHTML(
+              lastMessage
+            )}
+          </span>
+
         </div>
 
       </div>
-
-
-      <span
-        style="
-          width:8px;
-          height:8px;
-          border-radius:50%;
-          background:${onlineDot};
-          flex-shrink:0;
-        "
-      ></span>
 
     `;
 
@@ -957,6 +1084,7 @@ function createMemberModal() {
           autocomplete="off"
           style="
             width:100%;
+            box-sizing:border-box;
             background:#202c33;
             border:0;
             outline:none;
@@ -1045,9 +1173,7 @@ function openMemberModal() {
     $("jdaMemberModal");
 
 
-  if (!modal) {
-    return;
-  }
+  if (!modal) return;
 
 
   modal.style.display =
@@ -1104,9 +1230,7 @@ function renderMemberResults() {
     $("memberResults");
 
 
-  if (!container) {
-    return;
-  }
+  if (!container) return;
 
 
   const input =
@@ -1127,7 +1251,9 @@ function renderMemberResults() {
       member => {
 
         if (!text) {
+
           return true;
+
         }
 
 
@@ -1248,16 +1374,20 @@ function renderMemberResults() {
 
 
         if (className) {
+
           parts.push(
             className
           );
+
         }
 
 
         if (member.stream) {
+
           parts.push(
             member.stream
           );
+
         }
 
 
@@ -1421,11 +1551,16 @@ async function startConversation(
       );
 
 
+    // Check whether this chat already exists.
+
     const existing =
       await getDoc(
         conversationRef
       );
 
+
+    // Create the conversation
+    // if it does not exist.
 
     if (
       !existing.exists()
@@ -1434,7 +1569,9 @@ async function startConversation(
       await setDoc(
         conversationRef,
         {
-          participantIds: ids,
+
+          participantIds:
+            ids,
 
           createdAt:
             serverTimestamp(),
@@ -1444,15 +1581,31 @@ async function startConversation(
 
           lastMessage:
             ""
+
         }
       );
 
     }
 
 
+    // Open the conversation.
+
     await openChat(
       member,
       conversationId
+    );
+
+
+    // Immediately refresh the Chats tab.
+    // The realtime listener will also update it.
+
+    setTimeout(
+      () => {
+
+        renderChats();
+
+      },
+      100
     );
 
   }
@@ -1483,7 +1636,9 @@ function createChatWindow() {
   if (
     $("jdaChatWindow")
   ) {
+
     return;
+
   }
 
 
@@ -1613,6 +1768,7 @@ function createChatWindow() {
           padding:11px 15px;
           font-size:15px;
           max-height:120px;
+          box-sizing:border-box;
         "
       ></textarea>
 
@@ -1672,6 +1828,31 @@ function createChatWindow() {
           sendMessage();
 
         }
+
+      }
+    );
+
+
+  // Automatically grow the message box.
+
+  $("messageInput")
+    .addEventListener(
+      "input",
+      () => {
+
+        const input =
+          $("messageInput");
+
+        if (!input) return;
+
+        input.style.height =
+          "auto";
+
+        input.style.height =
+          Math.min(
+            input.scrollHeight,
+            120
+          ) + "px";
 
       }
     );
@@ -2066,8 +2247,10 @@ async function sendMessage() {
 
 
   if (sendButton) {
+
     sendButton.disabled =
       true;
+
   }
 
 
@@ -2090,6 +2273,8 @@ async function sendMessage() {
       );
 
 
+    // First save the message.
+
     await addDoc(
       messagesRef,
       {
@@ -2108,6 +2293,8 @@ async function sendMessage() {
       }
     );
 
+
+    // Then update the conversation preview.
 
     await updateDoc(
       conversationRef,
@@ -2128,6 +2315,11 @@ async function sendMessage() {
 
     input.style.height =
       "auto";
+
+
+    // Make sure the chat list refreshes.
+
+    renderChats();
 
   }
   catch(error) {
@@ -2180,15 +2372,16 @@ function setupNewChatButtons() {
   buttons.forEach(
     button => {
 
-      button.onclick = event => {
+      button.onclick =
+        event => {
 
-        event.preventDefault();
+          event.preventDefault();
 
-        event.stopPropagation();
+          event.stopPropagation();
 
-        openMemberModal();
+          openMemberModal();
 
-      };
+        };
 
     }
   );
@@ -2197,7 +2390,7 @@ function setupNewChatButtons() {
 
 
 // ============================================================
-// SEARCH
+// SEARCH CHATS
 // ============================================================
 
 function setupSearch() {
@@ -2228,11 +2421,20 @@ function setupSearch() {
       rows.forEach(
         row => {
 
+          const name =
+            row.dataset.name ||
+            "";
+
+
+          const content =
+            row.innerText
+              .toLowerCase();
+
+
           row.style.display =
             !text ||
-            row.innerText
-              .toLowerCase()
-              .includes(text)
+            name.includes(text) ||
+            content.includes(text)
               ? "flex"
               : "none";
 
@@ -2313,6 +2515,18 @@ function switchPage(
 
       }
     );
+
+
+  // Refresh the chat list whenever
+  // the Chats tab is opened.
+
+  if (
+    page === "chats"
+  ) {
+
+    renderChats();
+
+  }
 
 }
 
@@ -2474,7 +2688,7 @@ function setupDirectoryButtons() {
 
 
 // ============================================================
-// RENDER STUDENTS + STAFF
+// RENDER DIRECTORY
 // ============================================================
 
 function renderDirectory() {
@@ -2531,7 +2745,9 @@ function renderClassMembers(
           member.accountType !==
           "student"
         ) {
+
           return false;
+
         }
 
 
@@ -2807,7 +3023,9 @@ function setupLogout() {
           "Log out of JDA Networks?"
         )
       ) {
+
         return;
+
       }
 
 
@@ -2847,7 +3065,9 @@ function renderProfile() {
   if (
     !currentProfile
   ) {
+
     return;
+
   }
 
 
@@ -2968,9 +3188,11 @@ function renderProfile() {
 
 
       if (className) {
+
         parts.push(
           className
         );
+
       }
 
 
@@ -3063,5 +3285,5 @@ window.JDA = {
 // ============================================================
 
 console.log(
-  "JDA Networks — chat system loaded."
+  "JDA Networks — WhatsApp-style chat system loaded."
 );

@@ -72,6 +72,14 @@ button{
   font-size:18px;
 }
 
+.icon-btn:active,
+.nav:active,
+.filter:active,
+.new-chat:active,
+.send:active{
+  transform:scale(.95);
+}
+
 .container{
   max-width:900px;
   margin:auto;
@@ -137,6 +145,7 @@ button{
   padding:12px 15px;
   border-bottom:1px solid #202c33;
   cursor:pointer;
+  min-height:76px;
 }
 
 .member:active{
@@ -149,6 +158,7 @@ button{
   border-radius:50%;
   object-fit:cover;
   background:#202c33;
+  flex-shrink:0;
 }
 
 .member-info{
@@ -248,6 +258,7 @@ button{
   font-size:11px;
   text-align:center;
   min-width:75px;
+  padding:5px 10px;
 }
 
 .nav span{
@@ -304,6 +315,7 @@ button{
   height:42px;
   border-radius:50%;
   object-fit:cover;
+  background:#202c33;
 }
 
 .chat-user{
@@ -462,8 +474,6 @@ button{
 
 <body>
 
-<!-- HEADER -->
-
 <header class="header">
 
   <div class="brand">
@@ -503,8 +513,6 @@ button{
 </header>
 
 
-<!-- MAIN -->
-
 <main class="container">
 
   <div class="search">
@@ -521,39 +529,39 @@ button{
 
   <div class="filters">
 
-    <button class="filter active" data-filter="all">
+    <button class="filter active" data-filter="all" type="button">
       All
     </button>
 
-    <button class="filter" data-filter="student">
+    <button class="filter" data-filter="student" type="button">
       Students
     </button>
 
-    <button class="filter" data-filter="staff">
+    <button class="filter" data-filter="staff" type="button">
       Staff
     </button>
 
-    <button class="filter" data-filter="Form One">
+    <button class="filter" data-filter="Form One" type="button">
       Form One
     </button>
 
-    <button class="filter" data-filter="Form Two">
+    <button class="filter" data-filter="Form Two" type="button">
       Form Two
     </button>
 
-    <button class="filter" data-filter="Form Three">
+    <button class="filter" data-filter="Form Three" type="button">
       Form Three
     </button>
 
-    <button class="filter" data-filter="Form Four">
+    <button class="filter" data-filter="Form Four" type="button">
       Form Four
     </button>
 
-    <button class="filter" data-filter="Form Five">
+    <button class="filter" data-filter="Form Five" type="button">
       Form Five
     </button>
 
-    <button class="filter" data-filter="Form Six">
+    <button class="filter" data-filter="Form Six" type="button">
       Form Six
     </button>
 
@@ -576,8 +584,6 @@ button{
 </main>
 
 
-<!-- NEW CHAT -->
-
 <button
   class="new-chat"
   id="newChat"
@@ -586,8 +592,6 @@ button{
   ✎
 </button>
 
-
-<!-- BOTTOM NAV -->
 
 <nav class="bottom">
 
@@ -611,8 +615,6 @@ button{
 
 </nav>
 
-
-<!-- CHAT -->
 
 <div id="chat" class="chat">
 
@@ -680,8 +682,6 @@ button{
 </div>
 
 
-<!-- PROFILE -->
-
 <div id="profileModal" class="modal">
 
   <div class="modal-card">
@@ -734,9 +734,9 @@ button{
 
 <script type="module">
 
-/* =========================
+/* =====================================================
    FIREBASE
-========================= */
+===================================================== */
 
 import {
   auth,
@@ -763,9 +763,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-/* =========================
+/* =====================================================
    ELEMENTS
-========================= */
+===================================================== */
 
 const membersEl =
   document.getElementById("members");
@@ -837,9 +837,9 @@ const messageInput =
   document.getElementById("messageInput");
 
 
-/* =========================
+/* =====================================================
    STATE
-========================= */
+===================================================== */
 
 let currentUser = null;
 let currentProfile = null;
@@ -850,31 +850,48 @@ let unsubscribeMessages = null;
 let contactMode = false;
 
 
-/* =========================
+/* =====================================================
    DEFAULT PHOTO
-========================= */
+===================================================== */
 
 const DEFAULT_PHOTO =
   "data:image/svg+xml;charset=UTF-8," +
   encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg"
-         width="120"
-         height="120"
-         viewBox="0 0 120 120">
-      <rect width="120" height="120" fill="#202c33"/>
-      <circle cx="60" cy="43" r="22" fill="#6b7c85"/>
-      <path d="M25 105c4-24 18-37 35-37s31 13 35 37"
-            fill="#6b7c85"/>
+      width="120"
+      height="120"
+      viewBox="0 0 120 120">
+
+      <rect
+        width="120"
+        height="120"
+        fill="#202c33"
+      />
+
+      <circle
+        cx="60"
+        cy="43"
+        r="22"
+        fill="#6b7c85"
+      />
+
+      <path
+        d="M25 105c4-24 18-37 35-37s31 13 35 37"
+        fill="#6b7c85"
+      />
+
     </svg>
   `);
 
 
-/* =========================
+/* =====================================================
    HELPERS
-========================= */
+===================================================== */
 
 function safe(value){
+
   return String(value ?? "");
+
 }
 
 
@@ -892,89 +909,111 @@ function escapeHTML(value){
 
 function photoUrl(url){
 
-  return url && url.startsWith("http")
-    ? url
-    : DEFAULT_PHOTO;
+  if(
+    url &&
+    (
+      String(url).startsWith("http") ||
+      String(url).startsWith("data:")
+    )
+  ){
+
+    return url;
+
+  }
+
+  return DEFAULT_PHOTO;
 
 }
 
 
-/*
-  Convert phone numbers into one
-  standard format.
+function getMemberClass(member){
 
-  Examples:
+  return (
+    member.class ||
+    member.studentClass ||
+    ""
+  );
 
-  +256 771 234 567
-  0771 234 567
-  256771234567
+}
 
-  all become:
 
-  256771234567
-*/
+function getMemberStream(member){
+
+  return (
+    member.stream ||
+    ""
+  );
+
+}
+
+
+/* =====================================================
+   PHONE NORMALIZATION
+===================================================== */
 
 function normalizePhone(number){
 
   if(!number){
+
     return "";
+
   }
+
 
   let digits =
     String(number)
       .replace(/\D/g,"");
 
 
-  if(digits.startsWith("00")){
+  if(
+    digits.startsWith("00")
+  ){
+
     digits =
       digits.substring(2);
+
   }
 
 
-  if(digits.startsWith("0") &&
-     digits.length === 10){
+  if(
+    digits.startsWith("0") &&
+    digits.length === 10
+  ){
 
     digits =
-      "256" + digits.substring(1);
+      "256" +
+      digits.substring(1);
 
   }
 
 
   if(
     digits.startsWith("256") &&
-    digits.length >= 12
+    digits.length === 12
   ){
 
     return digits;
+
   }
 
 
   return digits;
-}
-
-
-/* =========================
-   MEMBER PHONE MATCH
-========================= */
-
-function memberPhone(member){
-
-  return normalizePhone(
-    member.jdaNumber
-  );
 
 }
 
 
-/* =========================
-   FORMAT TIME
-========================= */
+/* =====================================================
+   TIME
+===================================================== */
 
 function formatTime(timestamp){
 
   if(!timestamp){
+
     return "";
+
   }
+
 
   try{
 
@@ -982,6 +1021,7 @@ function formatTime(timestamp){
       timestamp.toDate
         ? timestamp.toDate()
         : new Date(timestamp);
+
 
     return date.toLocaleTimeString(
       [],
@@ -1000,9 +1040,58 @@ function formatTime(timestamp){
 }
 
 
-/* =========================
+/* =====================================================
+   MEMBER DETAIL
+===================================================== */
+
+function memberDetail(member){
+
+  if(
+    member.accountType ===
+    "student"
+  ){
+
+    const studentClass =
+      getMemberClass(member);
+
+    const stream =
+      getMemberStream(member);
+
+
+    if(
+      studentClass &&
+      stream
+    ){
+
+      return (
+        studentClass +
+        " • " +
+        stream
+      );
+
+    }
+
+
+    return studentClass || "Student";
+
+  }
+
+
+  return (
+    "Staff" +
+    (
+      member.department
+        ? " • " + member.department
+        : ""
+    )
+  );
+
+}
+
+
+/* =====================================================
    RENDER MEMBERS
-========================= */
+===================================================== */
 
 function renderMembers(){
 
@@ -1022,59 +1111,101 @@ function renderMembers(){
     [...allMembers];
 
 
-  if(currentFilter !== "all"){
+  /* FILTER */
+
+  if(
+    currentFilter !==
+    "all"
+  ){
 
     filtered =
-      filtered.filter(member => {
+      filtered.filter(
+        member => {
 
-        if(currentFilter === "student"){
-          return member.accountType === "student";
+          if(
+            currentFilter ===
+            "student"
+          ){
+
+            return (
+              member.accountType ===
+              "student"
+            );
+
+          }
+
+
+          if(
+            currentFilter ===
+            "staff"
+          ){
+
+            return (
+              member.accountType ===
+              "staff"
+            );
+
+          }
+
+
+          return (
+            getMemberClass(member) ===
+            currentFilter
+          );
+
         }
-
-        if(currentFilter === "staff"){
-          return member.accountType === "staff";
-        }
-
-        return member.class === currentFilter;
-
-      });
+      );
 
   }
 
+
+  /* SEARCH */
 
   if(term){
 
     filtered =
-      filtered.filter(member => {
+      filtered.filter(
+        member => {
 
-        return (
-          safe(member.realName)
-            .toLowerCase()
-            .includes(term)
+          return (
 
-          ||
+            safe(member.realName)
+              .toLowerCase()
+              .includes(term)
 
-          safe(member.jdaNumber)
-            .toLowerCase()
-            .includes(term)
+            ||
 
-          ||
+            safe(member.jdaNumber)
+              .toLowerCase()
+              .includes(term)
 
-          safe(member.email)
-            .toLowerCase()
-            .includes(term)
+            ||
 
-          ||
+            safe(member.email)
+              .toLowerCase()
+              .includes(term)
 
-          safe(member.department)
-            .toLowerCase()
-            .includes(term)
-        );
+            ||
 
-      });
+            safe(member.department)
+              .toLowerCase()
+              .includes(term)
+
+            ||
+
+            safe(getMemberClass(member))
+              .toLowerCase()
+              .includes(term)
+
+          );
+
+        }
+      );
 
   }
 
+
+  /* EMPTY */
 
   if(!filtered.length){
 
@@ -1089,56 +1220,54 @@ function renderMembers(){
   }
 
 
+  /* DRAW MEMBERS */
+
   membersEl.innerHTML =
-    filtered.map(member => {
+    filtered
+      .map(member => {
 
-      let detail = "";
+        return `
 
-      if(member.accountType === "student"){
-
-        detail =
-          `${safe(member.class)} • ${safe(member.stream)}`;
-
-      }else{
-
-        detail =
-          `Staff • ${safe(member.department)}`;
-
-      }
-
-
-      return `
-        <div
-          class="member"
-          data-uid="${escapeHTML(member.uid)}"
-        >
-
-          <img
-            src="${escapeHTML(
-              photoUrl(member.photoURL)
-            )}"
-            alt=""
+          <div
+            class="member"
+            data-uid="${escapeHTML(member.uid)}"
           >
 
-          <div class="member-info">
+            <img
+              src="${escapeHTML(
+                photoUrl(member.photoURL)
+              )}"
+              alt=""
+            >
 
-            <div class="member-name">
-              ${escapeHTML(member.realName)}
+            <div class="member-info">
+
+              <div class="member-name">
+                ${escapeHTML(
+                  member.realName ||
+                  "JDA Member"
+                )}
+              </div>
+
+              <div class="member-detail">
+                ${escapeHTML(
+                  memberDetail(member)
+                )}
+              </div>
+
             </div>
 
-            <div class="member-detail">
-              ${escapeHTML(detail)}
-            </div>
+            <div class="status"></div>
 
           </div>
 
-          <div class="status"></div>
+        `;
 
-        </div>
-      `;
+      })
+      .join("");
 
-    }).join("");
 
+  /* MEMBER CLICK */
 
   membersEl
     .querySelectorAll(".member")
@@ -1146,18 +1275,23 @@ function renderMembers(){
 
       element.addEventListener(
         "click",
-        function(){
+        () => {
 
           const uid =
-            this.dataset.uid;
+            element.dataset.uid;
+
 
           const member =
             allMembers.find(
-              item => item.uid === uid
+              item =>
+                item.uid === uid
             );
 
+
           if(member){
+
             openChat(member);
+
           }
 
         }
@@ -1168,9 +1302,9 @@ function renderMembers(){
 }
 
 
-/* =========================
+/* =====================================================
    LOAD MEMBERS
-========================= */
+===================================================== */
 
 async function loadMembers(){
 
@@ -1185,20 +1319,34 @@ async function loadMembers(){
 
     const usersQuery =
       query(
-        collection(db,"users"),
-        where("status","==","approved")
+        collection(
+          db,
+          "users"
+        ),
+        where(
+          "status",
+          "==",
+          "approved"
+        )
       );
 
 
     const snapshot =
-      await getDocs(usersQuery);
+      await getDocs(
+        usersQuery
+      );
 
 
     allMembers =
-      snapshot.docs.map(item => ({
-        id:item.id,
-        ...item.data()
-      }));
+      snapshot.docs.map(
+        item => ({
+
+          id:item.id,
+
+          ...item.data()
+
+        })
+      );
 
 
     allMembers.sort(
@@ -1212,6 +1360,7 @@ async function loadMembers(){
 
     renderMembers();
 
+
   }catch(error){
 
     console.error(
@@ -1221,16 +1370,22 @@ async function loadMembers(){
 
 
     membersEl.innerHTML = `
+
       <div class="error-box">
+
         <strong>
           Could not load JDA Network members.
         </strong>
+
         <br><br>
+
         ${escapeHTML(
-          error?.message ||
+          error.message ||
           "Check your Firebase connection."
         )}
+
       </div>
+
     `;
 
   }
@@ -1239,59 +1394,63 @@ async function loadMembers(){
 
 
 /* =====================================================
-   CONTACT PICKER
+   NETWORK / CONTACT PICKER
 ===================================================== */
-
-/*
-  This uses the Android/browser Contact Picker API.
-
-  The user must press Network first.
-
-  The browser then opens the phone contacts.
-*/
 
 async function openPhoneContacts(){
 
   contactMode = true;
 
-  networkBtn.classList.add("active");
-  chatNav.classList.remove("active");
+
+  networkBtn.classList.add(
+    "active"
+  );
+
+  chatNav.classList.remove(
+    "active"
+  );
+
 
   sectionTitle.textContent =
     "JDA MEMBERS IN YOUR CONTACTS";
 
 
   membersEl.innerHTML = `
+
     <div class="loading">
+
       Opening your phone contacts...
+
     </div>
+
   `;
 
 
   /*
-    Check browser support.
+    Contact Picker support check.
   */
 
   if(
-    !("contacts" in navigator) ||
     !navigator.contacts ||
     !navigator.contacts.select
   ){
 
     membersEl.innerHTML = `
+
       <div class="error-box">
 
         <strong>
-          Contact access is not supported here.
+          Phone contact access is not supported here.
         </strong>
 
         <br><br>
 
-        Please open JDA Networks in
+        Open JDA Networks in
         <strong>Google Chrome on Android</strong>
         and press Network again.
 
       </div>
+
     `;
 
     return;
@@ -1300,16 +1459,6 @@ async function openPhoneContacts(){
 
 
   try{
-
-    /*
-      Open Android/browser contact picker.
-
-      We request:
-      - name
-      - phone number
-
-      Multiple contacts can be selected.
-    */
 
     const contacts =
       await navigator.contacts.select(
@@ -1320,16 +1469,19 @@ async function openPhoneContacts(){
       );
 
 
-    /*
-      User cancelled.
-    */
-
-    if(!contacts || !contacts.length){
+    if(
+      !contacts ||
+      !contacts.length
+    ){
 
       membersEl.innerHTML = `
+
         <div class="empty">
+
           No contacts were selected.
+
         </div>
+
       `;
 
       return;
@@ -1337,67 +1489,64 @@ async function openPhoneContacts(){
     }
 
 
-    /*
-      Collect every selected phone number.
-    */
-
     const selectedPhones =
       new Set();
 
 
-    contacts.forEach(contact => {
+    contacts.forEach(
+      contact => {
 
-      if(!contact.tel){
-        return;
+        if(!contact.tel){
+
+          return;
+
+        }
+
+
+        contact.tel.forEach(
+          number => {
+
+            const normalized =
+              normalizePhone(
+                number
+              );
+
+
+            if(normalized){
+
+              selectedPhones.add(
+                normalized
+              );
+
+            }
+
+          }
+        );
+
       }
+    );
 
 
-      contact.tel.forEach(number => {
+    const matches =
+      allMembers.filter(
+        member => {
 
-        const normalized =
-          normalizePhone(number);
+          const phone =
+            normalizePhone(
+              member.jdaNumber
+            );
 
 
-        if(normalized){
-
-          selectedPhones.add(
-            normalized
+          return (
+            phone &&
+            selectedPhones.has(
+              phone
+            )
           );
 
         }
+      );
 
-      });
-
-    });
-
-
-    /*
-      Compare selected phone numbers
-      with approved JDA members.
-    */
-
-    const matches =
-      allMembers.filter(member => {
-
-        const jdaPhone =
-          memberPhone(member);
-
-
-        if(!jdaPhone){
-          return false;
-        }
-
-
-        return selectedPhones.has(
-          jdaPhone
-        );
-
-      });
-
-
-    /*
-      Display results.
-    */
 
     renderContactMatches(
       matches,
@@ -1408,24 +1557,24 @@ async function openPhoneContacts(){
   }catch(error){
 
     console.error(
-      "Contact picker error:",
+      "Contact Picker error:",
       error
     );
 
 
-    /*
-      User cancelled the picker.
-    */
-
     if(
-      error?.name ===
+      error.name ===
       "AbortError"
     ){
 
       membersEl.innerHTML = `
+
         <div class="empty">
+
           Contact selection cancelled.
+
         </div>
+
       `;
 
       return;
@@ -1434,6 +1583,7 @@ async function openPhoneContacts(){
 
 
     membersEl.innerHTML = `
+
       <div class="error-box">
 
         <strong>
@@ -1443,11 +1593,12 @@ async function openPhoneContacts(){
         <br><br>
 
         ${escapeHTML(
-          error?.message ||
+          error.message ||
           "Please try again."
         )}
 
       </div>
+
     `;
 
   }
@@ -1455,9 +1606,9 @@ async function openPhoneContacts(){
 }
 
 
-/* =========================
-   RENDER CONTACT MATCHES
-========================= */
+/* =====================================================
+   CONTACT MATCHES
+===================================================== */
 
 function renderContactMatches(
   matches,
@@ -1481,4 +1632,1195 @@ function renderContactMatches(
         You selected
         ${selectedCount}
         contact${selectedCount === 1 ? "" : "s"},
-       
+        but none of their phone numbers
+        match an approved JDA Networks member.
+
+      </div>
+
+
+      <button
+        class="contact-button"
+        id="backToNetwork"
+        type="button"
+      >
+        Show All JDA Members
+      </button>
+
+    `;
+
+
+    const backButton =
+      document.getElementById(
+        "backToNetwork"
+      );
+
+
+    if(backButton){
+
+      backButton.addEventListener(
+        "click",
+        () => {
+
+          chatNav.classList.add(
+            "active"
+          );
+
+          networkBtn.classList.remove(
+            "active"
+          );
+
+          renderMembers();
+
+        }
+      );
+
+    }
+
+
+    return;
+
+  }
+
+
+  membersEl.innerHTML = `
+
+    <div class="contact-info">
+
+      <div class="contact-title">
+        JDA Members Found
+      </div>
+
+      ${matches.length}
+      JDA member${matches.length === 1 ? "" : "s"}
+      found in your contacts.
+
+    </div>
+
+  `;
+
+
+  matches.forEach(
+    member => {
+
+      const element =
+        document.createElement(
+          "div"
+        );
+
+
+      element.className =
+        "member";
+
+
+      element.innerHTML = `
+
+        <img
+          src="${escapeHTML(
+            photoUrl(member.photoURL)
+          )}"
+          alt=""
+        >
+
+        <div class="member-info">
+
+          <div class="member-name">
+
+            ${escapeHTML(
+              member.realName ||
+              "JDA Member"
+            )}
+
+          </div>
+
+          <div class="member-detail">
+
+            ${escapeHTML(
+              memberDetail(member)
+            )}
+
+          </div>
+
+        </div>
+
+        <div class="status"></div>
+
+      `;
+
+
+      element.addEventListener(
+        "click",
+        () => {
+
+          openChat(member);
+
+        }
+      );
+
+
+      membersEl.appendChild(
+        element
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   FILTER BUTTONS
+===================================================== */
+
+filters.forEach(
+  button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        filters.forEach(
+          item =>
+            item.classList.remove(
+              "active"
+            )
+        );
+
+
+        button.classList.add(
+          "active"
+        );
+
+
+        currentFilter =
+          button.dataset.filter;
+
+
+        chatNav.classList.add(
+          "active"
+        );
+
+        networkBtn.classList.remove(
+          "active"
+        );
+
+
+        renderMembers();
+
+      }
+    );
+
+  }
+);
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+searchInput.addEventListener(
+  "input",
+  () => {
+
+    if(contactMode){
+
+      contactMode = false;
+
+      networkBtn.classList.remove(
+        "active"
+      );
+
+      chatNav.classList.add(
+        "active"
+      );
+
+    }
+
+
+    renderMembers();
+
+  }
+);
+
+
+/* =====================================================
+   NETWORK BUTTON
+===================================================== */
+
+networkBtn.addEventListener(
+  "click",
+  () => {
+
+    openPhoneContacts();
+
+  }
+);
+
+
+/* =====================================================
+   CHAT BUTTON
+===================================================== */
+
+chatNav.addEventListener(
+  "click",
+  () => {
+
+    chatNav.classList.add(
+      "active"
+    );
+
+    networkBtn.classList.remove(
+      "active"
+    );
+
+
+    renderMembers();
+
+  }
+);
+
+
+/* =====================================================
+   PROFILE BUTTON
+===================================================== */
+
+profileBtn.addEventListener(
+  "click",
+  () => {
+
+    if(!currentProfile){
+
+      alert(
+        "Your profile is still loading."
+      );
+
+      return;
+
+    }
+
+
+    myPhoto.src =
+      photoUrl(
+        currentProfile.photoURL
+      );
+
+
+    myName.textContent =
+      currentProfile.realName ||
+      "JDA Member";
+
+
+    if(
+      currentProfile.accountType ===
+      "student"
+    ){
+
+      myInfo.innerHTML = `
+
+        <strong>
+          Student
+        </strong>
+
+        <br>
+
+        ${escapeHTML(
+          getMemberClass(
+            currentProfile
+          )
+        )}
+
+        ${
+          getMemberStream(
+            currentProfile
+          )
+          ? " • " +
+            escapeHTML(
+              getMemberStream(
+                currentProfile
+              )
+            )
+          : ""
+        }
+
+        <br>
+
+        JDA Number:
+        ${escapeHTML(
+          currentProfile.jdaNumber
+        )}
+
+      `;
+
+    }else{
+
+      myInfo.innerHTML = `
+
+        <strong>
+          Staff
+        </strong>
+
+        <br>
+
+        Department:
+        ${escapeHTML(
+          currentProfile.department ||
+          "Staff"
+        )}
+
+        <br>
+
+        JDA Number:
+        ${escapeHTML(
+          currentProfile.jdaNumber
+        )}
+
+      `;
+
+    }
+
+
+    profileModal.style.display =
+      "flex";
+
+  }
+);
+
+
+/* =====================================================
+   CLOSE PROFILE
+===================================================== */
+
+closeProfile.addEventListener(
+  "click",
+  () => {
+
+    profileModal.style.display =
+      "none";
+
+  }
+);
+
+
+profileModal.addEventListener(
+  "click",
+  event => {
+
+    if(
+      event.target ===
+      profileModal
+    ){
+
+      profileModal.style.display =
+        "none";
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+logoutBtn.addEventListener(
+  "click",
+  async () => {
+
+    const confirmed =
+      confirm(
+        "Do you want to logout?"
+      );
+
+
+    if(!confirmed){
+
+      return;
+
+    }
+
+
+    try{
+
+      await signOut(
+        auth
+      );
+
+
+      location.href =
+        "index.html";
+
+
+    }catch(error){
+
+      alert(
+        "Logout failed:\n\n" +
+        (
+          error.message ||
+          ""
+        )
+      );
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   ADMIN BUTTON
+===================================================== */
+
+adminBtn.addEventListener(
+  "click",
+  () => {
+
+    location.href =
+      "admin.html";
+
+  }
+);
+
+
+/* =====================================================
+   NEW CHAT
+===================================================== */
+
+newChat.addEventListener(
+  "click",
+  () => {
+
+    searchInput.focus();
+
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }
+);
+
+
+/* =====================================================
+   CONVERSATION ID
+===================================================== */
+
+function conversationId(
+  uid1,
+  uid2
+){
+
+  return [
+    uid1,
+    uid2
+  ]
+    .sort()
+    .join("_");
+
+}
+
+
+/* =====================================================
+   OPEN CHAT
+===================================================== */
+
+async function openChat(
+  member
+){
+
+  if(
+    !currentUser ||
+    !member
+  ){
+
+    return;
+
+  }
+
+
+  if(
+    member.uid ===
+    currentUser.uid
+  ){
+
+    alert(
+      "You cannot start a chat with yourself."
+    );
+
+    return;
+
+  }
+
+
+  currentChatUser =
+    member;
+
+
+  chatName.textContent =
+    member.realName ||
+    "JDA Member";
+
+
+  chatStatus.textContent =
+    memberDetail(member);
+
+
+  chatPhoto.src =
+    photoUrl(
+      member.photoURL
+    );
+
+
+  chat.style.display =
+    "block";
+
+
+  messagesEl.innerHTML = `
+
+    <div class="loading">
+
+      Loading messages...
+
+    </div>
+
+  `;
+
+
+  if(unsubscribeMessages){
+
+    unsubscribeMessages();
+
+    unsubscribeMessages =
+      null;
+
+  }
+
+
+  try{
+
+    const conversation =
+      conversationId(
+        currentUser.uid,
+        member.uid
+      );
+
+
+    const conversationRef =
+      doc(
+        db,
+        "conversations",
+        conversation
+      );
+
+
+    const conversationSnap =
+      await getDoc(
+        conversationRef
+      );
+
+
+    if(
+      !conversationSnap.exists()
+    ){
+
+      await setDoc(
+        conversationRef,
+        {
+
+          participantIds:[
+            currentUser.uid,
+            member.uid
+          ],
+
+          createdAt:
+            serverTimestamp(),
+
+          updatedAt:
+            serverTimestamp()
+
+        }
+      );
+
+    }
+
+
+    const messagesQuery =
+      query(
+        collection(
+          db,
+          "conversations",
+          conversation,
+          "messages"
+        ),
+
+        orderBy(
+          "createdAt",
+          "asc"
+        )
+      );
+
+
+    unsubscribeMessages =
+      onSnapshot(
+        messagesQuery,
+
+        snapshot => {
+
+          if(
+            snapshot.empty
+          ){
+
+            messagesEl.innerHTML = `
+
+              <div class="empty">
+
+                No messages yet.
+
+                <br>
+
+                Say hello 👋
+
+              </div>
+
+            `;
+
+            return;
+
+          }
+
+
+          messagesEl.innerHTML =
+            "";
+
+
+          snapshot.forEach(
+            messageDoc => {
+
+              const message =
+                messageDoc.data();
+
+
+              const mine =
+                message.senderId ===
+                currentUser.uid;
+
+
+              const bubble =
+                document.createElement(
+                  "div"
+                );
+
+
+              bubble.className =
+                "message " +
+                (
+                  mine
+                    ? "mine"
+                    : "theirs"
+                );
+
+
+              const text =
+                document.createElement(
+                  "div"
+                );
+
+
+              text.textContent =
+                message.text || "";
+
+
+              const time =
+                document.createElement(
+                  "span"
+                );
+
+
+              time.className =
+                "message-time";
+
+
+              time.textContent =
+                formatTime(
+                  message.createdAt
+                );
+
+
+              bubble.appendChild(
+                text
+              );
+
+              bubble.appendChild(
+                time
+              );
+
+
+              messagesEl.appendChild(
+                bubble
+              );
+
+            }
+          );
+
+
+          messagesEl.scrollTop =
+            messagesEl.scrollHeight;
+
+        },
+
+        error => {
+
+          console.error(
+            "Message listener:",
+            error
+          );
+
+
+          messagesEl.innerHTML = `
+
+            <div class="error-box">
+
+              Could not load messages.
+
+              <br><br>
+
+              ${escapeHTML(
+                error.message ||
+                ""
+              )}
+
+            </div>
+
+          `;
+
+        }
+      );
+
+
+  }catch(error){
+
+    console.error(
+      "Open chat:",
+      error
+    );
+
+
+    messagesEl.innerHTML = `
+
+      <div class="error-box">
+
+        Could not open this chat.
+
+        <br><br>
+
+        ${escapeHTML(
+          error.message ||
+          ""
+        )}
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   CLOSE CHAT
+===================================================== */
+
+closeChat.addEventListener(
+  "click",
+  () => {
+
+    chat.style.display =
+      "none";
+
+
+    currentChatUser =
+      null;
+
+
+    if(
+      unsubscribeMessages
+    ){
+
+      unsubscribeMessages();
+
+      unsubscribeMessages =
+        null;
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   SEND MESSAGE
+===================================================== */
+
+messageForm.addEventListener(
+  "submit",
+  async event => {
+
+    event.preventDefault();
+
+
+    const text =
+      messageInput.value.trim();
+
+
+    if(!text){
+
+      return;
+
+    }
+
+
+    if(!currentUser){
+
+      alert(
+        "You are not logged in."
+      );
+
+      return;
+
+    }
+
+
+    if(!currentChatUser){
+
+      alert(
+        "No chat is selected."
+      );
+
+      return;
+
+    }
+
+
+    messageInput.disabled =
+      true;
+
+
+    try{
+
+      const conversation =
+        conversationId(
+          currentUser.uid,
+          currentChatUser.uid
+        );
+
+
+      const conversationRef =
+        doc(
+          db,
+          "conversations",
+          conversation
+        );
+
+
+      const conversationSnap =
+        await getDoc(
+          conversationRef
+        );
+
+
+      if(
+        !conversationSnap.exists()
+      ){
+
+        await setDoc(
+          conversationRef,
+          {
+
+            participantIds:[
+              currentUser.uid,
+              currentChatUser.uid
+            ],
+
+            createdAt:
+              serverTimestamp(),
+
+            updatedAt:
+              serverTimestamp()
+
+          }
+        );
+
+      }
+
+
+      await addDoc(
+        collection(
+          db,
+          "conversations",
+          conversation,
+          "messages"
+        ),
+        {
+
+          senderId:
+            currentUser.uid,
+
+          receiverId:
+            currentChatUser.uid,
+
+          text:text,
+
+          createdAt:
+            serverTimestamp()
+
+        }
+      );
+
+
+      await setDoc(
+        conversationRef,
+        {
+
+          updatedAt:
+            serverTimestamp(),
+
+          lastMessage:
+            text
+
+        },
+
+        {
+          merge:true
+        }
+      );
+
+
+      messageInput.value =
+        "";
+
+
+    }catch(error){
+
+      console.error(
+        "Send message:",
+        error
+      );
+
+
+      alert(
+        "Message could not be sent.\n\n" +
+        (
+          error.message ||
+          ""
+        )
+      );
+
+    }finally{
+
+      messageInput.disabled =
+        false;
+
+
+      messageInput.focus();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   ADMIN CHECK
+===================================================== */
+
+async function checkAdmin(){
+
+  if(!currentUser){
+
+    return false;
+
+  }
+
+
+  const superAdminEmail =
+    "jonathanmentor62@gmail.com";
+
+
+  if(
+    currentUser.email ===
+    superAdminEmail
+  ){
+
+    return true;
+
+  }
+
+
+  try{
+
+    const adminDoc =
+      await getDoc(
+        doc(
+          db,
+          "admins",
+          currentUser.uid
+        )
+      );
+
+
+    return adminDoc.exists();
+
+  }catch{
+
+    return false;
+
+  }
+
+}
+
+
+/* =====================================================
+   AUTHENTICATION
+===================================================== */
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    if(!user){
+
+      location.href =
+        "index.html";
+
+      return;
+
+    }
+
+
+    currentUser =
+      user;
+
+
+    try{
+
+      const profileDoc =
+        await getDoc(
+          doc(
+            db,
+            "users",
+            user.uid
+          )
+        );
+
+
+      if(
+        !profileDoc.exists()
+      ){
+
+        alert(
+          "Your JDA Networks profile was not found."
+        );
+
+
+        await signOut(
+          auth
+        );
+
+
+        location.href =
+          "index.html";
+
+
+        return;
+
+      }
+
+
+      currentProfile =
+        profileDoc.data();
+
+
+      if(
+        currentProfile.status !==
+        "approved"
+      ){
+
+        alert(
+          "Your JDA Networks account has not been approved yet."
+        );
+
+
+        location.href =
+          "index.html";
+
+
+        return;
+
+      }
+
+
+      const isAdmin =
+        await checkAdmin();
+
+
+      if(isAdmin){
+
+        adminBtn.classList.remove(
+          "hidden"
+        );
+
+      }else{
+
+        adminBtn.classList.add(
+          "hidden"
+        );
+
+      }
+
+
+      myPhoto.src =
+        photoUrl(
+          currentProfile.photoURL
+        );
+
+
+      await loadMembers();
+
+
+    }catch(error){
+
+      console.error(
+        "Authentication/profile error:",
+        error
+      );
+
+
+      membersEl.innerHTML = `
+
+        <div class="error-box">
+
+          <strong>
+            JDA Networks could not start.
+          </strong>
+
+          <br><br>
+
+          ${escapeHTML(
+            error.message ||
+            "Please refresh the page."
+          )}
+
+        </div>
+
+      `;
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>

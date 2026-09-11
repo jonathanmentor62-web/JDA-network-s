@@ -1,6 +1,6 @@
 // ============================================================
 // JDA NETWORKS — FIREBASE APP
-// Clean chat + member directory system
+// FULL CHAT + MEMBER DIRECTORY
 // ============================================================
 
 import {
@@ -98,7 +98,9 @@ function timestampSeconds(timestamp) {
   }
 
   if (timestamp instanceof Date) {
-    return Math.floor(timestamp.getTime() / 1000);
+    return Math.floor(
+      timestamp.getTime() / 1000
+    );
   }
 
   return 0;
@@ -124,13 +126,29 @@ function formatTime(timestamp) {
 }
 
 
+function getMemberClass(member) {
+
+  return (
+    member.className ||
+    member.class ||
+    member.studentClass ||
+    ""
+  );
+
+}
+
+
 function avatarHTML(profile, size = 52) {
 
   const name =
-    profile?.realName || "JDA Member";
+    profile?.realName ||
+    "JDA Member";
 
   const photo =
-    profile?.photoURL || "";
+    profile?.photoURL ||
+    profile?.profilePhoto ||
+    profile?.photoUrl ||
+    "";
 
   if (photo) {
 
@@ -162,7 +180,10 @@ function avatarHTML(profile, size = 52) {
         justify-content:center;
         color:#e9edef;
         font-weight:700;
-        font-size:${Math.max(14, size / 2.7)}px;
+        font-size:${Math.max(
+          14,
+          size / 2.7
+        )}px;
         flex-shrink:0;
       "
     >
@@ -177,33 +198,11 @@ function avatarHTML(profile, size = 52) {
 // AUTHENTICATION
 // ============================================================
 
-onAuthStateChanged(auth, async user => {
+onAuthStateChanged(
+  auth,
+  async user => {
 
-  if (!user) {
-
-    window.location.replace(
-      "./index.html"
-    );
-
-    return;
-  }
-
-
-  currentUser = user;
-
-
-  try {
-
-    const profileRef =
-      doc(db, "users", user.uid);
-
-    const profileSnap =
-      await getDoc(profileRef);
-
-
-    if (!profileSnap.exists()) {
-
-      await signOut(auth);
+    if (!user) {
 
       window.location.replace(
         "./index.html"
@@ -213,46 +212,83 @@ onAuthStateChanged(auth, async user => {
     }
 
 
-    currentProfile = {
-      id: profileSnap.id,
-      ...profileSnap.data()
-    };
+    currentUser = user;
 
 
-    /*
-      ONLY APPROVED MEMBERS CAN ENTER.
-    */
+    try {
 
-    if (
-      currentProfile.status !== "approved" &&
-      currentProfile.approved !== true
-    ) {
+      const profileRef =
+        doc(
+          db,
+          "users",
+          user.uid
+        );
 
-      window.location.replace(
-        "./index.html"
+
+      const profileSnap =
+        await getDoc(
+          profileRef
+        );
+
+
+      if (!profileSnap.exists()) {
+
+        await signOut(auth);
+
+        window.location.replace(
+          "./index.html"
+        );
+
+        return;
+
+      }
+
+
+      currentProfile = {
+        id: profileSnap.id,
+        ...profileSnap.data()
+      };
+
+
+      /*
+        ONLY APPROVED MEMBERS
+        CAN USE THE APP.
+      */
+
+      if (
+        currentProfile.status !== "approved" &&
+        currentProfile.approved !== true
+      ) {
+
+        window.location.replace(
+          "./index.html"
+        );
+
+        return;
+
+      }
+
+
+      initializeApp();
+
+    }
+    catch(error) {
+
+      console.error(
+        "JDA authentication error:",
+        error
       );
 
-      return;
+
+      showError(
+        "JDA Networks could not load your account.\n\n" +
+        error.message
+      );
+
     }
 
-
-    initializeApp();
-
-  } catch (error) {
-
-    console.error(
-      "JDA authentication error:",
-      error
-    );
-
-    showError(
-      "JDA Networks could not load your account.\n\n" +
-      error.message
-    );
-
   }
-
-});
+);
 
 
 // ============================================================
@@ -275,6 +311,8 @@ async function initializeApp() {
 
   setupLogout();
 
+  setupDirectoryButtons();
+
   await loadMembers();
 
   listenForMembers();
@@ -285,7 +323,7 @@ async function initializeApp() {
 
 
 // ============================================================
-// MEMBERS
+// LOAD MEMBERS
 // ============================================================
 
 async function loadMembers() {
@@ -297,52 +335,85 @@ async function loadMembers() {
 
     const membersQuery =
       query(
-        collection(db, "users"),
-        where("status", "==", "approved")
+        collection(
+          db,
+          "users"
+        ),
+        where(
+          "status",
+          "==",
+          "approved"
+        )
       );
 
 
     const snapshot =
-      await getDocs(membersQuery);
+      await getDocs(
+        membersQuery
+      );
 
 
     members = [];
 
 
-    snapshot.forEach(item => {
+    snapshot.forEach(
+      item => {
 
-      if (
-        item.id === currentUser.uid
-      ) {
-        return;
+        if (
+          item.id ===
+          currentUser.uid
+        ) {
+          return;
+        }
+
+
+        members.push({
+          id: item.id,
+          ...item.data()
+        });
+
       }
-
-
-      members.push({
-        id: item.id,
-        ...item.data()
-      });
-
-    });
-
-
-    members.sort(
-      (a, b) =>
-        (a.realName || "")
-          .localeCompare(
-            b.realName || ""
-          )
     );
 
 
-  } catch (error) {
+    sortMembers();
+
+    renderMemberResults();
+
+    renderDirectory();
+
+  }
+  catch(error) {
 
     console.error(
       "Member loading error:",
       error
     );
 
+    showError(
+      "Approved members could not be loaded.\n\n" +
+      error.message
+    );
+
   }
+
+}
+
+
+// ============================================================
+// SORT MEMBERS
+// ============================================================
+
+function sortMembers() {
+
+  members.sort(
+    (a, b) =>
+      (
+        a.realName || ""
+      ).localeCompare(
+        b.realName || ""
+      )
+  );
 
 }
 
@@ -360,46 +431,52 @@ function listenForMembers() {
 
   const membersQuery =
     query(
-      collection(db, "users"),
-      where("status", "==", "approved")
+      collection(
+        db,
+        "users"
+      ),
+      where(
+        "status",
+        "==",
+        "approved"
+      )
     );
 
 
   unsubscribeMembers =
     onSnapshot(
       membersQuery,
+
       snapshot => {
 
         members = [];
 
 
-        snapshot.forEach(item => {
+        snapshot.forEach(
+          item => {
 
-          if (
-            item.id === currentUser.uid
-          ) {
-            return;
+            if (
+              item.id ===
+              currentUser.uid
+            ) {
+              return;
+            }
+
+
+            members.push({
+              id: item.id,
+              ...item.data()
+            });
+
           }
-
-
-          members.push({
-            id: item.id,
-            ...item.data()
-          });
-
-        });
-
-
-        members.sort(
-          (a, b) =>
-            (a.realName || "")
-              .localeCompare(
-                b.realName || ""
-              )
         );
 
 
+        sortMembers();
+
         renderMemberResults();
+
+        renderDirectory();
 
       },
 
@@ -429,7 +506,10 @@ function listenForConversations() {
 
   const conversationsQuery =
     query(
-      collection(db, "conversations"),
+      collection(
+        db,
+        "conversations"
+      ),
       where(
         "participantIds",
         "array-contains",
@@ -441,19 +521,26 @@ function listenForConversations() {
   unsubscribeConversations =
     onSnapshot(
       conversationsQuery,
+
       async snapshot => {
 
         conversations =
-          snapshot.docs.map(item => ({
-            id: item.id,
-            ...item.data()
-          }));
+          snapshot.docs.map(
+            item => ({
+              id: item.id,
+              ...item.data()
+            })
+          );
 
 
         conversations.sort(
           (a, b) =>
-            timestampSeconds(b.updatedAt) -
-            timestampSeconds(a.updatedAt)
+            timestampSeconds(
+              b.updatedAt
+            ) -
+            timestampSeconds(
+              a.updatedAt
+            )
         );
 
 
@@ -475,7 +562,7 @@ function listenForConversations() {
 
 
 // ============================================================
-// FIND OTHER PERSON
+// GET OTHER PARTICIPANT
 // ============================================================
 
 async function getOtherParticipant(
@@ -483,12 +570,15 @@ async function getOtherParticipant(
 ) {
 
   const ids =
-    conversation.participantIds || [];
+    conversation.participantIds ||
+    [];
 
 
   const otherId =
     ids.find(
-      id => id !== currentUser.uid
+      id =>
+        id !==
+        currentUser.uid
     );
 
 
@@ -499,7 +589,9 @@ async function getOtherParticipant(
 
   const cached =
     members.find(
-      member => member.id === otherId
+      member =>
+        member.id ===
+        otherId
     );
 
 
@@ -512,7 +604,11 @@ async function getOtherParticipant(
 
     const snap =
       await getDoc(
-        doc(db, "users", otherId)
+        doc(
+          db,
+          "users",
+          otherId
+        )
       );
 
 
@@ -526,8 +622,8 @@ async function getOtherParticipant(
       ...snap.data()
     };
 
-
-  } catch (error) {
+  }
+  catch(error) {
 
     console.error(error);
 
@@ -547,39 +643,79 @@ async function renderChats() {
   const list =
     $("chatList");
 
+
   if (!list) return;
 
 
   list.innerHTML = "";
 
 
-  if (conversations.length === 0) {
+  if (
+    conversations.length === 0
+  ) {
 
-    list.innerHTML = `
-      <div class="empty">
+    const empty =
+      document.createElement(
+        "div"
+      );
 
-        <div class="empty-icon">
-          💬
-        </div>
 
-        <div class="empty-title">
-          No chats yet
-        </div>
+    empty.className =
+      "empty";
 
-        <div>
-          Tap + to start a conversation
-          with a JDA member.
-        </div>
 
+    empty.innerHTML = `
+
+      <div class="empty-icon">
+        💬
       </div>
+
+      <div class="empty-title">
+        No chats yet
+      </div>
+
+      <div style="margin-bottom:18px;">
+        Start a conversation with
+        another JDA member.
+      </div>
+
+      <button
+        id="emptyStartChat"
+        style="
+          border:0;
+          border-radius:22px;
+          padding:12px 22px;
+          background:#25d366;
+          color:#062b1d;
+          font-weight:700;
+        "
+      >
+        ✎ Start chatting
+      </button>
+
     `;
 
+
+    list.appendChild(
+      empty
+    );
+
+
+    $("emptyStartChat")
+      ?.addEventListener(
+        "click",
+        openMemberModal
+      );
+
+
     return;
+
   }
 
 
   for (
-    const conversation of conversations
+    const conversation of
+    conversations
   ) {
 
     const person =
@@ -592,7 +728,9 @@ async function renderChats() {
 
 
     const row =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     row.className =
@@ -617,7 +755,10 @@ async function renderChats() {
 
     row.innerHTML = `
 
-      ${avatarHTML(person, 52)}
+      ${avatarHTML(
+        person,
+        52
+      )}
 
       <div
         style="
@@ -709,7 +850,9 @@ async function renderChats() {
     );
 
 
-    list.appendChild(row);
+    list.appendChild(
+      row
+    );
 
   }
 
@@ -722,13 +865,17 @@ async function renderChats() {
 
 function createMemberModal() {
 
-  if ($("jdaMemberModal")) {
+  if (
+    $("jdaMemberModal")
+  ) {
     return;
   }
 
 
   const modal =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   modal.id =
@@ -738,8 +885,8 @@ function createMemberModal() {
   modal.style.cssText = `
     position:fixed;
     inset:0;
-    z-index:9999;
-    background:rgba(0,0,0,.72);
+    z-index:99999;
+    background:rgba(0,0,0,.75);
     display:none;
     align-items:flex-end;
     justify-content:center;
@@ -752,7 +899,7 @@ function createMemberModal() {
       style="
         width:100%;
         max-width:700px;
-        max-height:90vh;
+        max-height:92vh;
         background:#111b21;
         border-radius:20px 20px 0 0;
         overflow:hidden;
@@ -777,7 +924,9 @@ function createMemberModal() {
             border:0;
             background:none;
             color:#e9edef;
-            font-size:28px;
+            font-size:30px;
+            width:40px;
+            height:40px;
           "
         >
           ×
@@ -795,12 +944,16 @@ function createMemberModal() {
       </div>
 
 
-      <div style="padding:12px 16px;">
+      <div
+        style="
+          padding:12px 16px;
+        "
+      >
 
         <input
           id="memberSearchInput"
           type="search"
-          placeholder="Search members"
+          placeholder="Search approved members"
           autocomplete="off"
           style="
             width:100%;
@@ -818,18 +971,32 @@ function createMemberModal() {
 
 
       <div
+        style="
+          padding:0 16px 8px;
+          color:#8696a0;
+          font-size:12px;
+        "
+      >
+        Select a JDA member to start chatting.
+      </div>
+
+
+      <div
         id="memberResults"
         style="
           overflow-y:auto;
-          padding-bottom:20px;
+          padding-bottom:25px;
         "
       ></div>
 
     </div>
+
   `;
 
 
-  document.body.appendChild(modal);
+  document.body.appendChild(
+    modal
+  );
 
 
   $("closeMemberModal")
@@ -851,7 +1018,8 @@ function createMemberModal() {
     event => {
 
       if (
-        event.target === modal
+        event.target ===
+        modal
       ) {
 
         closeMemberModal();
@@ -877,11 +1045,17 @@ function openMemberModal() {
     $("jdaMemberModal");
 
 
+  if (!modal) {
+    return;
+  }
+
+
   modal.style.display =
     "flex";
 
 
-  $("memberSearchInput").value = "";
+  $("memberSearchInput").value =
+    "";
 
 
   renderMemberResults();
@@ -889,9 +1063,12 @@ function openMemberModal() {
 
   setTimeout(
     () => {
-      $("memberSearchInput")?.focus();
+
+      $("memberSearchInput")
+        ?.focus();
+
     },
-    100
+    150
   );
 
 }
@@ -918,7 +1095,7 @@ function closeMemberModal() {
 
 
 // ============================================================
-// MEMBER SEARCH RESULTS
+// MEMBER RESULTS
 // ============================================================
 
 function renderMemberResults() {
@@ -927,7 +1104,9 @@ function renderMemberResults() {
     $("memberResults");
 
 
-  if (!container) return;
+  if (!container) {
+    return;
+  }
 
 
   const input =
@@ -935,65 +1114,87 @@ function renderMemberResults() {
 
 
   const text =
-    (input?.value || "")
+    (
+      input?.value ||
+      ""
+    )
       .trim()
       .toLowerCase();
 
 
   const filtered =
-    members.filter(member => {
+    members.filter(
+      member => {
 
-      if (!text) return true;
-
-
-      const name =
-        (member.realName || "")
-          .toLowerCase();
+        if (!text) {
+          return true;
+        }
 
 
-      const number =
-        (member.jdaNumber || "")
-          .toLowerCase();
+        const name =
+          (
+            member.realName ||
+            ""
+          ).toLowerCase();
 
 
-      const type =
-        (member.accountType || "")
-          .toLowerCase();
+        const number =
+          (
+            member.jdaNumber ||
+            ""
+          ).toLowerCase();
 
 
-      const className =
-        (member.className || "")
-          .toLowerCase();
+        const type =
+          (
+            member.accountType ||
+            ""
+          ).toLowerCase();
 
 
-      const stream =
-        (member.stream || "")
-          .toLowerCase();
+        const className =
+          getMemberClass(
+            member
+          ).toLowerCase();
 
 
-      const department =
-        (member.department || "")
-          .toLowerCase();
+        const stream =
+          (
+            member.stream ||
+            ""
+          ).toLowerCase();
 
 
-      return (
-        name.includes(text) ||
-        number.includes(text) ||
-        type.includes(text) ||
-        className.includes(text) ||
-        stream.includes(text) ||
-        department.includes(text)
-      );
-
-    });
+        const department =
+          (
+            member.department ||
+            ""
+          ).toLowerCase();
 
 
-  container.innerHTML = "";
+        return (
+          name.includes(text) ||
+          number.includes(text) ||
+          type.includes(text) ||
+          className.includes(text) ||
+          stream.includes(text) ||
+          department.includes(text)
+        );
+
+      }
+    );
 
 
-  if (filtered.length === 0) {
+  container.innerHTML =
+    "";
+
+
+  if (
+    filtered.length === 0
+  ) {
 
     container.innerHTML = `
+
       <div
         style="
           padding:35px 20px;
@@ -1003,6 +1204,7 @@ function renderMemberResults() {
       >
         No approved member found.
       </div>
+
     `;
 
     return;
@@ -1010,133 +1212,158 @@ function renderMemberResults() {
   }
 
 
-  filtered.forEach(member => {
+  filtered.forEach(
+    member => {
 
-    const row =
-      document.createElement("div");
-
-
-    row.style.cssText = `
-      display:flex;
-      align-items:center;
-      gap:13px;
-      padding:13px 18px;
-      cursor:pointer;
-    `;
-
-
-    let info = "";
-
-
-    if (
-      member.accountType === "student"
-    ) {
-
-      const parts = [];
-
-
-      if (member.className) {
-        parts.push(
-          member.className
+      const row =
+        document.createElement(
+          "div"
         );
+
+
+      row.style.cssText = `
+        display:flex;
+        align-items:center;
+        gap:13px;
+        padding:13px 18px;
+        cursor:pointer;
+      `;
+
+
+      let info = "";
+
+
+      if (
+        member.accountType ===
+        "student"
+      ) {
+
+        const parts = [];
+
+
+        const className =
+          getMemberClass(
+            member
+          );
+
+
+        if (className) {
+          parts.push(
+            className
+          );
+        }
+
+
+        if (member.stream) {
+          parts.push(
+            member.stream
+          );
+        }
+
+
+        info =
+          parts.join(
+            " • "
+          );
+
+      }
+      else {
+
+        info =
+          member.department ||
+          "Staff";
+
       }
 
 
-      if (member.stream) {
-        parts.push(
-          member.stream
-        );
+      if (!info) {
+
+        info =
+          member.jdaNumber ||
+          "JDA member";
+
       }
 
 
-      info =
-        parts.join(" • ");
+      row.innerHTML = `
 
-    } else {
-
-      info =
-        member.department ||
-        "Staff";
-
-    }
-
-
-    if (!info) {
-      info =
-        member.jdaNumber ||
-        "JDA member";
-    }
-
-
-    row.innerHTML = `
-
-      ${avatarHTML(member, 52)}
-
-      <div
-        style="
-          flex:1;
-          min-width:0;
-        "
-      >
+        ${avatarHTML(
+          member,
+          52
+        )}
 
         <div
           style="
-            color:#e9edef;
-            font-size:16px;
-            font-weight:600;
+            flex:1;
+            min-width:0;
           "
         >
-          ${escapeHTML(
-            member.realName ||
-            "JDA Member"
-          )}
+
+          <div
+            style="
+              color:#e9edef;
+              font-size:16px;
+              font-weight:600;
+            "
+          >
+            ${escapeHTML(
+              member.realName ||
+              "JDA Member"
+            )}
+          </div>
+
+
+          <div
+            style="
+              color:#8696a0;
+              font-size:13px;
+              margin-top:4px;
+            "
+          >
+            ${escapeHTML(
+              info
+            )}
+          </div>
+
         </div>
 
 
         <div
           style="
-            color:#8696a0;
-            font-size:13px;
-            margin-top:4px;
+            width:9px;
+            height:9px;
+            border-radius:50%;
+            background:${
+              member.isOnline
+                ? "#25d366"
+                : "#667781"
+            };
           "
-        >
-          ${escapeHTML(info)}
-        </div>
+        ></div>
 
-      </div>
+      `;
 
 
-      <div
-        style="
-          width:9px;
-          height:9px;
-          border-radius:50%;
-          background:${
-            member.isOnline
-              ? "#25d366"
-              : "#667781"
-          };
-        "
-      ></div>
+      row.addEventListener(
+        "click",
+        async () => {
 
-    `;
+          closeMemberModal();
+
+          await startConversation(
+            member
+          );
+
+        }
+      );
 
 
-    row.addEventListener(
-      "click",
-      () => {
+      container.appendChild(
+        row
+      );
 
-        closeMemberModal();
-
-        startConversation(member);
-
-      }
-    );
-
-
-    container.appendChild(row);
-
-  });
+    }
+  );
 
 }
 
@@ -1145,13 +1372,32 @@ function renderMemberResults() {
 // START CONVERSATION
 // ============================================================
 
-async function startConversation(member) {
+async function startConversation(
+  member
+) {
 
   if (
     !currentUser ||
-    !member?.id
+    !member ||
+    !member.id
   ) {
+
+    showError(
+      "You must be logged in before starting a chat."
+    );
+
     return;
+
+  }
+
+
+  if (
+    member.id ===
+    currentUser.uid
+  ) {
+
+    return;
+
   }
 
 
@@ -1181,17 +1427,23 @@ async function startConversation(member) {
       );
 
 
-    if (!existing.exists()) {
+    if (
+      !existing.exists()
+    ) {
 
       await setDoc(
         conversationRef,
         {
           participantIds: ids,
+
           createdAt:
             serverTimestamp(),
+
           updatedAt:
             serverTimestamp(),
-          lastMessage: ""
+
+          lastMessage:
+            ""
         }
       );
 
@@ -1203,8 +1455,8 @@ async function startConversation(member) {
       conversationId
     );
 
-
-  } catch (error) {
+  }
+  catch(error) {
 
     console.error(
       "Conversation creation error:",
@@ -1228,13 +1480,17 @@ async function startConversation(member) {
 
 function createChatWindow() {
 
-  if ($("jdaChatWindow")) {
+  if (
+    $("jdaChatWindow")
+  ) {
     return;
   }
 
 
   const windowEl =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   windowEl.id =
@@ -1244,7 +1500,7 @@ function createChatWindow() {
   windowEl.style.cssText = `
     position:fixed;
     inset:0;
-    z-index:10000;
+    z-index:100000;
     background:#0b141a;
     display:none;
     flex-direction:column;
@@ -1272,6 +1528,8 @@ function createChatWindow() {
           background:none;
           color:#e9edef;
           font-size:30px;
+          width:40px;
+          height:45px;
         "
       >
         ‹
@@ -1376,6 +1634,7 @@ function createChatWindow() {
       </button>
 
     </div>
+
   `;
 
 
@@ -1441,7 +1700,8 @@ async function openChat(
 
 
   $("jdaChatWindow")
-    .style.display = "flex";
+    .style.display =
+      "flex";
 
 
   $("chatAvatar").innerHTML =
@@ -1456,11 +1716,17 @@ async function openChat(
     "JDA Member";
 
 
-  updateChatStatus(member);
+  updateChatStatus(
+    member
+  );
 
 
-  if (unsubscribeMessages) {
+  if (
+    unsubscribeMessages
+  ) {
+
     unsubscribeMessages();
+
   }
 
 
@@ -1487,6 +1753,7 @@ async function openChat(
   unsubscribeMessages =
     onSnapshot(
       messagesQuery,
+
       snapshot => {
 
         const messages =
@@ -1523,7 +1790,10 @@ async function openChat(
 
   setTimeout(
     () => {
-      $("messageInput")?.focus();
+
+      $("messageInput")
+        ?.focus();
+
     },
     100
   );
@@ -1535,7 +1805,9 @@ async function openChat(
 // CHAT STATUS
 // ============================================================
 
-function updateChatStatus(member) {
+function updateChatStatus(
+  member
+) {
 
   const status =
     $("chatStatus");
@@ -1552,7 +1824,8 @@ function updateChatStatus(member) {
     status.style.color =
       "#25d366";
 
-  } else {
+  }
+  else {
 
     status.textContent =
       "offline";
@@ -1571,11 +1844,14 @@ function updateChatStatus(member) {
 
 function closeChat() {
 
-  if (unsubscribeMessages) {
+  if (
+    unsubscribeMessages
+  ) {
 
     unsubscribeMessages();
 
-    unsubscribeMessages = null;
+    unsubscribeMessages =
+      null;
 
   }
 
@@ -1605,7 +1881,9 @@ function closeChat() {
 // RENDER MESSAGES
 // ============================================================
 
-function renderMessages(messages) {
+function renderMessages(
+  messages
+) {
 
   const container =
     $("messageList");
@@ -1614,12 +1892,16 @@ function renderMessages(messages) {
   if (!container) return;
 
 
-  container.innerHTML = "";
+  container.innerHTML =
+    "";
 
 
-  if (messages.length === 0) {
+  if (
+    messages.length === 0
+  ) {
 
     container.innerHTML = `
+
       <div
         style="
           margin:auto;
@@ -1629,10 +1911,15 @@ function renderMessages(messages) {
           font-size:13px;
         "
       >
+
         🔒 Your conversation is private.
+
         <br><br>
+
         Start the conversation.
+
       </div>
+
     `;
 
     return;
@@ -1640,78 +1927,84 @@ function renderMessages(messages) {
   }
 
 
-  messages.forEach(message => {
+  messages.forEach(
+    message => {
 
-    const mine =
-      message.senderId ===
-      currentUser.uid;
-
-
-    const bubble =
-      document.createElement("div");
+      const mine =
+        message.senderId ===
+        currentUser.uid;
 
 
-    bubble.style.cssText = `
-      align-self:${
-        mine
-          ? "flex-end"
-          : "flex-start"
-      };
-      max-width:78%;
-      background:${
-        mine
-          ? "#005c4b"
-          : "#202c33"
-      };
-      color:#e9edef;
-      padding:8px 10px 5px;
-      border-radius:${
-        mine
-          ? "9px 3px 9px 9px"
-          : "3px 9px 9px 9px"
-      };
-      word-wrap:break-word;
-      margin-bottom:3px;
-    `;
+      const bubble =
+        document.createElement(
+          "div"
+        );
 
 
-    bubble.innerHTML = `
-
-      <div
-        style="
-          font-size:15px;
-          line-height:1.4;
-          white-space:pre-wrap;
-        "
-      >
-        ${escapeHTML(
-          message.text || ""
-        )}
-      </div>
-
-
-      <div
-        style="
-          text-align:right;
-          color:#8696a0;
-          font-size:10px;
-          margin-top:3px;
-        "
-      >
-        ${formatTime(
-          message.createdAt
-        )}
-        ${mine ? " ✓" : ""}
-      </div>
-
-    `;
+      bubble.style.cssText = `
+        align-self:${
+          mine
+            ? "flex-end"
+            : "flex-start"
+        };
+        max-width:78%;
+        background:${
+          mine
+            ? "#005c4b"
+            : "#202c33"
+        };
+        color:#e9edef;
+        padding:8px 10px 5px;
+        border-radius:${
+          mine
+            ? "9px 3px 9px 9px"
+            : "3px 9px 9px 9px"
+        };
+        word-wrap:break-word;
+        margin-bottom:3px;
+      `;
 
 
-    container.appendChild(
-      bubble
-    );
+      bubble.innerHTML = `
 
-  });
+        <div
+          style="
+            font-size:15px;
+            line-height:1.4;
+            white-space:pre-wrap;
+          "
+        >
+          ${escapeHTML(
+            message.text ||
+            ""
+          )}
+        </div>
+
+
+        <div
+          style="
+            text-align:right;
+            color:#8696a0;
+            font-size:10px;
+            margin-top:3px;
+          "
+        >
+          ${formatTime(
+            message.createdAt
+          )}
+
+          ${mine ? " ✓" : ""}
+        </div>
+
+      `;
+
+
+      container.appendChild(
+        bubble
+      );
+
+    }
+  );
 
 
   container.scrollTop =
@@ -1731,7 +2024,9 @@ async function sendMessage() {
     !currentConversationId ||
     !currentChatUser
   ) {
+
     return;
+
   }
 
 
@@ -1749,7 +2044,9 @@ async function sendMessage() {
   if (!text) return;
 
 
-  if (text.length > 5000) {
+  if (
+    text.length > 5000
+  ) {
 
     showError(
       "Message cannot exceed 5000 characters."
@@ -1764,10 +2061,13 @@ async function sendMessage() {
     $("sendMessage");
 
 
-  input.disabled = true;
+  input.disabled =
+    true;
+
 
   if (sendButton) {
-    sendButton.disabled = true;
+    sendButton.disabled =
+      true;
   }
 
 
@@ -1793,6 +2093,7 @@ async function sendMessage() {
     await addDoc(
       messagesRef,
       {
+
         senderId:
           currentUser.uid,
 
@@ -1803,6 +2104,7 @@ async function sendMessage() {
 
         createdAt:
           serverTimestamp()
+
       }
     );
 
@@ -1810,22 +2112,25 @@ async function sendMessage() {
     await updateDoc(
       conversationRef,
       {
+
         lastMessage:
           text,
 
         updatedAt:
           serverTimestamp()
+
       }
     );
 
 
-    input.value = "";
+    input.value =
+      "";
 
     input.style.height =
       "auto";
 
-
-  } catch (error) {
+  }
+  catch(error) {
 
     console.error(
       "Send message error:",
@@ -1838,18 +2143,55 @@ async function sendMessage() {
       error.message
     );
 
+  }
+  finally {
 
-  } finally {
+    input.disabled =
+      false;
 
-    input.disabled = false;
 
     if (sendButton) {
-      sendButton.disabled = false;
+
+      sendButton.disabled =
+        false;
+
     }
+
 
     input.focus();
 
   }
+
+}
+
+
+// ============================================================
+// NEW CHAT BUTTONS
+// ============================================================
+
+function setupNewChatButtons() {
+
+  const buttons =
+    document.querySelectorAll(
+      "#newChatBtn, #fab"
+    );
+
+
+  buttons.forEach(
+    button => {
+
+      button.onclick = event => {
+
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        openMemberModal();
+
+      };
+
+    }
+  );
 
 }
 
@@ -1869,7 +2211,7 @@ function setupSearch() {
 
   search.addEventListener(
     "input",
-    async () => {
+    () => {
 
       const text =
         search.value
@@ -1883,32 +2225,19 @@ function setupSearch() {
         );
 
 
-      if (!text) {
+      rows.forEach(
+        row => {
 
-        rows.forEach(
-          row => {
-            row.style.display =
-              "flex";
-          }
-        );
-
-        return;
-
-      }
-
-
-      for (
-        const row of rows
-      ) {
-
-        row.style.display =
-          row.innerText
-            .toLowerCase()
-            .includes(text)
+          row.style.display =
+            !text ||
+            row.innerText
+              .toLowerCase()
+              .includes(text)
               ? "flex"
               : "none";
 
-      }
+        }
+      );
 
     }
   );
@@ -1928,93 +2257,530 @@ function setupNavigation() {
     );
 
 
-  buttons.forEach(button => {
+  buttons.forEach(
+    button => {
 
-    button.addEventListener(
-      "click",
-      () => {
+      button.addEventListener(
+        "click",
+        () => {
 
-        switchPage(
-          button.dataset.page
-        );
+          switchPage(
+            button.dataset.page
+          );
 
-      }
-    );
+        }
+      );
 
-  });
+    }
+  );
 
 }
 
 
-function switchPage(page) {
+function switchPage(
+  page
+) {
 
   document
     .querySelectorAll(
       "[data-screen]"
     )
-    .forEach(screen => {
+    .forEach(
+      screen => {
 
-      screen.classList.toggle(
-        "active",
-        screen.dataset.screen === page
-      );
+        screen.classList.toggle(
+          "active",
+          screen.dataset.screen ===
+          page
+        );
 
-    });
+      }
+    );
 
 
   document
     .querySelectorAll(
       ".bottom-nav [data-page]"
     )
-    .forEach(button => {
+    .forEach(
+      button => {
 
-      button.classList.toggle(
-        "active",
-        button.dataset.page === page
-      );
+        button.classList.toggle(
+          "active",
+          button.dataset.page ===
+          page
+        );
 
-    });
-
-
-  const content =
-    document.querySelector(
-      ".content"
+      }
     );
-
-
-  if (content) {
-    content.scrollTop = 0;
-  }
 
 }
 
 
 // ============================================================
-// NEW CHAT BUTTONS
+// DIRECTORY BUTTONS
 // ============================================================
 
-function setupNewChatButtons() {
+function setupDirectoryButtons() {
 
-  const buttons =
-    document.querySelectorAll(
-      "#newChatBtn, #fab"
-    );
+  document
+    .querySelectorAll(
+      ".filter-button"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            const filter =
+              button.dataset.filter;
 
 
-  buttons.forEach(button => {
+            document
+              .querySelectorAll(
+                ".filter-button"
+              )
+              .forEach(
+                item => {
 
-    button.addEventListener(
-      "click",
-      event => {
+                  item.classList.remove(
+                    "active"
+                  );
 
-        event.preventDefault();
+                }
+              );
 
-        openMemberModal();
+
+            button.classList.add(
+              "active"
+            );
+
+
+            if (
+              filter ===
+              "students"
+            ) {
+
+              switchPage(
+                "students"
+              );
+
+              return;
+
+            }
+
+
+            if (
+              filter ===
+              "staff"
+            ) {
+
+              switchPage(
+                "staff"
+              );
+
+              return;
+
+            }
+
+
+            switchPage(
+              "chats"
+            );
+
+          }
+        );
 
       }
     );
 
-  });
+
+  document
+    .querySelectorAll(
+      ".class-button"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            const className =
+              button.dataset.class;
+
+
+            const number =
+              className.replace(
+                "Form ",
+                ""
+              );
+
+
+            const membersBox =
+              document.getElementById(
+                "form" +
+                number +
+                "Members"
+              );
+
+
+            if (
+              !membersBox
+            ) return;
+
+
+            document
+              .querySelectorAll(
+                ".class-members"
+              )
+              .forEach(
+                item => {
+
+                  if (
+                    item !==
+                    membersBox
+                  ) {
+
+                    item.classList.remove(
+                      "open"
+                    );
+
+                  }
+
+                }
+              );
+
+
+            renderClassMembers(
+              className,
+              membersBox
+            );
+
+
+            membersBox.classList.toggle(
+              "open"
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+// ============================================================
+// RENDER STUDENTS + STAFF
+// ============================================================
+
+function renderDirectory() {
+
+  for (
+    let number = 1;
+    number <= 6;
+    number++
+  ) {
+
+    const box =
+      document.getElementById(
+        "form" +
+        number +
+        "Members"
+      );
+
+
+    if (!box) continue;
+
+
+    const className =
+      "Form " +
+      number;
+
+
+    renderClassMembers(
+      className,
+      box
+    );
+
+  }
+
+
+  renderStaff();
+
+}
+
+
+// ============================================================
+// RENDER CLASS MEMBERS
+// ============================================================
+
+function renderClassMembers(
+  className,
+  container
+) {
+
+  const students =
+    members.filter(
+      member => {
+
+        if (
+          member.accountType !==
+          "student"
+        ) {
+          return false;
+        }
+
+
+        return (
+          getMemberClass(
+            member
+          ).toLowerCase() ===
+          className.toLowerCase()
+        );
+
+      }
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  if (
+    students.length === 0
+  ) {
+
+    container.innerHTML = `
+
+      <div class="class-members-empty">
+        No approved students in
+        ${escapeHTML(className)}
+        yet.
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  students.forEach(
+    member => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+      row.style.cssText = `
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:10px 4px;
+        cursor:pointer;
+        border-bottom:1px solid rgba(255,255,255,.05);
+      `;
+
+
+      row.innerHTML = `
+
+        ${avatarHTML(
+          member,
+          42
+        )}
+
+        <div
+          style="
+            flex:1;
+            min-width:0;
+          "
+        >
+
+          <div
+            style="
+              font-weight:600;
+              color:#e9edef;
+              font-size:14px;
+            "
+          >
+            ${escapeHTML(
+              member.realName
+            )}
+          </div>
+
+          <div
+            style="
+              color:#8696a0;
+              font-size:12px;
+              margin-top:3px;
+            "
+          >
+            ${escapeHTML(
+              member.stream ||
+              "Student"
+            )}
+          </div>
+
+        </div>
+
+      `;
+
+
+      row.addEventListener(
+        "click",
+        () => {
+
+          startConversation(
+            member
+          );
+
+        }
+      );
+
+
+      container.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
+
+
+// ============================================================
+// RENDER STAFF
+// ============================================================
+
+function renderStaff() {
+
+  const container =
+    document.querySelector(
+      ".staff-list"
+    );
+
+
+  if (!container) return;
+
+
+  const staff =
+    members.filter(
+      member =>
+        member.accountType ===
+        "staff"
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  if (
+    staff.length === 0
+  ) {
+
+    container.innerHTML = `
+
+      <div class="staff-card">
+
+        <div class="staff-title">
+          No approved staff yet
+        </div>
+
+        <div class="staff-description">
+          Approved staff members will
+          appear here.
+        </div>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  staff.forEach(
+    member => {
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "staff-card";
+
+
+      card.style.cssText += `
+        display:flex;
+        align-items:center;
+        gap:12px;
+        cursor:pointer;
+      `;
+
+
+      card.innerHTML = `
+
+        ${avatarHTML(
+          member,
+          48
+        )}
+
+        <div
+          style="
+            flex:1;
+          "
+        >
+
+          <div
+            class="staff-title"
+          >
+            ${escapeHTML(
+              member.realName
+            )}
+          </div>
+
+          <div
+            class="staff-description"
+          >
+            ${escapeHTML(
+              member.department ||
+              "Staff"
+            )}
+          </div>
+
+        </div>
+
+      `;
+
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          startConversation(
+            member
+          );
+
+        }
+      );
+
+
+      container.appendChild(
+        card
+      );
+
+    }
+  );
 
 }
 
@@ -2036,26 +2802,28 @@ function setupLogout() {
     "click",
     async () => {
 
-      const confirmed =
-        confirm(
+      if (
+        !confirm(
           "Log out of JDA Networks?"
-        );
-
-
-      if (!confirmed) {
+        )
+      ) {
         return;
       }
 
 
       try {
 
-        await signOut(auth);
+        await signOut(
+          auth
+        );
+
 
         window.location.replace(
           "./index.html"
         );
 
-      } catch (error) {
+      }
+      catch(error) {
 
         showError(
           "Could not log out.\n\n" +
@@ -2076,7 +2844,9 @@ function setupLogout() {
 
 function renderProfile() {
 
-  if (!currentProfile) {
+  if (
+    !currentProfile
+  ) {
     return;
   }
 
@@ -2093,6 +2863,7 @@ function renderProfile() {
 
   const photo =
     currentProfile.photoURL ||
+    currentProfile.profilePhoto ||
     "";
 
 
@@ -2105,8 +2876,11 @@ function renderProfile() {
     if (photo) {
 
       photoElement.innerHTML = `
+
         <img
-          src="${escapeHTML(photo)}"
+          src="${escapeHTML(
+            photo
+          )}"
           alt=""
           style="
             width:100%;
@@ -2115,9 +2889,11 @@ function renderProfile() {
             border-radius:50%;
           "
         >
+
       `;
 
-    } else {
+    }
+    else {
 
       photoElement.textContent =
         initials(name);
@@ -2127,7 +2903,9 @@ function renderProfile() {
   }
 
 
-  if ($("profileName")) {
+  if (
+    $("profileName")
+  ) {
 
     $("profileName").textContent =
       name;
@@ -2135,7 +2913,9 @@ function renderProfile() {
   }
 
 
-  if ($("profileJdaNumber")) {
+  if (
+    $("profileJdaNumber")
+  ) {
 
     $("profileJdaNumber").textContent =
       number;
@@ -2143,7 +2923,9 @@ function renderProfile() {
   }
 
 
-  if ($("profileEmail")) {
+  if (
+    $("profileEmail")
+  ) {
 
     $("profileEmail").textContent =
       currentProfile.email ||
@@ -2153,7 +2935,9 @@ function renderProfile() {
   }
 
 
-  if ($("profileAccountType")) {
+  if (
+    $("profileAccountType")
+  ) {
 
     $("profileAccountType")
       .textContent =
@@ -2165,7 +2949,9 @@ function renderProfile() {
   }
 
 
-  if ($("profileClass")) {
+  if (
+    $("profileClass")
+  ) {
 
     if (
       currentProfile.accountType ===
@@ -2175,11 +2961,15 @@ function renderProfile() {
       const parts = [];
 
 
-      if (
-        currentProfile.className
-      ) {
+      const className =
+        getMemberClass(
+          currentProfile
+        );
+
+
+      if (className) {
         parts.push(
-          currentProfile.className
+          className
         );
       }
 
@@ -2187,21 +2977,28 @@ function renderProfile() {
       if (
         currentProfile.stream
       ) {
+
         parts.push(
           currentProfile.stream
         );
+
       }
 
 
-      $("profileClass").textContent =
-        parts.join(" • ") ||
-        "Student";
+      $("profileClass")
+        .textContent =
+          parts.join(
+            " • "
+          ) ||
+          "Student";
 
-    } else {
+    }
+    else {
 
-      $("profileClass").textContent =
-        currentProfile.department ||
-        "Staff";
+      $("profileClass")
+        .textContent =
+          currentProfile.department ||
+          "Staff";
 
     }
 
@@ -2219,6 +3016,8 @@ window.JDA = {
   openNewChat:
     openMemberModal,
 
+  startConversation,
+
   openChat,
 
   closeChat,
@@ -2229,9 +3028,14 @@ window.JDA = {
   refreshChats:
     async () => {
 
-      if (unsubscribeConversations) {
+      if (
+        unsubscribeConversations
+      ) {
+
         unsubscribeConversations();
+
       }
+
 
       listenForConversations();
 
@@ -2240,7 +3044,10 @@ window.JDA = {
   logout:
     async () => {
 
-      await signOut(auth);
+      await signOut(
+        auth
+      );
+
 
       window.location.replace(
         "./index.html"
@@ -2256,5 +3063,5 @@ window.JDA = {
 // ============================================================
 
 console.log(
-  "JDA Networks Firebase app loaded successfully."
+  "JDA Networks — chat system loaded."
 );

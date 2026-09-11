@@ -4,14 +4,22 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
 
+
+    /* =====================================
+       BASIC SECURITY FUNCTIONS
+    ===================================== */
+
     function signedIn() {
       return request.auth != null;
     }
 
+
     function superAdmin() {
       return signedIn()
-        && request.auth.token.email == "jonathanmentor62@gmail.com";
+        && request.auth.token.email
+           == "jonathanmentor62@gmail.com";
     }
+
 
     function admin() {
       return superAdmin()
@@ -23,12 +31,14 @@ service cloud.firestore {
         );
     }
 
+
     function myUser() {
       return signedIn()
         && exists(
           /databases/$(database)/documents/users/$(request.auth.uid)
         );
     }
+
 
     function approved() {
       return myUser()
@@ -38,15 +48,18 @@ service cloud.firestore {
     }
 
 
-    /* =========================
+
+    /* =====================================
        USERS
-    ========================= */
+    ===================================== */
 
     match /users/{uid} {
 
       /*
-       New registration.
-       A user may ONLY create their own pending account.
+       NEW REGISTRATION
+
+       A person can create only their own
+       account and it must start as pending.
       */
 
       allow create:
@@ -63,8 +76,10 @@ service cloud.firestore {
 
 
       /*
-       Admins can review all users.
-       Approved members can see the directory.
+       Administrators can review users.
+
+       Approved members can access the
+       JDA member directory.
       */
 
       allow read:
@@ -72,61 +87,94 @@ service cloud.firestore {
 
 
       /*
-       Admin controls approval/disable/rejection.
-       Normal users cannot change identity or status.
+       ONLY ADMINISTRATORS can change:
+
+       - approval
+       - rejection
+       - disabled status
+       - identity/profile information
       */
 
       allow update:
         if admin();
 
 
+      /*
+       Only the super administrator can
+       permanently delete a user document.
+      */
+
       allow delete:
         if superAdmin();
 
-
-      /*
-       No other access.
-      */
     }
 
 
-    /* =========================
-       ADMINS
-    ========================= */
+
+    /* =====================================
+       ADMIN ACCOUNTS
+    ===================================== */
 
     match /admins/{uid} {
 
       /*
-       An admin can read their own admin record.
-       The super admin can manage admin records.
+       An administrator can see their own
+       admin record.
+
+       Existing administrators can also
+       see admin records.
       */
 
       allow read:
         if signedIn()
-        && (request.auth.uid == uid || admin());
+        && (
+          request.auth.uid == uid
+          || admin()
+        );
+
+
+      /*
+       Only the super administrator can
+       create, change or remove administrators.
+      */
 
       allow create, update, delete:
         if superAdmin();
+
     }
 
 
-    /* =========================
-       CONVERSATIONS
-    ========================= */
+
+    /* =====================================
+       PRIVATE CONVERSATIONS
+    ===================================== */
 
     match /conversations/{conversationId} {
 
       /*
-       Only approved members can access conversations.
-       The conversation document must contain:
-       participantIds: [uid1, uid2]
+       A conversation must contain exactly
+       two participant UIDs.
+
+       Example:
+
+       participantIds:
+       [
+         "USER_A",
+         "USER_B"
+       ]
       */
 
       allow read:
         if approved()
+        && resource.data.participantIds is list
         && request.auth.uid
            in resource.data.participantIds;
 
+
+      /*
+       Only an approved member can create
+       a conversation involving themselves.
+      */
 
       allow create:
         if approved()
@@ -136,6 +184,12 @@ service cloud.firestore {
            in request.resource.data.participantIds;
 
 
+      /*
+       Participants can update conversation
+       metadata, but cannot change who is
+       participating.
+      */
+
       allow update:
         if approved()
         && request.auth.uid
@@ -144,15 +198,25 @@ service cloud.firestore {
            == resource.data.participantIds;
 
 
+      /*
+       Admins can delete conversations.
+      */
+
       allow delete:
         if admin();
 
 
-      /* =========================
+
+      /* =================================
          MESSAGES
-      ========================= */
+      ================================= */
 
       match /messages/{messageId} {
+
+        /*
+         Only conversation participants
+         can read messages.
+        */
 
         allow read:
           if approved()
@@ -162,51 +226,70 @@ service cloud.firestore {
              ).data.participantIds;
 
 
+        /*
+         A member can send only as themselves.
+
+         The receiver must also be one of
+         the two conversation participants.
+        */
+
         allow create:
           if approved()
+
           && request.auth.uid
              in get(
                /databases/$(database)/documents/conversations/$(conversationId)
              ).data.participantIds
+
           && request.resource.data.senderId
              == request.auth.uid
+
           && request.resource.data.receiverId
              in get(
                /databases/$(database)/documents/conversations/$(conversationId)
              ).data.participantIds
+
           && request.resource.data.receiverId
              != request.auth.uid
+
           && request.resource.data.text is string
+
           && request.resource.data.text.size() > 0
+
           && request.resource.data.text.size() <= 5000;
 
 
         /*
-         Messages cannot be secretly edited.
-         */
+         Messages cannot be edited from
+         the client.
+        */
 
         allow update:
           if false;
 
 
         /*
-         Only an admin can delete messages.
-         */
+         Admins can remove messages.
+        */
 
         allow delete:
           if admin();
+
       }
+
     }
 
 
-    /* =========================
+
+    /* =====================================
        CONNECTIONS
-    ========================= */
+    ===================================== */
 
     match /connections/{connectionId} {
 
       /*
-       Connection documents must contain:
+       A connection document contains:
+
        requesterId
        receiverId
       */
@@ -214,10 +297,18 @@ service cloud.firestore {
       allow read:
         if approved()
         && (
-          resource.data.requesterId == request.auth.uid
-          || resource.data.receiverId == request.auth.uid
+          resource.data.requesterId
+             == request.auth.uid
+
+          || resource.data.receiverId
+             == request.auth.uid
         );
 
+
+      /*
+       Users can create a connection request
+       only as themselves.
+      */
 
       allow create:
         if approved()
@@ -227,20 +318,35 @@ service cloud.firestore {
            != request.auth.uid;
 
 
+      /*
+       Either participant can remove the
+       connection.
+      */
+
       allow delete:
         if approved()
         && (
-          resource.data.requesterId == request.auth.uid
-          || resource.data.receiverId == request.auth.uid
+          resource.data.requesterId
+             == request.auth.uid
+
+          || resource.data.receiverId
+             == request.auth.uid
         );
+
     }
 
 
-    /* =========================
+
+    /* =====================================
        NOTIFICATIONS
-    ========================= */
+    ===================================== */
 
     match /notifications/{notificationId} {
+
+      /*
+       A user can read only notifications
+       belonging to that user.
+      */
 
       allow read:
         if signedIn()
@@ -249,23 +355,21 @@ service cloud.firestore {
 
 
       /*
-       Only the server/admin should create
-       registration approval notifications.
+       A newly registering member can create
+       the temporary registration event.
+
+       IMPORTANT:
+       This does NOT itself send a phone push.
+       The server notification system will
+       handle the actual push later.
       */
 
       allow create:
-        if admin();
-
-
-      allow update:
         if signedIn()
-        && resource.data.userId
-           == request.auth.uid;
+        && request.resource.data.type
+           == "new_registration"
 
+        && request.resource.data.userId
+           == request.auth.uid
 
-      allow delete:
-        if admin();
-    }
-
-  }
-}
+        && request.resource.data.member

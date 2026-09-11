@@ -1,0 +1,29 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Fix Account</title></head><body style="background:#0b141a;color:white;font-family:Arial;padding:20px;text-align:center">
+<h2>JDA Networks - Emergency Fix</h2>
+<p id="status">Checking...</p>
+<button id="btn" style="padding:15px 25px;background:#25d366;border:0;border-radius:25px;font-weight:bold;display:none" onclick="location.href='./index.html'">Go Login</button>
+<script type="module">
+import { auth, db } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+const status=document.getElementById("status"),btn=document.getElementById("btn");
+onAuthStateChanged(auth, async (user)=>{
+ if(!user){ status.textContent="Not logged in - Go login first"; btn.style.display="inline-block"; return; }
+ status.textContent="Fixing "+user.email+"...";
+ try{
+   const ref=doc(db,"users",user.uid);
+   const snap=await getDoc(ref);
+   if(!snap.exists()){
+     await setDoc(ref,{uid:user.uid,email:user.email,realName:user.displayName||user.email.split('@')[0],status:"approved",approved:true,accountType:"student",class:"Form One",createdAt:serverTimestamp()});
+     status.innerHTML="✅ FIXED! You are now APPROVED MEMBER!<br><br>"+user.email;
+   } else {
+     await setDoc(ref,{status:"approved",approved:true},{merge:true});
+     status.innerHTML="✅ FIXED! Status changed to APPROVED!<br><br>"+user.email+"<br><br>You are now MEMBER!";
+   }
+   btn.textContent="Go to Chats";
+   btn.style.display="inline-block";
+   btn.onclick=()=>location.href="./home.html";
+ }catch(e){ status.textContent="Error: "+e.message; console.error(e); btn.style.display="inline-block"; }
+});
+setTimeout(()=>{ if(status.textContent.includes("Checking")){ status.textContent="Timeout - Clear browser data and try again. Go to Chrome 3 dots -> Site Settings -> Clear Data"; btn.style.display="inline-block"; } },6000);
+</script></body></html>

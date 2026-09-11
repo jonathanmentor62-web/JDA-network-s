@@ -1,29 +1,104 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Fix Account</title></head><body style="background:#0b141a;color:white;font-family:Arial;padding:20px;text-align:center">
-<h2>JDA Networks - Emergency Fix</h2>
-<p id="status">Checking...</p>
-<button id="btn" style="padding:15px 25px;background:#25d366;border:0;border-radius:25px;font-weight:bold;display:none" onclick="location.href='./index.html'">Go Login</button>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Fix Account</title>
+</head>
+<body style="background:#0b141a;color:white;font-family:Arial;padding:20px;text-align:center">
+<h2>JDA Networks - Ultimate Fix</h2>
+<p id="status">Loading Firebase...</p>
+<p id="log" style="font-size:11px;color:#8696a0;word-break:break-all"></p>
+<button id="btn" style="padding:15px 25px;background:#25d366;border:0;border-radius:25px;font-weight:bold;display:none" onclick="location.reload()">Retry</button>
+<button id="goBtn" style="padding:15px 25px;background:#374952;border:0;border-radius:25px;font-weight:bold;display:none;color:white;margin-left:10px" onclick="location.href='./index.html'">Go Login</button>
+
 <script type="module">
-import { auth, db } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-const status=document.getElementById("status"),btn=document.getElementById("btn");
-onAuthStateChanged(auth, async (user)=>{
- if(!user){ status.textContent="Not logged in - Go login first"; btn.style.display="inline-block"; return; }
- status.textContent="Fixing "+user.email+"...";
- try{
-   const ref=doc(db,"users",user.uid);
-   const snap=await getDoc(ref);
-   if(!snap.exists()){
-     await setDoc(ref,{uid:user.uid,email:user.email,realName:user.displayName||user.email.split('@')[0],status:"approved",approved:true,accountType:"student",class:"Form One",createdAt:serverTimestamp()});
-     status.innerHTML="✅ FIXED! You are now APPROVED MEMBER!<br><br>"+user.email;
-   } else {
-     await setDoc(ref,{status:"approved",approved:true},{merge:true});
-     status.innerHTML="✅ FIXED! Status changed to APPROVED!<br><br>"+user.email+"<br><br>You are now MEMBER!";
-   }
-   btn.textContent="Go to Chats";
-   btn.style.display="inline-block";
-   btn.onclick=()=>location.href="./home.html";
- }catch(e){ status.textContent="Error: "+e.message; console.error(e); btn.style.display="inline-block"; }
-});
-setTimeout(()=>{ if(status.textContent.includes("Checking")){ status.textContent="Timeout - Clear browser data and try again. Go to Chrome 3 dots -> Site Settings -> Clear Data"; btn.style.display="inline-block"; } },6000);
-</script></body></html>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+const logEl = document.getElementById("log");
+const statusEl = document.getElementById("status");
+const btn = document.getElementById("btn");
+const goBtn = document.getElementById("goBtn");
+
+function log(t){ logEl.innerHTML += "<br>" + t; }
+
+// PASTE YOUR FIREBASE CONFIG HERE - I need your real config
+// Go to console.firebase.google.com -> Project Settings -> scroll down -> config
+const firebaseConfig = {
+  apiKey: "AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
+};
+
+try{
+  log("Init app...");
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  log("Firebase OK, waiting for login...");
+
+  let timedOut = false;
+  setTimeout(()=>{
+    if(statusEl.textContent.includes("waiting")){
+      timedOut = true;
+      statusEl.innerHTML = "❌ STILL NOT LOGGED IN<br><br>You need to login FIRST at index.html<br>Then come back here";
+      btn.style.display="inline-block";
+      goBtn.style.display="inline-block";
+    }
+  },5000);
+
+  onAuthStateChanged(auth, async (user)=>{
+    if(timedOut) return;
+    log("Auth: " + (user? user.email : "null"));
+    if(!user){
+      statusEl.innerHTML = "❌ Not logged in<br>Go to login first";
+      goBtn.style.display="inline-block";
+      goBtn.textContent="Go Login";
+      return;
+    }
+    statusEl.textContent = "Fixing " + user.email + "...";
+    try{
+      const ref = doc(db, "users", user.uid);
+      const snap = await getDoc(ref);
+      log("Doc exists: " + snap.exists());
+      if(!snap.exists()){
+        await setDoc(ref,{
+          uid:user.uid,
+          email:user.email,
+          realName:user.displayName||user.email.split('@')[0],
+          status:"approved",
+          approved:true,
+          accountType:"student",
+          class:"Form One",
+          createdAt:serverTimestamp()
+        });
+        statusEl.innerHTML = "✅ CREATED & APPROVED!<br><br>" + user.email + "<br><br>You are now MEMBER!";
+      }else{
+        await setDoc(ref,{status:"approved",approved:true},{merge:true});
+        statusEl.innerHTML = "✅ FIXED TO APPROVED!<br><br>" + user.email + "<br><br>You are now MEMBER!";
+      }
+      goBtn.style.display="inline-block";
+      goBtn.textContent="Go to Chats";
+      goBtn.onclick=()=>location.href="./home.html";
+      log("Done!");
+    }catch(e){
+      statusEl.textContent = "Error: " + e.message;
+      log("Error code: " + e.code);
+      btn.style.display="inline-block";
+    }
+  });
+
+}catch(e){
+  statusEl.textContent = "Config Error: " + e.message;
+  log(e.toString());
+  log("👉 You need to paste REAL firebase config inside this file!");
+  btn.style.display="inline-block";
+}
+</script>
+</body>
+</html>

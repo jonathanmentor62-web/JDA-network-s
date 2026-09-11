@@ -75,7 +75,7 @@ button{
 .container{
   max-width:900px;
   margin:auto;
-  padding-bottom:85px;
+  padding-bottom:90px;
 }
 
 .search{
@@ -199,6 +199,34 @@ button{
   color:#ff9b9b;
   font-size:13px;
   line-height:1.5;
+}
+
+.contact-info{
+  margin:10px 15px 18px;
+  padding:15px;
+  background:#202c33;
+  border-radius:15px;
+  color:#aebac1;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.contact-title{
+  color:#fff;
+  font-size:16px;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+.contact-button{
+  display:block;
+  width:calc(100% - 30px);
+  margin:10px 15px;
+  padding:13px;
+  border-radius:25px;
+  background:#25d366;
+  color:#07130b;
+  font-weight:bold;
 }
 
 .bottom{
@@ -411,19 +439,9 @@ button{
   line-height:1.5;
 }
 
-.profile-action{
-  width:100%;
-  padding:13px;
-  border-radius:25px;
-  background:#25d366;
-  color:#06130b;
-  font-weight:bold;
-  margin-top:15px;
-}
-
 .close{
   width:100%;
-  margin-top:10px;
+  margin-top:20px;
   padding:13px;
   border-radius:25px;
   background:#374952;
@@ -439,176 +457,162 @@ button{
   color:#ff9b9b;
   font-weight:bold;
 }
-
-@media(min-width:700px){
-  .bottom{
-    left:50%;
-    transform:translateX(-50%);
-    width:100%;
-    max-width:900px;
-  }
-}
 </style>
 </head>
 
 <body>
 
-<!-- =========================
-     MAIN HOME
-========================= -->
+<!-- HEADER -->
 
-<div id="homePage">
+<header class="header">
 
-  <header class="header">
+  <div class="brand">
 
-    <div class="brand">
+    <img
+      src="./logo.png"
+      alt="JDA Networks"
+      onerror="this.style.display='none'"
+    >
 
-      <img
-        src="./logo.png"
-        alt="JDA Networks"
-        onerror="this.style.display='none'"
-      >
-
-      <div class="brand-title">
-        JDA Networks
-      </div>
-
+    <div class="brand-title">
+      JDA Networks
     </div>
 
-    <div class="header-buttons">
+  </div>
 
-      <button
-        class="icon-btn hidden"
-        id="adminBtn"
-        type="button"
-        title="Admin"
-      >
-        🛡️
-      </button>
+  <div class="header-buttons">
 
-      <button
-        class="icon-btn"
-        id="profileBtn"
-        type="button"
-        title="Profile"
-      >
-        👤
-      </button>
+    <button
+      class="icon-btn hidden"
+      id="adminBtn"
+      type="button"
+    >
+      🛡️
+    </button>
 
+    <button
+      class="icon-btn"
+      id="profileBtn"
+      type="button"
+    >
+      👤
+    </button>
+
+  </div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<main class="container">
+
+  <div class="search">
+
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search JDA Networks"
+      autocomplete="off"
+    >
+
+  </div>
+
+
+  <div class="filters">
+
+    <button class="filter active" data-filter="all">
+      All
+    </button>
+
+    <button class="filter" data-filter="student">
+      Students
+    </button>
+
+    <button class="filter" data-filter="staff">
+      Staff
+    </button>
+
+    <button class="filter" data-filter="Form One">
+      Form One
+    </button>
+
+    <button class="filter" data-filter="Form Two">
+      Form Two
+    </button>
+
+    <button class="filter" data-filter="Form Three">
+      Form Three
+    </button>
+
+    <button class="filter" data-filter="Form Four">
+      Form Four
+    </button>
+
+    <button class="filter" data-filter="Form Five">
+      Form Five
+    </button>
+
+    <button class="filter" data-filter="Form Six">
+      Form Six
+    </button>
+
+  </div>
+
+
+  <div class="section" id="sectionTitle">
+    JDA NETWORK MEMBERS
+  </div>
+
+
+  <div id="members">
+
+    <div class="loading">
+      Loading JDA Network members...
     </div>
 
-  </header>
+  </div>
+
+</main>
 
 
-  <main class="container">
+<!-- NEW CHAT -->
 
-    <div class="search">
-
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="Search JDA Networks"
-        autocomplete="off"
-      >
-
-    </div>
+<button
+  class="new-chat"
+  id="newChat"
+  type="button"
+>
+  ✎
+</button>
 
 
-    <div class="filters">
+<!-- BOTTOM NAV -->
 
-      <button class="filter active" data-filter="all">
-        All
-      </button>
-
-      <button class="filter" data-filter="student">
-        Students
-      </button>
-
-      <button class="filter" data-filter="staff">
-        Staff
-      </button>
-
-      <button class="filter" data-filter="Form One">
-        Form One
-      </button>
-
-      <button class="filter" data-filter="Form Two">
-        Form Two
-      </button>
-
-      <button class="filter" data-filter="Form Three">
-        Form Three
-      </button>
-
-      <button class="filter" data-filter="Form Four">
-        Form Four
-      </button>
-
-      <button class="filter" data-filter="Form Five">
-        Form Five
-      </button>
-
-      <button class="filter" data-filter="Form Six">
-        Form Six
-      </button>
-
-    </div>
-
-
-    <div class="section">
-      JDA NETWORK MEMBERS
-    </div>
-
-
-    <div id="members">
-
-      <div class="loading">
-        Loading JDA Network members...
-      </div>
-
-    </div>
-
-  </main>
-
+<nav class="bottom">
 
   <button
-    class="new-chat"
-    id="newChat"
+    class="nav active"
+    id="chatNav"
     type="button"
-    title="New chat"
   >
-    ✎
+    <span>💬</span>
+    Chats
   </button>
 
+  <button
+    class="nav"
+    id="networkBtn"
+    type="button"
+  >
+    <span>👥</span>
+    Network
+  </button>
 
-  <nav class="bottom">
-
-    <button
-      class="nav active"
-      id="chatNav"
-      type="button"
-    >
-      <span>💬</span>
-      Chats
-    </button>
-
-    <button
-      class="nav"
-      id="networkBtn"
-      type="button"
-    >
-      <span>👥</span>
-      Network
-    </button>
-
-  </nav>
-
-</div>
+</nav>
 
 
-<!-- =========================
-     CHAT
-========================= -->
+<!-- CHAT -->
 
 <div id="chat" class="chat">
 
@@ -651,7 +655,10 @@ button{
   </div>
 
 
-  <form id="messageForm" class="message-form">
+  <form
+    id="messageForm"
+    class="message-form"
+  >
 
     <input
       id="messageInput"
@@ -673,9 +680,7 @@ button{
 </div>
 
 
-<!-- =========================
-     PROFILE MODAL
-========================= -->
+<!-- PROFILE -->
 
 <div id="profileModal" class="modal">
 
@@ -771,6 +776,9 @@ const searchInput =
 const filters =
   document.querySelectorAll(".filter");
 
+const sectionTitle =
+  document.getElementById("sectionTitle");
+
 const adminBtn =
   document.getElementById("adminBtn");
 
@@ -834,20 +842,16 @@ const messageInput =
 ========================= */
 
 let currentUser = null;
-
 let currentProfile = null;
-
 let allMembers = [];
-
 let currentFilter = "all";
-
 let currentChatUser = null;
-
 let unsubscribeMessages = null;
+let contactMode = false;
 
 
 /* =========================
-   DEFAULT IMAGE
+   DEFAULT PHOTO
 ========================= */
 
 const DEFAULT_PHOTO =
@@ -866,13 +870,11 @@ const DEFAULT_PHOTO =
 
 
 /* =========================
-   UTILITY
+   HELPERS
 ========================= */
 
 function safe(value){
-
   return String(value ?? "");
-
 }
 
 
@@ -896,6 +898,77 @@ function photoUrl(url){
 
 }
 
+
+/*
+  Convert phone numbers into one
+  standard format.
+
+  Examples:
+
+  +256 771 234 567
+  0771 234 567
+  256771234567
+
+  all become:
+
+  256771234567
+*/
+
+function normalizePhone(number){
+
+  if(!number){
+    return "";
+  }
+
+  let digits =
+    String(number)
+      .replace(/\D/g,"");
+
+
+  if(digits.startsWith("00")){
+    digits =
+      digits.substring(2);
+  }
+
+
+  if(digits.startsWith("0") &&
+     digits.length === 10){
+
+    digits =
+      "256" + digits.substring(1);
+
+  }
+
+
+  if(
+    digits.startsWith("256") &&
+    digits.length >= 12
+  ){
+
+    return digits;
+  }
+
+
+  return digits;
+}
+
+
+/* =========================
+   MEMBER PHONE MATCH
+========================= */
+
+function memberPhone(member){
+
+  return normalizePhone(
+    member.jdaNumber
+  );
+
+}
+
+
+/* =========================
+   FORMAT TIME
+========================= */
 
 function formatTime(timestamp){
 
@@ -928,10 +1001,16 @@ function formatTime(timestamp){
 
 
 /* =========================
-   FILTER MEMBERS
+   RENDER MEMBERS
 ========================= */
 
 function renderMembers(){
+
+  contactMode = false;
+
+  sectionTitle.textContent =
+    "JDA NETWORK MEMBERS";
+
 
   const term =
     searchInput.value
@@ -940,15 +1019,7 @@ function renderMembers(){
 
 
   let filtered =
-    allMembers.filter(member => {
-
-      if(member.uid === currentUser?.uid){
-        return true;
-      }
-
-      return true;
-
-    });
+    [...allMembers];
 
 
   if(currentFilter !== "all"){
@@ -957,18 +1028,12 @@ function renderMembers(){
       filtered.filter(member => {
 
         if(currentFilter === "student"){
-
           return member.accountType === "student";
-
         }
-
 
         if(currentFilter === "staff"){
-
           return member.accountType === "staff";
-
         }
-
 
         return member.class === currentFilter;
 
@@ -982,23 +1047,28 @@ function renderMembers(){
     filtered =
       filtered.filter(member => {
 
-        const name =
-          safe(member.realName).toLowerCase();
-
-        const number =
-          safe(member.jdaNumber).toLowerCase();
-
-        const email =
-          safe(member.email).toLowerCase();
-
-        const department =
-          safe(member.department).toLowerCase();
-
         return (
-          name.includes(term) ||
-          number.includes(term) ||
-          email.includes(term) ||
-          department.includes(term)
+          safe(member.realName)
+            .toLowerCase()
+            .includes(term)
+
+          ||
+
+          safe(member.jdaNumber)
+            .toLowerCase()
+            .includes(term)
+
+          ||
+
+          safe(member.email)
+            .toLowerCase()
+            .includes(term)
+
+          ||
+
+          safe(member.department)
+            .toLowerCase()
+            .includes(term)
         );
 
       });
@@ -1019,8 +1089,8 @@ function renderMembers(){
   }
 
 
-  membersEl.innerHTML = filtered
-    .map(member => {
+  membersEl.innerHTML =
+    filtered.map(member => {
 
       let detail = "";
 
@@ -1044,9 +1114,10 @@ function renderMembers(){
         >
 
           <img
-            src="${escapeHTML(photoUrl(member.photoURL))}"
+            src="${escapeHTML(
+              photoUrl(member.photoURL)
+            )}"
             alt=""
-            onerror="this.src='${escapeHTML(DEFAULT_PHOTO)}'"
           >
 
           <div class="member-info">
@@ -1061,17 +1132,12 @@ function renderMembers(){
 
           </div>
 
-          ${
-            member.uid !== currentUser?.uid
-              ? `<div class="status"></div>`
-              : `<div></div>`
-          }
+          <div class="status"></div>
 
         </div>
       `;
 
-    })
-    .join("");
+    }).join("");
 
 
   membersEl
@@ -1090,20 +1156,9 @@ function renderMembers(){
               item => item.uid === uid
             );
 
-          if(!member){
-            return;
+          if(member){
+            openChat(member);
           }
-
-
-          if(uid === currentUser?.uid){
-
-            showMyProfile();
-            return;
-
-          }
-
-
-          openChat(member);
 
         }
       );
@@ -1167,10 +1222,13 @@ async function loadMembers(){
 
     membersEl.innerHTML = `
       <div class="error-box">
-        <strong>Could not load JDA Network members.</strong><br><br>
+        <strong>
+          Could not load JDA Network members.
+        </strong>
+        <br><br>
         ${escapeHTML(
           error?.message ||
-          "Please check your Firebase connection and Firestore rules."
+          "Check your Firebase connection."
         )}
       </div>
     `;
@@ -1180,427 +1238,215 @@ async function loadMembers(){
 }
 
 
-/* =========================
-   PROFILE
-========================= */
+/* =====================================================
+   CONTACT PICKER
+===================================================== */
 
-function showMyProfile(){
+/*
+  This uses the Android/browser Contact Picker API.
 
-  if(!currentProfile){
-    return;
-  }
+  The user must press Network first.
 
+  The browser then opens the phone contacts.
+*/
 
-  myPhoto.src =
-    photoUrl(currentProfile.photoURL);
+async function openPhoneContacts(){
 
+  contactMode = true;
 
-  myName.textContent =
-    currentProfile.realName ||
-    "JDA Member";
+  networkBtn.classList.add("active");
+  chatNav.classList.remove("active");
 
+  sectionTitle.textContent =
+    "JDA MEMBERS IN YOUR CONTACTS";
 
-  if(currentProfile.accountType === "student"){
 
-    myInfo.innerHTML =
-      `JDA Number: ${escapeHTML(currentProfile.jdaNumber)}<br>` +
-      `${escapeHTML(currentProfile.class)} • ` +
-      `${escapeHTML(currentProfile.stream)}<br>` +
-      `Email: ${escapeHTML(currentProfile.email)}`;
-
-  }else{
-
-    myInfo.innerHTML =
-      `JDA Number: ${escapeHTML(currentProfile.jdaNumber)}<br>` +
-      `Department: ${escapeHTML(currentProfile.department)}<br>` +
-      `Email: ${escapeHTML(currentProfile.email)}`;
-
-  }
-
-
-  profileModal.style.display =
-    "flex";
-
-}
-
-
-profileBtn.addEventListener(
-  "click",
-  showMyProfile
-);
-
-
-closeProfile.addEventListener(
-  "click",
-  function(){
-
-    profileModal.style.display =
-      "none";
-
-  }
-);
-
-
-profileModal.addEventListener(
-  "click",
-  function(event){
-
-    if(event.target === profileModal){
-
-      profileModal.style.display =
-        "none";
-
-    }
-
-  }
-);
-
-
-/* =========================
-   LOGOUT
-========================= */
-
-logoutBtn.addEventListener(
-  "click",
-  async function(){
-
-    try{
-
-      await signOut(auth);
-
-    }catch(error){
-
-      console.error(
-        "Logout error:",
-        error
-      );
-
-      alert(
-        "Could not log out. Please try again."
-      );
-
-    }
-
-  }
-);
-
-
-/* =========================
-   FILTER BUTTONS
-========================= */
-
-filters.forEach(button => {
-
-  button.addEventListener(
-    "click",
-    function(){
-
-      filters.forEach(
-        item =>
-          item.classList.remove("active")
-      );
-
-
-      this.classList.add("active");
-
-      currentFilter =
-        this.dataset.filter;
-
-      renderMembers();
-
-    }
-  );
-
-});
-
-
-/* =========================
-   SEARCH
-========================= */
-
-searchInput.addEventListener(
-  "input",
-  renderMembers
-);
-
-
-/* =========================
-   NETWORK BUTTON
-========================= */
-
-networkBtn.addEventListener(
-  "click",
-  function(){
-
-    chatNav.classList.remove("active");
-
-    networkBtn.classList.add("active");
-
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-
-  }
-);
-
-
-chatNav.addEventListener(
-  "click",
-  function(){
-
-    networkBtn.classList.remove("active");
-
-    chatNav.classList.add("active");
-
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-
-  }
-);
-
-
-/* =========================
-   NEW CHAT
-========================= */
-
-newChat.addEventListener(
-  "click",
-  function(){
-
-    searchInput.focus();
-
-    document.querySelector(
-      ".section"
-    ).scrollIntoView({
-      behavior:"smooth"
-    });
-
-  }
-);
-
-
-/* =========================
-   CHAT ID
-========================= */
-
-function conversationId(uid1,uid2){
-
-  return [uid1,uid2]
-    .sort()
-    .join("_");
-
-}
-
-
-/* =========================
-   OPEN CHAT
-========================= */
-
-async function openChat(member){
-
-  currentChatUser =
-    member;
-
-
-  chatPhoto.src =
-    photoUrl(member.photoURL);
-
-
-  chatPhoto.onerror =
-    function(){
-      this.src =
-        DEFAULT_PHOTO;
-    };
-
-
-  chatName.textContent =
-    member.realName;
-
-
-  chatStatus.textContent =
-    member.accountType === "student"
-      ? `${safe(member.class)} • ${safe(member.stream)}`
-      : `Staff • ${safe(member.department)}`;
-
-
-  chat.style.display =
-    "block";
-
-
-  document.body.style.overflow =
-    "hidden";
-
-
-  messagesEl.innerHTML = `
+  membersEl.innerHTML = `
     <div class="loading">
-      Loading messages...
+      Opening your phone contacts...
     </div>
   `;
 
 
-  if(unsubscribeMessages){
+  /*
+    Check browser support.
+  */
 
-    unsubscribeMessages();
+  if(
+    !("contacts" in navigator) ||
+    !navigator.contacts ||
+    !navigator.contacts.select
+  ){
 
-    unsubscribeMessages = null;
+    membersEl.innerHTML = `
+      <div class="error-box">
+
+        <strong>
+          Contact access is not supported here.
+        </strong>
+
+        <br><br>
+
+        Please open JDA Networks in
+        <strong>Google Chrome on Android</strong>
+        and press Network again.
+
+      </div>
+    `;
+
+    return;
 
   }
 
 
-  const id =
-    conversationId(
-      currentUser.uid,
-      member.uid
-    );
-
-
   try{
 
-    const conversationRef =
-      doc(
-        db,
-        "conversations",
-        id
-      );
+    /*
+      Open Android/browser contact picker.
 
+      We request:
+      - name
+      - phone number
 
-    const conversationSnap =
-      await getDoc(conversationRef);
+      Multiple contacts can be selected.
+    */
 
-
-    if(!conversationSnap.exists()){
-
-      await setDoc(
-        conversationRef,
+    const contacts =
+      await navigator.contacts.select(
+        ["name","tel"],
         {
-          participantIds:[
-            currentUser.uid,
-            member.uid
-          ],
-          createdAt:serverTimestamp(),
-          updatedAt:serverTimestamp()
+          multiple:true
         }
       );
+
+
+    /*
+      User cancelled.
+    */
+
+    if(!contacts || !contacts.length){
+
+      membersEl.innerHTML = `
+        <div class="empty">
+          No contacts were selected.
+        </div>
+      `;
+
+      return;
 
     }
 
 
-    const messagesQuery =
-      query(
-        collection(
-          db,
-          "conversations",
-          id,
-          "messages"
-        ),
-        orderBy(
-          "createdAt",
-          "asc"
-        )
-      );
+    /*
+      Collect every selected phone number.
+    */
+
+    const selectedPhones =
+      new Set();
 
 
-    unsubscribeMessages =
-      onSnapshot(
-        messagesQuery,
-        function(snapshot){
+    contacts.forEach(contact => {
 
-          if(snapshot.empty){
-
-            messagesEl.innerHTML = `
-              <div class="empty">
-                No messages yet.<br>
-                Send the first message.
-              </div>
-            `;
-
-            return;
-
-          }
+      if(!contact.tel){
+        return;
+      }
 
 
-          messagesEl.innerHTML =
-            snapshot.docs
-              .map(item => {
+      contact.tel.forEach(number => {
 
-                const message =
-                  item.data();
-
-                const mine =
-                  message.senderId ===
-                  currentUser.uid;
+        const normalized =
+          normalizePhone(number);
 
 
-                return `
-                  <div
-                    class="message ${
-                      mine
-                        ? "mine"
-                        : "theirs"
-                    }"
-                  >
+        if(normalized){
 
-                    ${escapeHTML(message.text)}
-
-                    <span class="message-time">
-                      ${escapeHTML(
-                        formatTime(
-                          message.createdAt
-                        )
-                      )}
-                    </span>
-
-                  </div>
-                `;
-
-              })
-              .join("");
-
-
-          messagesEl.scrollTop =
-            messagesEl.scrollHeight;
-
-        },
-        function(error){
-
-          console.error(
-            "Message listener error:",
-            error
+          selectedPhones.add(
+            normalized
           );
 
-
-          messagesEl.innerHTML = `
-            <div class="error-box">
-              Could not load messages.<br><br>
-              ${escapeHTML(
-                error?.message ||
-                "Please try again."
-              )}
-            </div>
-          `;
-
         }
-      );
+
+      });
+
+    });
+
+
+    /*
+      Compare selected phone numbers
+      with approved JDA members.
+    */
+
+    const matches =
+      allMembers.filter(member => {
+
+        const jdaPhone =
+          memberPhone(member);
+
+
+        if(!jdaPhone){
+          return false;
+        }
+
+
+        return selectedPhones.has(
+          jdaPhone
+        );
+
+      });
+
+
+    /*
+      Display results.
+    */
+
+    renderContactMatches(
+      matches,
+      contacts.length
+    );
 
 
   }catch(error){
 
     console.error(
-      "Open chat error:",
+      "Contact picker error:",
       error
     );
 
 
-    messagesEl.innerHTML = `
+    /*
+      User cancelled the picker.
+    */
+
+    if(
+      error?.name ===
+      "AbortError"
+    ){
+
+      membersEl.innerHTML = `
+        <div class="empty">
+          Contact selection cancelled.
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    membersEl.innerHTML = `
       <div class="error-box">
-        Could not open this chat.<br><br>
+
+        <strong>
+          Could not access contacts.
+        </strong>
+
+        <br><br>
+
         ${escapeHTML(
           error?.message ||
           "Please try again."
         )}
+
       </div>
     `;
 
@@ -1610,384 +1456,29 @@ async function openChat(member){
 
 
 /* =========================
-   CLOSE CHAT
+   RENDER CONTACT MATCHES
 ========================= */
 
-closeChat.addEventListener(
-  "click",
-  function(){
+function renderContactMatches(
+  matches,
+  selectedCount
+){
 
-    chat.style.display =
-      "none";
+  sectionTitle.textContent =
+    "JDA MEMBERS IN YOUR CONTACTS";
 
 
-    document.body.style.overflow =
-      "";
+  if(!matches.length){
 
+    membersEl.innerHTML = `
 
-    if(unsubscribeMessages){
+      <div class="contact-info">
 
-      unsubscribeMessages();
-
-      unsubscribeMessages = null;
-
-    }
-
-
-    currentChatUser =
-      null;
-
-  }
-);
-
-
-/* =========================
-   SEND MESSAGE
-========================= */
-
-messageForm.addEventListener(
-  "submit",
-  async function(event){
-
-    event.preventDefault();
-
-
-    if(!currentUser ||
-       !currentChatUser){
-
-      return;
-
-    }
-
-
-    const text =
-      messageInput.value
-        .trim();
-
-
-    if(!text){
-      return;
-    }
-
-
-    if(text.length > 5000){
-
-      alert(
-        "Message is too long."
-      );
-
-      return;
-
-    }
-
-
-    const sendButton =
-      messageForm.querySelector(
-        ".send"
-      );
-
-
-    sendButton.disabled =
-      true;
-
-
-    try{
-
-      const id =
-        conversationId(
-          currentUser.uid,
-          currentChatUser.uid
-        );
-
-
-      const conversationRef =
-        doc(
-          db,
-          "conversations",
-          id
-        );
-
-
-      const conversationSnap =
-        await getDoc(
-          conversationRef
-        );
-
-
-      if(!conversationSnap.exists()){
-
-        await setDoc(
-          conversationRef,
-          {
-            participantIds:[
-              currentUser.uid,
-              currentChatUser.uid
-            ],
-            createdAt:serverTimestamp(),
-            updatedAt:serverTimestamp()
-          }
-        );
-
-      }else{
-
-        await setDoc(
-          conversationRef,
-          {
-            updatedAt:serverTimestamp()
-          },
-          {
-            merge:true
-          }
-        );
-
-      }
-
-
-      await addDoc(
-        collection(
-          db,
-          "conversations",
-          id,
-          "messages"
-        ),
-        {
-          senderId:
-            currentUser.uid,
-
-          receiverId:
-            currentChatUser.uid,
-
-          text:text,
-
-          createdAt:
-            serverTimestamp()
-        }
-      );
-
-
-      messageInput.value =
-        "";
-
-
-    }catch(error){
-
-      console.error(
-        "Send message error:",
-        error
-      );
-
-
-      alert(
-        error?.message ||
-        "Could not send message."
-      );
-
-    }finally{
-
-      sendButton.disabled =
-        false;
-
-    }
-
-  }
-);
-
-
-/* =========================
-   ADMIN CHECK
-========================= */
-
-async function checkAdmin(){
-
-  if(!currentUser){
-    return;
-  }
-
-
-  const SUPER_ADMIN =
-    "jonathanmentor62@gmail.com";
-
-
-  if(
-    currentUser.email?.toLowerCase() ===
-    SUPER_ADMIN.toLowerCase()
-  ){
-
-    adminBtn.classList.remove(
-      "hidden"
-    );
-
-    return;
-
-  }
-
-
-  try{
-
-    const adminSnap =
-      await getDoc(
-        doc(
-          db,
-          "admins",
-          currentUser.uid
-        )
-      );
-
-
-    if(adminSnap.exists()){
-
-      adminBtn.classList.remove(
-        "hidden"
-      );
-
-    }
-
-  }catch(error){
-
-    console.warn(
-      "Admin check failed:",
-      error
-    );
-
-  }
-
-}
-
-
-adminBtn.addEventListener(
-  "click",
-  function(){
-
-    window.location.href =
-      "./admin.html";
-
-  }
-);
-
-
-/* =========================
-   AUTH
-========================= */
-
-onAuthStateChanged(
-  auth,
-  async function(user){
-
-    if(!user){
-
-      window.location.href =
-        "./index.html";
-
-      return;
-
-    }
-
-
-    currentUser =
-      user;
-
-
-    try{
-
-      const userRef =
-        doc(
-          db,
-          "users",
-          user.uid
-        );
-
-
-      const userSnap =
-        await getDoc(
-          userRef
-        );
-
-
-      if(!userSnap.exists()){
-
-        await signOut(auth);
-
-        window.location.href =
-          "./index.html";
-
-        return;
-
-      }
-
-
-      currentProfile =
-        userSnap.data();
-
-
-      if(
-        currentProfile.status !==
-        "approved"
-      ){
-
-        await signOut(auth);
-
-        window.location.href =
-          "./index.html";
-
-        return;
-
-      }
-
-
-      checkAdmin();
-
-      await loadMembers();
-
-
-    }catch(error){
-
-      console.error(
-        "Home authentication error:",
-        error
-      );
-
-
-      membersEl.innerHTML = `
-        <div class="error-box">
-
-          <strong>
-            JDA Networks could not load.
-          </strong>
-
-          <br><br>
-
-          ${escapeHTML(
-            error?.message ||
-            "Please refresh and try again."
-          )}
-
+        <div class="contact-title">
+          No JDA members found
         </div>
-      `;
 
-    }
-
-  }
-);
-
-
-/* =========================
-   GLOBAL ERROR LOG
-========================= */
-
-window.addEventListener(
-  "error",
-  function(event){
-
-    console.error(
-      "JDA Networks error:",
-      event.error ||
-      event.message
-    );
-
-  }
-);
-
-</script>
-
-</body>
-</html>
+        You selected
+        ${selectedCount}
+        contact${selectedCount === 1 ? "" : "s"},
+       

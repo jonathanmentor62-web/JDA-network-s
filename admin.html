@@ -1,518 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>JDA Networks — Admin</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b141a;
-      color: white;
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: #202c33;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #303c43;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    header small {
-      color: #8696a0;
-      display: block;
-      margin-top: 4px;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .logout {
-      background: #26343b;
-      color: white;
-      border-radius: 20px;
-      padding: 9px 14px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 15px;
-    }
-
-    .permission {
-      background: #17252b;
-      border: 1px solid #2b3a40;
-      border-radius: 15px;
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-
-    .permission button {
-      background: #25d366;
-      color: #07120c;
-      padding: 10px 15px;
-      border-radius: 20px;
-      margin-top: 10px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .stat {
-      background: #202c33;
-      border-radius: 15px;
-      padding: 16px;
-      text-align: center;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 26px;
-    }
-
-    .stat span {
-      color: #8696a0;
-      font-size: 12px;
-    }
-
-    .section-title {
-      margin: 25px 0 10px;
-      font-size: 18px;
-    }
-
-    .application {
-      background: #202c33;
-      border-radius: 18px;
-      padding: 15px;
-      margin-bottom: 12px;
-      display: flex;
-      gap: 15px;
-    }
-
-    .application img {
-      width: 78px;
-      height: 78px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 2px solid #25d366;
-      flex-shrink: 0;
-    }
-
-    .details {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .name {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    .number {
-      color: #25d366;
-      font-weight: bold;
-      margin-bottom: 7px;
-    }
-
-    .info {
-      color: #aebac1;
-      font-size: 13px;
-      line-height: 1.6;
-      word-break: break-word;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .approve {
-      background: #25d366;
-      color: #06130a;
-      padding: 9px 16px;
-      border-radius: 20px;
-    }
-
-    .reject {
-      background: transparent;
-      border: 1px solid #ea4335;
-      color: #ff6b61;
-      padding: 8px 16px;
-      border-radius: 20px;
-    }
-
-    .disable {
-      background: #3b2b12;
-      color: #ffca67;
-      padding: 9px 16px;
-      border-radius: 20px;
-    }
-
-    .enable {
-      background: #25d366;
-      color: #06130a;
-      padding: 9px 16px;
-      border-radius: 20px;
-    }
-
-    .empty {
-      text-align: center;
-      color: #8696a0;
-      padding: 40px 10px;
-    }
-
-    .notification {
-      background: #18282e;
-      border-left: 4px solid #25d366;
-      border-radius: 12px;
-      padding: 13px;
-      margin-bottom: 10px;
-    }
-
-    .notification.unread {
-      background: #20343b;
-    }
-
-    .notification-title {
-      font-weight: bold;
-    }
-
-    .notification-message {
-      color: #c8d1d5;
-      font-size: 13px;
-      margin-top: 5px;
-    }
-
-    .notification-time {
-      color: #8696a0;
-      font-size: 11px;
-      margin-top: 6px;
-    }
-
-    .error {
-      background: #351b1b;
-      color: #ffb4ae;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      display: none;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 30px;
-      color: #8696a0;
-    }
-
-    @media (max-width: 600px) {
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .application {
-        align-items: flex-start;
-      }
-
-      .application img {
-        width: 65px;
-        height: 65px;
-      }
-
-      .name {
-        font-size: 16px;
-      }
-
-    }
-  </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JDA Networks — Admin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0b141a;color:white}header{position:sticky;top:0;z-index:20;background:#202c33;padding:16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #303c43}header h1{margin:0;font-size:20px}header small{color:#8696a0;display:block;margin-top:4px}button{border:0;cursor:pointer;font-weight:bold}.logout{background:#26343b;color:white;border-radius:20px;padding:9px 14px}.container{max-width:900px;margin:auto;padding:15px}.permission{background:#17252b;border:1px solid #2b3a40;border-radius:15px;padding:15px;margin-bottom:15px}.permission button{background:#25d366;color:#07120c;padding:10px 15px;border-radius:20px;margin-top:10px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}.stat{background:#202c33;border-radius:15px;padding:16px;text-align:center}.stat strong{display:block;font-size:26px}.stat span{color:#8696a0;font-size:12px}.section-title{margin:25px 0 10px;font-size:18px}.application{background:#202c33;border-radius:18px;padding:15px;margin-bottom:12px;display:flex;gap:15px}.application img{width:78px;height:78px;object-fit:cover;border-radius:50%;border:2px solid #25d366;flex-shrink:0}.details{flex:1;min-width:0}.name{font-size:18px;font-weight:bold;margin-bottom:5px}.number{color:#25d366;font-weight:bold;margin-bottom:7px}.info{color:#aebac1;font-size:13px;line-height:1.6;word-break:break-word}.buttons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.approve{background:#25d366;color:#06130a;padding:9px 16px;border-radius:20px}.reject{background:transparent;border:1px solid #ea4335;color:#ff6b61;padding:8px 16px;border-radius:20px}.disable{background:#3b2b12;color:#ffca67;padding:9px 16px;border-radius:20px}.enable{background:#25d366;color:#06130a;padding:9px 16px;border-radius:20px}.empty{text-align:center;color:#8696a0;padding:40px 10px}.notification{background:#18282e;border-left:4px solid #25d366;border-radius:12px;padding:13px;margin-bottom:10px}.notification.unread{background:#20343b;border-left-color:#f59e0b}.notification-title{font-weight:bold}.notification-message{color:#c8d1d5;font-size:13px;margin-top:5px}.notification-time{color:#8696a0;font-size:11px;margin-top:6px}.error{background:#351b1b;color:#ffb4ae;padding:12px;border-radius:12px;margin-bottom:15px;display:none}.loading{text-align:center;padding:30px;color:#8696a0}
+</style>
 </head>
-
 <body>
-
-<header>
-
-  <div>
-    <h1>JDA Networks</h1>
-    <small>Administrator Panel</small>
-  </div>
-
-  <button class="logout" id="logoutBtn">
-    Logout
-  </button>
-
-</header>
-
-
+<header><div><h1>JDA Networks</h1><small>Administrator Panel</small></div><button class="logout" id="logoutBtn">Logout</button></header>
 <div class="container">
-
-  <div id="errorBox" class="error"></div>
-
-
-  <!-- NOTIFICATION PERMISSION -->
-
-  <div id="permissionBox" class="permission" style="display:none;">
-
-    <strong>🔔 Enable JDA Networks notifications</strong>
-
-    <div style="color:#aebac1;font-size:13px;margin-top:6px;">
-      Allow notifications so your phone can alert you when
-      a student or staff member registers.
-    </div>
-
-    <button id="enableNotifications">
-      Enable Notifications
-    </button>
-
-  </div>
-
-
-  <!-- STATISTICS -->
-
-  <div class="stats">
-
-    <div class="stat">
-      <strong id="pendingCount">0</strong>
-      <span>Pending</span>
-    </div>
-
-    <div class="stat">
-      <strong id="approvedCount">0</strong>
-      <span>Approved</span>
-    </div>
-
-    <div class="stat">
-      <strong id="disabledCount">0</strong>
-      <span>Disabled</span>
-    </div>
-
-  </div>
-
-
-  <!-- NOTIFICATIONS -->
-
-  <h2 class="section-title">
-    🔔 Notifications
-  </h2>
-
-  <div id="notifications">
-    <div class="loading">
-      Loading notifications...
-    </div>
-  </div>
-
-
-  <!-- PENDING -->
-
-  <h2 class="section-title">
-    ⏳ Pending Registrations
-  </h2>
-
-  <div id="pendingList">
-    <div class="loading">
-      Loading registrations...
-    </div>
-  </div>
-
-
-  <!-- APPROVED -->
-
-  <h2 class="section-title">
-    ✅ Approved Members
-  </h2>
-
-  <div id="approvedList">
-    <div class="loading">
-      Loading members...
-    </div>
-  </div>
-
-
-  <!-- DISABLED -->
-
-  <h2 class="section-title">
-    🚫 Disabled Members
-  </h2>
-
-  <div id="disabledList">
-    <div class="loading">
-      Loading members...
-    </div>
-  </div>
-
+<div id="errorBox" class="error"></div>
+<div id="permissionBox" class="permission" style="display:none;"><strong>🔔 Enable JDA Networks notifications</strong><div style="color:#aebac1;font-size:13px;margin-top:6px;">Allow notifications so your phone can alert you when someone registers.</div><button id="enableNotifications">Enable Notifications</button></div>
+<div class="stats"><div class="stat"><strong id="pendingCount">0</strong><span>Pending</span></div><div class="stat"><strong id="approvedCount">0</strong><span>Approved</span></div><div class="stat"><strong id="disabledCount">0</strong><span>Disabled</span></div></div>
+<h2 class="section-title">🔔 Notifications</h2><div id="notifications"><div class="loading">Loading notifications...</div></div>
+<h2 class="section-title">⏳ Pending Registrations</h2><div id="pendingList"><div class="loading">Loading registrations...</div></div>
+<h2 class="section-title">✅ Approved Members</h2><div id="approvedList"><div class="loading">Loading members...</div></div>
+<h2 class="section-title">🚫 Disabled Members</h2><div id="disabledList"><div class="loading">Loading members...</div></div>
 </div>
-
-
 <script type="module">
-
-/* =========================================
-   FIREBASE IMPORTS
-========================================= */
-
-import {
-  initializeApp
-} from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-
-
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-
-
-import {
-  getFirestore,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  query,
-  where,
-  orderBy,
-  limit,
-  serverTimestamp,
-  setDoc,
-  onSnapshot
-} from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
-
-import {
-  getMessaging,
-  getToken,
-  onMessage
-} from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-messaging.js";
-
-
-/* =========================================
-   FIREBASE CONFIG
-========================================= */
-
-const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
-
-  authDomain:
-    "jda-network-fabde.firebaseapp.com",
-
-  projectId:
-    "jda-network-fabde",
-
-  storageBucket:
-    "jda-network-fabde.firebasestorage.app",
-
-  messagingSenderId:
-    "383915852673",
-
-  appId:
-    "1:383915852673:web:4b185c0387ed0bbad1de80"
-
-};
-
-
-/* =========================================
-   INITIALIZE
-========================================= */
-
-const app =
-  initializeApp(firebaseConfig);
-
-const auth =
-  getAuth(app);
-
-const db =
-  getFirestore(app);
-
-const messaging =
-  getMessaging(app);
-
-
-/* =========================================
-   VAPID PUBLIC KEY
-========================================= */
-
-const VAPID_KEY =
-"BC4q1e0S3m0Tvd8L4zB0MEF-4w9gPIevFFzOigEMJu9kNmMOlZzT6_CC3mo2Sw2YYb9JbiVxTQ4cy2lE6HfugVI";
-
-
-/* =========================================
-   SUPER ADMIN
-========================================= */
-
-const SUPER_ADMIN_EMAIL =
-  "jonathanmentor62@gmail.com";
-
-
-/* =========================================
-   ELEMENTS
-========================================= */
-
-const errorBox =
-  document.getElementById("errorBox");
-
-const permissionBox =
-  document.getElementById("permissionBox");
-
-const enableNotifications =
-  document.getElementById("enableNotifications");
-
-const logoutBtn =
-  document.getElementById("logoutBtn");
-
-
-/* =========================================
-   ERROR DISPLAY
-========================================= */
-
-function showError(message) {
-
-  errorBox.textContent = message;
-
-  errorBox.style.display = "block";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, query, where, serverTimestamp, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-messaging.js";
+const firebaseConfig = { apiKey: "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I", authDomain: "jda-network-fabde.firebaseapp.com", projectId: "jda-network-fabde", storageBucket: "jda-network-fabde.firebasestorage.app", messagingSenderId: "383915852673", appId: "1:383915852673:web:4b185c0387ed0bbad1de80" };
+const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const messaging = getMessaging(app);
+const VAPID_KEY = "BC4q1e0S3m0Tvd8L4zB0MEF-4w9gPIevFFzOigEMJu9kNmMOlZzT6_CC3mo2Sw2YYb9JbiVxTQ4cy2lE6HfugVI";
+const SUPER_ADMIN_EMAIL = "jonathanmentor62@gmail.com";
+const errorBox = document.getElementById("errorBox"); const permissionBox = document.getElementById("permissionBox"); const enableNotifications = document.getElementById("enableNotifications"); const logoutBtn = document.getElementById("logoutBtn");
+function showError(m){ errorBox.textContent=m; errorBox.style.display="block"; }
+const jdaSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+function playAlert(){ jdaSound.play().catch(()=>{}); if(navigator.vibrate) navigator.vibrate([300,100,300]); }
+function timeAgo(ts){ if(!ts) return "just now"; const d=ts.toDate?ts.toDate():new Date(ts); const diff=Math.floor((Date.now()-d)/1000); if(diff<60) return diff+"s ago"; if(diff<3600) return Math.floor(diff/60)+"m ago"; if(diff<86400) return Math.floor(diff/3600)+"h ago"; return d.toLocaleString(); }
+async function checkAdmin(user){ if(!user){ location.href="./index.html"; return; } if(user.email===SUPER_ADMIN_EMAIL) return true; try{ const adminDoc=await getDoc(doc(db,"admins",user.uid)); if(adminDoc.exists()) return true; const q=query(collection(db,"admins"),where("email","==",user.email)); const snap=await getDocs(q); if(!snap.empty) return true; showError("Access denied"); setTimeout(()=>location.href="./index.html",2000); return false; }catch(e){ return true; } }
+function renderCard(data,id,status){ const name=data.fullName||data.displayName||data.username||"Unknown"; const phone=data.phone||data.phoneNumber||""; const email=data.email||""; const photo=data.photoURL||data.profileImage||"https://ui-avatars.com/api/?name="+encodeURIComponent(name)+"&background=202c33&color=fff"; const district=data.district||data.location||""; const created=data.createdAt?timeAgo(data.createdAt):""; let btns=""; if(status==="pending"){ btns=`<button class="approve" onclick="approveUser('${id}','${data.__col}')">Approve</button><button class="reject" onclick="rejectUser('${id}','${data.__col}')">Reject</button>`; } else if(status==="approved"){ btns=`<button class="disable" onclick="disableUser('${id}','${data.__col}')">Disable</button>`; } else { btns=`<button class="enable" onclick="enableUser('${id}','${data.__col}')">Enable</button><button class="reject" onclick="rejectUser('${id}','${data.__col}')">Delete</button>`; } return `<div class="application"><img src="${photo}"><div class="details"><div class="name">${name}</div><div class="number">${phone} ${email?'• '+email:''}</div><div class="info">${district?'📍 '+district+'<br>':''}🕒 ${created}<br>UID: ${id.substring(0,10)}...</div><div class="buttons">${btns}</div></div></div>`; }
+function renderNotification(data){ const name=data.fullName||data.displayName||"New user"; return `<div class="notification ${data.read?'':'unread'}"><div class="notification-title">🔥 New registration: ${name}</div><div class="notification-message">${data.email||''} ${data.phone||''} wants approval. Status: ${data.status}</div><div class="notification-time">${data.createdAt?timeAgo(data.createdAt):'just now'}</div></div>`; }
+let firstPendingLoad=true;
+function setupRealtime(){
+  const pendingList=document.getElementById("pendingList"); const approvedList=document.getElementById("approvedList"); const disabledList=document.getElementById("disabledList"); const notificationsBox=document.getElementById("notifications"); const pendingCount=document.getElementById("pendingCount"); const approvedCount=document.getElementById("approvedCount"); const disabledCount=document.getElementById("disabledCount");
+  let allPending=[];
+  function updatePendingUI(){
+    if(allPending.length===0){ pendingList.innerHTML=`<div class="empty">No pending</div>`; notificationsBox.innerHTML=`<div class="empty">No new notifications</div>`; pendingCount.textContent="0"; return; }
+    allPending.sort((a,b)=>{ const ta=a.createdAt?.toMillis?.()||0; const tb=b.createdAt?.toMillis?.()||0; return tb-ta; });
+    pendingList.innerHTML=allPending.map(d=>renderCard(d,d.__id,"pending")).join(""); notificationsBox.innerHTML=allPending.slice(0,10).map(d=>renderNotification(d)).join(""); pendingCount.textContent=allPending.length;
+    if(!firstPendingLoad){ if(Notification&&Notification.permission==="granted"){ new Notification("🔥 New JDA Registration!",{body:`${allPending[0].fullName||'Someone'} registered - Approve now!`}); } playAlert(); }
+  }
+  ["members","users"].forEach(colName=>{
+    const qPending=query(collection(db,colName),where("status","==","pending"));
+    onSnapshot(qPending,(snap)=>{
+      allPending=allPending.filter(x=>x.__col!==colName);
+      snap.forEach(docSnap=>{ const d=docSnap.data(); d.__id=docSnap.id; d.__col=colName; allPending.push(d); });
+      updatePendingUI();
+      if(firstPendingLoad) setTimeout(()=>{firstPendingLoad=false;},1500);
+    },(err)=>{ pendingList.innerHTML=`<div class="empty">Error: ${err.message} - Check Firestore Rules</div>`; });
+    onSnapshot(query(collection(db,colName),where("status","==","approved")), (snap)=>{
+      let html=""; snap.forEach(d=>{ const data=d.data(); data.__col=colName; data.__id=d.id; html+=renderCard(data,d.id,"approved"); });
+      if(colName==="members") approvedList.innerHTML=html||"<div class='empty'>No approved</div>";
+    });
+    onSnapshot(query(collection(db,colName),where("status","==","disabled")), (snap)=>{
+      let html=""; snap.forEach(d=>{ const data=d.data(); data.__col=colName; data.__id=d.id; html+=renderCard(data,d.id,"disabled"); });
+      if(colName==="members") disabledList.innerHTML=html||"<div class='empty'>No disabled</div>";
+    });
+  });
+  setTimeout(async()=>{ try{ const m1=await getDocs(query(collection(db,"members"),where("status","==","approved"))); const m2=await getDocs(query(collection(db,"users"),where("status","==","approved"))); approvedCount.textContent=m1.size+m2.size; const d1=await getDocs(query(collection(db,"members"),where("status","==","disabled"))); const d2=await getDocs(query(collection(db,"users"),where("status","==","disabled"))); disabledCount.textContent=d1.size+d2.size; }catch(e){} },2000);
 }
-
-
-/* =========================================
-   ADMIN CHECK
-========================================= */
-
-async function checkAdmin(user) {
-
-  if (!user) {
-
-    location.href =
-      "./index.html";
+window.approveUser=async(id,col)=>{ try{ await updateDoc(doc(db,col,id),{status:"approved",approvedAt:serverTimestamp()}); playAlert(); }catch(e){ alert(e.message); } };
+window.rejectUser=async(id,col)=>{ if(!confirm("Reject?")) return; try{ await updateDoc(doc(db,col,id),{status:"rejected"}); }catch(e){ alert(e.message); } };
+window.disableUser=async(id,col)=>{ try{ await updateDoc(doc(db,col,id),{status:"disabled"}); }catch(e){ alert(e.message); } };
+window.enableUser=async(id,col)=>{ try{ await updateDoc(doc(db,col,id),{status:"approved"}); }catch(e){ alert(e.message); } };
+onAuthStateChanged(auth, async(user)=>{
+  const ok=await checkAdmin(user); if(!ok) return; setupRealtime();
+  if("Notification" in window && Notification.permission==="default") permissionBox.style.display="block";
+  try{ const token=await getToken(messaging,{vapidKey:VAPID_KEY}); if(token) await setDoc(doc(db,"adminTokens",user.uid),{token,email:user.email,updatedAt:serverTimestamp()},{merge:true}); }catch(e){}
+  onMessage(messaging,(payload)=>{ playAlert(); if(Notification.permission==="granted"){ new Notification(payload.notification?.title||"🔥 New JDA Registration!",{body:payload.notification?.body||"New user waiting"}); } });
+});
+enableNotifications.onclick=async()=>{ try{ const perm=await Notification.requestPermission(); if(perm==="granted"){ permissionBox.style.display="none"; const token=await getToken(messaging,{vapidKey:VAPID_KEY}); if(auth.currentUser&&token){ await setDoc(doc(db,"adminTokens",auth.currentUser.uid),{token,email:auth.currentUser.email,updatedAt:serverTimestamp()},{merge:true}); } new Notification("✅ JDA Notifications Enabled!",{body:"You will now get alerts when someone registers"}); playAlert(); } }catch(e){ showError(e.message); } };
+logoutBtn.onclick=()=>signOut(auth).then(()=>location.href="./index.html");
+</script>
+</body>
+</html>

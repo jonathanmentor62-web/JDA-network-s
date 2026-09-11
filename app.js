@@ -1,10 +1,10 @@
 // ============================================================
-// JDA NETWORKS — REAL FIREBASE APP
+// JDA NETWORKS — FIREBASE APP
+// Clean chat + member directory system
 // ============================================================
 
 import {
   collection,
-  addDoc,
   query,
   where,
   orderBy,
@@ -13,10 +13,10 @@ import {
   getDoc,
   doc,
   setDoc,
+  addDoc,
   updateDoc,
   serverTimestamp,
-  onSnapshot,
-  arrayUnion
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 import {
@@ -24,60 +24,116 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
-import { auth, db } from "./firebase.js";
+import {
+  auth,
+  db
+} from "./firebase.js";
 
 
 // ============================================================
-// GLOBAL STATE
+// STATE
 // ============================================================
 
 let currentUser = null;
 let currentProfile = null;
-let currentConversationId = null;
-let currentChatUser = null;
-let unsubscribeMessages = null;
-let unsubscribeConversation = null;
 
 let members = [];
 let conversations = [];
+
+let currentConversationId = null;
+let currentChatUser = null;
+
+let unsubscribeMessages = null;
+let unsubscribeConversations = null;
+let unsubscribeMembers = null;
 
 
 // ============================================================
 // HELPERS
 // ============================================================
 
-const $ = (id) => document.getElementById(id);
+const $ = id => document.getElementById(id);
+
 
 function escapeHTML(value = "") {
+
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+
 }
 
-function showMessage(message) {
-  alert(message);
-}
 
-function getInitials(name = "User") {
+function initials(name = "JDA") {
+
   return name
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map(x => x[0]?.toUpperCase() || "")
-    .join("");
+    .map(word => word[0] || "")
+    .join("")
+    .toUpperCase();
+
 }
 
-function profilePhoto(profile) {
-  return profile?.photoURL || "";
+
+function showError(message) {
+
+  console.error(message);
+
+  alert(message);
+
 }
+
+
+function timestampSeconds(timestamp) {
+
+  if (!timestamp) return 0;
+
+  if (typeof timestamp.seconds === "number") {
+    return timestamp.seconds;
+  }
+
+  if (timestamp instanceof Date) {
+    return Math.floor(timestamp.getTime() / 1000);
+  }
+
+  return 0;
+
+}
+
+
+function formatTime(timestamp) {
+
+  const seconds =
+    timestampSeconds(timestamp);
+
+  if (!seconds) return "";
+
+  const date =
+    new Date(seconds * 1000);
+
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+}
+
 
 function avatarHTML(profile, size = 52) {
-  const photo = profilePhoto(profile);
+
+  const name =
+    profile?.realName || "JDA Member";
+
+  const photo =
+    profile?.photoURL || "";
 
   if (photo) {
+
     return `
       <img
         src="${escapeHTML(photo)}"
@@ -91,25 +147,29 @@ function avatarHTML(profile, size = 52) {
         "
       >
     `;
+
   }
 
   return `
-    <div style="
-      width:${size}px;
-      height:${size}px;
-      border-radius:50%;
-      background:#26343b;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:700;
-      font-size:${Math.max(14, size / 2.8)}px;
-      color:#d9e1e5;
-      flex-shrink:0;
-    ">
-      ${escapeHTML(getInitials(profile?.realName))}
+    <div
+      style="
+        width:${size}px;
+        height:${size}px;
+        border-radius:50%;
+        background:#26343b;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#e9edef;
+        font-weight:700;
+        font-size:${Math.max(14, size / 2.7)}px;
+        flex-shrink:0;
+      "
+    >
+      ${escapeHTML(initials(name))}
     </div>
   `;
+
 }
 
 
@@ -117,106 +177,146 @@ function avatarHTML(profile, size = 52) {
 // AUTHENTICATION
 // ============================================================
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async user => {
 
   if (!user) {
-    window.location.href = "./index.html";
+
+    window.location.replace(
+      "./index.html"
+    );
+
     return;
   }
 
+
   currentUser = user;
+
 
   try {
 
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
+    const profileRef =
+      doc(db, "users", user.uid);
 
-    if (!snap.exists()) {
+    const profileSnap =
+      await getDoc(profileRef);
+
+
+    if (!profileSnap.exists()) {
+
       await signOut(auth);
-      window.location.href = "./index.html";
+
+      window.location.replace(
+        "./index.html"
+      );
+
       return;
     }
+
 
     currentProfile = {
-      id: snap.id,
-      ...snap.data()
+      id: profileSnap.id,
+      ...profileSnap.data()
     };
 
-    if (currentProfile.status !== "approved") {
-      await signOut(auth);
-      window.location.href = "./index.html";
+
+    /*
+      ONLY APPROVED MEMBERS CAN ENTER.
+    */
+
+    if (
+      currentProfile.status !== "approved" &&
+      currentProfile.approved !== true
+    ) {
+
+      window.location.replace(
+        "./index.html"
+      );
+
       return;
     }
 
-    await updateOnlineStatus(true);
 
-    await loadMembers();
-    await loadConversations();
-
-    setupInterface();
+    initializeApp();
 
   } catch (error) {
 
-    console.error("JDA initialization error:", error);
+    console.error(
+      "JDA authentication error:",
+      error
+    );
 
-    showMessage(
+    showError(
       "JDA Networks could not load your account.\n\n" +
       error.message
     );
+
   }
+
 });
 
 
 // ============================================================
-// ONLINE STATUS
+// INITIALIZE
 // ============================================================
 
-async function updateOnlineStatus(isOnline) {
+async function initializeApp() {
 
-  if (!currentUser) return;
+  renderProfile();
 
-  try {
+  createMemberModal();
 
-    await updateDoc(
-      doc(db, "users", currentUser.uid),
-      {
-        isOnline,
-        lastSeen: serverTimestamp()
-      }
-    );
+  createChatWindow();
 
-  } catch (error) {
-    console.warn("Online status error:", error);
-  }
+  setupNavigation();
+
+  setupNewChatButtons();
+
+  setupSearch();
+
+  setupLogout();
+
+  await loadMembers();
+
+  listenForMembers();
+
+  listenForConversations();
+
 }
 
-window.addEventListener("beforeunload", () => {
-  updateOnlineStatus(false);
-});
-
 
 // ============================================================
-// LOAD MEMBERS
+// MEMBERS
 // ============================================================
 
 async function loadMembers() {
 
   if (!currentUser) return;
 
+
   try {
 
-    const q = query(
-      collection(db, "users"),
-      where("status", "==", "approved")
-    );
+    const membersQuery =
+      query(
+        collection(db, "users"),
+        where("status", "==", "approved")
+      );
 
-    const snap = await getDocs(q);
+
+    const snapshot =
+      await getDocs(membersQuery);
+
 
     members = [];
 
-    snap.forEach((item) => {
 
-      if (item.id === currentUser.uid) return;
+    snapshot.forEach(item => {
+
+      if (
+        item.id === currentUser.uid
+      ) {
+        return;
+      }
+
 
       members.push({
         id: item.id,
@@ -225,161 +325,279 @@ async function loadMembers() {
 
     });
 
-    members.sort((a, b) =>
-      (a.realName || "").localeCompare(b.realName || "")
+
+    members.sort(
+      (a, b) =>
+        (a.realName || "")
+          .localeCompare(
+            b.realName || ""
+          )
     );
+
 
   } catch (error) {
 
-    console.error("Member loading error:", error);
+    console.error(
+      "Member loading error:",
+      error
+    );
 
-    if (error.code === "permission-denied") {
-      showMessage(
-        "Firebase blocked the member directory.\n\n" +
-        "Check that your Firestore Rules were published."
-      );
-    }
   }
+
 }
 
 
 // ============================================================
-// LOAD CONVERSATIONS
+// REAL-TIME MEMBERS
 // ============================================================
 
-async function loadConversations() {
+function listenForMembers() {
 
-  if (!currentUser) return;
+  if (unsubscribeMembers) {
+    unsubscribeMembers();
+  }
 
-  try {
 
-    const q = query(
+  const membersQuery =
+    query(
+      collection(db, "users"),
+      where("status", "==", "approved")
+    );
+
+
+  unsubscribeMembers =
+    onSnapshot(
+      membersQuery,
+      snapshot => {
+
+        members = [];
+
+
+        snapshot.forEach(item => {
+
+          if (
+            item.id === currentUser.uid
+          ) {
+            return;
+          }
+
+
+          members.push({
+            id: item.id,
+            ...item.data()
+          });
+
+        });
+
+
+        members.sort(
+          (a, b) =>
+            (a.realName || "")
+              .localeCompare(
+                b.realName || ""
+              )
+        );
+
+
+        renderMemberResults();
+
+      },
+
+      error => {
+
+        console.error(
+          "Member listener error:",
+          error
+        );
+
+      }
+    );
+
+}
+
+
+// ============================================================
+// CONVERSATIONS
+// ============================================================
+
+function listenForConversations() {
+
+  if (unsubscribeConversations) {
+    unsubscribeConversations();
+  }
+
+
+  const conversationsQuery =
+    query(
       collection(db, "conversations"),
-      where("participantIds", "array-contains", currentUser.uid)
+      where(
+        "participantIds",
+        "array-contains",
+        currentUser.uid
+      )
     );
 
-    const snap = await getDocs(q);
 
-    conversations = [];
+  unsubscribeConversations =
+    onSnapshot(
+      conversationsQuery,
+      async snapshot => {
 
-    snap.forEach((item) => {
+        conversations =
+          snapshot.docs.map(item => ({
+            id: item.id,
+            ...item.data()
+          }));
 
-      conversations.push({
-        id: item.id,
-        ...item.data()
-      });
 
-    });
+        conversations.sort(
+          (a, b) =>
+            timestampSeconds(b.updatedAt) -
+            timestampSeconds(a.updatedAt)
+        );
 
-    conversations.sort((a, b) => {
 
-      const aTime = a.updatedAt?.seconds || 0;
-      const bTime = b.updatedAt?.seconds || 0;
+        await renderChats();
 
-      return bTime - aTime;
-    });
+      },
 
-    renderChats();
+      error => {
 
-  } catch (error) {
+        console.error(
+          "Conversation listener error:",
+          error
+        );
 
-    console.error("Conversation loading error:", error);
-  }
+      }
+    );
+
 }
 
 
 // ============================================================
-// FIND OTHER PARTICIPANT
+// FIND OTHER PERSON
 // ============================================================
 
-async function getOtherParticipant(conversation) {
+async function getOtherParticipant(
+  conversation
+) {
 
-  const ids = conversation.participantIds || [];
+  const ids =
+    conversation.participantIds || [];
 
-  const otherId = ids.find(
-    id => id !== currentUser.uid
-  );
 
-  if (!otherId) return null;
+  const otherId =
+    ids.find(
+      id => id !== currentUser.uid
+    );
 
-  const cached = members.find(
-    member => member.id === otherId
-  );
 
-  if (cached) return cached;
+  if (!otherId) {
+    return null;
+  }
+
+
+  const cached =
+    members.find(
+      member => member.id === otherId
+    );
+
+
+  if (cached) {
+    return cached;
+  }
+
 
   try {
 
-    const snap = await getDoc(
-      doc(db, "users", otherId)
-    );
+    const snap =
+      await getDoc(
+        doc(db, "users", otherId)
+      );
 
-    if (!snap.exists()) return null;
+
+    if (!snap.exists()) {
+      return null;
+    }
+
 
     return {
       id: snap.id,
       ...snap.data()
     };
 
-  } catch {
+
+  } catch (error) {
+
+    console.error(error);
+
     return null;
+
   }
+
 }
 
 
 // ============================================================
-// RENDER CHATS
+// CHAT LIST
 // ============================================================
 
 async function renderChats() {
 
-  const container =
-    $("chatList") ||
-    $("conversationList") ||
-    $("chatsList");
+  const list =
+    $("chatList");
 
-  if (!container) return;
+  if (!list) return;
 
-  container.innerHTML = "";
+
+  list.innerHTML = "";
+
 
   if (conversations.length === 0) {
 
-    container.innerHTML = `
-      <div style="
-        padding:50px 25px;
-        text-align:center;
-        color:#8696a0;
-      ">
-        <div style="font-size:42px;margin-bottom:12px;">💬</div>
+    list.innerHTML = `
+      <div class="empty">
 
-        <div style="
-          font-size:18px;
-          font-weight:600;
-          color:#d9e1e5;
-          margin-bottom:8px;
-        ">
+        <div class="empty-icon">
+          💬
+        </div>
+
+        <div class="empty-title">
           No chats yet
         </div>
 
-        <div style="font-size:14px;">
-          Tap the + button to find a JDA Networks member.
+        <div>
+          Tap + to start a conversation
+          with a JDA member.
         </div>
+
       </div>
     `;
 
     return;
   }
 
-  for (const conversation of conversations) {
+
+  for (
+    const conversation of conversations
+  ) {
 
     const person =
-      await getOtherParticipant(conversation);
+      await getOtherParticipant(
+        conversation
+      );
+
 
     if (!person) continue;
 
-    const row = document.createElement("div");
 
-    row.className = "jda-chat-row";
+    const row =
+      document.createElement("div");
+
+
+    row.className =
+      "jda-chat-row";
+
 
     row.style.cssText = `
       display:flex;
@@ -390,97 +608,132 @@ async function renderChats() {
       border-bottom:1px solid rgba(255,255,255,.04);
     `;
 
-    const preview =
-      conversation.lastMessage || "Start chatting";
+
+    const onlineDot =
+      person.isOnline
+        ? "#25d366"
+        : "#667781";
+
 
     row.innerHTML = `
 
       ${avatarHTML(person, 52)}
 
-      <div style="
-        flex:1;
-        min-width:0;
-      ">
+      <div
+        style="
+          flex:1;
+          min-width:0;
+        "
+      >
 
-        <div style="
-          display:flex;
-          justify-content:space-between;
-          gap:10px;
-        ">
+        <div
+          style="
+            display:flex;
+            justify-content:space-between;
+            gap:8px;
+          "
+        >
 
-          <strong style="
-            color:#e9edef;
-            font-size:16px;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
-          ">
-            ${escapeHTML(person.realName || "JDA Member")}
+          <strong
+            style="
+              color:#e9edef;
+              font-size:16px;
+              white-space:nowrap;
+              overflow:hidden;
+              text-overflow:ellipsis;
+            "
+          >
+            ${escapeHTML(
+              person.realName ||
+              "JDA Member"
+            )}
           </strong>
 
-          <span style="
-            color:#8696a0;
-            font-size:11px;
-            white-space:nowrap;
-          ">
-            ${formatTime(conversation.updatedAt)}
+          <span
+            style="
+              color:#8696a0;
+              font-size:11px;
+              white-space:nowrap;
+            "
+          >
+            ${formatTime(
+              conversation.updatedAt
+            )}
           </span>
 
         </div>
 
-        <div style="
-          color:#8696a0;
-          font-size:14px;
-          margin-top:5px;
-          white-space:nowrap;
-          overflow:hidden;
-          text-overflow:ellipsis;
-        ">
-          ${escapeHTML(preview)}
+
+        <div
+          style="
+            color:#8696a0;
+            font-size:14px;
+            margin-top:5px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+          "
+        >
+          ${escapeHTML(
+            conversation.lastMessage ||
+            "Start chatting"
+          )}
         </div>
 
       </div>
+
+
+      <span
+        style="
+          width:8px;
+          height:8px;
+          border-radius:50%;
+          background:${onlineDot};
+          flex-shrink:0;
+        "
+      ></span>
+
     `;
 
-    row.addEventListener("click", () => {
-      openChat(person, conversation.id);
-    });
 
-    container.appendChild(row);
+    row.addEventListener(
+      "click",
+      () => {
+
+        openChat(
+          person,
+          conversation.id
+        );
+
+      }
+    );
+
+
+    list.appendChild(row);
+
   }
+
 }
 
 
 // ============================================================
-// FORMAT TIME
-// ============================================================
-
-function formatTime(timestamp) {
-
-  if (!timestamp?.seconds) return "";
-
-  const date = new Date(
-    timestamp.seconds * 1000
-  );
-
-  return date.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
-
-
-// ============================================================
-// CREATE MEMBER SEARCH MODAL
+// MEMBER MODAL
 // ============================================================
 
 function createMemberModal() {
 
-  if ($("jdaMemberModal")) return;
+  if ($("jdaMemberModal")) {
+    return;
+  }
 
-  const modal = document.createElement("div");
 
-  modal.id = "jdaMemberModal";
+  const modal =
+    document.createElement("div");
+
+
+  modal.id =
+    "jdaMemberModal";
+
 
   modal.style.cssText = `
     position:fixed;
@@ -492,57 +745,65 @@ function createMemberModal() {
     justify-content:center;
   `;
 
+
   modal.innerHTML = `
 
-    <div style="
-      width:100%;
-      max-width:700px;
-      max-height:90vh;
-      background:#111b21;
-      border-radius:22px 22px 0 0;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-    ">
-
-      <div style="
-        padding:17px;
-        border-bottom:1px solid #26343b;
+    <div
+      style="
+        width:100%;
+        max-width:700px;
+        max-height:90vh;
+        background:#111b21;
+        border-radius:20px 20px 0 0;
+        overflow:hidden;
         display:flex;
-        align-items:center;
-        gap:12px;
-      ">
+        flex-direction:column;
+      "
+    >
 
-        <button id="closeMemberModal"
+      <div
+        style="
+          padding:16px;
+          border-bottom:1px solid #26343b;
+          display:flex;
+          align-items:center;
+          gap:12px;
+        "
+      >
+
+        <button
+          id="closeMemberModal"
           style="
             border:0;
             background:none;
             color:#e9edef;
-            font-size:26px;
-            cursor:pointer;
-          ">
+            font-size:28px;
+          "
+        >
           ×
         </button>
 
-        <strong style="
-          color:#e9edef;
-          font-size:19px;
-        ">
+        <strong
+          style="
+            font-size:19px;
+            color:#e9edef;
+          "
+        >
           New chat
         </strong>
 
       </div>
 
+
       <div style="padding:12px 16px;">
 
         <input
           id="memberSearchInput"
-          type="text"
-          placeholder="Search JDA members"
+          type="search"
+          placeholder="Search members"
           autocomplete="off"
           style="
             width:100%;
-            box-sizing:border-box;
             background:#202c33;
             border:0;
             outline:none;
@@ -555,6 +816,7 @@ function createMemberModal() {
 
       </div>
 
+
       <div
         id="memberResults"
         style="
@@ -566,119 +828,193 @@ function createMemberModal() {
     </div>
   `;
 
+
   document.body.appendChild(modal);
 
-  $("closeMemberModal").onclick =
-    closeMemberModal;
 
-  $("memberSearchInput").addEventListener(
-    "input",
-    renderMemberResults
+  $("closeMemberModal")
+    .addEventListener(
+      "click",
+      closeMemberModal
+    );
+
+
+  $("memberSearchInput")
+    .addEventListener(
+      "input",
+      renderMemberResults
+    );
+
+
+  modal.addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target === modal
+      ) {
+
+        closeMemberModal();
+
+      }
+
+    }
   );
 
-  modal.addEventListener("click", (event) => {
-
-    if (event.target === modal) {
-      closeMemberModal();
-    }
-
-  });
 }
 
 
 // ============================================================
-// OPEN MEMBER SEARCH
+// OPEN MEMBER MODAL
 // ============================================================
 
 function openMemberModal() {
 
   createMemberModal();
 
-  $("jdaMemberModal").style.display = "flex";
+
+  const modal =
+    $("jdaMemberModal");
+
+
+  modal.style.display =
+    "flex";
+
 
   $("memberSearchInput").value = "";
 
+
   renderMemberResults();
 
-  setTimeout(() => {
-    $("memberSearchInput")?.focus();
-  }, 100);
+
+  setTimeout(
+    () => {
+      $("memberSearchInput")?.focus();
+    },
+    100
+  );
+
 }
 
 
 // ============================================================
-// CLOSE MEMBER SEARCH
+// CLOSE MEMBER MODAL
 // ============================================================
 
 function closeMemberModal() {
 
-  const modal = $("jdaMemberModal");
+  const modal =
+    $("jdaMemberModal");
+
 
   if (modal) {
-    modal.style.display = "none";
+
+    modal.style.display =
+      "none";
+
   }
+
 }
 
 
 // ============================================================
-// RENDER MEMBER SEARCH
+// MEMBER SEARCH RESULTS
 // ============================================================
 
 function renderMemberResults() {
 
-  const container = $("memberResults");
+  const container =
+    $("memberResults");
+
 
   if (!container) return;
 
-  const search =
-    ($("memberSearchInput")?.value || "")
+
+  const input =
+    $("memberSearchInput");
+
+
+  const text =
+    (input?.value || "")
       .trim()
       .toLowerCase();
 
-  const filtered = members.filter(member => {
 
-    if (!search) return true;
+  const filtered =
+    members.filter(member => {
 
-    const name =
-      (member.realName || "").toLowerCase();
+      if (!text) return true;
 
-    const number =
-      (member.jdaNumber || "").toLowerCase();
 
-    const type =
-      (member.accountType || "").toLowerCase();
+      const name =
+        (member.realName || "")
+          .toLowerCase();
 
-    const cls =
-      (member.className || "").toLowerCase();
 
-    return (
-      name.includes(search) ||
-      number.includes(search) ||
-      type.includes(search) ||
-      cls.includes(search)
-    );
-  });
+      const number =
+        (member.jdaNumber || "")
+          .toLowerCase();
+
+
+      const type =
+        (member.accountType || "")
+          .toLowerCase();
+
+
+      const className =
+        (member.className || "")
+          .toLowerCase();
+
+
+      const stream =
+        (member.stream || "")
+          .toLowerCase();
+
+
+      const department =
+        (member.department || "")
+          .toLowerCase();
+
+
+      return (
+        name.includes(text) ||
+        number.includes(text) ||
+        type.includes(text) ||
+        className.includes(text) ||
+        stream.includes(text) ||
+        department.includes(text)
+      );
+
+    });
+
 
   container.innerHTML = "";
+
 
   if (filtered.length === 0) {
 
     container.innerHTML = `
-      <div style="
-        padding:35px 20px;
-        text-align:center;
-        color:#8696a0;
-      ">
+      <div
+        style="
+          padding:35px 20px;
+          text-align:center;
+          color:#8696a0;
+        "
+      >
         No approved member found.
       </div>
     `;
 
     return;
+
   }
+
 
   filtered.forEach(member => {
 
-    const row = document.createElement("div");
+    const row =
+      document.createElement("div");
+
 
     row.style.cssText = `
       display:flex;
@@ -688,69 +1024,120 @@ function renderMemberResults() {
       cursor:pointer;
     `;
 
-    const details = [];
 
-    if (member.accountType === "student") {
+    let info = "";
+
+
+    if (
+      member.accountType === "student"
+    ) {
+
+      const parts = [];
+
 
       if (member.className) {
-        details.push(member.className);
+        parts.push(
+          member.className
+        );
       }
+
 
       if (member.stream) {
-        details.push(member.stream);
+        parts.push(
+          member.stream
+        );
       }
 
-    } else if (member.department) {
 
-      details.push(member.department);
+      info =
+        parts.join(" • ");
+
+    } else {
+
+      info =
+        member.department ||
+        "Staff";
 
     }
+
+
+    if (!info) {
+      info =
+        member.jdaNumber ||
+        "JDA member";
+    }
+
 
     row.innerHTML = `
 
       ${avatarHTML(member, 52)}
 
-      <div style="flex:1;min-width:0;">
+      <div
+        style="
+          flex:1;
+          min-width:0;
+        "
+      >
 
-        <div style="
-          color:#e9edef;
-          font-size:16px;
-          font-weight:600;
-        ">
-          ${escapeHTML(member.realName || "JDA Member")}
+        <div
+          style="
+            color:#e9edef;
+            font-size:16px;
+            font-weight:600;
+          "
+        >
+          ${escapeHTML(
+            member.realName ||
+            "JDA Member"
+          )}
         </div>
 
-        <div style="
-          color:#8696a0;
-          font-size:13px;
-          margin-top:4px;
-        ">
-          ${escapeHTML(
-            details.join(" • ") ||
-            member.jdaNumber ||
-            "JDA Networks member"
-          )}
+
+        <div
+          style="
+            color:#8696a0;
+            font-size:13px;
+            margin-top:4px;
+          "
+        >
+          ${escapeHTML(info)}
         </div>
 
       </div>
 
-      <div style="
-        width:9px;
-        height:9px;
-        border-radius:50%;
-        background:${member.isOnline ? "#25d366" : "#667781"};
-      "></div>
+
+      <div
+        style="
+          width:9px;
+          height:9px;
+          border-radius:50%;
+          background:${
+            member.isOnline
+              ? "#25d366"
+              : "#667781"
+          };
+        "
+      ></div>
+
     `;
 
-    row.addEventListener("click", async () => {
 
-      closeMemberModal();
+    row.addEventListener(
+      "click",
+      () => {
 
-      await startConversation(member);
-    });
+        closeMemberModal();
+
+        startConversation(member);
+
+      }
+    );
+
 
     container.appendChild(row);
+
   });
+
 }
 
 
@@ -760,7 +1147,13 @@ function renderMemberResults() {
 
 async function startConversation(member) {
 
-  if (!currentUser || !member?.id) return;
+  if (
+    !currentUser ||
+    !member?.id
+  ) {
+    return;
+  }
+
 
   try {
 
@@ -769,44 +1162,63 @@ async function startConversation(member) {
       member.id
     ].sort();
 
+
     const conversationId =
       `${ids[0]}_${ids[1]}`;
 
+
     const conversationRef =
-      doc(db, "conversations", conversationId);
+      doc(
+        db,
+        "conversations",
+        conversationId
+      );
+
 
     const existing =
-      await getDoc(conversationRef);
+      await getDoc(
+        conversationRef
+      );
+
 
     if (!existing.exists()) {
 
-      await setDoc(conversationRef, {
-
-        participantIds: ids,
-
-        createdAt: serverTimestamp(),
-
-        updatedAt: serverTimestamp(),
-
-        lastMessage: ""
-
-      });
+      await setDoc(
+        conversationRef,
+        {
+          participantIds: ids,
+          createdAt:
+            serverTimestamp(),
+          updatedAt:
+            serverTimestamp(),
+          lastMessage: ""
+        }
+      );
 
     }
 
-    await loadConversations();
 
-    await openChat(member, conversationId);
+    await openChat(
+      member,
+      conversationId
+    );
+
 
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Conversation creation error:",
+      error
+    );
 
-    showMessage(
-      "Could not start the chat.\n\n" +
+
+    showError(
+      "Could not start the conversation.\n\n" +
       error.message
     );
+
   }
+
 }
 
 
@@ -816,13 +1228,20 @@ async function startConversation(member) {
 
 function createChatWindow() {
 
-  if ($("jdaChatWindow")) return;
+  if ($("jdaChatWindow")) {
+    return;
+  }
 
-  const screen = document.createElement("div");
 
-  screen.id = "jdaChatWindow";
+  const windowEl =
+    document.createElement("div");
 
-  screen.style.cssText = `
+
+  windowEl.id =
+    "jdaChatWindow";
+
+
+  windowEl.style.cssText = `
     position:fixed;
     inset:0;
     z-index:10000;
@@ -831,18 +1250,20 @@ function createChatWindow() {
     flex-direction:column;
   `;
 
-  screen.innerHTML = `
 
-    <div style="
-      height:62px;
-      background:#202c33;
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:0 10px;
-      box-sizing:border-box;
-      flex-shrink:0;
-    ">
+  windowEl.innerHTML = `
+
+    <div
+      style="
+        height:62px;
+        background:#202c33;
+        display:flex;
+        align-items:center;
+        gap:11px;
+        padding:0 10px;
+        flex-shrink:0;
+      "
+    >
 
       <button
         id="closeChat"
@@ -850,30 +1271,34 @@ function createChatWindow() {
           border:0;
           background:none;
           color:#e9edef;
-          font-size:27px;
-          cursor:pointer;
+          font-size:30px;
         "
       >
         ‹
       </button>
 
+
       <div id="chatAvatar"></div>
 
-      <div style="
-        flex:1;
-        min-width:0;
-      ">
+
+      <div
+        style="
+          flex:1;
+          min-width:0;
+        "
+      >
 
         <div
           id="chatName"
           style="
             color:#e9edef;
-            font-weight:600;
             font-size:16px;
+            font-weight:600;
           "
         >
           Member
         </div>
+
 
         <div
           id="chatStatus"
@@ -897,22 +1322,23 @@ function createChatWindow() {
         flex:1;
         overflow-y:auto;
         padding:18px 12px;
-        box-sizing:border-box;
         display:flex;
         flex-direction:column;
-        gap:5px;
+        gap:4px;
       "
     ></div>
 
 
-    <div style="
-      background:#202c33;
-      padding:8px;
-      display:flex;
-      align-items:flex-end;
-      gap:8px;
-      flex-shrink:0;
-    ">
+    <div
+      style="
+        background:#202c33;
+        padding:8px;
+        display:flex;
+        align-items:flex-end;
+        gap:8px;
+        flex-shrink:0;
+      "
+    >
 
       <textarea
         id="messageInput"
@@ -928,24 +1354,22 @@ function createChatWindow() {
           color:#e9edef;
           padding:11px 15px;
           font-size:15px;
-          box-sizing:border-box;
           max-height:120px;
         "
       ></textarea>
+
 
       <button
         id="sendMessage"
         style="
           width:45px;
           height:45px;
-          border-radius:50%;
           border:0;
+          border-radius:50%;
           background:#25d366;
-          color:#061b13;
-          font-size:19px;
+          color:#062b1d;
+          font-size:18px;
           font-weight:bold;
-          cursor:pointer;
-          flex-shrink:0;
         "
       >
         ➤
@@ -954,30 +1378,45 @@ function createChatWindow() {
     </div>
   `;
 
-  document.body.appendChild(screen);
 
-  $("closeChat").onclick =
-    closeChat;
-
-  $("sendMessage").onclick =
-    sendMessage;
-
-  $("messageInput").addEventListener(
-    "keydown",
-    (event) => {
-
-      if (
-        event.key === "Enter" &&
-        !event.shiftKey
-      ) {
-
-        event.preventDefault();
-
-        sendMessage();
-      }
-
-    }
+  document.body.appendChild(
+    windowEl
   );
+
+
+  $("closeChat")
+    .addEventListener(
+      "click",
+      closeChat
+    );
+
+
+  $("sendMessage")
+    .addEventListener(
+      "click",
+      sendMessage
+    );
+
+
+  $("messageInput")
+    .addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+
+          event.preventDefault();
+
+          sendMessage();
+
+        }
+
+      }
+    );
+
 }
 
 
@@ -985,30 +1424,45 @@ function createChatWindow() {
 // OPEN CHAT
 // ============================================================
 
-async function openChat(member, conversationId) {
+async function openChat(
+  member,
+  conversationId
+) {
 
   createChatWindow();
 
-  currentChatUser = member;
+
+  currentChatUser =
+    member;
+
 
   currentConversationId =
     conversationId;
 
-  $("jdaChatWindow").style.display =
-    "flex";
+
+  $("jdaChatWindow")
+    .style.display = "flex";
+
 
   $("chatAvatar").innerHTML =
-    avatarHTML(member, 42);
+    avatarHTML(
+      member,
+      42
+    );
+
 
   $("chatName").textContent =
-    member.realName || "JDA Member";
+    member.realName ||
+    "JDA Member";
+
 
   updateChatStatus(member);
 
+
   if (unsubscribeMessages) {
     unsubscribeMessages();
-    unsubscribeMessages = null;
   }
+
 
   const messagesRef =
     collection(
@@ -1018,42 +1472,62 @@ async function openChat(member, conversationId) {
       "messages"
     );
 
-  const q = query(
-    messagesRef,
-    orderBy("createdAt", "asc"),
-    limit(500)
-  );
+
+  const messagesQuery =
+    query(
+      messagesRef,
+      orderBy(
+        "createdAt",
+        "asc"
+      ),
+      limit(500)
+    );
+
 
   unsubscribeMessages =
     onSnapshot(
-      q,
-      (snap) => {
+      messagesQuery,
+      snapshot => {
+
+        const messages =
+          snapshot.docs.map(
+            item => ({
+              id: item.id,
+              ...item.data()
+            })
+          );
+
 
         renderMessages(
-          snap.docs.map(item => ({
-            id: item.id,
-            ...item.data()
-          }))
+          messages
         );
 
       },
-      (error) => {
+
+      error => {
 
         console.error(
-          "Message listener error:",
+          "Message error:",
           error
         );
 
-        showMessage(
-          "Unable to load messages.\n\n" +
+
+        showError(
+          "Messages could not be loaded.\n\n" +
           error.message
         );
+
       }
     );
 
-  setTimeout(() => {
-    $("messageInput")?.focus();
-  }, 100);
+
+  setTimeout(
+    () => {
+      $("messageInput")?.focus();
+    },
+    100
+  );
+
 }
 
 
@@ -1066,7 +1540,9 @@ function updateChatStatus(member) {
   const status =
     $("chatStatus");
 
+
   if (!status) return;
+
 
   if (member.isOnline) {
 
@@ -1083,7 +1559,9 @@ function updateChatStatus(member) {
 
     status.style.color =
       "#8696a0";
+
   }
+
 }
 
 
@@ -1098,17 +1576,28 @@ function closeChat() {
     unsubscribeMessages();
 
     unsubscribeMessages = null;
+
   }
 
-  const windowEl =
+
+  const chat =
     $("jdaChatWindow");
 
-  if (windowEl) {
-    windowEl.style.display = "none";
+
+  if (chat) {
+
+    chat.style.display =
+      "none";
+
   }
 
-  currentConversationId = null;
-  currentChatUser = null;
+
+  currentConversationId =
+    null;
+
+  currentChatUser =
+    null;
+
 }
 
 
@@ -1121,78 +1610,113 @@ function renderMessages(messages) {
   const container =
     $("messageList");
 
+
   if (!container) return;
 
+
   container.innerHTML = "";
+
 
   if (messages.length === 0) {
 
     container.innerHTML = `
-      <div style="
-        text-align:center;
-        color:#8696a0;
-        font-size:13px;
-        margin:auto;
-        padding:30px;
-      ">
-        🔒 Messages are stored securely
-        in JDA Networks.
+      <div
+        style="
+          margin:auto;
+          text-align:center;
+          color:#8696a0;
+          padding:30px;
+          font-size:13px;
+        "
+      >
+        🔒 Your conversation is private.
         <br><br>
         Start the conversation.
       </div>
     `;
 
     return;
+
   }
+
 
   messages.forEach(message => {
 
     const mine =
-      message.senderId === currentUser.uid;
+      message.senderId ===
+      currentUser.uid;
+
 
     const bubble =
       document.createElement("div");
 
+
     bubble.style.cssText = `
-      align-self:${mine ? "flex-end" : "flex-start"};
+      align-self:${
+        mine
+          ? "flex-end"
+          : "flex-start"
+      };
       max-width:78%;
-      background:${mine ? "#005c4b" : "#202c33"};
+      background:${
+        mine
+          ? "#005c4b"
+          : "#202c33"
+      };
       color:#e9edef;
       padding:8px 10px 5px;
-      border-radius:${mine
-        ? "9px 3px 9px 9px"
-        : "3px 9px 9px 9px"};
-      margin-bottom:3px;
+      border-radius:${
+        mine
+          ? "9px 3px 9px 9px"
+          : "3px 9px 9px 9px"
+      };
       word-wrap:break-word;
-      box-shadow:0 1px 1px rgba(0,0,0,.2);
+      margin-bottom:3px;
     `;
+
 
     bubble.innerHTML = `
 
-      <div style="
-        font-size:15px;
-        line-height:1.35;
-        white-space:pre-wrap;
-      ">
-        ${escapeHTML(message.text || "")}
+      <div
+        style="
+          font-size:15px;
+          line-height:1.4;
+          white-space:pre-wrap;
+        "
+      >
+        ${escapeHTML(
+          message.text || ""
+        )}
       </div>
 
-      <div style="
-        text-align:right;
-        color:#8696a0;
-        font-size:10px;
-        margin-top:3px;
-      ">
-        ${formatTime(message.createdAt)}
+
+      <div
+        style="
+          text-align:right;
+          color:#8696a0;
+          font-size:10px;
+          margin-top:3px;
+        "
+      >
+        ${formatTime(
+          message.createdAt
+        )}
         ${mine ? " ✓" : ""}
       </div>
+
     `;
 
-    container.appendChild(bubble);
+
+    container.appendChild(
+      bubble
+    );
+
   });
+
 
   container.scrollTop =
     container.scrollHeight;
+
 }
 
 
@@ -1206,28 +1730,46 @@ async function sendMessage() {
     !currentUser ||
     !currentConversationId ||
     !currentChatUser
-  ) return;
+  ) {
+    return;
+  }
+
 
   const input =
     $("messageInput");
 
+
   if (!input) return;
+
 
   const text =
     input.value.trim();
 
+
   if (!text) return;
+
 
   if (text.length > 5000) {
 
-    showMessage(
-      "Message is too long. Maximum is 5000 characters."
+    showError(
+      "Message cannot exceed 5000 characters."
     );
 
     return;
+
   }
 
+
+  const sendButton =
+    $("sendMessage");
+
+
   input.disabled = true;
+
+  if (sendButton) {
+    sendButton.disabled = true;
+  }
+
 
   try {
 
@@ -1238,7 +1780,8 @@ async function sendMessage() {
         currentConversationId
       );
 
-    const messageRef =
+
+    const messagesRef =
       collection(
         db,
         "conversations",
@@ -1246,32 +1789,41 @@ async function sendMessage() {
         "messages"
       );
 
-    await addDoc(messageRef, {
 
-      senderId:
-        currentUser.uid,
+    await addDoc(
+      messagesRef,
+      {
+        senderId:
+          currentUser.uid,
 
-      receiverId:
-        currentChatUser.id,
+        receiverId:
+          currentChatUser.id,
 
-      text,
+        text,
 
-      createdAt:
-        serverTimestamp()
+        createdAt:
+          serverTimestamp()
+      }
+    );
 
-    });
 
     await updateDoc(
       conversationRef,
       {
-        lastMessage: text,
-        updatedAt: serverTimestamp()
+        lastMessage:
+          text,
+
+        updatedAt:
+          serverTimestamp()
       }
     );
 
+
     input.value = "";
 
-    input.style.height = "auto";
+    input.style.height =
+      "auto";
+
 
   } catch (error) {
 
@@ -1280,158 +1832,160 @@ async function sendMessage() {
       error
     );
 
-    showMessage(
+
+    showError(
       "Message could not be sent.\n\n" +
       error.message
     );
+
 
   } finally {
 
     input.disabled = false;
 
+    if (sendButton) {
+      sendButton.disabled = false;
+    }
+
     input.focus();
+
   }
+
 }
 
 
 // ============================================================
-// SEARCH EXISTING CHATS
+// SEARCH
 // ============================================================
 
 function setupSearch() {
 
-  const searchInput =
-    document.querySelector(
-      'input[placeholder*="Search" i]'
-    );
+  const search =
+    $("chatSearch");
 
-  if (!searchInput) return;
 
-  searchInput.addEventListener(
+  if (!search) return;
+
+
+  search.addEventListener(
     "input",
     async () => {
 
       const text =
-        searchInput.value
+        search.value
           .trim()
           .toLowerCase();
 
+
+      const rows =
+        document.querySelectorAll(
+          ".jda-chat-row"
+        );
+
+
       if (!text) {
 
-        await renderChats();
+        rows.forEach(
+          row => {
+            row.style.display =
+              "flex";
+          }
+        );
 
         return;
+
       }
 
-      const container =
-        $("chatList") ||
-        $("conversationList") ||
-        $("chatsList");
 
-      if (!container) return;
+      for (
+        const row of rows
+      ) {
 
-      const results = [];
-
-      for (const conversation of conversations) {
-
-        const person =
-          await getOtherParticipant(
-            conversation
-          );
-
-        if (!person) continue;
-
-        if (
-          (person.realName || "")
-            .toLowerCase()
-            .includes(text) ||
-          (person.jdaNumber || "")
+        row.style.display =
+          row.innerText
             .toLowerCase()
             .includes(text)
-        ) {
+              ? "flex"
+              : "none";
 
-          results.push({
-            conversation,
-            person
-          });
-        }
       }
 
-      container.innerHTML = "";
-
-      results.forEach(
-        ({ conversation, person }) => {
-
-          const row =
-            document.createElement("div");
-
-          row.style.cssText = `
-            display:flex;
-            align-items:center;
-            gap:13px;
-            padding:12px 16px;
-            cursor:pointer;
-          `;
-
-          row.innerHTML = `
-
-            ${avatarHTML(person, 52)}
-
-            <div style="flex:1;">
-
-              <div style="
-                color:#e9edef;
-                font-weight:600;
-              ">
-                ${escapeHTML(person.realName)}
-              </div>
-
-              <div style="
-                color:#8696a0;
-                font-size:13px;
-              ">
-                ${escapeHTML(
-                  conversation.lastMessage ||
-                  "Start chatting"
-                )}
-              </div>
-
-            </div>
-          `;
-
-          row.onclick = () =>
-            openChat(
-              person,
-              conversation.id
-            );
-
-          container.appendChild(row);
-        }
-      );
     }
   );
+
 }
 
 
 // ============================================================
-// SETUP INTERFACE
+// NAVIGATION
 // ============================================================
 
-function setupInterface() {
+function setupNavigation() {
 
-  createMemberModal();
+  const buttons =
+    document.querySelectorAll(
+      ".bottom-nav [data-page]"
+    );
 
-  createChatWindow();
 
-  setupSearch();
+  buttons.forEach(button => {
 
-  setupNewChatButtons();
+    button.addEventListener(
+      "click",
+      () => {
 
-  setupLogoutButtons();
+        switchPage(
+          button.dataset.page
+        );
 
-  updateProfileUI();
+      }
+    );
 
-  setupBottomNavigation();
+  });
+
+}
+
+
+function switchPage(page) {
+
+  document
+    .querySelectorAll(
+      "[data-screen]"
+    )
+    .forEach(screen => {
+
+      screen.classList.toggle(
+        "active",
+        screen.dataset.screen === page
+      );
+
+    });
+
+
+  document
+    .querySelectorAll(
+      ".bottom-nav [data-page]"
+    )
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.page === page
+      );
+
+    });
+
+
+  const content =
+    document.querySelector(
+      ".content"
+    );
+
+
+  if (content) {
+    content.scrollTop = 0;
+  }
+
 }
 
 
@@ -1443,21 +1997,25 @@ function setupNewChatButtons() {
 
   const buttons =
     document.querySelectorAll(
-      "#newChatBtn, #fab, .new-chat, .fab"
+      "#newChatBtn, #fab"
     );
+
 
   buttons.forEach(button => {
 
     button.addEventListener(
       "click",
-      (event) => {
+      event => {
 
         event.preventDefault();
 
         openMemberModal();
+
       }
     );
+
   });
+
 }
 
 
@@ -1465,187 +2023,238 @@ function setupNewChatButtons() {
 // LOGOUT
 // ============================================================
 
-function setupLogoutButtons() {
+function setupLogout() {
 
-  const buttons =
-    document.querySelectorAll(
-      "#logoutBtn, .logout"
-    );
+  const button =
+    $("logoutBtn");
 
-  buttons.forEach(button => {
 
-    button.addEventListener(
-      "click",
-      async () => {
+  if (!button) return;
 
-        if (
-          !confirm(
-            "Log out of JDA Networks?"
-          )
-        ) return;
 
-        await updateOnlineStatus(false);
+  button.addEventListener(
+    "click",
+    async () => {
+
+      const confirmed =
+        confirm(
+          "Log out of JDA Networks?"
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      try {
 
         await signOut(auth);
 
-        window.location.href =
-          "./index.html";
+        window.location.replace(
+          "./index.html"
+        );
+
+      } catch (error) {
+
+        showError(
+          "Could not log out.\n\n" +
+          error.message
+        );
+
       }
-    );
-  });
+
+    }
+  );
+
 }
 
 
 // ============================================================
-// PROFILE UI
+// PROFILE
 // ============================================================
 
-function updateProfileUI() {
+function renderProfile() {
 
-  if (!currentProfile) return;
+  if (!currentProfile) {
+    return;
+  }
+
 
   const name =
     currentProfile.realName ||
     "JDA Member";
 
-  document
-    .querySelectorAll(
-      "[data-user-name], #profileName"
-    )
-    .forEach(el => {
-      el.textContent = name;
-    });
 
-  document
-    .querySelectorAll(
-      "[data-jda-number], #profileJdaNumber"
-    )
-    .forEach(el => {
-      el.textContent =
-        currentProfile.jdaNumber || "";
-    });
+  const number =
+    currentProfile.jdaNumber ||
+    "—";
 
-  document
-    .querySelectorAll(
-      "[data-user-photo], #profilePhoto"
-    )
-    .forEach(el => {
 
-      const photo =
-        profilePhoto(currentProfile);
+  const photo =
+    currentProfile.photoURL ||
+    "";
+
+
+  const photoElement =
+    $("profilePhoto");
+
+
+  if (photoElement) {
+
+    if (photo) {
+
+      photoElement.innerHTML = `
+        <img
+          src="${escapeHTML(photo)}"
+          alt=""
+          style="
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            border-radius:50%;
+          "
+        >
+      `;
+
+    } else {
+
+      photoElement.textContent =
+        initials(name);
+
+    }
+
+  }
+
+
+  if ($("profileName")) {
+
+    $("profileName").textContent =
+      name;
+
+  }
+
+
+  if ($("profileJdaNumber")) {
+
+    $("profileJdaNumber").textContent =
+      number;
+
+  }
+
+
+  if ($("profileEmail")) {
+
+    $("profileEmail").textContent =
+      currentProfile.email ||
+      currentUser.email ||
+      "—";
+
+  }
+
+
+  if ($("profileAccountType")) {
+
+    $("profileAccountType")
+      .textContent =
+        currentProfile.accountType ===
+        "student"
+          ? "Student"
+          : "Staff";
+
+  }
+
+
+  if ($("profileClass")) {
+
+    if (
+      currentProfile.accountType ===
+      "student"
+    ) {
+
+      const parts = [];
+
 
       if (
-        el.tagName === "IMG" &&
-        photo
+        currentProfile.className
       ) {
-        el.src = photo;
+        parts.push(
+          currentProfile.className
+        );
       }
 
-    });
-}
 
-
-// ============================================================
-// BOTTOM NAVIGATION
-// ============================================================
-
-function setupBottomNavigation() {
-
-  const navButtons =
-    document.querySelectorAll(
-      "[data-page], .bottom-nav button"
-    );
-
-  navButtons.forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        const page =
-          button.dataset.page;
-
-        if (!page) return;
-
-        switchPage(page);
+      if (
+        currentProfile.stream
+      ) {
+        parts.push(
+          currentProfile.stream
+        );
       }
-    );
-  });
+
+
+      $("profileClass").textContent =
+        parts.join(" • ") ||
+        "Student";
+
+    } else {
+
+      $("profileClass").textContent =
+        currentProfile.department ||
+        "Staff";
+
+    }
+
+  }
+
 }
 
 
 // ============================================================
-// SWITCH PAGE
-// ============================================================
-
-function switchPage(page) {
-
-  const pages =
-    document.querySelectorAll(
-      "[data-screen]"
-    );
-
-  if (pages.length === 0) return;
-
-  pages.forEach(screen => {
-
-    screen.style.display =
-      screen.dataset.screen === page
-        ? ""
-        : "none";
-  });
-
-  document
-    .querySelectorAll(
-      "[data-page]"
-    )
-    .forEach(button => {
-
-      button.classList.toggle(
-        "active",
-        button.dataset.page === page
-      );
-
-    });
-}
-
-
-// ============================================================
-// PUBLIC FUNCTIONS
+// PUBLIC API
 // ============================================================
 
 window.JDA = {
 
-  openNewChat: openMemberModal,
+  openNewChat:
+    openMemberModal,
 
   openChat,
 
   closeChat,
 
-  refreshMembers: async () => {
+  refreshMembers:
+    loadMembers,
 
-    await loadMembers();
+  refreshChats:
+    async () => {
 
-    renderMemberResults();
-  },
+      if (unsubscribeConversations) {
+        unsubscribeConversations();
+      }
 
-  refreshChats: async () => {
+      listenForConversations();
 
-    await loadConversations();
-  },
+    },
 
-  logout: async () => {
+  logout:
+    async () => {
 
-    await updateOnlineStatus(false);
+      await signOut(auth);
 
-    await signOut(auth);
+      window.location.replace(
+        "./index.html"
+      );
 
-    window.location.href =
-      "./index.html";
-  }
+    }
 
 };
 
+
+// ============================================================
+// DONE
+// ============================================================
+
 console.log(
-  "JDA Networks real Firebase app loaded."
+  "JDA Networks Firebase app loaded successfully."
 );

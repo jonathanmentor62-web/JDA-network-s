@@ -1,5 +1,7 @@
 rules_version = '2';
+
 service firebase.storage {
+
   match /b/{bucket}/o {
 
     function signedIn() {
@@ -7,31 +9,60 @@ service firebase.storage {
     }
 
     function isSuperAdmin() {
-      return signedIn() && request.auth.token.email == "jonathanmentor62@gmail.com";
+      return signedIn()
+        && request.auth.token.email
+           == "jonathanmentor62@gmail.com";
     }
 
-    // =========================
-    // PROFILE PHOTOS - FIXED
-    // =========================
+    function isAdmin() {
+      return isSuperAdmin()
+        || (
+          signedIn()
+          && firestore.exists(
+            /databases/(default)/documents/admins/$(request.auth.uid)
+          )
+        );
+    }
 
-    // FIX 1: Allow upload to profilePhotos/UID (your app.js uses this)
-    match /profilePhotos/{uid} {
-      allow read: if true;
+
+    /* =========================
+       PROFILE PHOTOS
+    ========================= */
+
+    match /profilePhotos/{uid}.{extension} {
+
+      /*
+       Everyone can view approved profile photos.
+      */
+
+      allow read:
+        if signedIn();
+
+
+      /*
+       A user can upload only their own photo.
+       Admin can manage photos when necessary.
+      */
+
       allow write:
         if signedIn()
-        && request.auth.uid == uid
+        && (
+          request.auth.uid == uid
+          || isAdmin()
+        )
         && request.resource.size < 5 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
+        && request.resource.contentType.matches(
+          'image/.*'
+        );
+
+
+      allow delete:
+        if isAdmin()
+        || (
+          signedIn()
+          && request.auth.uid == uid
+        );
     }
 
-    // FIX 2: Also allow profilePhotos/UID/filename (for future)
-    match /profilePhotos/{uid}/{fileName} {
-      allow read: if true;
-      allow write:
-        if signedIn()
-        && (request.auth.uid == uid || isSuperAdmin())
-        && request.resource.size < 5 * 1024 * 1024
-        && request.resource.contentType.matches('image/.*');
-    }
   }
 }

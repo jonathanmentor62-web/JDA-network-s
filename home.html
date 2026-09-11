@@ -20,11 +20,13 @@ html,body{
 
 body{overflow-x:hidden}
 button,input{font-family:inherit}
+
 button{
   cursor:pointer;
   border:0;
   -webkit-tap-highlight-color:transparent;
 }
+
 .hidden{display:none!important}
 
 /* HEADER */
@@ -83,7 +85,9 @@ button{
   padding-bottom:100px;
 }
 
-.search{padding:12px}
+.search{
+  padding:12px;
+}
 
 .search input{
   width:100%;
@@ -96,7 +100,9 @@ button{
   font-size:14px;
 }
 
-.search input::placeholder{color:#8696a0}
+.search input::placeholder{
+  color:#8696a0;
+}
 
 /* FILTERS */
 .filters{
@@ -107,7 +113,9 @@ button{
   scrollbar-width:none;
 }
 
-.filters::-webkit-scrollbar{display:none}
+.filters::-webkit-scrollbar{
+  display:none;
+}
 
 .filter{
   white-space:nowrap;
@@ -142,7 +150,9 @@ button{
   min-height:77px;
 }
 
-.member:active{background:#202c33}
+.member:active{
+  background:#202c33;
+}
 
 .member img{
   width:52px;
@@ -259,7 +269,9 @@ button{
   margin-bottom:2px;
 }
 
-.nav.active{color:#25d366}
+.nav.active{
+  color:#25d366;
+}
 
 /* NEW CHAT */
 .new-chat{
@@ -285,7 +297,9 @@ button{
   z-index:50;
 }
 
-.chat.open{display:block}
+.chat.open{
+  display:block;
+}
 
 .chat-header{
   height:64px;
@@ -323,7 +337,9 @@ button{
   text-overflow:ellipsis;
 }
 
-.chat-user small{color:#8696a0}
+.chat-user small{
+  color:#8696a0;
+}
 
 .messages{
   position:absolute;
@@ -409,7 +425,9 @@ button{
   justify-content:center;
 }
 
-.modal.open{display:flex}
+.modal.open{
+  display:flex;
+}
 
 .modal-card{
   width:100%;
@@ -421,7 +439,9 @@ button{
   overflow-y:auto;
 }
 
-.profile-center{text-align:center}
+.profile-center{
+  text-align:center;
+}
 
 .profile-center img{
   width:100px;
@@ -495,7 +515,9 @@ button{
   padding:25px;
 }
 
-.startup.hidden{display:none}
+.startup.hidden{
+  display:none;
+}
 
 .startup-box{
   width:100%;
@@ -506,7 +528,9 @@ button{
   border-radius:20px;
 }
 
-.startup-box h2{margin:0 0 10px}
+.startup-box h2{
+  margin:0 0 10px;
+}
 
 .startup-box p{
   color:#8696a0;
@@ -524,13 +548,14 @@ button{
   font-weight:bold;
 }
 
-#profilePhotoInput{display:none}
+#profilePhotoInput{
+  display:none;
+}
 </style>
 </head>
 
 <body>
 
-<!-- STARTUP -->
 <div id="startup" class="startup">
   <div class="startup-box">
     <h2>JDA Networks</h2>
@@ -548,7 +573,6 @@ button{
   </div>
 </div>
 
-<!-- HEADER -->
 <header class="header">
 
   <div class="brand">
@@ -584,7 +608,6 @@ button{
 
 </header>
 
-<!-- MAIN -->
 <main class="container">
 
   <div class="search">
@@ -667,7 +690,6 @@ button{
 
 </main>
 
-<!-- NEW CHAT -->
 <button
   class="new-chat"
   id="newChat"
@@ -675,7 +697,6 @@ button{
   ✎
 </button>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom">
 
   <button
@@ -696,7 +717,6 @@ button{
 
 </nav>
 
-<!-- CHAT -->
 <div id="chat" class="chat">
 
   <header class="chat-header">
@@ -749,7 +769,6 @@ button{
 
 </div>
 
-<!-- PROFILE -->
 <div id="profileModal" class="modal">
 
   <div class="modal-card">
@@ -810,10 +829,6 @@ button{
   accept="image/*">
 
 <script type="module">
-
-/* =====================================================
-   FIREBASE
-===================================================== */
 
 import {
   auth,
@@ -998,18 +1013,14 @@ function safe(value){
   return String(value ?? "");
 }
 
-
 function escapeHTML(value){
-
   return safe(value)
     .replaceAll("&","&amp;")
     .replaceAll("<","&lt;")
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
-
 }
-
 
 function photoUrl(url){
 
@@ -1026,7 +1037,6 @@ function photoUrl(url){
   return DEFAULT_PHOTO;
 }
 
-
 function getMemberClass(member){
 
   return safe(
@@ -1037,12 +1047,9 @@ function getMemberClass(member){
 
 }
 
-
 function getMemberDetail(member){
 
-  if(
-    member.accountType === "student"
-  ){
+  if(member.accountType === "student"){
 
     const studentClass =
       getMemberClass(member);
@@ -1071,7 +1078,7 @@ function getMemberDetail(member){
 
 
 /* =====================================================
-   PHONE NORMALIZATION
+   PHONE
 ===================================================== */
 
 function normalizePhone(number){
@@ -1107,7 +1114,6 @@ function normalizePhone(number){
 
   return digits;
 }
-
 
 function memberPhone(member){
 
@@ -1147,9 +1153,7 @@ function formatTime(timestamp){
     );
 
   }catch{
-
     return "";
-
   }
 
 }
@@ -1174,80 +1178,55 @@ function renderMembers(){
   let filtered =
     [...allMembers];
 
-  if(
-    currentFilter !== "all"
-  ){
+  if(currentFilter !== "all"){
 
     filtered =
-      filtered.filter(
-        member => {
+      filtered.filter(member => {
 
-          if(
-            currentFilter === "student"
-          ){
-
-            return (
-              member.accountType ===
-              "student"
-            );
-
-          }
-
-          if(
-            currentFilter === "staff"
-          ){
-
-            return (
-              member.accountType ===
-              "staff"
-            );
-
-          }
-
-          return (
-            getMemberClass(member) ===
-            currentFilter
-          );
-
+        if(currentFilter === "student"){
+          return member.accountType === "student";
         }
-      );
+
+        if(currentFilter === "staff"){
+          return member.accountType === "staff";
+        }
+
+        return getMemberClass(member) === currentFilter;
+
+      });
 
   }
 
   if(term){
 
     filtered =
-      filtered.filter(
-        member => {
+      filtered.filter(member => {
 
-          return (
+        return (
+          safe(member.realName)
+            .toLowerCase()
+            .includes(term)
 
-            safe(member.realName)
-              .toLowerCase()
-              .includes(term)
+          ||
 
-            ||
+          safe(member.jdaNumber)
+            .toLowerCase()
+            .includes(term)
 
-            safe(member.jdaNumber)
-              .toLowerCase()
-              .includes(term)
+          ||
 
-            ||
+          safe(member.department)
+            .toLowerCase()
+            .includes(term)
 
-            safe(member.department)
-              .toLowerCase()
-              .includes(term)
+          ||
 
-            ||
+          getMemberClass(member)
+            .toLowerCase()
+            .includes(term)
+        );
 
-            getMemberClass(member)
-              .toLowerCase()
-              .includes(term)
-
-          );
-
-        }
-      );
+      });
 
   }
 
@@ -1276,7 +1255,6 @@ function renderMembers(){
         );
 
       return `
-
         <div
           class="member"
           data-uid="${escapeHTML(member.uid)}">
@@ -1303,7 +1281,6 @@ function renderMembers(){
           <div class="status"></div>
 
         </div>
-
       `;
 
     }).join("");
@@ -1312,25 +1289,21 @@ function renderMembers(){
     .querySelectorAll(".member")
     .forEach(element => {
 
-      element.addEventListener(
-        "click",
-        function(){
+      element.addEventListener("click",function(){
 
-          const uid =
-            this.dataset.uid;
+        const uid =
+          this.dataset.uid;
 
-          const member =
-            allMembers.find(
-              item =>
-                item.uid === uid
-            );
+        const member =
+          allMembers.find(
+            item => item.uid === uid
+          );
 
-          if(member){
-            openChat(member);
-          }
-
+        if(member){
+          openChat(member);
         }
-      );
+
+      });
 
     });
 
@@ -1405,8 +1378,7 @@ async function loadMembers(){
       allMembers =
         allMembers.filter(
           member =>
-            member.uid !==
-            currentUser.uid
+            member.uid !== currentUser.uid
         );
 
     }
@@ -1429,7 +1401,6 @@ async function loadMembers(){
     );
 
     membersEl.innerHTML = `
-
       <div class="error-box">
 
         <strong>
@@ -1444,7 +1415,6 @@ async function loadMembers(){
         )}
 
       </div>
-
     `;
 
   }
@@ -1458,8 +1428,9 @@ async function loadMembers(){
 
 async function checkAdmin(){
 
-  currentUserIsAdmin =
-    false;
+  currentUserIsAdmin = false;
+
+  adminBtn.classList.add("hidden");
 
   if(!currentUser){
     return false;
@@ -1471,12 +1442,9 @@ async function checkAdmin(){
     SUPER_ADMIN.toLowerCase()
   ){
 
-    currentUserIsAdmin =
-      true;
+    currentUserIsAdmin = true;
 
-    adminBtn.classList.remove(
-      "hidden"
-    );
+    adminBtn.classList.remove("hidden");
 
     return true;
   }
@@ -1494,12 +1462,9 @@ async function checkAdmin(){
 
     if(adminDoc.exists()){
 
-      currentUserIsAdmin =
-        true;
+      currentUserIsAdmin = true;
 
-      adminBtn.classList.remove(
-        "hidden"
-      );
+      adminBtn.classList.remove("hidden");
 
       return true;
     }
@@ -1513,39 +1478,25 @@ async function checkAdmin(){
 
   }
 
-  adminBtn.classList.add(
-    "hidden"
-  );
-
   return false;
 }
 
 
 /* =====================================================
-   PHOTO PERMISSION
+   PHOTO UI
 ===================================================== */
 
 function updatePhotoPermissionUI(){
 
   if(currentUserIsAdmin){
 
-    changePhotoBtn.classList.remove(
-      "hidden"
-    );
-
-    photoHint.classList.remove(
-      "hidden"
-    );
+    changePhotoBtn.classList.remove("hidden");
+    photoHint.classList.remove("hidden");
 
   }else{
 
-    changePhotoBtn.classList.add(
-      "hidden"
-    );
-
-    photoHint.classList.add(
-      "hidden"
-    );
+    changePhotoBtn.classList.add("hidden");
+    photoHint.classList.add("hidden");
 
   }
 
@@ -1553,7 +1504,7 @@ function updatePhotoPermissionUI(){
 
 
 /* =====================================================
-   CHANGE PHOTO BUTTON
+   CHANGE PHOTO
 ===================================================== */
 
 changePhotoBtn.addEventListener(
@@ -1576,8 +1527,7 @@ changePhotoBtn.addEventListener(
 
 
 /* =====================================================
-   PROFILE PHOTO UPLOAD
-   FIXED STORAGE PATH
+   ADMIN PROFILE PHOTO UPLOAD
 ===================================================== */
 
 profilePhotoInput.addEventListener(
@@ -1608,7 +1558,7 @@ profilePhotoInput.addEventListener(
     ){
 
       alert(
-        "Please select a valid image."
+        "Please select a valid image file."
       );
 
       profilePhotoInput.value = "";
@@ -1616,10 +1566,7 @@ profilePhotoInput.addEventListener(
       return;
     }
 
-    if(
-      file.size >
-      5 * 1024 * 1024
-    ){
+    if(file.size > 5 * 1024 * 1024){
 
       alert(
         "The image must be smaller than 5 MB."
@@ -1633,35 +1580,36 @@ profilePhotoInput.addEventListener(
     const originalText =
       changePhotoBtn.textContent;
 
-    changePhotoBtn.disabled =
-      true;
+    changePhotoBtn.disabled = true;
 
     changePhotoBtn.textContent =
       "Uploading photo...";
 
     try{
 
-      const extension =
+      let extension =
         (
           file.name
             .split(".")
             .pop() ||
           "jpg"
         )
-        .toLowerCase()
-        .replace(
-          /[^a-z0-9]/g,
-          ""
-        );
+          .toLowerCase()
+          .replace(
+            /[^a-z0-9]/g,
+            ""
+          );
+
+      if(!extension){
+        extension = "jpg";
+      }
 
       /*
-        IMPORTANT:
-
-        This now matches your Firebase
-        Storage rule:
-
-        profilePhotos/{uid}.{extension}
-      */
+       * Firebase Storage path.
+       *
+       * This matches:
+       * match /profilePhotos/{fileName}
+       */
 
       const storagePath =
         `profilePhotos/${currentUser.uid}.${extension}`;
@@ -1673,7 +1621,7 @@ profilePhotoInput.addEventListener(
         );
 
       console.log(
-        "Uploading profile photo:",
+        "Starting upload:",
         storagePath
       );
 
@@ -1681,12 +1629,18 @@ profilePhotoInput.addEventListener(
         storageRef,
         file,
         {
-          contentType:file.type
+          contentType:file.type,
+          customMetadata:{
+            uploadedBy:
+              currentUser.uid,
+            uploadedAt:
+              new Date().toISOString()
+          }
         }
       );
 
       console.log(
-        "Photo uploaded successfully."
+        "Upload completed."
       );
 
       const downloadURL =
@@ -1695,8 +1649,13 @@ profilePhotoInput.addEventListener(
         );
 
       console.log(
-        "Photo URL received."
+        "Download URL received."
       );
+
+      /*
+       * Only an admin can update the user document
+       * under the Firestore rules.
+       */
 
       await updateDoc(
         doc(
@@ -1705,19 +1664,37 @@ profilePhotoInput.addEventListener(
           currentUser.uid
         ),
         {
-          photoURL:downloadURL
+          photoURL:
+            downloadURL
         }
       );
 
-      if(currentProfile){
+      console.log(
+        "Firestore profile updated."
+      );
 
+      if(currentProfile){
         currentProfile.photoURL =
           downloadURL;
-
       }
 
+      /*
+       * Add cache-busting to the image display
+       * so the new photo appears immediately.
+       */
+
+      const freshPhotoURL =
+        downloadURL +
+        (
+          downloadURL.includes("?")
+            ? "&"
+            : "?"
+        ) +
+        "v=" +
+        Date.now();
+
       myPhoto.src =
-        downloadURL;
+        freshPhotoURL;
 
       myPhoto.onerror =
         function(){
@@ -1745,14 +1722,23 @@ profilePhotoInput.addEventListener(
       let message =
         "Profile photo could not be changed.";
 
-      if(
-        error?.code ===
-        "storage/unauthorized"
-      ){
+      if(error?.code === "storage/unauthorized"){
 
         message =
           "Firebase Storage rejected the upload.\n\n" +
-          "Check your Firebase Storage rules.";
+          "Make sure the admin account is recognized by your Storage Rules.";
+
+      }else if(
+        error?.code ===
+        "storage/unknown"
+      ){
+
+        message =
+          "Firebase Storage returned an unknown error.\n\n" +
+          (
+            error?.message ||
+            ""
+          );
 
       }else if(
         error?.code ===
@@ -1762,9 +1748,7 @@ profilePhotoInput.addEventListener(
         message =
           "The photo upload was cancelled.";
 
-      }else if(
-        error?.message
-      ){
+      }else if(error?.message){
 
         message +=
           "\n\n" +
@@ -1782,8 +1766,7 @@ profilePhotoInput.addEventListener(
       changePhotoBtn.textContent =
         originalText;
 
-      profilePhotoInput.value =
-        "";
+      profilePhotoInput.value = "";
 
     }
 
@@ -1814,7 +1797,6 @@ async function openPhoneContacts(){
   ){
 
     membersEl.innerHTML = `
-
       <div class="error-box">
 
         <strong>
@@ -1827,7 +1809,6 @@ async function openPhoneContacts(){
         Try Google Chrome on Android.
 
       </div>
-
     `;
 
     return;
@@ -1872,11 +1853,9 @@ async function openPhoneContacts(){
           normalizePhone(phone);
 
         if(normalized){
-
           selectedPhones.add(
             normalized
           );
-
         }
 
       });
@@ -1884,19 +1863,17 @@ async function openPhoneContacts(){
     });
 
     const matches =
-      allMembers.filter(
-        member => {
+      allMembers.filter(member => {
 
-          const number =
-            memberPhone(member);
+        const number =
+          memberPhone(member);
 
-          return (
-            number &&
-            selectedPhones.has(number)
-          );
+        return (
+          number &&
+          selectedPhones.has(number)
+        );
 
-        }
-      );
+      });
 
     renderContactMatches(
       matches,
@@ -1925,7 +1902,6 @@ async function openPhoneContacts(){
     }
 
     membersEl.innerHTML = `
-
       <div class="error-box">
 
         <strong>
@@ -1940,7 +1916,6 @@ async function openPhoneContacts(){
         )}
 
       </div>
-
     `;
 
   }
@@ -2011,7 +1986,6 @@ function renderContactMatches(
         );
 
       return `
-
         <div
           class="member"
           data-uid="${escapeHTML(member.uid)}">
@@ -2040,7 +2014,6 @@ function renderContactMatches(
           <div class="status"></div>
 
         </div>
-
       `;
 
     }).join("");
@@ -2073,20 +2046,15 @@ function renderContactMatches(
 
 
 /* =====================================================
-   NETWORK BUTTON
+   NETWORK
 ===================================================== */
 
 networkBtn.addEventListener(
   "click",
   async () => {
 
-    networkBtn.classList.add(
-      "active"
-    );
-
-    chatNav.classList.remove(
-      "active"
-    );
+    networkBtn.classList.add("active");
+    chatNav.classList.remove("active");
 
     await openPhoneContacts();
 
@@ -2102,13 +2070,8 @@ chatNav.addEventListener(
   "click",
   () => {
 
-    chatNav.classList.add(
-      "active"
-    );
-
-    networkBtn.classList.remove(
-      "active"
-    );
+    chatNav.classList.add("active");
+    networkBtn.classList.remove("active");
 
     contactMode = false;
 
@@ -2128,16 +2091,13 @@ filters.forEach(button => {
     "click",
     () => {
 
-      filters.forEach(
-        item =>
-          item.classList.remove(
-            "active"
-          )
-      );
+      filters.forEach(item => {
 
-      button.classList.add(
-        "active"
-      );
+        item.classList.remove("active");
+
+      });
+
+      button.classList.add("active");
 
       currentFilter =
         button.dataset.filter;
@@ -2162,13 +2122,8 @@ searchInput.addEventListener(
 
       contactMode = false;
 
-      networkBtn.classList.remove(
-        "active"
-      );
-
-      chatNav.classList.add(
-        "active"
-      );
+      networkBtn.classList.remove("active");
+      chatNav.classList.add("active");
 
     }
 
@@ -2206,8 +2161,7 @@ profileBtn.addEventListener(
       function(){
 
         this.onerror = null;
-        this.src =
-          DEFAULT_PHOTO;
+        this.src = DEFAULT_PHOTO;
 
       };
 
@@ -2216,8 +2170,7 @@ profileBtn.addEventListener(
       "JDA Member";
 
     const account =
-      currentProfile.accountType ===
-      "student"
+      currentProfile.accountType === "student"
         ? "Student"
         : "Staff";
 
@@ -2239,8 +2192,7 @@ profileBtn.addEventListener(
 
       JDA Number:
       ${escapeHTML(
-        currentProfile.jdaNumber ||
-        ""
+        currentProfile.jdaNumber || ""
       )}
 
       <br>
@@ -2256,9 +2208,7 @@ profileBtn.addEventListener(
 
     updatePhotoPermissionUI();
 
-    profileModal.classList.add(
-      "open"
-    );
+    profileModal.classList.add("open");
 
   }
 );
@@ -2272,30 +2222,18 @@ closeProfile.addEventListener(
   "click",
   () => {
 
-    profileModal.classList.remove(
-      "open"
-    );
+    profileModal.classList.remove("open");
 
   }
 );
-
-
-/* =====================================================
-   OUTSIDE PROFILE
-===================================================== */
 
 profileModal.addEventListener(
   "click",
   event => {
 
-    if(
-      event.target ===
-      profileModal
-    ){
+    if(event.target === profileModal){
 
-      profileModal.classList.remove(
-        "open"
-      );
+      profileModal.classList.remove("open");
 
     }
 
@@ -2354,13 +2292,8 @@ newChat.addEventListener(
   "click",
   () => {
 
-    chatNav.classList.add(
-      "active"
-    );
-
-    networkBtn.classList.remove(
-      "active"
-    );
+    chatNav.classList.add("active");
+    networkBtn.classList.remove("active");
 
     contactMode = false;
 
@@ -2410,10 +2343,7 @@ async function openChat(member){
     return;
   }
 
-  if(
-    member.uid ===
-    currentUser.uid
-  ){
+  if(member.uid === currentUser.uid){
 
     alert(
       "You cannot chat with yourself."
@@ -2436,8 +2366,7 @@ async function openChat(member){
     function(){
 
       this.onerror = null;
-      this.src =
-        DEFAULT_PHOTO;
+      this.src = DEFAULT_PHOTO;
 
     };
 
@@ -2447,9 +2376,7 @@ async function openChat(member){
   chatStatus.textContent =
     getMemberDetail(member);
 
-  chat.classList.add(
-    "open"
-  );
+  chat.classList.add("open");
 
   messagesEl.innerHTML = `
     <div class="loading">
@@ -2461,8 +2388,7 @@ async function openChat(member){
 
     unsubscribeMessages();
 
-    unsubscribeMessages =
-      null;
+    unsubscribeMessages = null;
 
   }
 
@@ -2482,13 +2408,9 @@ async function openChat(member){
       );
 
     const conversationSnap =
-      await getDoc(
-        conversationRef
-      );
+      await getDoc(conversationRef);
 
-    if(
-      !conversationSnap.exists()
-    ){
+    if(!conversationSnap.exists()){
 
       await setDoc(
         conversationRef,
@@ -2552,9 +2474,7 @@ async function openChat(member){
                 currentUser.uid;
 
               const bubble =
-                document.createElement(
-                  "div"
-                );
+                document.createElement("div");
 
               bubble.className =
                 "message " +
@@ -2582,9 +2502,7 @@ async function openChat(member){
 
               `;
 
-              messagesEl.appendChild(
-                bubble
-              );
+              messagesEl.appendChild(bubble);
 
             }
           );
@@ -2602,7 +2520,6 @@ async function openChat(member){
           );
 
           messagesEl.innerHTML = `
-
             <div class="error-box">
 
               Unable to load messages.
@@ -2615,7 +2532,6 @@ async function openChat(member){
               )}
 
             </div>
-
           `;
 
         }
@@ -2634,7 +2550,6 @@ async function openChat(member){
     );
 
     messagesEl.innerHTML = `
-
       <div class="error-box">
 
         <strong>
@@ -2649,7 +2564,6 @@ async function openChat(member){
         )}
 
       </div>
-
     `;
 
   }
@@ -2665,19 +2579,15 @@ closeChat.addEventListener(
   "click",
   () => {
 
-    chat.classList.remove(
-      "open"
-    );
+    chat.classList.remove("open");
 
-    currentChatUser =
-      null;
+    currentChatUser = null;
 
     if(unsubscribeMessages){
 
       unsubscribeMessages();
 
-      unsubscribeMessages =
-        null;
+      unsubscribeMessages = null;
 
     }
 
@@ -2717,8 +2627,7 @@ messageForm.addEventListener(
         currentChatUser.uid
       );
 
-    messageInput.disabled =
-      true;
+    messageInput.disabled = true;
 
     try{
 
@@ -2734,9 +2643,7 @@ messageForm.addEventListener(
           conversationRef
         );
 
-      if(
-        !conversationSnap.exists()
-      ){
+      if(!conversationSnap.exists()){
 
         await setDoc(
           conversationRef,
@@ -2809,9 +2716,7 @@ messageForm.addEventListener(
 
     }finally{
 
-      messageInput.disabled =
-        false;
-
+      messageInput.disabled = false;
       messageInput.focus();
 
     }
@@ -2833,16 +2738,12 @@ onAuthStateChanged(
       currentUser = null;
       currentProfile = null;
 
-      startup.classList.remove(
-        "hidden"
-      );
+      startup.classList.remove("hidden");
 
       startupText.textContent =
         "You are not logged in.";
 
-      startupButton.classList.remove(
-        "hidden"
-      );
+      startupButton.classList.remove("hidden");
 
       startupButton.textContent =
         "Go to Login";
@@ -2858,8 +2759,7 @@ onAuthStateChanged(
       return;
     }
 
-    currentUser =
-      user;
+    currentUser = user;
 
     try{
 
@@ -2872,20 +2772,14 @@ onAuthStateChanged(
           )
         );
 
-      if(
-        !profileDoc.exists()
-      ){
+      if(!profileDoc.exists()){
 
-        startup.classList.remove(
-          "hidden"
-        );
+        startup.classList.remove("hidden");
 
         startupText.textContent =
           "Your JDA Networks profile could not be found.";
 
-        startupButton.classList.remove(
-          "hidden"
-        );
+        startupButton.classList.remove("hidden");
 
         startupButton.textContent =
           "Go to Login";
@@ -2911,9 +2805,7 @@ onAuthStateChanged(
         "approved"
       ){
 
-        startup.classList.remove(
-          "hidden"
-        );
+        startup.classList.remove("hidden");
 
         if(
           currentProfile.status ===
@@ -2930,9 +2822,7 @@ onAuthStateChanged(
 
         }
 
-        startupButton.classList.remove(
-          "hidden"
-        );
+        startupButton.classList.remove("hidden");
 
         startupButton.textContent =
           "Back to Login";
@@ -2948,9 +2838,7 @@ onAuthStateChanged(
         return;
       }
 
-      startup.classList.add(
-        "hidden"
-      );
+      startup.classList.add("hidden");
 
       await checkAdmin();
 
@@ -2963,16 +2851,12 @@ onAuthStateChanged(
         error
       );
 
-      startup.classList.remove(
-        "hidden"
-      );
+      startup.classList.remove("hidden");
 
       startupText.textContent =
         "JDA Networks could not start.";
 
-      startupButton.classList.remove(
-        "hidden"
-      );
+      startupButton.classList.remove("hidden");
 
       startupButton.textContent =
         "Refresh";

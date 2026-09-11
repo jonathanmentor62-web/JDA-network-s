@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Fix Account</title>
+<title>Fix Account - JDA</title>
 </head>
 <body style="background:#0b141a;color:white;font-family:Arial;padding:20px;text-align:center">
 <h2>JDA Networks - Ultimate Fix</h2>
-<p id="status">Loading Firebase...</p>
+<p id="status">Loading...</p>
 <p id="log" style="font-size:11px;color:#8696a0;word-break:break-all"></p>
-<button id="btn" style="padding:15px 25px;background:#25d366;border:0;border-radius:25px;font-weight:bold;display:none" onclick="location.reload()">Retry</button>
-<button id="goBtn" style="padding:15px 25px;background:#374952;border:0;border-radius:25px;font-weight:bold;display:none;color:white;margin-left:10px" onclick="location.href='./index.html'">Go Login</button>
+<button id="btn" style="padding:15px 25px;background:#25d366;border:0;border-radius:25px;font-weight:bold;display:none;margin-top:10px" onclick="location.reload()">Retry</button>
+<button id="goBtn" style="padding:15px 25px;background:#374952;border:0;border-radius:25px;font-weight:bold;display:none;color:white;margin:10px" onclick="location.href='./index.html'">Go Login</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
@@ -21,82 +21,78 @@ const logEl = document.getElementById("log");
 const statusEl = document.getElementById("status");
 const btn = document.getElementById("btn");
 const goBtn = document.getElementById("goBtn");
-
 function log(t){ logEl.innerHTML += "<br>" + t; }
 
-// PASTE YOUR FIREBASE CONFIG HERE - I need your real config
-// Go to console.firebase.google.com -> Project Settings -> scroll down -> config
 const firebaseConfig = {
-  apiKey: "AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
+  apiKey: "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
+  authDomain: "jda-network-fabde.firebaseapp.com",
+  projectId: "jda-network-fabde",
+  storageBucket: "jda-network-fabde.firebasestorage.app",
+  messagingSenderId: "383915852673",
+  appId: "1:383915852673:web:4b185c0387ed0bbad1de80"
 };
 
 try{
-  log("Init app...");
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-  log("Firebase OK, waiting for login...");
+  log("Firebase OK");
 
-  let timedOut = false;
   setTimeout(()=>{
-    if(statusEl.textContent.includes("waiting")){
-      timedOut = true;
-      statusEl.innerHTML = "❌ STILL NOT LOGGED IN<br><br>You need to login FIRST at index.html<br>Then come back here";
-      btn.style.display="inline-block";
+    if(statusEl.textContent.includes("Checking") || statusEl.textContent.includes("Loading") || statusEl.textContent.includes("waiting")){
+      statusEl.innerHTML = "❌ NOT LOGGED IN<br><br>Login first at index.html<br>Then come back";
       goBtn.style.display="inline-block";
     }
   },5000);
 
   onAuthStateChanged(auth, async (user)=>{
-    if(timedOut) return;
     log("Auth: " + (user? user.email : "null"));
     if(!user){
-      statusEl.innerHTML = "❌ Not logged in<br>Go to login first";
+      statusEl.innerHTML = "❌ Not logged in<br><br>Go to login first";
       goBtn.style.display="inline-block";
-      goBtn.textContent="Go Login";
       return;
     }
     statusEl.textContent = "Fixing " + user.email + "...";
     try{
       const ref = doc(db, "users", user.uid);
       const snap = await getDoc(ref);
-      log("Doc exists: " + snap.exists());
+      log("Exists: " + snap.exists());
       if(!snap.exists()){
         await setDoc(ref,{
           uid:user.uid,
           email:user.email,
           realName:user.displayName||user.email.split('@')[0],
-          status:"approved",
-          approved:true,
+          jdaNumber:"",
           accountType:"student",
           class:"Form One",
-          createdAt:serverTimestamp()
+          stream:"",
+          department:"",
+          photoURL:user.photoURL||"",
+          status:"approved",
+          approved:true,
+          createdAt:serverTimestamp(),
+          updatedAt:serverTimestamp()
         });
-        statusEl.innerHTML = "✅ CREATED & APPROVED!<br><br>" + user.email + "<br><br>You are now MEMBER!";
+        statusEl.innerHTML = "✅ CREATED & APPROVED!<br><br><b>" + user.email + "</b><br><br>You are now FULL MEMBER!";
       }else{
-        await setDoc(ref,{status:"approved",approved:true},{merge:true});
-        statusEl.innerHTML = "✅ FIXED TO APPROVED!<br><br>" + user.email + "<br><br>You are now MEMBER!";
+        const data=snap.data();
+        await setDoc(ref,{status:"approved",approved:true,updatedAt:serverTimestamp()},{merge:true});
+        statusEl.innerHTML = "✅ FIXED TO APPROVED!<br><br><b>" + user.email + "</b><br>Status was: " + (data.status||"unknown") + "<br><br>Now you are MEMBER!";
       }
       goBtn.style.display="inline-block";
-      goBtn.textContent="Go to Chats";
+      goBtn.textContent="Go to Chats →";
+      goBtn.style.background="#25d366";
+      goBtn.style.color="#07130b";
       goBtn.onclick=()=>location.href="./home.html";
-      log("Done!");
     }catch(e){
       statusEl.textContent = "Error: " + e.message;
-      log("Error code: " + e.code);
+      log(e.code);
       btn.style.display="inline-block";
     }
   });
-
 }catch(e){
-  statusEl.textContent = "Config Error: " + e.message;
+  statusEl.textContent = "Error: " + e.message;
   log(e.toString());
-  log("👉 You need to paste REAL firebase config inside this file!");
   btn.style.display="inline-block";
 }
 </script>

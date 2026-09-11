@@ -6,9 +6,7 @@
 <title>JDA Networks</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 html,body{
   margin:0;
@@ -20,28 +18,16 @@ html,body{
   color:#fff;
 }
 
-body{
-  overflow-x:hidden;
-}
-
-button,input{
-  font-family:inherit;
-}
-
+body{overflow-x:hidden}
+button,input{font-family:inherit}
 button{
   cursor:pointer;
   border:0;
   -webkit-tap-highlight-color:transparent;
 }
+.hidden{display:none!important}
 
-.hidden{
-  display:none!important;
-}
-
-/* =========================
-   HEADER
-========================= */
-
+/* HEADER */
 .header{
   height:64px;
   background:#202c33;
@@ -89,10 +75,7 @@ button{
   font-size:18px;
 }
 
-/* =========================
-   MAIN
-========================= */
-
+/* MAIN */
 .container{
   width:100%;
   max-width:900px;
@@ -100,9 +83,7 @@ button{
   padding-bottom:100px;
 }
 
-.search{
-  padding:12px;
-}
+.search{padding:12px}
 
 .search input{
   width:100%;
@@ -115,14 +96,9 @@ button{
   font-size:14px;
 }
 
-.search input::placeholder{
-  color:#8696a0;
-}
+.search input::placeholder{color:#8696a0}
 
-/* =========================
-   FILTERS
-========================= */
-
+/* FILTERS */
 .filters{
   display:flex;
   gap:8px;
@@ -131,9 +107,7 @@ button{
   scrollbar-width:none;
 }
 
-.filters::-webkit-scrollbar{
-  display:none;
-}
+.filters::-webkit-scrollbar{display:none}
 
 .filter{
   white-space:nowrap;
@@ -150,10 +124,7 @@ button{
   color:#07130b;
 }
 
-/* =========================
-   MEMBERS
-========================= */
-
+/* MEMBERS */
 .section{
   padding:10px 15px;
   color:#8696a0;
@@ -171,9 +142,7 @@ button{
   min-height:77px;
 }
 
-.member:active{
-  background:#202c33;
-}
+.member:active{background:#202c33}
 
 .member img{
   width:52px;
@@ -262,10 +231,7 @@ button{
   font-weight:bold;
 }
 
-/* =========================
-   BOTTOM NAV
-========================= */
-
+/* BOTTOM NAV */
 .bottom{
   position:fixed;
   bottom:0;
@@ -293,14 +259,9 @@ button{
   margin-bottom:2px;
 }
 
-.nav.active{
-  color:#25d366;
-}
+.nav.active{color:#25d366}
 
-/* =========================
-   NEW CHAT
-========================= */
-
+/* NEW CHAT */
 .new-chat{
   position:fixed;
   right:20px;
@@ -315,10 +276,7 @@ button{
   box-shadow:0 4px 15px rgba(0,0,0,.3);
 }
 
-/* =========================
-   CHAT
-========================= */
-
+/* CHAT */
 .chat{
   display:none;
   position:fixed;
@@ -327,9 +285,7 @@ button{
   z-index:50;
 }
 
-.chat.open{
-  display:block;
-}
+.chat.open{display:block}
 
 .chat-header{
   height:64px;
@@ -367,9 +323,7 @@ button{
   text-overflow:ellipsis;
 }
 
-.chat-user small{
-  color:#8696a0;
-}
+.chat-user small{color:#8696a0}
 
 .messages{
   position:absolute;
@@ -444,10 +398,7 @@ button{
   flex-shrink:0;
 }
 
-/* =========================
-   PROFILE MODAL
-========================= */
-
+/* PROFILE */
 .modal{
   display:none;
   position:fixed;
@@ -458,9 +409,7 @@ button{
   justify-content:center;
 }
 
-.modal.open{
-  display:flex;
-}
+.modal.open{display:flex}
 
 .modal-card{
   width:100%;
@@ -472,9 +421,7 @@ button{
   overflow-y:auto;
 }
 
-.profile-center{
-  text-align:center;
-}
+.profile-center{text-align:center}
 
 .profile-center img{
   width:100px;
@@ -536,10 +483,7 @@ button{
   font-weight:bold;
 }
 
-/* =========================
-   STARTUP SCREEN
-========================= */
-
+/* STARTUP */
 .startup{
   position:fixed;
   inset:0;
@@ -551,9 +495,7 @@ button{
   padding:25px;
 }
 
-.startup.hidden{
-  display:none;
-}
+.startup.hidden{display:none}
 
 .startup-box{
   width:100%;
@@ -564,9 +506,7 @@ button{
   border-radius:20px;
 }
 
-.startup-box h2{
-  margin:0 0 10px;
-}
+.startup-box h2{margin:0 0 10px}
 
 .startup-box p{
   color:#8696a0;
@@ -584,26 +524,15 @@ button{
   font-weight:bold;
 }
 
-/* =========================
-   HIDDEN FILE INPUT
-========================= */
-
-#profilePhotoInput{
-  display:none;
-}
+#profilePhotoInput{display:none}
 </style>
 </head>
 
 <body>
 
-<!-- =========================
-     STARTUP
-========================= -->
-
+<!-- STARTUP -->
 <div id="startup" class="startup">
-
   <div class="startup-box">
-
     <h2>JDA Networks</h2>
 
     <p id="startupText">
@@ -613,20 +542,13 @@ button{
     <button
       id="startupButton"
       class="startup-btn hidden"
-      type="button"
-    >
+      type="button">
       Go to Login
     </button>
-
   </div>
-
 </div>
 
-
-<!-- =========================
-     HEADER
-========================= -->
-
+<!-- HEADER -->
 <header class="header">
 
   <div class="brand">
@@ -634,8 +556,7 @@ button{
     <img
       src="./logo.png"
       alt="JDA Networks"
-      onerror="this.style.display='none'"
-    >
+      onerror="this.style.display='none'">
 
     <div class="brand-title">
       JDA Networks
@@ -648,18 +569,14 @@ button{
     <button
       class="icon-btn hidden"
       id="adminBtn"
-      type="button"
-      title="Admin"
-    >
+      type="button">
       🛡️
     </button>
 
     <button
       class="icon-btn"
       id="profileBtn"
-      type="button"
-      title="Profile"
-    >
+      type="button">
       👤
     </button>
 
@@ -667,146 +584,104 @@ button{
 
 </header>
 
-
-<!-- =========================
-     MAIN
-========================= -->
-
+<!-- MAIN -->
 <main class="container">
 
   <div class="search">
-
     <input
       id="searchInput"
       type="text"
       placeholder="Search JDA Networks"
-      autocomplete="off"
-    >
-
+      autocomplete="off">
   </div>
-
 
   <div class="filters">
 
-    <button
-      class="filter active"
+    <button class="filter active"
       data-filter="all"
-      type="button"
-    >
+      type="button">
       All
     </button>
 
-    <button
-      class="filter"
+    <button class="filter"
       data-filter="student"
-      type="button"
-    >
+      type="button">
       Students
     </button>
 
-    <button
-      class="filter"
+    <button class="filter"
       data-filter="staff"
-      type="button"
-    >
+      type="button">
       Staff
     </button>
 
-    <button
-      class="filter"
+    <button class="filter"
       data-filter="Form One"
-      type="button"
-    >
+      type="button">
       Form One
     </button>
 
-    <button
-      class="filter"
+    <button class="filter"
       data-filter="Form Two"
-      type="button"
-    >
+      type="button">
       Form Two
     </button>
 
-    <button
-      class="filter"
+    <button class="filter"
       data-filter="Form Three"
-      type="button"
-    >
+      type="button">
       Form Three
     </button>
 
-    <button
-      class="filter"
+    <button class="filter"
       data-filter="Form Four"
-      type="button"
-    >
+      type="button">
       Form Four
     </button>
 
-    <button
-      class="filter"
+    <button class="filter"
       data-filter="Form Five"
-      type="button"
-    >
+      type="button">
       Form Five
     </button>
 
-    <button
-      class="filter"
+    <button class="filter"
       data-filter="Form Six"
-      type="button"
-    >
+      type="button">
       Form Six
     </button>
 
   </div>
 
-
   <div
     class="section"
-    id="sectionTitle"
-  >
+    id="sectionTitle">
     JDA NETWORK MEMBERS
   </div>
 
-
   <div id="members">
-
     <div class="loading">
       Loading JDA Network members...
     </div>
-
   </div>
 
 </main>
 
-
-<!-- =========================
-     NEW CHAT
-========================= -->
-
+<!-- NEW CHAT -->
 <button
   class="new-chat"
   id="newChat"
-  type="button"
-  title="New chat"
->
+  type="button">
   ✎
 </button>
 
-
-<!-- =========================
-     BOTTOM NAV
-========================= -->
-
+<!-- BOTTOM NAV -->
 <nav class="bottom">
 
   <button
     class="nav active"
     id="chatNav"
-    type="button"
-  >
+    type="button">
     <span>💬</span>
     Chats
   </button>
@@ -814,38 +689,26 @@ button{
   <button
     class="nav"
     id="networkBtn"
-    type="button"
-  >
+    type="button">
     <span>👥</span>
     Network
   </button>
 
 </nav>
 
-
-<!-- =========================
-     CHAT
-========================= -->
-
-<div
-  id="chat"
-  class="chat"
->
+<!-- CHAT -->
+<div id="chat" class="chat">
 
   <header class="chat-header">
 
     <button
       class="back"
       id="closeChat"
-      type="button"
-    >
+      type="button">
       ←
     </button>
 
-    <img
-      id="chatPhoto"
-      alt=""
-    >
+    <img id="chatPhoto" alt="">
 
     <div class="chat-user">
 
@@ -861,36 +724,24 @@ button{
 
   </header>
 
-
-  <div
-    id="messages"
-    class="messages"
-  >
-
+  <div id="messages" class="messages">
     <div class="loading">
       Loading messages...
     </div>
-
   </div>
 
-
-  <form
-    id="messageForm"
-    class="message-form"
-  >
+  <form id="messageForm" class="message-form">
 
     <input
       id="messageInput"
       type="text"
       placeholder="Type a message"
       maxlength="5000"
-      autocomplete="off"
-    >
+      autocomplete="off">
 
     <button
       class="send"
-      type="submit"
-    >
+      type="submit">
       ➤
     </button>
 
@@ -898,15 +749,8 @@ button{
 
 </div>
 
-
-<!-- =========================
-     PROFILE
-========================= -->
-
-<div
-  id="profileModal"
-  class="modal"
->
+<!-- PROFILE -->
+<div id="profileModal" class="modal">
 
   <div class="modal-card">
 
@@ -914,72 +758,56 @@ button{
 
       <img
         id="myPhoto"
-        alt="Profile photo"
-      >
+        alt="Profile photo">
 
       <div
         id="myName"
-        class="profile-name"
-      >
+        class="profile-name">
         JDA Member
       </div>
 
       <div
         id="myInfo"
-        class="profile-info"
-      >
+        class="profile-info">
         Loading...
       </div>
 
-      <!-- ADMIN ONLY -->
       <button
         id="changePhotoBtn"
         class="profile-photo-button hidden"
-        type="button"
-      >
+        type="button">
         📷 Change Profile Photo
       </button>
 
       <div
         id="photoHint"
-        class="photo-hint hidden"
-      >
+        class="photo-hint hidden">
         Admin only
       </div>
 
     </div>
 
-
     <button
       id="closeProfile"
       class="close"
-      type="button"
-    >
+      type="button">
       Close
     </button>
-
 
     <button
       id="logoutBtn"
       class="logout"
-      type="button"
-    >
+      type="button">
       Logout
     </button>
 
   </div>
-
 </div>
-
-
-<!-- HIDDEN PHOTO PICKER -->
 
 <input
   id="profilePhotoInput"
   type="file"
-  accept="image/*"
->
-
+  accept="image/*">
 
 <script type="module">
 
@@ -1146,23 +974,17 @@ const DEFAULT_PHOTO =
          height="120"
          viewBox="0 0 120 120">
 
-      <rect
-        width="120"
-        height="120"
-        fill="#202c33"
-      />
+      <rect width="120" height="120" fill="#202c33"/>
 
       <circle
         cx="60"
         cy="43"
         r="22"
-        fill="#6b7c85"
-      />
+        fill="#6b7c85"/>
 
       <path
         d="M25 105c4-24 18-37 35-37s31 13 35 37"
-        fill="#6b7c85"
-      />
+        fill="#6b7c85"/>
 
     </svg>
   `);
@@ -1173,9 +995,7 @@ const DEFAULT_PHOTO =
 ===================================================== */
 
 function safe(value){
-
   return String(value ?? "");
-
 }
 
 
@@ -1200,13 +1020,10 @@ function photoUrl(url){
       url.startsWith("https://")
     )
   ){
-
     return url;
-
   }
 
   return DEFAULT_PHOTO;
-
 }
 
 
@@ -1233,39 +1050,23 @@ function getMemberDetail(member){
     const stream =
       safe(member.stream).trim();
 
-
-    if(
-      studentClass &&
-      stream
-    ){
-
-      return (
-        studentClass +
-        " • " +
-        stream
-      );
-
+    if(studentClass && stream){
+      return studentClass + " • " + stream;
     }
-
 
     if(studentClass){
       return studentClass;
     }
 
-
     return "Student";
-
   }
-
 
   const department =
     safe(member.department).trim();
 
-
   return department
     ? `Staff • ${department}`
     : "Staff";
-
 }
 
 
@@ -1279,46 +1080,32 @@ function normalizePhone(number){
     return "";
   }
 
-
   let digits =
     String(number)
       .replace(/\D/g,"");
 
-
-  if(
-    digits.startsWith("00")
-  ){
-
+  if(digits.startsWith("00")){
     digits =
       digits.substring(2);
-
   }
-
 
   if(
     digits.startsWith("0") &&
     digits.length === 10
   ){
-
     digits =
       "256" +
       digits.substring(1);
-
   }
-
 
   if(
     digits.startsWith("256") &&
     digits.length === 12
   ){
-
     return digits;
-
   }
 
-
   return digits;
-
 }
 
 
@@ -1344,14 +1131,12 @@ function formatTime(timestamp){
     return "";
   }
 
-
   try{
 
     const date =
       timestamp.toDate
         ? timestamp.toDate()
         : new Date(timestamp);
-
 
     return date.toLocaleTimeString(
       [],
@@ -1381,22 +1166,16 @@ function renderMembers(){
   sectionTitle.textContent =
     "JDA NETWORK MEMBERS";
 
-
   const term =
     searchInput.value
       .trim()
       .toLowerCase();
 
-
   let filtered =
     [...allMembers];
 
-
-  /* FILTER */
-
   if(
-    currentFilter !==
-    "all"
+    currentFilter !== "all"
   ){
 
     filtered =
@@ -1404,8 +1183,7 @@ function renderMembers(){
         member => {
 
           if(
-            currentFilter ===
-            "student"
+            currentFilter === "student"
           ){
 
             return (
@@ -1415,10 +1193,8 @@ function renderMembers(){
 
           }
 
-
           if(
-            currentFilter ===
-            "staff"
+            currentFilter === "staff"
           ){
 
             return (
@@ -1427,7 +1203,6 @@ function renderMembers(){
             );
 
           }
-
 
           return (
             getMemberClass(member) ===
@@ -1438,9 +1213,6 @@ function renderMembers(){
       );
 
   }
-
-
-  /* SEARCH */
 
   if(term){
 
@@ -1479,7 +1251,6 @@ function renderMembers(){
 
   }
 
-
   if(!filtered.length){
 
     membersEl.innerHTML = `
@@ -1489,16 +1260,13 @@ function renderMembers(){
     `;
 
     return;
-
   }
-
 
   membersEl.innerHTML =
     filtered.map(member => {
 
       const name =
         safe(member.realName).trim();
-
 
       const photo =
         photoUrl(
@@ -1507,19 +1275,16 @@ function renderMembers(){
           member.photo
         );
 
-
       return `
 
         <div
           class="member"
-          data-uid="${escapeHTML(member.uid)}"
-        >
+          data-uid="${escapeHTML(member.uid)}">
 
           <img
             src="${escapeHTML(photo)}"
             alt=""
-            onerror="this.onerror=null;this.src='${DEFAULT_PHOTO}'"
-          >
+            onerror="this.onerror=null;this.src='${DEFAULT_PHOTO}'">
 
           <div class="member-info">
 
@@ -1543,7 +1308,6 @@ function renderMembers(){
 
     }).join("");
 
-
   membersEl
     .querySelectorAll(".member")
     .forEach(element => {
@@ -1555,18 +1319,14 @@ function renderMembers(){
           const uid =
             this.dataset.uid;
 
-
           const member =
             allMembers.find(
               item =>
                 item.uid === uid
             );
 
-
           if(member){
-
             openChat(member);
-
           }
 
         }
@@ -1589,94 +1349,56 @@ async function loadMembers(){
     </div>
   `;
 
-
   try{
 
     const usersQuery =
       query(
-        collection(
-          db,
-          "users"
-        ),
-        where(
-          "status",
-          "==",
-          "approved"
-        )
+        collection(db,"users"),
+        where("status","==","approved")
       );
-
 
     const snapshot =
-      await getDocs(
-        usersQuery
-      );
-
+      await getDocs(usersQuery);
 
     const uniqueMembers =
       new Map();
 
+    snapshot.docs.forEach(item => {
 
-    snapshot.docs.forEach(
-      item => {
+      const data =
+        item.data();
 
-        const data =
-          item.data();
+      const uid =
+        data.uid ||
+        item.id;
 
+      const realName =
+        safe(data.realName).trim();
 
-        const uid =
-          data.uid ||
-          item.id;
-
-
-        const realName =
-          safe(data.realName)
-            .trim();
-
-
-        /*
-          IMPORTANT:
-
-          Never show incomplete records
-          that don't have a real name.
-        */
-
-        if(!realName){
-          return;
-        }
-
-
-        if(
-          uniqueMembers.has(uid)
-        ){
-
-          return;
-
-        }
-
-
-        uniqueMembers.set(
-          uid,
-          {
-            id:item.id,
-            uid:uid,
-            ...data,
-            realName:realName
-          }
-        );
-
+      if(!realName){
+        return;
       }
-    );
 
+      if(uniqueMembers.has(uid)){
+        return;
+      }
+
+      uniqueMembers.set(
+        uid,
+        {
+          id:item.id,
+          uid:uid,
+          ...data,
+          realName:realName
+        }
+      );
+
+    });
 
     allMembers =
       Array.from(
         uniqueMembers.values()
       );
-
-
-    /*
-      Don't show yourself.
-    */
 
     if(currentUser){
 
@@ -1689,11 +1411,6 @@ async function loadMembers(){
 
     }
 
-
-    /*
-      Alphabetical.
-    */
-
     allMembers.sort(
       (a,b) =>
         safe(a.realName)
@@ -1702,9 +1419,7 @@ async function loadMembers(){
           )
     );
 
-
     renderMembers();
-
 
   }catch(error){
 
@@ -1712,7 +1427,6 @@ async function loadMembers(){
       "Member loading error:",
       error
     );
-
 
     membersEl.innerHTML = `
 
@@ -1747,17 +1461,9 @@ async function checkAdmin(){
   currentUserIsAdmin =
     false;
 
-
   if(!currentUser){
-
     return false;
-
   }
-
-
-  /*
-    Super admin.
-  */
 
   if(
     safe(currentUser.email)
@@ -1773,13 +1479,7 @@ async function checkAdmin(){
     );
 
     return true;
-
   }
-
-
-  /*
-    Admin collection.
-  */
 
   try{
 
@@ -1792,10 +1492,7 @@ async function checkAdmin(){
         )
       );
 
-
-    if(
-      adminDoc.exists()
-    ){
+    if(adminDoc.exists()){
 
       currentUserIsAdmin =
         true;
@@ -1805,9 +1502,7 @@ async function checkAdmin(){
       );
 
       return true;
-
     }
-
 
   }catch(error){
 
@@ -1818,26 +1513,21 @@ async function checkAdmin(){
 
   }
 
-
   adminBtn.classList.add(
     "hidden"
   );
 
-
   return false;
-
 }
 
 
 /* =====================================================
-   ADMIN PHOTO BUTTON
+   PHOTO PERMISSION
 ===================================================== */
 
 function updatePhotoPermissionUI(){
 
-  if(
-    currentUserIsAdmin
-  ){
+  if(currentUserIsAdmin){
 
     changePhotoBtn.classList.remove(
       "hidden"
@@ -1863,16 +1553,12 @@ function updatePhotoPermissionUI(){
 
 
 /* =====================================================
-   CHANGE PROFILE PHOTO BUTTON
+   CHANGE PHOTO BUTTON
 ===================================================== */
 
 changePhotoBtn.addEventListener(
   "click",
   () => {
-
-    /*
-      Extra security check.
-    */
 
     if(!currentUserIsAdmin){
 
@@ -1881,9 +1567,7 @@ changePhotoBtn.addEventListener(
       );
 
       return;
-
     }
-
 
     profilePhotoInput.click();
 
@@ -1892,7 +1576,8 @@ changePhotoBtn.addEventListener(
 
 
 /* =====================================================
-   PROFILE PHOTO FILE SELECTED
+   PROFILE PHOTO UPLOAD
+   FIXED STORAGE PATH
 ===================================================== */
 
 profilePhotoInput.addEventListener(
@@ -1903,47 +1588,33 @@ profilePhotoInput.addEventListener(
 
       profilePhotoInput.value = "";
 
+      alert(
+        "Only an admin can change this profile photo."
+      );
+
       return;
-
     }
-
 
     const file =
       profilePhotoInput.files?.[0];
 
-
     if(!file){
-
       return;
-
     }
 
-
-    /*
-      Check image.
-    */
-
     if(
-      !file.type.startsWith(
-        "image/"
-      )
+      !file.type ||
+      !file.type.startsWith("image/")
     ){
 
       alert(
-        "Please select an image."
+        "Please select a valid image."
       );
 
-      profilePhotoInput.value =
-        "";
+      profilePhotoInput.value = "";
 
       return;
-
     }
-
-
-    /*
-      5 MB maximum.
-    */
 
     if(
       file.size >
@@ -1954,34 +1625,21 @@ profilePhotoInput.addEventListener(
         "The image must be smaller than 5 MB."
       );
 
-      profilePhotoInput.value =
-        "";
+      profilePhotoInput.value = "";
 
       return;
-
     }
-
 
     const originalText =
       changePhotoBtn.textContent;
 
-
     changePhotoBtn.disabled =
       true;
-
 
     changePhotoBtn.textContent =
       "Uploading photo...";
 
-
     try{
-
-      /*
-        Upload to Firebase Storage.
-
-        Every new photo gets a timestamp
-        so an old cached image is avoided.
-      */
 
       const extension =
         (
@@ -1989,12 +1647,24 @@ profilePhotoInput.addEventListener(
             .split(".")
             .pop() ||
           "jpg"
-        ).toLowerCase();
+        )
+        .toLowerCase()
+        .replace(
+          /[^a-z0-9]/g,
+          ""
+        );
 
+      /*
+        IMPORTANT:
+
+        This now matches your Firebase
+        Storage rule:
+
+        profilePhotos/{uid}.{extension}
+      */
 
       const storagePath =
-        `profilePhotos/${currentUser.uid}_${Date.now()}.${extension}`;
-
+        `profilePhotos/${currentUser.uid}.${extension}`;
 
       const storageRef =
         ref(
@@ -2002,30 +1672,31 @@ profilePhotoInput.addEventListener(
           storagePath
         );
 
+      console.log(
+        "Uploading profile photo:",
+        storagePath
+      );
 
       await uploadBytes(
         storageRef,
         file,
         {
-          contentType:
-            file.type
+          contentType:file.type
         }
       );
 
-
-      /*
-        Get public download URL.
-      */
+      console.log(
+        "Photo uploaded successfully."
+      );
 
       const downloadURL =
         await getDownloadURL(
           storageRef
         );
 
-
-      /*
-        Save URL in Firestore.
-      */
+      console.log(
+        "Photo URL received."
+      );
 
       await updateDoc(
         doc(
@@ -2034,56 +1705,74 @@ profilePhotoInput.addEventListener(
           currentUser.uid
         ),
         {
-          photoURL:
-            downloadURL
+          photoURL:downloadURL
         }
       );
 
+      if(currentProfile){
 
-      /*
-        Update current profile.
-      */
+        currentProfile.photoURL =
+          downloadURL;
 
-      currentProfile.photoURL =
-        downloadURL;
-
-
-      /*
-        Update displayed photo immediately.
-      */
+      }
 
       myPhoto.src =
         downloadURL;
 
+      myPhoto.onerror =
+        function(){
+
+          this.onerror = null;
+
+          this.src =
+            DEFAULT_PHOTO;
+
+        };
+
+      await loadMembers();
 
       alert(
         "Profile photo updated successfully."
       );
 
-
-      /*
-        Reload members so the new
-        picture appears in Network too.
-      */
-
-      await loadMembers();
-
-
     }catch(error){
 
       console.error(
-        "Profile photo upload error:",
+        "PROFILE PHOTO ERROR:",
         error
       );
 
+      let message =
+        "Profile photo could not be changed.";
 
-      alert(
-        "Profile photo could not be changed.\n\n" +
-        (
-          error?.message ||
-          "Please try again."
-        )
-      );
+      if(
+        error?.code ===
+        "storage/unauthorized"
+      ){
+
+        message =
+          "Firebase Storage rejected the upload.\n\n" +
+          "Check your Firebase Storage rules.";
+
+      }else if(
+        error?.code ===
+        "storage/canceled"
+      ){
+
+        message =
+          "The photo upload was cancelled.";
+
+      }else if(
+        error?.message
+      ){
+
+        message +=
+          "\n\n" +
+          error.message;
+
+      }
+
+      alert(message);
 
     }finally{
 
@@ -2110,17 +1799,14 @@ async function openPhoneContacts(){
 
   contactMode = true;
 
-
   sectionTitle.textContent =
     "JDA MEMBERS IN YOUR CONTACTS";
-
 
   membersEl.innerHTML = `
     <div class="loading">
       Opening your phone contacts...
     </div>
   `;
-
 
   if(
     !navigator.contacts ||
@@ -2145,9 +1831,7 @@ async function openPhoneContacts(){
     `;
 
     return;
-
   }
-
 
   try{
 
@@ -2158,7 +1842,6 @@ async function openPhoneContacts(){
           multiple:true
         }
       );
-
 
     if(
       !contacts ||
@@ -2172,45 +1855,33 @@ async function openPhoneContacts(){
       `;
 
       return;
-
     }
-
 
     const selectedPhones =
       new Set();
 
+    contacts.forEach(contact => {
 
-    contacts.forEach(
-      contact => {
+      if(!contact.tel){
+        return;
+      }
 
-        if(!contact.tel){
-          return;
+      contact.tel.forEach(phone => {
+
+        const normalized =
+          normalizePhone(phone);
+
+        if(normalized){
+
+          selectedPhones.add(
+            normalized
+          );
+
         }
 
+      });
 
-        contact.tel.forEach(
-          phone => {
-
-            const normalized =
-              normalizePhone(
-                phone
-              );
-
-
-            if(normalized){
-
-              selectedPhones.add(
-                normalized
-              );
-
-            }
-
-          }
-        );
-
-      }
-    );
-
+    });
 
     const matches =
       allMembers.filter(
@@ -2219,23 +1890,18 @@ async function openPhoneContacts(){
           const number =
             memberPhone(member);
 
-
           return (
             number &&
-            selectedPhones.has(
-              number
-            )
+            selectedPhones.has(number)
           );
 
         }
       );
 
-
     renderContactMatches(
       matches,
       contacts.length
     );
-
 
   }catch(error){
 
@@ -2243,7 +1909,6 @@ async function openPhoneContacts(){
       "Contact picker error:",
       error
     );
-
 
     if(
       error?.name ===
@@ -2257,9 +1922,7 @@ async function openPhoneContacts(){
       `;
 
       return;
-
     }
-
 
     membersEl.innerHTML = `
 
@@ -2296,10 +1959,8 @@ function renderContactMatches(
 
   contactMode = true;
 
-
   sectionTitle.textContent =
     "JDA MEMBERS IN YOUR CONTACTS";
-
 
   if(!matches.length){
 
@@ -2321,28 +1982,23 @@ function renderContactMatches(
       <button
         id="chooseAgain"
         class="contact-button"
-        type="button"
-      >
+        type="button">
+
         Choose Contacts Again
+
       </button>
 
     `;
 
-
     document
-      .getElementById(
-        "chooseAgain"
-      )
+      .getElementById("chooseAgain")
       ?.addEventListener(
         "click",
         openPhoneContacts
       );
 
-
     return;
-
   }
-
 
   membersEl.innerHTML =
     matches.map(member => {
@@ -2354,19 +2010,16 @@ function renderContactMatches(
           member.photo
         );
 
-
       return `
 
         <div
           class="member"
-          data-uid="${escapeHTML(member.uid)}"
-        >
+          data-uid="${escapeHTML(member.uid)}">
 
           <img
             src="${escapeHTML(photo)}"
             alt=""
-            onerror="this.onerror=null;this.src='${DEFAULT_PHOTO}'"
-          >
+            onerror="this.onerror=null;this.src='${DEFAULT_PHOTO}'">
 
           <div class="member-info">
 
@@ -2392,7 +2045,6 @@ function renderContactMatches(
 
     }).join("");
 
-
   membersEl
     .querySelectorAll(".member")
     .forEach(element => {
@@ -2407,7 +2059,6 @@ function renderContactMatches(
                 item.uid ===
                 this.dataset.uid
             );
-
 
           if(member){
             openChat(member);
@@ -2437,7 +2088,6 @@ networkBtn.addEventListener(
       "active"
     );
 
-
     await openPhoneContacts();
 
   }
@@ -2445,7 +2095,7 @@ networkBtn.addEventListener(
 
 
 /* =====================================================
-   CHAT NAV BUTTON
+   CHAT NAV
 ===================================================== */
 
 chatNav.addEventListener(
@@ -2460,9 +2110,7 @@ chatNav.addEventListener(
       "active"
     );
 
-
     contactMode = false;
-
 
     renderMembers();
 
@@ -2471,40 +2119,35 @@ chatNav.addEventListener(
 
 
 /* =====================================================
-   FILTER BUTTONS
+   FILTERS
 ===================================================== */
 
-filters.forEach(
-  button => {
+filters.forEach(button => {
 
-    button.addEventListener(
-      "click",
-      () => {
+  button.addEventListener(
+    "click",
+    () => {
 
-        filters.forEach(
-          item =>
-            item.classList.remove(
-              "active"
-            )
-        );
+      filters.forEach(
+        item =>
+          item.classList.remove(
+            "active"
+          )
+      );
 
+      button.classList.add(
+        "active"
+      );
 
-        button.classList.add(
-          "active"
-        );
+      currentFilter =
+        button.dataset.filter;
 
+      renderMembers();
 
-        currentFilter =
-          button.dataset.filter;
+    }
+  );
 
-
-        renderMembers();
-
-      }
-    );
-
-  }
-);
+});
 
 
 /* =====================================================
@@ -2529,7 +2172,6 @@ searchInput.addEventListener(
 
     }
 
-
     renderMembers();
 
   }
@@ -2551,9 +2193,7 @@ profileBtn.addEventListener(
       );
 
       return;
-
     }
-
 
     myPhoto.src =
       photoUrl(
@@ -2561,7 +2201,6 @@ profileBtn.addEventListener(
         currentProfile.photoUrl ||
         currentProfile.photo
       );
-
 
     myPhoto.onerror =
       function(){
@@ -2572,18 +2211,15 @@ profileBtn.addEventListener(
 
       };
 
-
     myName.textContent =
       currentProfile.realName ||
       "JDA Member";
-
 
     const account =
       currentProfile.accountType ===
       "student"
         ? "Student"
         : "Staff";
-
 
     myInfo.innerHTML = `
 
@@ -2618,9 +2254,7 @@ profileBtn.addEventListener(
 
     `;
 
-
     updatePhotoPermissionUI();
-
 
     profileModal.classList.add(
       "open"
@@ -2647,7 +2281,7 @@ closeProfile.addEventListener(
 
 
 /* =====================================================
-   CLICK OUTSIDE PROFILE
+   OUTSIDE PROFILE
 ===================================================== */
 
 profileModal.addEventListener(
@@ -2679,9 +2313,7 @@ logoutBtn.addEventListener(
 
     try{
 
-      await signOut(
-        auth
-      );
+      await signOut(auth);
 
       window.location.href =
         "./index.html";
@@ -2700,7 +2332,7 @@ logoutBtn.addEventListener(
 
 
 /* =====================================================
-   ADMIN BUTTON
+   ADMIN
 ===================================================== */
 
 adminBtn.addEventListener(
@@ -2730,15 +2362,11 @@ newChat.addEventListener(
       "active"
     );
 
-
     contactMode = false;
-
 
     renderMembers();
 
-
     searchInput.focus();
-
 
     searchInput.scrollIntoView({
       behavior:"smooth",
@@ -2779,11 +2407,8 @@ async function openChat(member){
     !member ||
     !member.uid
   ){
-
     return;
-
   }
-
 
   if(
     member.uid ===
@@ -2795,13 +2420,10 @@ async function openChat(member){
     );
 
     return;
-
   }
-
 
   currentChatUser =
     member;
-
 
   chatPhoto.src =
     photoUrl(
@@ -2809,7 +2431,6 @@ async function openChat(member){
       member.photoUrl ||
       member.photo
     );
-
 
   chatPhoto.onerror =
     function(){
@@ -2820,28 +2441,21 @@ async function openChat(member){
 
     };
 
-
   chatName.textContent =
     member.realName;
 
-
   chatStatus.textContent =
-    getMemberDetail(
-      member
-    );
-
+    getMemberDetail(member);
 
   chat.classList.add(
     "open"
   );
-
 
   messagesEl.innerHTML = `
     <div class="loading">
       Loading messages...
     </div>
   `;
-
 
   if(unsubscribeMessages){
 
@@ -2852,13 +2466,11 @@ async function openChat(member){
 
   }
 
-
   const conversationId =
     getConversationId(
       currentUser.uid,
       member.uid
     );
-
 
   try{
 
@@ -2869,12 +2481,10 @@ async function openChat(member){
         conversationId
       );
 
-
     const conversationSnap =
       await getDoc(
         conversationRef
       );
-
 
     if(
       !conversationSnap.exists()
@@ -2897,7 +2507,6 @@ async function openChat(member){
 
     }
 
-
     const messagesQuery =
       query(
         collection(
@@ -2912,16 +2521,13 @@ async function openChat(member){
         )
       );
 
-
     unsubscribeMessages =
       onSnapshot(
         messagesQuery,
 
         snapshot => {
 
-          if(
-            snapshot.empty
-          ){
+          if(snapshot.empty){
 
             messagesEl.innerHTML = `
               <div class="empty">
@@ -2931,13 +2537,9 @@ async function openChat(member){
             `;
 
             return;
-
           }
 
-
-          messagesEl.innerHTML =
-            "";
-
+          messagesEl.innerHTML = "";
 
           snapshot.forEach(
             messageDoc => {
@@ -2945,17 +2547,14 @@ async function openChat(member){
               const message =
                 messageDoc.data();
 
-
               const mine =
                 message.senderId ===
                 currentUser.uid;
-
 
               const bubble =
                 document.createElement(
                   "div"
                 );
-
 
               bubble.className =
                 "message " +
@@ -2965,7 +2564,6 @@ async function openChat(member){
                     : "theirs"
                 );
 
-
               bubble.innerHTML = `
 
                 <div>
@@ -2974,9 +2572,7 @@ async function openChat(member){
                   )}
                 </div>
 
-                <span
-                  class="message-time"
-                >
+                <span class="message-time">
                   ${escapeHTML(
                     formatTime(
                       message.createdAt
@@ -2986,14 +2582,12 @@ async function openChat(member){
 
               `;
 
-
               messagesEl.appendChild(
                 bubble
               );
 
             }
           );
-
 
           messagesEl.scrollTop =
             messagesEl.scrollHeight;
@@ -3006,7 +2600,6 @@ async function openChat(member){
             "Message listener error:",
             error
           );
-
 
           messagesEl.innerHTML = `
 
@@ -3028,12 +2621,10 @@ async function openChat(member){
         }
       );
 
-
     setTimeout(
       () => messageInput.focus(),
       250
     );
-
 
   }catch(error){
 
@@ -3041,7 +2632,6 @@ async function openChat(member){
       "Opening chat failed:",
       error
     );
-
 
     messagesEl.innerHTML = `
 
@@ -3079,10 +2669,8 @@ closeChat.addEventListener(
       "open"
     );
 
-
     currentChatUser =
       null;
-
 
     if(unsubscribeMessages){
 
@@ -3093,9 +2681,7 @@ closeChat.addEventListener(
 
     }
 
-
-    messageInput.value =
-      "";
+    messageInput.value = "";
 
   }
 );
@@ -3111,27 +2697,19 @@ messageForm.addEventListener(
 
     event.preventDefault();
 
-
     if(
       !currentUser ||
       !currentChatUser
     ){
-
       return;
-
     }
-
 
     const text =
       messageInput.value.trim();
 
-
     if(!text){
-
       return;
-
     }
-
 
     const conversationId =
       getConversationId(
@@ -3139,10 +2717,8 @@ messageForm.addEventListener(
         currentChatUser.uid
       );
 
-
     messageInput.disabled =
       true;
-
 
     try{
 
@@ -3153,12 +2729,10 @@ messageForm.addEventListener(
           conversationId
         );
 
-
       const conversationSnap =
         await getDoc(
           conversationRef
         );
-
 
       if(
         !conversationSnap.exists()
@@ -3181,7 +2755,6 @@ messageForm.addEventListener(
 
       }
 
-
       await addDoc(
         collection(
           db,
@@ -3192,20 +2765,23 @@ messageForm.addEventListener(
         {
           senderId:
             currentUser.uid,
+
           receiverId:
             currentChatUser.uid,
+
           text:text,
+
           createdAt:
             serverTimestamp()
         }
       );
-
 
       await setDoc(
         conversationRef,
         {
           updatedAt:
             serverTimestamp(),
+
           lastMessage:
             text
         },
@@ -3214,10 +2790,7 @@ messageForm.addEventListener(
         }
       );
 
-
-      messageInput.value =
-        "";
-
+      messageInput.value = "";
 
     }catch(error){
 
@@ -3225,7 +2798,6 @@ messageForm.addEventListener(
         "Send message error:",
         error
       );
-
 
       alert(
         "Message could not be sent.\n\n" +
@@ -3258,30 +2830,22 @@ onAuthStateChanged(
 
     if(!user){
 
-      currentUser =
-        null;
-
-      currentProfile =
-        null;
-
+      currentUser = null;
+      currentProfile = null;
 
       startup.classList.remove(
         "hidden"
       );
 
-
       startupText.textContent =
         "You are not logged in.";
-
 
       startupButton.classList.remove(
         "hidden"
       );
 
-
       startupButton.textContent =
         "Go to Login";
-
 
       startupButton.onclick =
         () => {
@@ -3291,21 +2855,13 @@ onAuthStateChanged(
 
         };
 
-
       return;
-
     }
-
 
     currentUser =
       user;
 
-
     try{
-
-      /*
-        Get current profile.
-      */
 
       const profileDoc =
         await getDoc(
@@ -3316,7 +2872,6 @@ onAuthStateChanged(
           )
         );
 
-
       if(
         !profileDoc.exists()
       ){
@@ -3325,19 +2880,15 @@ onAuthStateChanged(
           "hidden"
         );
 
-
         startupText.textContent =
           "Your JDA Networks profile could not be found.";
-
 
         startupButton.classList.remove(
           "hidden"
         );
 
-
         startupButton.textContent =
           "Go to Login";
-
 
         startupButton.onclick =
           () => {
@@ -3347,22 +2898,13 @@ onAuthStateChanged(
 
           };
 
-
         return;
-
       }
 
-
-      currentProfile =
-        {
-          id:profileDoc.id,
-          ...profileDoc.data()
-        };
-
-
-      /*
-        Only approved users.
-      */
+      currentProfile = {
+        id:profileDoc.id,
+        ...profileDoc.data()
+      };
 
       if(
         currentProfile.status !==
@@ -3372,7 +2914,6 @@ onAuthStateChanged(
         startup.classList.remove(
           "hidden"
         );
-
 
         if(
           currentProfile.status ===
@@ -3389,15 +2930,12 @@ onAuthStateChanged(
 
         }
 
-
         startupButton.classList.remove(
           "hidden"
         );
 
-
         startupButton.textContent =
           "Back to Login";
-
 
         startupButton.onclick =
           () => {
@@ -3407,34 +2945,16 @@ onAuthStateChanged(
 
           };
 
-
         return;
-
       }
-
-
-      /*
-        Approved.
-      */
 
       startup.classList.add(
         "hidden"
       );
 
-
-      /*
-        Check admin.
-      */
-
       await checkAdmin();
 
-
-      /*
-        Load members.
-      */
-
       await loadMembers();
-
 
     }catch(error){
 
@@ -3443,24 +2963,19 @@ onAuthStateChanged(
         error
       );
 
-
       startup.classList.remove(
         "hidden"
       );
 
-
       startupText.textContent =
         "JDA Networks could not start.";
-
 
       startupButton.classList.remove(
         "hidden"
       );
 
-
       startupButton.textContent =
         "Refresh";
-
 
       startupButton.onclick =
         () => {
@@ -3491,7 +3006,6 @@ window.addEventListener(
 
   }
 );
-
 
 window.addEventListener(
   "unhandledrejection",

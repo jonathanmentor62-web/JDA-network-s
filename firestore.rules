@@ -4,22 +4,17 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
 
-    /* =========================
-       BASIC FUNCTIONS
-    ========================= */
-
     function signedIn() {
       return request.auth != null;
     }
 
-    function isSuperAdmin() {
+    function superAdmin() {
       return signedIn()
-        && request.auth.token.email
-        == "jonathanmentor62@gmail.com";
+        && request.auth.token.email == "jonathanmentor62@gmail.com";
     }
 
-    function isAdmin() {
-      return isSuperAdmin()
+    function admin() {
+      return superAdmin()
         || (
           signedIn()
           && exists(
@@ -28,11 +23,15 @@ service cloud.firestore {
         );
     }
 
-    function isApproved() {
+    function myUser() {
       return signedIn()
         && exists(
           /databases/$(database)/documents/users/$(request.auth.uid)
-        )
+        );
+    }
+
+    function approved() {
+      return myUser()
         && get(
           /databases/$(database)/documents/users/$(request.auth.uid)
         ).data.status == "approved";
@@ -41,152 +40,140 @@ service cloud.firestore {
 
     /* =========================
        USERS
-       ========================= */
+    ========================= */
 
     match /users/{uid} {
 
       /*
-       * A person may create ONLY their
-       * own registration.
-       *
-       * They MUST start as pending.
-       */
+       New registration.
+       A user may ONLY create their own pending account.
+      */
+
       allow create:
         if signedIn()
         && request.auth.uid == uid
         && request.resource.data.uid == uid
         && request.resource.data.status == "pending"
-        && request.resource.data.approved == false;
+        && request.resource.data.approved == false
+        && request.resource.data.realName is string
+        && request.resource.data.realName.size() >= 3
+        && request.resource.data.jdaNumber is string
+        && request.resource.data.accountType
+           in ["student", "staff"];
 
 
       /*
-       * Approved members can see member
-       * profiles.
-       *
-       * Admins can see everything.
-       */
+       Admins can review all users.
+       Approved members can see the directory.
+      */
+
       allow read:
-        if isAdmin()
-        || isApproved();
+        if admin() || approved();
 
 
       /*
-       * NORMAL MEMBERS CANNOT change
-       * their identity/status.
-       *
-       * Admin controls approval.
-       */
+       Admin controls approval/disable/rejection.
+       Normal users cannot change identity or status.
+      */
+
       allow update:
-        if isAdmin()
-        || (
-          isApproved()
-          && request.auth.uid == uid
+        if admin();
 
-          /*
-           * Identity fields cannot be changed
-           * by the member.
-           */
-          && request.resource.data.realName
-             == resource.data.realName
 
-          && request.resource.data.jdaNumber
-             == resource.data.jdaNumber
-
-          && request.resource.data.accountType
-             == resource.data.accountType
-
-          && request.resource.data.status
-             == resource.data.status
-
-          && request.resource.data.approved
-             == resource.data.approved
-        );
+      allow delete:
+        if superAdmin();
 
 
       /*
-       * Only admins can delete users.
-       */
-      allow delete:
-        if isAdmin();
+       No other access.
+      */
     }
 
 
     /* =========================
        ADMINS
-       ========================= */
+    ========================= */
 
     match /admins/{uid} {
 
-      allow read:
-        if signedIn();
-
       /*
-       * Only the super admin can create
-       * another admin record.
-       */
-      allow create:
-        if isSuperAdmin();
+       An admin can read their own admin record.
+       The super admin can manage admin records.
+      */
 
-      allow update, delete:
-        if isSuperAdmin();
+      allow read:
+        if signedIn()
+        && (request.auth.uid == uid || admin());
+
+      allow create, update, delete:
+        if superAdmin();
     }
 
 
     /* =========================
        CONVERSATIONS
-       ========================= */
+    ========================= */
 
     match /conversations/{conversationId} {
 
       /*
-       * The conversation ID is built from
-       * two user UIDs sorted alphabetically.
-       *
-       * This check makes sure the current
-       * user is actually one of them.
-       */
-      allow read, create, update:
-        if isApproved()
-        && (
-          conversationId.matches(
-            ".*" + request.auth.uid + ".*"
-          )
-        );
+       Only approved members can access conversations.
+       The conversation document must contain:
+       participantIds: [uid1, uid2]
+      */
+
+      allow read:
+        if approved()
+        && request.auth.uid
+           in resource.data.participantIds;
+
+
+      allow create:
+        if approved()
+        && request.resource.data.participantIds is list
+        && request.resource.data.participantIds.size() == 2
+        && request.auth.uid
+           in request.resource.data.participantIds;
+
+
+      allow update:
+        if approved()
+        && request.auth.uid
+           in resource.data.participantIds
+        && request.resource.data.participantIds
+           == resource.data.participantIds;
 
 
       allow delete:
-        if isAdmin();
+        if admin();
 
 
       /* =========================
          MESSAGES
-         ========================= */
+      ========================= */
 
       match /messages/{messageId} {
 
-        /*
-         * Approved users can read messages
-         * in their own conversation.
-         */
         allow read:
-          if isApproved()
-          && (
-            resource.data.senderId
-            == request.auth.uid
-            ||
-            resource.data.receiverId
-            == request.auth.uid
-          );
+          if approved()
+          && request.auth.uid
+             in get(
+               /databases/$(database)/documents/conversations/$(conversationId)
+             ).data.participantIds;
 
 
-        /*
-         * New message:
-         * sender MUST be the logged-in user.
-         */
         allow create:
-          if isApproved()
+          if approved()
+          && request.auth.uid
+             in get(
+               /databases/$(database)/documents/conversations/$(conversationId)
+             ).data.participantIds
           && request.resource.data.senderId
              == request.auth.uid
+          && request.resource.data.receiverId
+             in get(
+               /databases/$(database)/documents/conversations/$(conversationId)
+             ).data.participantIds
           && request.resource.data.receiverId
              != request.auth.uid
           && request.resource.data.text is string
@@ -195,58 +182,89 @@ service cloud.firestore {
 
 
         /*
-         * Messages cannot be edited by normal
-         * users.
+         Messages cannot be secretly edited.
          */
+
         allow update:
           if false;
 
 
         /*
-         * Only admins can delete messages.
+         Only an admin can delete messages.
          */
+
         allow delete:
-          if isAdmin();
+          if admin();
       }
     }
 
 
     /* =========================
        CONNECTIONS
-       ========================= */
+    ========================= */
 
     match /connections/{connectionId} {
 
-      allow read, create, delete:
-        if isApproved();
+      /*
+       Connection documents must contain:
+       requesterId
+       receiverId
+      */
+
+      allow read:
+        if approved()
+        && (
+          resource.data.requesterId == request.auth.uid
+          || resource.data.receiverId == request.auth.uid
+        );
+
+
+      allow create:
+        if approved()
+        && request.resource.data.requesterId
+           == request.auth.uid
+        && request.resource.data.receiverId
+           != request.auth.uid;
+
+
+      allow delete:
+        if approved()
+        && (
+          resource.data.requesterId == request.auth.uid
+          || resource.data.receiverId == request.auth.uid
+        );
     }
 
 
     /* =========================
        NOTIFICATIONS
-       ========================= */
+    ========================= */
 
     match /notifications/{notificationId} {
 
       allow read:
-        if isApproved()
+        if signedIn()
         && resource.data.userId
            == request.auth.uid;
+
 
       /*
-       * Notifications should be generated
-       * by trusted server/admin processes.
-       */
+       Only the server/admin should create
+       registration approval notifications.
+      */
+
       allow create:
-        if isAdmin();
+        if admin();
+
 
       allow update:
-        if isApproved()
+        if signedIn()
         && resource.data.userId
            == request.auth.uid;
 
+
       allow delete:
-        if isAdmin();
+        if admin();
     }
 
   }

@@ -1,1579 +1,1688 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
-
-  <meta name="theme-color" content="#111b21">
-
-  <title>JDA Networks</title>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      background: #0b141a;
-      color: #e9edef;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    body {
-      overflow-x: hidden;
-    }
-
-    button,
-    input,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    #app {
-      width: 100%;
-      max-width: 700px;
-      min-height: 100vh;
-      margin: 0 auto;
-      background: #0b141a;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* ================= HEADER ================= */
-
-    .top-header {
-      background: #111b21;
-      padding: 10px 16px 10px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-
-    .header-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    /* ADMIN PANEL - TOP LEFT */
-
-    .admin-panel-button {
-      width: 42px;
-      height: 42px;
-      border: 0;
-      border-radius: 50%;
-      background: transparent;
-      color: #e9edef;
-      font-size: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .admin-panel-button:active {
-      background: #26343b;
-    }
-
-    .brand {
-      flex: 1;
-      font-size: 22px;
-      font-weight: 700;
-      color: #e9edef;
-      letter-spacing: -0.4px;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .icon-button {
-      width: 42px;
-      height: 42px;
-      border: 0;
-      border-radius: 50%;
-      background: transparent;
-      color: #e9edef;
-      font-size: 23px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .icon-button:active {
-      background: #26343b;
-    }
-
-    /* ================= SEARCH ================= */
-
-    .search-box {
-      margin-top: 10px;
-      background: #202c33;
-      border-radius: 12px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      padding: 0 13px;
-      gap: 10px;
-    }
-
-    .search-icon {
-      color: #8696a0;
-      font-size: 18px;
-    }
-
-    #chatSearch {
-      flex: 1;
-      min-width: 0;
-      border: 0;
-      outline: 0;
-      background: transparent;
-      color: #e9edef;
-      font-size: 15px;
-    }
-
-    #chatSearch::placeholder {
-      color: #8696a0;
-    }
-
-    /* ================= FILTERS ================= */
-
-    .filters {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 11px 0 2px;
-      scrollbar-width: none;
-    }
-
-    .filters::-webkit-scrollbar {
-      display: none;
-    }
-
-    .filter-button {
-      border: 0;
-      border-radius: 18px;
-      background: #202c33;
-      color: #8696a0;
-      padding: 8px 15px;
-      white-space: nowrap;
-      font-size: 13px;
-    }
-
-    .filter-button.active {
-      background: #0b5c4c;
-      color: #d9fff5;
-    }
-
-    /* ================= MAIN ================= */
-
-    .content {
-      min-height: calc(100vh - 154px);
-      padding-bottom: 85px;
-    }
-
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
-    }
-
-    /* ================= CHAT LIST ================= */
-
-    #chatList {
-      width: 100%;
-    }
-
-    .empty {
-      min-height: 50vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      color: #8696a0;
-      padding: 30px;
-    }
-
-    .empty-icon {
-      font-size: 50px;
-      margin-bottom: 15px;
-      opacity: .8;
-    }
-
-    .empty-title {
-      color: #e9edef;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 7px;
-    }
-
-    /* ================= PAGES ================= */
-
-    .page-container {
-      padding: 24px 18px;
-    }
-
-    .page-title {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .page-subtitle {
-      color: #8696a0;
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .feature-card {
-      background: #202c33;
-      border-radius: 15px;
-      padding: 18px;
-      margin-top: 18px;
-    }
-
-    .feature-card-title {
-      font-weight: 600;
-      margin-bottom: 7px;
-    }
-
-    .feature-card-text {
-      color: #8696a0;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    /* ================= STUDENTS ================= */
-
-    .class-list {
-      padding: 8px 18px 25px;
-    }
-
-    .class-button {
-      width: 100%;
-      border: 0;
-      background: #202c33;
-      color: #e9edef;
-      border-radius: 14px;
-      padding: 17px;
-      margin-bottom: 10px;
-      text-align: left;
-      font-size: 16px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .class-button:active {
-      background: #26343b;
-    }
-
-    .class-arrow {
-      color: #8696a0;
-      font-size: 18px;
-    }
-
-    .class-members {
-      display: none;
-      margin-top: -5px;
-      margin-bottom: 10px;
-      background: #111b21;
-      border-radius: 0 0 14px 14px;
-      padding: 10px;
-    }
-
-    .class-members.open {
-      display: block;
-    }
-
-    .class-members-empty {
-      color: #8696a0;
-      text-align: center;
-      padding: 15px;
-      font-size: 13px;
-    }
-
-    /* ================= STAFF ================= */
-
-    .staff-list {
-      padding: 8px 18px 25px;
-    }
-
-    .staff-card {
-      background: #202c33;
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 10px;
-    }
-
-    .staff-title {
-      font-size: 16px;
-      font-weight: 600;
-    }
-
-    .staff-description {
-      color: #8696a0;
-      font-size: 13px;
-      margin-top: 5px;
-    }
-
-    /* ================= PROFILE ================= */
-
-    .profile-header {
-      background: #111b21;
-      padding: 28px 18px;
-      text-align: center;
-    }
-
-    #profilePhoto {
-      width: 105px;
-      height: 105px;
-      margin: 0 auto 15px;
-      border-radius: 50%;
-      background: #26343b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #e9edef;
-      font-size: 35px;
-      font-weight: 700;
-      overflow: hidden;
-    }
-
-    #profileName {
-      font-size: 21px;
-      font-weight: 700;
-    }
-
-    .profile-number {
-      color: #8696a0;
-      margin-top: 6px;
-      font-size: 14px;
-    }
-
-    .profile-details {
-      padding: 10px 18px;
-    }
-
-    .profile-item {
-      padding: 17px 2px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-
-    .profile-label {
-      color: #8696a0;
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .profile-value {
-      color: #e9edef;
-      font-size: 15px;
-      word-break: break-word;
-    }
-
-    /* ================= SETTINGS ================= */
-
-    .settings-list {
-      padding: 8px 0;
-    }
-
-    .settings-row {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      padding: 17px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.05);
-    }
-
-    .settings-row-icon {
-      width: 35px;
-      text-align: center;
-      font-size: 21px;
-    }
-
-    .settings-row-content {
-      flex: 1;
-    }
-
-    .settings-row-title {
-      font-size: 15px;
-      color: #e9edef;
-    }
-
-    .settings-row-description {
-      color: #8696a0;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .logout-button {
-      margin: 25px 18px;
-      width: calc(100% - 36px);
-      border: 0;
-      border-radius: 12px;
-      padding: 14px;
-      background: #8b1e2d;
-      color: white;
-      font-weight: 600;
-    }
-
-    /* ================= FAB ================= */
-
-    #fab {
-      position: fixed;
-      right: max(20px, calc((100vw - 700px) / 2 + 20px));
-      bottom: 80px;
-      width: 56px;
-      height: 56px;
-      border: 0;
-      border-radius: 50%;
-      background: #25d366;
-      color: #062b1d;
-      font-size: 28px;
-      font-weight: 400;
-      box-shadow: 0 5px 18px rgba(0,0,0,.35);
-      z-index: 40;
-    }
-
-    #fab:active {
-      transform: scale(.94);
-    }
-
-    /* ================= BOTTOM NAV ================= */
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 700px;
-      height: 68px;
-      background: #111b21;
-      border-top: 1px solid rgba(255,255,255,.06);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      z-index: 45;
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    .nav-button {
-      border: 0;
-      background: transparent;
-      color: #8696a0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      font-size: 11px;
-    }
-
-    .nav-icon {
-      font-size: 22px;
-      line-height: 1;
-    }
-
-    .nav-button.active {
-      color: #25d366;
-    }
-
-    /* ================= LOADING ================= */
-
-    #loadingScreen {
-      position: fixed;
-      inset: 0;
-      background: #0b141a;
-      z-index: 99999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    .loading-box {
-      padding: 30px;
-    }
-
-    .loading-logo {
-      width: 75px;
-      height: 75px;
-      border-radius: 50%;
-      background: #202c33;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 18px;
-      font-size: 30px;
-      font-weight: 700;
-      color: #25d366;
-    }
-
-    .loading-title {
-      font-size: 22px;
-      font-weight: 700;
-    }
-
-    .loading-text {
-      margin-top: 8px;
-      color: #8696a0;
-      font-size: 13px;
-    }
-
-    @media (max-width: 480px) {
-
-      .top-header {
-        padding-left: 10px;
-        padding-right: 10px;
-      }
-
-      .brand {
-        font-size: 20px;
-      }
-
-      #fab {
-        right: 18px;
-      }
-
-    }
-
-  </style>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="theme-color" content="#111b21">
+
+<title>JDA Networks</title>
+
+<style>
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  background:#0b141a;
+  color:#e9edef;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+button,input,textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+#app{
+  width:100%;
+  max-width:700px;
+  min-height:100vh;
+  margin:0 auto;
+  background:#0b141a;
+  position:relative;
+  overflow:hidden;
+}
+
+
+/* ================= HEADER ================= */
+
+.top-header{
+  background:#111b21;
+  padding:10px 14px 10px;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+.header-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.brand{
+  flex:1;
+  font-size:21px;
+  font-weight:700;
+  color:#e9edef;
+  letter-spacing:-.4px;
+}
+
+
+/* ================= ADMIN BUTTON ================= */
+
+.admin-panel-button{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:#e9edef;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+
+.admin-panel-button:active{
+  background:#26343b;
+}
+
+.admin-icon{
+  width:22px;
+  height:22px;
+  display:block;
+}
+
+
+/* ================= HEADER ACTIONS ================= */
+
+.header-actions{
+  display:flex;
+  align-items:center;
+  gap:3px;
+}
+
+.icon-button{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:transparent;
+  color:#e9edef;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.icon-button:active{
+  background:#26343b;
+}
+
+
+/* WhatsApp-style three dots */
+
+.whatsapp-menu-icon{
+  width:5px;
+  height:22px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.whatsapp-menu-icon span{
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:#e9edef;
+}
+
+
+/* ================= SEARCH ================= */
+
+.search-box{
+  margin-top:10px;
+  background:#202c33;
+  border-radius:12px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  padding:0 13px;
+  gap:10px;
+}
+
+.search-icon{
+  color:#8696a0;
+  font-size:18px;
+}
+
+#chatSearch{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#e9edef;
+  font-size:15px;
+}
+
+#chatSearch::placeholder{
+  color:#8696a0;
+}
+
+
+/* ================= UPPER TABS ================= */
+
+.filters{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:11px 0 2px;
+  scrollbar-width:none;
+}
+
+.filters::-webkit-scrollbar{
+  display:none;
+}
+
+.filter-button{
+  border:0;
+  border-radius:18px;
+  background:#202c33;
+  color:#8696a0;
+  padding:8px 15px;
+  white-space:nowrap;
+  font-size:13px;
+}
+
+.filter-button.active{
+  background:#0b5c4c;
+  color:#d9fff5;
+}
+
+
+/* ================= MAIN ================= */
+
+.content{
+  min-height:calc(100vh - 154px);
+  padding-bottom:85px;
+}
+
+.screen{
+  display:none;
+}
+
+.screen.active{
+  display:block;
+}
+
+
+/* ================= CHAT ================= */
+
+#chatList{
+  width:100%;
+}
+
+.empty{
+  min-height:50vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:#8696a0;
+  padding:30px;
+}
+
+.empty-icon{
+  font-size:50px;
+  margin-bottom:15px;
+}
+
+.empty-title{
+  color:#e9edef;
+  font-size:18px;
+  font-weight:600;
+  margin-bottom:7px;
+}
+
+
+/* ================= PAGES ================= */
+
+.page-container{
+  padding:24px 18px;
+}
+
+.page-title{
+  font-size:24px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.page-subtitle{
+  color:#8696a0;
+  line-height:1.5;
+  font-size:14px;
+}
+
+.feature-card{
+  background:#202c33;
+  border-radius:15px;
+  padding:18px;
+  margin-top:18px;
+}
+
+.feature-card-title{
+  font-weight:600;
+  margin-bottom:7px;
+}
+
+.feature-card-text{
+  color:#8696a0;
+  font-size:14px;
+  line-height:1.5;
+}
+
+
+/* ================= STUDENTS ================= */
+
+.class-list{
+  padding:8px 18px 25px;
+}
+
+.class-button{
+  width:100%;
+  border:0;
+  background:#202c33;
+  color:#e9edef;
+  border-radius:14px;
+  padding:17px;
+  margin-bottom:10px;
+  text-align:left;
+  font-size:16px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.class-button:active{
+  background:#26343b;
+}
+
+.class-arrow{
+  color:#8696a0;
+  font-size:20px;
+}
+
+.class-members{
+  display:none;
+  margin-top:-8px;
+  margin-bottom:10px;
+  background:#111b21;
+  border-radius:0 0 14px 14px;
+  padding:10px;
+}
+
+.class-members.open{
+  display:block;
+}
+
+.class-members-empty{
+  color:#8696a0;
+  text-align:center;
+  padding:15px;
+  font-size:13px;
+}
+
+
+/* ================= STAFF ================= */
+
+.staff-list{
+  padding:8px 18px 25px;
+}
+
+.staff-card{
+  background:#202c33;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:10px;
+}
+
+.staff-title{
+  font-size:16px;
+  font-weight:600;
+}
+
+.staff-description{
+  color:#8696a0;
+  font-size:13px;
+  margin-top:5px;
+}
+
+
+/* ================= PROFILE ================= */
+
+.profile-header{
+  background:#111b21;
+  padding:28px 18px;
+  text-align:center;
+}
+
+#profilePhoto{
+  width:105px;
+  height:105px;
+  margin:0 auto 15px;
+  border-radius:50%;
+  background:#26343b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#e9edef;
+  font-size:35px;
+  font-weight:700;
+  overflow:hidden;
+}
+
+#profileName{
+  font-size:21px;
+  font-weight:700;
+}
+
+.profile-number{
+  color:#8696a0;
+  margin-top:6px;
+  font-size:14px;
+}
+
+.profile-details{
+  padding:10px 18px;
+}
+
+.profile-item{
+  padding:17px 2px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.profile-label{
+  color:#8696a0;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.profile-value{
+  color:#e9edef;
+  font-size:15px;
+  word-break:break-word;
+}
+
+
+/* ================= SETTINGS ================= */
+
+.settings-list{
+  padding:8px 0;
+}
+
+.settings-row{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  padding:17px 18px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.settings-row-icon{
+  width:35px;
+  text-align:center;
+  font-size:21px;
+}
+
+.settings-row-content{
+  flex:1;
+}
+
+.settings-row-title{
+  font-size:15px;
+  color:#e9edef;
+}
+
+.settings-row-description{
+  color:#8696a0;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.logout-button{
+  margin:25px 18px;
+  width:calc(100% - 36px);
+  border:0;
+  border-radius:12px;
+  padding:14px;
+  background:#8b1e2d;
+  color:white;
+  font-weight:600;
+}
+
+
+/* ================= FAB ================= */
+
+#fab{
+  position:fixed;
+  right:max(20px,calc((100vw - 700px)/2 + 20px));
+  bottom:80px;
+  width:56px;
+  height:56px;
+  border:0;
+  border-radius:50%;
+  background:#25d366;
+  color:#062b1d;
+  font-size:28px;
+  box-shadow:0 5px 18px rgba(0,0,0,.35);
+  z-index:40;
+}
+
+
+/* ================= BOTTOM NAV ================= */
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:700px;
+  height:68px;
+  background:#111b21;
+  border-top:1px solid rgba(255,255,255,.06);
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  z-index:45;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+.nav-button{
+  border:0;
+  background:transparent;
+  color:#8696a0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  font-size:11px;
+}
+
+.nav-icon{
+  font-size:22px;
+}
+
+.nav-button.active{
+  color:#25d366;
+}
+
+
+/* ================= LOADING ================= */
+
+#loadingScreen{
+  position:fixed;
+  inset:0;
+  background:#0b141a;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.loading-box{
+  padding:30px;
+}
+
+.loading-logo{
+  width:75px;
+  height:75px;
+  border-radius:50%;
+  background:#202c33;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 18px;
+  font-size:30px;
+  font-weight:700;
+  color:#25d366;
+}
+
+.loading-title{
+  font-size:22px;
+  font-weight:700;
+}
+
+.loading-text{
+  margin-top:8px;
+  color:#8696a0;
+  font-size:13px;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media(max-width:480px){
+
+  .top-header{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .brand{
+    font-size:20px;
+  }
+
+  #fab{
+    right:18px;
+  }
+
+}
+
+</style>
 </head>
+
 
 <body>
 
-  <!-- LOADING -->
 
-  <div id="loadingScreen">
+<!-- ================= LOADING ================= -->
 
-    <div class="loading-box">
+<div id="loadingScreen">
 
-      <div class="loading-logo">
-        J
-      </div>
+  <div class="loading-box">
 
-      <div class="loading-title">
-        JDA Networks
-      </div>
+    <div class="loading-logo">J</div>
 
-      <div class="loading-text">
-        Loading your network...
-      </div>
+    <div class="loading-title">
+      JDA Networks
+    </div>
+
+    <div class="loading-text">
+      Loading your network...
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= APP ================= -->
+
+<main id="app">
+
+
+<!-- ================= HEADER ================= -->
+
+<header class="top-header">
+
+  <div class="header-row">
+
+
+    <!-- ADMIN PANEL -->
+
+    <button
+      class="admin-panel-button"
+      id="adminPanelBtn"
+      aria-label="Admin Panel"
+      title="Admin Panel"
+    >
+
+      <svg
+        class="admin-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+
+        <path
+          d="M4 5H20"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+
+        <path
+          d="M4 12H20"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+
+        <path
+          d="M4 19H20"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+
+      </svg>
+
+    </button>
+
+
+    <div class="brand">
+      JDA Networks
+    </div>
+
+
+    <div class="header-actions">
+
+      <button
+        class="icon-button"
+        id="newChatBtn"
+        aria-label="New chat"
+      >
+        ✎
+      </button>
+
+
+      <!-- WHATSAPP STYLE THREE DOTS -->
+
+      <button
+        class="icon-button"
+        id="menuBtn"
+        aria-label="Menu"
+      >
+
+        <span class="whatsapp-menu-icon">
+
+          <span></span>
+          <span></span>
+          <span></span>
+
+        </span>
+
+      </button>
 
     </div>
 
   </div>
 
 
-  <!-- APP -->
+  <!-- SEARCH -->
 
-  <main id="app">
+  <div class="search-box">
 
-    <!-- HEADER -->
+    <span class="search-icon">
+      🔍
+    </span>
 
-    <header class="top-header">
+    <input
+      id="chatSearch"
+      type="search"
+      placeholder="Search"
+      autocomplete="off"
+    >
 
-      <div class="header-row">
+  </div>
 
-        <!-- ADMIN PANEL: TOP LEFT -->
 
-        <button
-          class="admin-panel-button"
-          id="adminPanelBtn"
-          aria-label="Admin Panel"
-          title="Admin Panel"
-        >
-          ☰
-        </button>
+  <!-- UPPER TABS -->
 
-
-        <div class="brand">
-          JDA Networks
-        </div>
-
-
-        <div class="header-actions">
-
-          <button
-            class="icon-button"
-            id="newChatBtn"
-            aria-label="New chat"
-          >
-            ✎
-          </button>
-
-          <button
-            class="icon-button"
-            id="menuBtn"
-            aria-label="Menu"
-          >
-            ⋮
-          </button>
-
-        </div>
-
-      </div>
-
-
-      <!-- SEARCH -->
-
-      <div class="search-box">
-
-        <span class="search-icon">
-          🔍
-        </span>
-
-        <input
-          id="chatSearch"
-          type="search"
-          placeholder="Search"
-          autocomplete="off"
-        >
-
-      </div>
-
-
-      <!-- UPPER FILTER TABS -->
-
-      <div class="filters">
-
-        <button
-          class="filter-button active"
-          data-filter="all"
-        >
-          All
-        </button>
-
-        <button
-          class="filter-button"
-          data-filter="unread"
-        >
-          Unread
-        </button>
-
-        <button
-          class="filter-button"
-          data-filter="students"
-        >
-          Students
-        </button>
-
-        <button
-          class="filter-button"
-          data-filter="staff"
-        >
-          Staff
-        </button>
-
-      </div>
-
-    </header>
-
-
-    <!-- CONTENT -->
-
-    <section class="content">
-
-
-      <!-- CHATS -->
-
-      <section
-        class="screen active"
-        data-screen="chats"
-      >
-
-        <div id="chatList">
-
-          <div class="empty">
-
-            <div class="empty-icon">
-              💬
-            </div>
-
-            <div class="empty-title">
-              Loading chats...
-            </div>
-
-            <div>
-              Please wait.
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- UPDATES -->
-
-      <section
-        class="screen"
-        data-screen="updates"
-      >
-
-        <div class="page-container">
-
-          <div class="page-title">
-            Updates
-          </div>
-
-          <div class="page-subtitle">
-            Stay connected with your JDA Networks community.
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- STUDENTS -->
-
-      <section
-        class="screen"
-        data-screen="students"
-      >
-
-        <div class="page-container">
-
-          <div class="page-title">
-            Students
-          </div>
-
-          <div class="page-subtitle">
-            Select a class to view students.
-          </div>
-
-        </div>
-
-
-        <div class="class-list">
-
-          <button
-            class="class-button"
-            data-class="Form 1"
-          >
-            <span>Form 1</span>
-            <span class="class-arrow">›</span>
-          </button>
-
-          <div
-            class="class-members"
-            id="form1Members"
-          >
-            <div class="class-members-empty">
-              Students in Form 1 will appear here.
-            </div>
-          </div>
-
-
-          <button
-            class="class-button"
-            data-class="Form 2"
-          >
-            <span>Form 2</span>
-            <span class="class-arrow">›</span>
-          </button>
-
-          <div
-            class="class-members"
-            id="form2Members"
-          >
-            <div class="class-members-empty">
-              Students in Form 2 will appear here.
-            </div>
-          </div>
-
-
-          <button
-            class="class-button"
-            data-class="Form 3"
-          >
-            <span>Form 3</span>
-            <span class="class-arrow">›</span>
-          </button>
-
-          <div
-            class="class-members"
-            id="form3Members"
-          >
-            <div class="class-members-empty">
-              Students in Form 3 will appear here.
-            </div>
-          </div>
-
-
-          <button
-            class="class-button"
-            data-class="Form 4"
-          >
-            <span>Form 4</span>
-            <span class="class-arrow">›</span>
-          </button>
-
-          <div
-            class="class-members"
-            id="form4Members"
-          >
-            <div class="class-members-empty">
-              Students in Form 4 will appear here.
-            </div>
-          </div>
-
-
-          <button
-            class="class-button"
-            data-class="Form 5"
-          >
-            <span>Form 5</span>
-            <span class="class-arrow">›</span>
-          </button>
-
-          <div
-            class="class-members"
-            id="form5Members"
-          >
-            <div class="class-members-empty">
-              Students in Form 5 will appear here.
-            </div>
-          </div>
-
-
-          <button
-            class="class-button"
-            data-class="Form 6"
-          >
-            <span>Form 6</span>
-            <span class="class-arrow">›</span>
-          </button>
-
-          <div
-            class="class-members"
-            id="form6Members"
-          >
-            <div class="class-members-empty">
-              Students in Form 6 will appear here.
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- STAFF -->
-
-      <section
-        class="screen"
-        data-screen="staff"
-      >
-
-        <div class="page-container">
-
-          <div class="page-title">
-            Staff
-          </div>
-
-          <div class="page-subtitle">
-            JDA Networks staff contacts.
-          </div>
-
-        </div>
-
-
-        <div class="staff-list">
-
-          <div class="staff-card">
-
-            <div class="staff-title">
-              Staff members
-            </div>
-
-            <div class="staff-description">
-              Approved staff members will appear here according to their departments.
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- CALLS -->
-
-      <section
-        class="screen"
-        data-screen="calls"
-      >
-
-        <div class="page-container">
-
-          <div class="page-title">
-            Calls
-          </div>
-
-          <div class="page-subtitle">
-            Your JDA Networks calls will appear here.
-          </div>
-
-
-          <div class="feature-card">
-
-            <div class="feature-card-title">
-              No calls yet
-            </div>
-
-            <div class="feature-card-text">
-              Voice and video calling will be connected here.
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- PROFILE -->
-
-      <section
-        class="screen"
-        data-screen="profile"
-      >
-
-        <div class="profile-header">
-
-          <div id="profilePhoto">
-            J
-          </div>
-
-          <div id="profileName">
-            JDA Member
-          </div>
-
-          <div class="profile-number">
-
-            <span id="profileJdaNumber">
-              —
-            </span>
-
-          </div>
-
-        </div>
-
-
-        <div class="profile-details">
-
-
-          <div class="profile-item">
-
-            <div class="profile-label">
-              Account type
-            </div>
-
-            <div
-              class="profile-value"
-              id="profileAccountType"
-            >
-              —
-            </div>
-
-          </div>
-
-
-          <div class="profile-item">
-
-            <div class="profile-label">
-              Class / Department
-            </div>
-
-            <div
-              class="profile-value"
-              id="profileClass"
-            >
-              —
-            </div>
-
-          </div>
-
-
-          <div class="profile-item">
-
-            <div class="profile-label">
-              Email
-            </div>
-
-            <div
-              class="profile-value"
-              id="profileEmail"
-            >
-              —
-            </div>
-
-          </div>
-
-
-        </div>
-
-      </section>
-
-
-      <!-- SETTINGS -->
-
-      <section
-        class="screen"
-        data-screen="settings"
-      >
-
-        <div class="page-container">
-
-          <div class="page-title">
-            Settings
-          </div>
-
-          <div class="page-subtitle">
-            Manage your JDA Networks account.
-          </div>
-
-        </div>
-
-
-        <div class="settings-list">
-
-
-          <div class="settings-row">
-
-            <div class="settings-row-icon">
-              🔔
-            </div>
-
-            <div class="settings-row-content">
-
-              <div class="settings-row-title">
-                Notifications
-              </div>
-
-              <div class="settings-row-description">
-                Manage message notifications.
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="settings-row">
-
-            <div class="settings-row-icon">
-              🔒
-            </div>
-
-            <div class="settings-row-content">
-
-              <div class="settings-row-title">
-                Privacy
-              </div>
-
-              <div class="settings-row-description">
-                Your JDA Networks account information.
-              </div>
-
-            </div>
-
-          </div>
-
-
-          <div class="settings-row">
-
-            <div class="settings-row-icon">
-              ℹ️
-            </div>
-
-            <div class="settings-row-content">
-
-              <div class="settings-row-title">
-                About JDA Networks
-              </div>
-
-              <div class="settings-row-description">
-                JDA Networks messaging platform.
-              </div>
-
-            </div>
-
-          </div>
-
-
-        </div>
-
-
-        <button
-          class="logout-button"
-          id="logoutBtn"
-        >
-          Log out
-        </button>
-
-      </section>
-
-    </section>
-
-
-    <!-- NEW CHAT BUTTON -->
+  <div class="filters">
 
     <button
-      id="fab"
-      aria-label="New chat"
+      class="filter-button active"
+      data-filter="all"
     >
-      ✎
+      All
     </button>
 
+    <button
+      class="filter-button"
+      data-filter="unread"
+    >
+      Unread
+    </button>
 
-    <!-- BOTTOM NAVIGATION -->
+    <button
+      class="filter-button"
+      data-filter="students"
+    >
+      Students
+    </button>
 
-    <nav class="bottom-nav">
+    <button
+      class="filter-button"
+      data-filter="staff"
+    >
+      Staff
+    </button>
+
+  </div>
+
+</header>
 
 
-      <button
-        class="nav-button active"
-        data-page="chats"
+<!-- ================= CONTENT ================= -->
+
+<section class="content">
+
+
+<!-- ================= CHATS ================= -->
+
+<section
+  class="screen active"
+  data-screen="chats"
+>
+
+  <div id="chatList">
+
+    <div class="empty">
+
+      <div class="empty-icon">
+        💬
+      </div>
+
+      <div class="empty-title">
+        Loading chats...
+      </div>
+
+      <div>
+        Please wait.
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= UPDATES ================= -->
+
+<section
+  class="screen"
+  data-screen="updates"
+>
+
+  <div class="page-container">
+
+    <div class="page-title">
+      Updates
+    </div>
+
+    <div class="page-subtitle">
+      Stay connected with your JDA Networks community.
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= STUDENTS ================= -->
+
+<section
+  class="screen"
+  data-screen="students"
+>
+
+  <div class="page-container">
+
+    <div class="page-title">
+      Students
+    </div>
+
+    <div class="page-subtitle">
+      Select a class to view students.
+    </div>
+
+  </div>
+
+
+  <div class="class-list">
+
+
+    <button
+      class="class-button"
+      data-class="Form 1"
+    >
+      <span>Form 1</span>
+      <span class="class-arrow">›</span>
+    </button>
+
+    <div
+      class="class-members"
+      id="form1Members"
+    >
+      <div class="class-members-empty">
+        Students in Form 1 will appear here.
+      </div>
+    </div>
+
+
+    <button
+      class="class-button"
+      data-class="Form 2"
+    >
+      <span>Form 2</span>
+      <span class="class-arrow">›</span>
+    </button>
+
+    <div
+      class="class-members"
+      id="form2Members"
+    >
+      <div class="class-members-empty">
+        Students in Form 2 will appear here.
+      </div>
+    </div>
+
+
+    <button
+      class="class-button"
+      data-class="Form 3"
+    >
+      <span>Form 3</span>
+      <span class="class-arrow">›</span>
+    </button>
+
+    <div
+      class="class-members"
+      id="form3Members"
+    >
+      <div class="class-members-empty">
+        Students in Form 3 will appear here.
+      </div>
+    </div>
+
+
+    <button
+      class="class-button"
+      data-class="Form 4"
+    >
+      <span>Form 4</span>
+      <span class="class-arrow">›</span>
+    </button>
+
+    <div
+      class="class-members"
+      id="form4Members"
+    >
+      <div class="class-members-empty">
+        Students in Form 4 will appear here.
+      </div>
+    </div>
+
+
+    <button
+      class="class-button"
+      data-class="Form 5"
+    >
+      <span>Form 5</span>
+      <span class="class-arrow">›</span>
+    </button>
+
+    <div
+      class="class-members"
+      id="form5Members"
+    >
+      <div class="class-members-empty">
+        Students in Form 5 will appear here.
+      </div>
+    </div>
+
+
+    <button
+      class="class-button"
+      data-class="Form 6"
+    >
+      <span>Form 6</span>
+      <span class="class-arrow">›</span>
+    </button>
+
+    <div
+      class="class-members"
+      id="form6Members"
+    >
+      <div class="class-members-empty">
+        Students in Form 6 will appear here.
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= STAFF ================= -->
+
+<section
+  class="screen"
+  data-screen="staff"
+>
+
+  <div class="page-container">
+
+    <div class="page-title">
+      Staff
+    </div>
+
+    <div class="page-subtitle">
+      JDA Networks staff contacts.
+    </div>
+
+  </div>
+
+
+  <div class="staff-list">
+
+    <div class="staff-card">
+
+      <div class="staff-title">
+        Staff members
+      </div>
+
+      <div class="staff-description">
+        Approved staff members will appear here according to their departments.
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= CALLS ================= -->
+
+<section
+  class="screen"
+  data-screen="calls"
+>
+
+  <div class="page-container">
+
+    <div class="page-title">
+      Calls
+    </div>
+
+    <div class="page-subtitle">
+      Your JDA Networks calls will appear here.
+    </div>
+
+
+    <div class="feature-card">
+
+      <div class="feature-card-title">
+        No calls yet
+      </div>
+
+      <div class="feature-card-text">
+        Voice and video calling will be connected here.
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= PROFILE ================= -->
+
+<section
+  class="screen"
+  data-screen="profile"
+>
+
+  <div class="profile-header">
+
+    <div id="profilePhoto">
+      J
+    </div>
+
+    <div id="profileName">
+      JDA Member
+    </div>
+
+    <div class="profile-number">
+
+      <span id="profileJdaNumber">
+        —
+      </span>
+
+    </div>
+
+  </div>
+
+
+  <div class="profile-details">
+
+
+    <div class="profile-item">
+
+      <div class="profile-label">
+        Account type
+      </div>
+
+      <div
+        class="profile-value"
+        id="profileAccountType"
       >
+        —
+      </div>
 
-        <span class="nav-icon">
-          💬
-        </span>
-
-        <span>
-          Chats
-        </span>
-
-      </button>
+    </div>
 
 
-      <button
-        class="nav-button"
-        data-page="updates"
+    <div class="profile-item">
+
+      <div class="profile-label">
+        Class / Department
+      </div>
+
+      <div
+        class="profile-value"
+        id="profileClass"
       >
+        —
+      </div>
 
-        <span class="nav-icon">
-          ◉
-        </span>
-
-        <span>
-          Updates
-        </span>
-
-      </button>
+    </div>
 
 
-      <button
-        class="nav-button"
-        data-page="groups"
+    <div class="profile-item">
+
+      <div class="profile-label">
+        Email
+      </div>
+
+      <div
+        class="profile-value"
+        id="profileEmail"
       >
+        —
+      </div>
 
-        <span class="nav-icon">
-          👥
-        </span>
-
-        <span>
-          Groups
-        </span>
-
-      </button>
+    </div>
 
 
-      <button
-        class="nav-button"
-        data-page="calls"
-      >
+  </div>
 
-        <span class="nav-icon">
-          ☎
-        </span>
-
-        <span>
-          Calls
-        </span>
-
-      </button>
+</section>
 
 
-    </nav>
+<!-- ================= SETTINGS ================= -->
 
-  </main>
+<section
+  class="screen"
+  data-screen="settings"
+>
+
+  <div class="page-container">
+
+    <div class="page-title">
+      Settings
+    </div>
+
+    <div class="page-subtitle">
+      Manage your JDA Networks account.
+    </div>
+
+  </div>
 
 
-  <!-- FIREBASE APP -->
-
-  <script
-    type="module"
-    src="./app.js"
-  ></script>
+  <div class="settings-list">
 
 
-  <!-- UI CONTROLLER -->
+    <div class="settings-row">
 
-  <script>
+      <div class="settings-row-icon">
+        🔔
+      </div>
 
-    document.addEventListener(
-      "DOMContentLoaded",
+      <div class="settings-row-content">
+
+        <div class="settings-row-title">
+          Notifications
+        </div>
+
+        <div class="settings-row-description">
+          Manage message notifications.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="settings-row">
+
+      <div class="settings-row-icon">
+        🔒
+      </div>
+
+      <div class="settings-row-content">
+
+        <div class="settings-row-title">
+          Privacy
+        </div>
+
+        <div class="settings-row-description">
+          Your JDA Networks account information.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="settings-row">
+
+      <div class="settings-row-icon">
+        ℹ️
+      </div>
+
+      <div class="settings-row-content">
+
+        <div class="settings-row-title">
+          About JDA Networks
+        </div>
+
+        <div class="settings-row-description">
+          JDA Networks messaging platform.
+        </div>
+
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+  <button
+    class="logout-button"
+    id="logoutBtn"
+  >
+    Log out
+  </button>
+
+</section>
+
+
+</section>
+
+
+<!-- ================= FAB ================= -->
+
+<button
+  id="fab"
+  aria-label="New chat"
+>
+  ✎
+</button>
+
+
+<!-- ================= BOTTOM NAV ================= -->
+
+<nav class="bottom-nav">
+
+
+  <button
+    class="nav-button active"
+    data-page="chats"
+  >
+
+    <span class="nav-icon">
+      💬
+    </span>
+
+    <span>
+      Chats
+    </span>
+
+  </button>
+
+
+  <button
+    class="nav-button"
+    data-page="updates"
+  >
+
+    <span class="nav-icon">
+      ◉
+    </span>
+
+    <span>
+      Updates
+    </span>
+
+  </button>
+
+
+  <button
+    class="nav-button"
+    data-page="groups"
+  >
+
+    <span class="nav-icon">
+      👥
+    </span>
+
+    <span>
+      Groups
+    </span>
+
+  </button>
+
+
+  <button
+    class="nav-button"
+    data-page="calls"
+  >
+
+    <span class="nav-icon">
+      ☎
+    </span>
+
+    <span>
+      Calls
+    </span>
+
+  </button>
+
+
+</nav>
+
+
+</main>
+
+
+<!-- ================= FIREBASE APP ================= -->
+
+<script
+  type="module"
+  src="./app.js"
+></script>
+
+
+<!-- ================= UI CONTROLLER ================= -->
+
+<script>
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    setTimeout(
       () => {
 
-        /* Hide loading */
+        const loading =
+          document.getElementById(
+            "loadingScreen"
+          );
 
-        setTimeout(
-          () => {
+        if(loading){
+          loading.style.display = "none";
+        }
 
-            const loading =
-              document.getElementById(
-                "loadingScreen"
-              );
+      },
+      1200
+    );
 
-            if (loading) {
-              loading.style.display = "none";
+
+    /* =========================
+       ADMIN PANEL
+    ========================= */
+
+    const adminButton =
+      document.getElementById(
+        "adminPanelBtn"
+      );
+
+    /*
+      The Admin Panel is shown ONLY
+      for the official administrator.
+    */
+
+    import("./firebase.js")
+      .then(({auth}) => {
+
+        auth.onAuthStateChanged(
+          user => {
+
+            if(
+              user &&
+              user.email &&
+              user.email.toLowerCase() ===
+              "jonathanmentor62@gmail.com"
+            ){
+
+              adminButton.style.display =
+                "flex";
+
+            }else{
+
+              adminButton.style.display =
+                "none";
+
             }
 
-          },
-          1200
+          }
         );
 
+      })
+      .catch(error => {
 
-        /* ============================
-           BOTTOM NAVIGATION
-        ============================ */
+        console.error(
+          "Admin button error:",
+          error
+        );
 
-        document
-          .querySelectorAll(
-            ".bottom-nav [data-page]"
-          )
-          .forEach(button => {
+      });
 
-            button.addEventListener(
-              "click",
-              () => {
 
-                const page =
-                  button.dataset.page;
+    /* =========================
+       ADMIN PANEL OPEN
+    ========================= */
 
-                document
-                  .querySelectorAll(
-                    "[data-screen]"
-                  )
-                  .forEach(screen => {
+    adminButton.addEventListener(
+      "click",
+      () => {
 
-                    screen.classList.toggle(
-                      "active",
-                      screen.dataset.screen === page
-                    );
-
-                  });
-
-                document
-                  .querySelectorAll(
-                    ".bottom-nav [data-page]"
-                  )
-                  .forEach(nav => {
-
-                    nav.classList.toggle(
-                      "active",
-                      nav.dataset.page === page
-                    );
-
-                  });
-
-              }
-            );
-
-          });
-
-
-        /* ============================
-           UPPER FILTER TABS
-        ============================ */
-
-        document
-          .querySelectorAll(
-            ".filter-button"
-          )
-          .forEach(button => {
-
-            button.addEventListener(
-              "click",
-              () => {
-
-                const filter =
-                  button.dataset.filter;
-
-
-                document
-                  .querySelectorAll(
-                    ".filter-button"
-                  )
-                  .forEach(item => {
-
-                    item.classList.remove(
-                      "active"
-                    );
-
-                  });
-
-
-                button.classList.add(
-                  "active"
-                );
-
-
-                /* Students tab */
-
-                if (filter === "students") {
-
-                  showScreen("students");
-
-                  return;
-                }
-
-
-                /* Staff tab */
-
-                if (filter === "staff") {
-
-                  showScreen("staff");
-
-                  return;
-                }
-
-
-                /* All and Unread stay on chats */
-
-                if (
-                  filter === "all" ||
-                  filter === "unread"
-                ) {
-
-                  showScreen("chats");
-
-                }
-
-              }
-            );
-
-          });
-
-
-        /* ============================
-           STUDENT CLASS BUTTONS
-        ============================ */
-
-        document
-          .querySelectorAll(
-            ".class-button"
-          )
-          .forEach(button => {
-
-            button.addEventListener(
-              "click",
-              () => {
-
-                const className =
-                  button.dataset.class;
-
-                const formNumber =
-                  className
-                    .replace("Form ", "");
-
-                const members =
-                  document.getElementById(
-                    "form" +
-                    formNumber +
-                    "Members"
-                  );
-
-                if (!members) return;
-
-
-                document
-                  .querySelectorAll(
-                    ".class-members"
-                  )
-                  .forEach(item => {
-
-                    if (item !== members) {
-                      item.classList.remove(
-                        "open"
-                      );
-                    }
-
-                  });
-
-
-                members.classList.toggle(
-                  "open"
-                );
-
-              }
-            );
-
-          });
-
-
-        /* ============================
-           ADMIN PANEL
-        ============================ */
-
-        const adminButton =
-          document.getElementById(
-            "adminPanelBtn"
-          );
-
-
-        if (adminButton) {
-
-          adminButton.addEventListener(
-            "click",
-            () => {
-
-              /*
-                The actual Firebase admin
-                security remains in admin.html
-                and Firestore rules.
-
-                This button only opens the
-                admin page. The admin page
-                will reject non-admin users.
-              */
-
-              window.location.href =
-                "./admin.html";
-
-            }
-          );
-
-        }
-
-
-        /* ============================
-           MENU
-        ============================ */
-
-        const menuButton =
-          document.getElementById(
-            "menuBtn"
-          );
-
-
-        if (menuButton) {
-
-          menuButton.addEventListener(
-            "click",
-            () => {
-
-              const choice =
-                prompt(
-                  "JDA Networks\n\n" +
-                  "Type:\n" +
-                  "1 - Profile\n" +
-                  "2 - Settings"
-                );
-
-
-              if (choice === "1") {
-                openPage("profile");
-              }
-
-
-              if (choice === "2") {
-                openPage("settings");
-              }
-
-            }
-          );
-
-        }
+        window.location.href =
+          "./admin.html";
 
       }
     );
 
 
-    /* ============================
-       SHOW SCREEN
-    ============================ */
+    /* =========================
+       BOTTOM NAVIGATION
+    ========================= */
 
-    function showScreen(page) {
+    document
+      .querySelectorAll(
+        ".bottom-nav [data-page]"
+      )
+      .forEach(button => {
 
-      document
-        .querySelectorAll(
-          "[data-screen]"
-        )
-        .forEach(screen => {
+        button.addEventListener(
+          "click",
+          () => {
 
-          screen.classList.toggle(
-            "active",
-            screen.dataset.screen === page
-          );
+            const page =
+              button.dataset.page;
 
-        });
+
+            document
+              .querySelectorAll(
+                "[data-screen]"
+              )
+              .forEach(screen => {
+
+                screen.classList.toggle(
+                  "active",
+                  screen.dataset.screen ===
+                  page
+                );
+
+              });
+
+
+            document
+              .querySelectorAll(
+                ".bottom-nav [data-page]"
+              )
+              .forEach(nav => {
+
+                nav.classList.toggle(
+                  "active",
+                  nav.dataset.page ===
+                  page
+                );
+
+              });
+
+          }
+        );
+
+      });
+
+
+    /* =========================
+       UPPER TABS
+    ========================= */
+
+    document
+      .querySelectorAll(
+        ".filter-button"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            const filter =
+              button.dataset.filter;
+
+
+            document
+              .querySelectorAll(
+                ".filter-button"
+              )
+              .forEach(item => {
+
+                item.classList.remove(
+                  "active"
+                );
+
+              });
+
+
+            button.classList.add(
+              "active"
+            );
+
+
+            if(filter === "students"){
+
+              showScreen("students");
+
+            }
+            else if(filter === "staff"){
+
+              showScreen("staff");
+
+            }
+            else{
+
+              showScreen("chats");
+
+            }
+
+          }
+        );
+
+      });
+
+
+    /* =========================
+       CLASS BUTTONS
+    ========================= */
+
+    document
+      .querySelectorAll(
+        ".class-button"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            const className =
+              button.dataset.class;
+
+            const number =
+              className.replace(
+                "Form ",
+                ""
+              );
+
+            const members =
+              document.getElementById(
+                "form" +
+                number +
+                "Members"
+              );
+
+            if(!members) return;
+
+
+            document
+              .querySelectorAll(
+                ".class-members"
+              )
+              .forEach(item => {
+
+                if(item !== members){
+
+                  item.classList.remove(
+                    "open"
+                  );
+
+                }
+
+              });
+
+
+            members.classList.toggle(
+              "open"
+            );
+
+          }
+        );
+
+      });
+
+
+    /* =========================
+       WHATSAPP STYLE MENU
+    ========================= */
+
+    const menuButton =
+      document.getElementById(
+        "menuBtn"
+      );
+
+
+    if(menuButton){
+
+      menuButton.addEventListener(
+        "click",
+        () => {
+
+          const choice =
+            prompt(
+              "JDA Networks\n\n" +
+              "1 - Profile\n" +
+              "2 - Settings"
+            );
+
+
+          if(choice === "1"){
+
+            openPage("profile");
+
+          }
+
+
+          if(choice === "2"){
+
+            openPage("settings");
+
+          }
+
+        }
+      );
 
     }
 
-
-    /* ============================
-       OPEN PAGE
-    ============================ */
-
-    function openPage(page) {
-
-      document
-        .querySelectorAll(
-          "[data-screen]"
-        )
-        .forEach(screen => {
-
-          screen.classList.toggle(
-            "active",
-            screen.dataset.screen === page
-          );
-
-        });
+  }
+);
 
 
-      document
-        .querySelectorAll(
-          ".bottom-nav [data-page]"
-        )
-        .forEach(button => {
+/* =========================
+   SHOW SCREEN
+========================= */
 
-          button.classList.remove(
-            "active"
-          );
+function showScreen(page){
 
-        });
+  document
+    .querySelectorAll(
+      "[data-screen]"
+    )
+    .forEach(screen => {
 
-    }
+      screen.classList.toggle(
+        "active",
+        screen.dataset.screen ===
+        page
+      );
 
-  </script>
+    });
+
+}
+
+
+/* =========================
+   OPEN PAGE
+========================= */
+
+function openPage(page){
+
+  document
+    .querySelectorAll(
+      "[data-screen]"
+    )
+    .forEach(screen => {
+
+      screen.classList.toggle(
+        "active",
+        screen.dataset.screen ===
+        page
+      );
+
+    });
+
+
+  document
+    .querySelectorAll(
+      ".bottom-nav [data-page]"
+    )
+    .forEach(button => {
+
+      button.classList.remove(
+        "active"
+      );
+
+    });
+
+}
+
+</script>
 
 </body>
 </html>

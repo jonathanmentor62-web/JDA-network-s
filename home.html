@@ -8,10 +8,7 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
 
-  <meta
-    name="theme-color"
-    content="#111b21"
-  >
+  <meta name="theme-color" content="#111b21">
 
   <title>JDA Networks</title>
 
@@ -30,10 +27,7 @@
       min-height: 100%;
       background: #0b141a;
       color: #e9edef;
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     body {
@@ -50,11 +44,6 @@
       cursor: pointer;
     }
 
-
-    /* =====================================================
-       APP
-    ===================================================== */
-
     #app {
       width: 100%;
       max-width: 700px;
@@ -65,14 +54,11 @@
       overflow: hidden;
     }
 
-
-    /* =====================================================
-       HEADER
-    ===================================================== */
+    /* ================= HEADER ================= */
 
     .top-header {
       background: #111b21;
-      padding: 14px 16px 10px;
+      padding: 10px 16px 10px;
       position: sticky;
       top: 0;
       z-index: 50;
@@ -81,11 +67,31 @@
     .header-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
+    }
+
+    /* ADMIN PANEL - TOP LEFT */
+
+    .admin-panel-button {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      color: #e9edef;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .admin-panel-button:active {
+      background: #26343b;
     }
 
     .brand {
+      flex: 1;
       font-size: 22px;
       font-weight: 700;
       color: #e9edef;
@@ -95,7 +101,7 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
     }
 
     .icon-button {
@@ -115,13 +121,10 @@
       background: #26343b;
     }
 
-
-    /* =====================================================
-       SEARCH
-    ===================================================== */
+    /* ================= SEARCH ================= */
 
     .search-box {
-      margin-top: 12px;
+      margin-top: 10px;
       background: #202c33;
       border-radius: 12px;
       height: 44px;
@@ -150,10 +153,7 @@
       color: #8696a0;
     }
 
-
-    /* =====================================================
-       FILTERS
-    ===================================================== */
+    /* ================= FILTERS ================= */
 
     .filters {
       display: flex;
@@ -182,10 +182,7 @@
       color: #d9fff5;
     }
 
-
-    /* =====================================================
-       MAIN
-    ===================================================== */
+    /* ================= MAIN ================= */
 
     .content {
       min-height: calc(100vh - 154px);
@@ -200,10 +197,7 @@
       display: block;
     }
 
-
-    /* =====================================================
-       CHAT LIST
-    ===================================================== */
+    /* ================= CHAT LIST ================= */
 
     #chatList {
       width: 100%;
@@ -233,10 +227,7 @@
       margin-bottom: 7px;
     }
 
-
-    /* =====================================================
-       SIMPLE PAGES
-    ===================================================== */
+    /* ================= PAGES ================= */
 
     .page-container {
       padding: 24px 18px;
@@ -272,10 +263,82 @@
       line-height: 1.5;
     }
 
+    /* ================= STUDENTS ================= */
 
-    /* =====================================================
-       PROFILE
-    ===================================================== */
+    .class-list {
+      padding: 8px 18px 25px;
+    }
+
+    .class-button {
+      width: 100%;
+      border: 0;
+      background: #202c33;
+      color: #e9edef;
+      border-radius: 14px;
+      padding: 17px;
+      margin-bottom: 10px;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .class-button:active {
+      background: #26343b;
+    }
+
+    .class-arrow {
+      color: #8696a0;
+      font-size: 18px;
+    }
+
+    .class-members {
+      display: none;
+      margin-top: -5px;
+      margin-bottom: 10px;
+      background: #111b21;
+      border-radius: 0 0 14px 14px;
+      padding: 10px;
+    }
+
+    .class-members.open {
+      display: block;
+    }
+
+    .class-members-empty {
+      color: #8696a0;
+      text-align: center;
+      padding: 15px;
+      font-size: 13px;
+    }
+
+    /* ================= STAFF ================= */
+
+    .staff-list {
+      padding: 8px 18px 25px;
+    }
+
+    .staff-card {
+      background: #202c33;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 10px;
+    }
+
+    .staff-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .staff-description {
+      color: #8696a0;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    /* ================= PROFILE ================= */
 
     .profile-header {
       background: #111b21;
@@ -330,10 +393,7 @@
       word-break: break-word;
     }
 
-
-    /* =====================================================
-       SETTINGS
-    ===================================================== */
+    /* ================= SETTINGS ================= */
 
     .settings-list {
       padding: 8px 0;
@@ -379,10 +439,7 @@
       font-weight: 600;
     }
 
-
-    /* =====================================================
-       FAB
-    ===================================================== */
+    /* ================= FAB ================= */
 
     #fab {
       position: fixed;
@@ -404,10 +461,7 @@
       transform: scale(.94);
     }
 
-
-    /* =====================================================
-       BOTTOM NAV
-    ===================================================== */
+    /* ================= BOTTOM NAV ================= */
 
     .bottom-nav {
       position: fixed;
@@ -446,10 +500,7 @@
       color: #25d366;
     }
 
-
-    /* =====================================================
-       LOADING
-    ===================================================== */
+    /* ================= LOADING ================= */
 
     #loadingScreen {
       position: fixed;
@@ -491,16 +542,11 @@
       font-size: 13px;
     }
 
-
-    /* =====================================================
-       MOBILE
-    ===================================================== */
-
     @media (max-width: 480px) {
 
       .top-header {
-        padding-left: 13px;
-        padding-right: 13px;
+        padding-left: 10px;
+        padding-right: 10px;
       }
 
       .brand {
@@ -516,13 +562,9 @@
   </style>
 </head>
 
-
 <body>
 
-
-  <!-- =====================================================
-       LOADING
-  ====================================================== -->
+  <!-- LOADING -->
 
   <div id="loadingScreen">
 
@@ -545,20 +587,27 @@
   </div>
 
 
-  <!-- =====================================================
-       APP
-  ====================================================== -->
+  <!-- APP -->
 
   <main id="app">
 
-
-    <!-- ===================================================
-         HEADER
-    ==================================================== -->
+    <!-- HEADER -->
 
     <header class="top-header">
 
       <div class="header-row">
+
+        <!-- ADMIN PANEL: TOP LEFT -->
+
+        <button
+          class="admin-panel-button"
+          id="adminPanelBtn"
+          aria-label="Admin Panel"
+          title="Admin Panel"
+        >
+          ☰
+        </button>
+
 
         <div class="brand">
           JDA Networks
@@ -606,7 +655,7 @@
       </div>
 
 
-      <!-- FILTERS -->
+      <!-- UPPER FILTER TABS -->
 
       <div class="filters">
 
@@ -626,16 +675,16 @@
 
         <button
           class="filter-button"
-          data-filter="favorites"
+          data-filter="students"
         >
-          Favorites
+          Students
         </button>
 
         <button
           class="filter-button"
-          data-filter="groups"
+          data-filter="staff"
         >
-          Groups
+          Staff
         </button>
 
       </div>
@@ -643,16 +692,12 @@
     </header>
 
 
-    <!-- ===================================================
-         CONTENT
-    ==================================================== -->
+    <!-- CONTENT -->
 
     <section class="content">
 
 
-      <!-- =================================================
-           CHATS
-      ================================================== -->
+      <!-- CHATS -->
 
       <section
         class="screen active"
@@ -682,9 +727,7 @@
       </section>
 
 
-      <!-- =================================================
-           UPDATES
-      ================================================== -->
+      <!-- UPDATES -->
 
       <section
         class="screen"
@@ -698,22 +741,7 @@
           </div>
 
           <div class="page-subtitle">
-            Stay connected with your JDA
-            Networks community.
-          </div>
-
-
-          <div class="feature-card">
-
-            <div class="feature-card-title">
-              Status
-            </div>
-
-            <div class="feature-card-text">
-              Updates and status features
-              will appear here.
-            </div>
-
+            Stay connected with your JDA Networks community.
           </div>
 
         </div>
@@ -721,36 +749,170 @@
       </section>
 
 
-      <!-- =================================================
-           GROUPS
-      ================================================== -->
+      <!-- STUDENTS -->
 
       <section
         class="screen"
-        data-screen="groups"
+        data-screen="students"
       >
 
         <div class="page-container">
 
           <div class="page-title">
-            Groups
+            Students
           </div>
 
           <div class="page-subtitle">
-            Connect with classmates,
-            departments and communities.
+            Select a class to view students.
+          </div>
+
+        </div>
+
+
+        <div class="class-list">
+
+          <button
+            class="class-button"
+            data-class="Form 1"
+          >
+            <span>Form 1</span>
+            <span class="class-arrow">›</span>
+          </button>
+
+          <div
+            class="class-members"
+            id="form1Members"
+          >
+            <div class="class-members-empty">
+              Students in Form 1 will appear here.
+            </div>
           </div>
 
 
-          <div class="feature-card">
+          <button
+            class="class-button"
+            data-class="Form 2"
+          >
+            <span>Form 2</span>
+            <span class="class-arrow">›</span>
+          </button>
 
-            <div class="feature-card-title">
-              Your groups
+          <div
+            class="class-members"
+            id="form2Members"
+          >
+            <div class="class-members-empty">
+              Students in Form 2 will appear here.
+            </div>
+          </div>
+
+
+          <button
+            class="class-button"
+            data-class="Form 3"
+          >
+            <span>Form 3</span>
+            <span class="class-arrow">›</span>
+          </button>
+
+          <div
+            class="class-members"
+            id="form3Members"
+          >
+            <div class="class-members-empty">
+              Students in Form 3 will appear here.
+            </div>
+          </div>
+
+
+          <button
+            class="class-button"
+            data-class="Form 4"
+          >
+            <span>Form 4</span>
+            <span class="class-arrow">›</span>
+          </button>
+
+          <div
+            class="class-members"
+            id="form4Members"
+          >
+            <div class="class-members-empty">
+              Students in Form 4 will appear here.
+            </div>
+          </div>
+
+
+          <button
+            class="class-button"
+            data-class="Form 5"
+          >
+            <span>Form 5</span>
+            <span class="class-arrow">›</span>
+          </button>
+
+          <div
+            class="class-members"
+            id="form5Members"
+          >
+            <div class="class-members-empty">
+              Students in Form 5 will appear here.
+            </div>
+          </div>
+
+
+          <button
+            class="class-button"
+            data-class="Form 6"
+          >
+            <span>Form 6</span>
+            <span class="class-arrow">›</span>
+          </button>
+
+          <div
+            class="class-members"
+            id="form6Members"
+          >
+            <div class="class-members-empty">
+              Students in Form 6 will appear here.
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- STAFF -->
+
+      <section
+        class="screen"
+        data-screen="staff"
+      >
+
+        <div class="page-container">
+
+          <div class="page-title">
+            Staff
+          </div>
+
+          <div class="page-subtitle">
+            JDA Networks staff contacts.
+          </div>
+
+        </div>
+
+
+        <div class="staff-list">
+
+          <div class="staff-card">
+
+            <div class="staff-title">
+              Staff members
             </div>
 
-            <div class="feature-card-text">
-              Groups will appear here when
-              group functionality is enabled.
+            <div class="staff-description">
+              Approved staff members will appear here according to their departments.
             </div>
 
           </div>
@@ -760,9 +922,7 @@
       </section>
 
 
-      <!-- =================================================
-           CALLS
-      ================================================== -->
+      <!-- CALLS -->
 
       <section
         class="screen"
@@ -776,8 +936,7 @@
           </div>
 
           <div class="page-subtitle">
-            Your JDA Networks calls will
-            appear here.
+            Your JDA Networks calls will appear here.
           </div>
 
 
@@ -788,8 +947,7 @@
             </div>
 
             <div class="feature-card-text">
-              Voice and video calling will
-              be connected here.
+              Voice and video calling will be connected here.
             </div>
 
           </div>
@@ -799,9 +957,7 @@
       </section>
 
 
-      <!-- =================================================
-           PROFILE
-      ================================================== -->
+      <!-- PROFILE -->
 
       <section
         class="screen"
@@ -819,9 +975,11 @@
           </div>
 
           <div class="profile-number">
+
             <span id="profileJdaNumber">
               —
             </span>
+
           </div>
 
         </div>
@@ -883,9 +1041,7 @@
       </section>
 
 
-      <!-- =================================================
-           SETTINGS
-      ================================================== -->
+      <!-- SETTINGS -->
 
       <section
         class="screen"
@@ -942,8 +1098,7 @@
               </div>
 
               <div class="settings-row-description">
-                Your JDA Networks account
-                information.
+                Your JDA Networks account information.
               </div>
 
             </div>
@@ -984,13 +1139,10 @@
 
       </section>
 
-
     </section>
 
 
-    <!-- ===================================================
-         NEW CHAT BUTTON
-    ==================================================== -->
+    <!-- NEW CHAT BUTTON -->
 
     <button
       id="fab"
@@ -1000,9 +1152,7 @@
     </button>
 
 
-    <!-- ===================================================
-         BOTTOM NAVIGATION
-    ==================================================== -->
+    <!-- BOTTOM NAVIGATION -->
 
     <nav class="bottom-nav">
 
@@ -1073,13 +1223,10 @@
 
     </nav>
 
-
   </main>
 
 
-  <!-- =====================================================
-       FIREBASE APP
-  ====================================================== -->
+  <!-- FIREBASE APP -->
 
   <script
     type="module"
@@ -1087,10 +1234,7 @@
   ></script>
 
 
-  <!-- =====================================================
-       SMALL UI CONTROLLER
-       This does NOT duplicate Firebase/chat logic.
-  ====================================================== -->
+  <!-- UI CONTROLLER -->
 
   <script>
 
@@ -1098,10 +1242,7 @@
       "DOMContentLoaded",
       () => {
 
-        /*
-          Hide loading screen after Firebase
-          has had time to initialize.
-        */
+        /* Hide loading */
 
         setTimeout(
           () => {
@@ -1112,8 +1253,7 @@
               );
 
             if (loading) {
-              loading.style.display =
-                "none";
+              loading.style.display = "none";
             }
 
           },
@@ -1121,9 +1261,9 @@
         );
 
 
-        /*
-          Bottom navigation.
-        */
+        /* ============================
+           BOTTOM NAVIGATION
+        ============================ */
 
         document
           .querySelectorAll(
@@ -1138,7 +1278,6 @@
                 const page =
                   button.dataset.page;
 
-
                 document
                   .querySelectorAll(
                     "[data-screen]"
@@ -1147,12 +1286,10 @@
 
                     screen.classList.toggle(
                       "active",
-                      screen.dataset.screen ===
-                      page
+                      screen.dataset.screen === page
                     );
 
                   });
-
 
                 document
                   .querySelectorAll(
@@ -1162,8 +1299,7 @@
 
                     nav.classList.toggle(
                       "active",
-                      nav.dataset.page ===
-                      page
+                      nav.dataset.page === page
                     );
 
                   });
@@ -1174,9 +1310,9 @@
           });
 
 
-        /*
-          Filter buttons.
-        */
+        /* ============================
+           UPPER FILTER TABS
+        ============================ */
 
         document
           .querySelectorAll(
@@ -1187,6 +1323,10 @@
             button.addEventListener(
               "click",
               () => {
+
+                const filter =
+                  button.dataset.filter;
+
 
                 document
                   .querySelectorAll(
@@ -1206,24 +1346,34 @@
                 );
 
 
-                /*
-                  The chat filtering system can
-                  be expanded when unread,
-                  favorites and groups are added.
-                */
+                /* Students tab */
 
-                const filter =
-                  button.dataset.filter;
+                if (filter === "students") {
 
+                  showScreen("students");
+
+                  return;
+                }
+
+
+                /* Staff tab */
+
+                if (filter === "staff") {
+
+                  showScreen("staff");
+
+                  return;
+                }
+
+
+                /* All and Unread stay on chats */
 
                 if (
-                  filter !== "all"
+                  filter === "all" ||
+                  filter === "unread"
                 ) {
 
-                  console.log(
-                    "JDA filter:",
-                    filter
-                  );
+                  showScreen("chats");
 
                 }
 
@@ -1233,9 +1383,100 @@
           });
 
 
-        /*
-          Menu button.
-        */
+        /* ============================
+           STUDENT CLASS BUTTONS
+        ============================ */
+
+        document
+          .querySelectorAll(
+            ".class-button"
+          )
+          .forEach(button => {
+
+            button.addEventListener(
+              "click",
+              () => {
+
+                const className =
+                  button.dataset.class;
+
+                const formNumber =
+                  className
+                    .replace("Form ", "");
+
+                const members =
+                  document.getElementById(
+                    "form" +
+                    formNumber +
+                    "Members"
+                  );
+
+                if (!members) return;
+
+
+                document
+                  .querySelectorAll(
+                    ".class-members"
+                  )
+                  .forEach(item => {
+
+                    if (item !== members) {
+                      item.classList.remove(
+                        "open"
+                      );
+                    }
+
+                  });
+
+
+                members.classList.toggle(
+                  "open"
+                );
+
+              }
+            );
+
+          });
+
+
+        /* ============================
+           ADMIN PANEL
+        ============================ */
+
+        const adminButton =
+          document.getElementById(
+            "adminPanelBtn"
+          );
+
+
+        if (adminButton) {
+
+          adminButton.addEventListener(
+            "click",
+            () => {
+
+              /*
+                The actual Firebase admin
+                security remains in admin.html
+                and Firestore rules.
+
+                This button only opens the
+                admin page. The admin page
+                will reject non-admin users.
+              */
+
+              window.location.href =
+                "./admin.html";
+
+            }
+          );
+
+        }
+
+
+        /* ============================
+           MENU
+        ============================ */
 
         const menuButton =
           document.getElementById(
@@ -1259,16 +1500,12 @@
 
 
               if (choice === "1") {
-
                 openPage("profile");
-
               }
 
 
               if (choice === "2") {
-
                 openPage("settings");
-
               }
 
             }
@@ -1276,10 +1513,35 @@
 
         }
 
-
       }
     );
 
+
+    /* ============================
+       SHOW SCREEN
+    ============================ */
+
+    function showScreen(page) {
+
+      document
+        .querySelectorAll(
+          "[data-screen]"
+        )
+        .forEach(screen => {
+
+          screen.classList.toggle(
+            "active",
+            screen.dataset.screen === page
+          );
+
+        });
+
+    }
+
+
+    /* ============================
+       OPEN PAGE
+    ============================ */
 
     function openPage(page) {
 
@@ -1291,8 +1553,7 @@
 
           screen.classList.toggle(
             "active",
-            screen.dataset.screen ===
-            page
+            screen.dataset.screen === page
           );
 
         });
@@ -1313,7 +1574,6 @@
     }
 
   </script>
-
 
 </body>
 </html>

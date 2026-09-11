@@ -2,217 +2,103 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JDA Networks</title>
 
 <style>
+*{box-sizing:border-box}
 
-*{
-  box-sizing:border-box;
-}
-
-html,body{
+body{
   margin:0;
-  padding:0;
-  width:100%;
-  min-height:100%;
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:#0b141a;
   color:#fff;
 }
 
-button,
-input,
-select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-  border:0;
-}
-
-.hidden{
-  display:none!important;
-}
-
-
-/* =========================
-   MAIN BACKGROUND
-========================= */
-
-.jda-page{
+.screen{
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:20px;
-
-  background:
-    radial-gradient(
-      circle at top,
-      #173d32 0%,
-      #0b141a 42%,
-      #071014 100%
-    );
 }
 
-
-/* =========================
-   MAIN CARD
-========================= */
-
-.jda-box{
-  width:min(440px,100%);
-  background:#111d24;
-  border:1px solid #26353d;
-  border-radius:26px;
-  padding:28px 22px;
-  box-shadow:0 20px 70px rgba(0,0,0,.5);
+.card{
+  width:100%;
+  max-width:470px;
+  background:#111b21;
+  border-radius:24px;
+  padding:25px;
+  box-shadow:0 10px 40px rgba(0,0,0,.35);
 }
 
-
-/* =========================
-   LOGO
-========================= */
-
-.jda-logo{
-  width:78px;
-  height:78px;
-
-  border-radius:22px;
-
+.logo{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  object-fit:cover;
+  display:block;
   margin:0 auto 18px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:#25d366;
-  color:#06140d;
-
-  font-size:30px;
-  font-weight:900;
-
-  box-shadow:
-    0 10px 30px rgba(37,211,102,.2);
 }
 
-
-/* =========================
-   TITLES
-========================= */
-
-.jda-title{
+h1{
   text-align:center;
-  font-size:28px;
-  font-weight:800;
   margin:0;
+  font-size:27px;
 }
 
-.jda-subtitle{
+.subtitle{
   text-align:center;
-  color:#91a3ad;
-  font-size:14px;
-  line-height:1.5;
+  color:#8696a0;
   margin:8px 0 25px;
+  font-size:14px;
 }
 
-
-/* =========================
-   ACCOUNT CHOICE
-========================= */
-
-.account-choice{
+.type-buttons{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-bottom:18px;
+  gap:12px;
 }
 
-.account-btn{
+.type{
   background:#202c33;
-  color:#d9e2e7;
-
-  border:1px solid #34434b;
-
-  border-radius:16px;
-
-  padding:18px 10px;
-
-  font-weight:700;
-
-  transition:.2s;
-}
-
-.account-btn:hover{
-  border-color:#25d366;
-}
-
-.account-btn.selected{
-  background:#0f6f4b;
-  border-color:#25d366;
   color:#fff;
-
-  box-shadow:
-    0 0 0 2px rgba(37,211,102,.12);
+  padding:18px 10px;
+  border-radius:16px;
+  border:2px solid transparent;
+  font-weight:bold;
 }
 
-.account-btn .emoji{
+.type.selected{
+  background:#164d39;
+  border-color:#25d366;
+}
+
+.type span{
   display:block;
-  font-size:27px;
+  font-size:28px;
   margin-bottom:7px;
 }
 
-
-/* =========================
-   BUTTONS
-========================= */
-
-.continue-btn,
-.register-btn,
-.login-btn{
+.primary{
   width:100%;
-
-  border-radius:14px;
-
-  padding:14px;
-
-  font-weight:800;
-
   background:#25d366;
-
-  color:#06140d;
-
-  margin-top:5px;
+  color:#06130b;
+  padding:14px;
+  border-radius:25px;
+  font-size:15px;
+  font-weight:800;
+  margin-top:18px;
 }
 
-.continue-btn:disabled,
-.register-btn:disabled,
-.login-btn:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-
-/* =========================
-   FORM
-========================= */
-
-.form-section{
-  display:none;
-}
-
-.form-section.active{
-  display:block;
-}
-
-.back-btn{
-  background:transparent;
-  color:#25d366;
-  padding:5px 0 15px;
-  font-weight:700;
+.secondary{
+  width:100%;
+  background:#202c33;
+  color:#fff;
+  padding:14px;
+  border-radius:25px;
+  margin-top:10px;
+  font-weight:bold;
 }
 
 .form-title{
@@ -221,313 +107,185 @@ button{
   margin-bottom:5px;
 }
 
-.form-description{
-  color:#91a3ad;
+.form-subtitle{
+  color:#8696a0;
   font-size:13px;
-  line-height:1.5;
   margin-bottom:20px;
 }
 
-
-/* =========================
-   INPUTS
-========================= */
-
-.field{
-  margin-bottom:14px;
-}
-
-.field label{
+label{
   display:block;
-  color:#dce5e9;
-  font-size:13px;
-  font-weight:700;
-  margin-bottom:7px;
+  color:#aebac1;
+  font-size:12px;
+  margin:14px 0 6px;
 }
 
-.field input,
-.field select{
+input,select{
   width:100%;
-
-  padding:13px;
-
-  border-radius:12px;
-
-  border:1px solid #34434b;
-
+  border:0;
+  outline:0;
   background:#202c33;
-
   color:#fff;
-
-  outline:none;
+  padding:14px;
+  border-radius:12px;
+  font-size:14px;
 }
 
-.field input::placeholder{
-  color:#72828b;
+select option{
+  background:#202c33;
 }
 
-.field input:focus,
-.field select:focus{
-  border-color:#25d366;
-
-  box-shadow:
-    0 0 0 2px rgba(37,211,102,.12);
-}
-
-
-/* =========================
-   PHOTO
-========================= */
-
-.photo-area{
+.photo-box{
   text-align:center;
-  margin-bottom:18px;
+  margin:15px 0;
 }
 
 .photo-preview{
-  width:96px;
-  height:96px;
-
+  width:105px;
+  height:105px;
   border-radius:50%;
-
-  margin:0 auto 10px;
-
-  background:#202c33;
-
-  border:2px dashed #52636c;
-
-  display:flex;
-
-  align-items:center;
-  justify-content:center;
-
-  overflow:hidden;
-
-  color:#8799a3;
-
-  font-size:12px;
-}
-
-.photo-preview img{
-  width:100%;
-  height:100%;
   object-fit:cover;
+  border:3px solid #25d366;
+  display:none;
+  margin:10px auto;
 }
 
 .photo-label{
   display:inline-block;
-
-  color:#25d366;
-
-  font-weight:700;
-
-  font-size:13px;
-
+  background:#202c33;
+  padding:12px 18px;
+  border-radius:22px;
   cursor:pointer;
+  color:#fff;
 }
 
-#photoInput{
+.photo-label input{
   display:none;
 }
 
-
-/* =========================
-   NOTICE
-========================= */
-
 .notice{
-  background:#18272d;
-
-  border-left:3px solid #25d366;
-
-  padding:11px;
-
+  background:#1b2b32;
+  border-left:4px solid #25d366;
+  color:#cbd5da;
+  padding:12px;
   border-radius:9px;
-
-  color:#aebdc4;
-
   font-size:12px;
-
+  margin-top:16px;
   line-height:1.5;
-
-  margin-bottom:15px;
 }
-
-
-/* =========================
-   STATUS
-========================= */
 
 .status{
-  min-height:20px;
-
-  text-align:center;
-
-  font-size:13px;
-
-  margin-top:13px;
-
-  color:#91a3ad;
-
-  line-height:1.5;
-}
-
-
-/* =========================
-   LOGIN LINK
-========================= */
-
-.login-link{
-  text-align:center;
-
-  margin-top:18px;
-
-  color:#91a3ad;
-
+  margin-top:15px;
+  padding:12px;
+  border-radius:10px;
+  display:none;
   font-size:13px;
 }
 
-.login-link button{
-  background:transparent;
-
-  color:#25d366;
-
-  font-weight:700;
-
-  padding:0;
+.status.error{
+  display:block;
+  background:#3b2024;
+  color:#ff8a8a;
 }
 
+.status.success{
+  display:block;
+  background:#163c2c;
+  color:#7dffb0;
+}
 
-/* =========================
-   SUCCESS SCREEN
-========================= */
+.hidden{
+  display:none!important;
+}
 
-.success-screen{
+.pending-icon{
+  text-align:center;
+  font-size:60px;
+  margin-bottom:10px;
+}
+
+.center{
   text-align:center;
 }
 
-.success-icon{
-  width:80px;
-  height:80px;
-
-  margin:0 auto 20px;
-
-  border-radius:50%;
-
-  background:#25d366;
-
-  color:#06140d;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:38px;
-  font-weight:900;
-}
-
-.success-screen h2{
-  margin:0 0 10px;
-  font-size:24px;
-}
-
-.success-screen p{
-  color:#91a3ad;
+.small{
+  color:#8696a0;
+  font-size:12px;
   line-height:1.6;
-  font-size:14px;
 }
 
-@media(max-width:380px){
-
-  .jda-box{
-    padding:23px 16px;
-  }
-
-  .jda-title{
-    font-size:24px;
-  }
-
+.password-note{
+  color:#8696a0;
+  font-size:11px;
+  margin-top:5px;
 }
 
+@media(max-width:400px){
+  .card{
+    padding:19px;
+  }
+
+  h1{
+    font-size:23px;
+  }
+}
 </style>
 </head>
 
-
 <body>
 
-<div class="jda-page">
+<!-- =========================
+     WELCOME
+========================= -->
 
-<div class="jda-box">
+<section id="welcomeScreen" class="screen">
 
+  <div class="card">
 
-<!-- =====================================
-     ACCOUNT TYPE SCREEN
-====================================== -->
+    <img
+      src="./logo.png"
+      class="logo"
+      onerror="this.style.display='none'"
+    >
 
-<section id="accountStep">
+    <h1>Welcome to JDA Networks</h1>
 
-  <div class="jda-logo">
-    JDA
-  </div>
+    <div class="subtitle">
+      The private communication network for JDA members.
+    </div>
 
-  <h1 class="jda-title">
-    Welcome to JDA Networks
-  </h1>
+    <div class="type-buttons">
 
-  <p class="jda-subtitle">
-    Choose your account type to continue
-  </p>
+      <button
+        class="type"
+        id="studentType"
+      >
+        <span>🎓</span>
+        Student
+      </button>
 
+      <button
+        class="type"
+        id="staffType"
+      >
+        <span>👨‍🏫</span>
+        Staff
+      </button>
 
-  <div class="account-choice">
+    </div>
 
     <button
-      type="button"
-      class="account-btn"
-      id="studentChoice">
-
-      <span class="emoji">🎓</span>
-
-      Student
-
+      class="primary"
+      id="continueBtn"
+    >
+      Continue
     </button>
 
-
     <button
-      type="button"
-      class="account-btn"
-      id="staffChoice">
-
-      <span class="emoji">👨‍🏫</span>
-
-      Staff
-
-    </button>
-
-  </div>
-
-
-  <button
-    type="button"
-    class="continue-btn"
-    id="continueBtn"
-    disabled>
-
-    Continue
-
-  </button>
-
-
-  <div class="login-link">
-
-    Already approved?
-
-    <button
-      type="button"
-      id="showLoginBtn">
-
-      Log in
-
+      class="secondary"
+      id="loginBtn"
+    >
+      Already registered? Login
     </button>
 
   </div>
@@ -535,1507 +293,200 @@ button{
 </section>
 
 
-
-<!-- =====================================
+<!-- =========================
      REGISTRATION
-====================================== -->
+========================= -->
 
 <section
-  id="registrationStep"
-  class="form-section">
+  id="registerScreen"
+  class="screen hidden"
+>
 
+  <div class="card">
 
-  <button
-    type="button"
-    class="back-btn"
-    id="backBtn">
+    <div class="form-title">
+      <span id="registerTypeTitle">
+        Student Registration
+      </span>
+    </div>
 
-    ← Back
-
-  </button>
-
-
-  <h2
-    class="form-title"
-    id="registrationTitle">
-
-    Student Registration
-
-  </h2>
-
-
-  <p class="form-description">
-
-    Enter your real information.
-    Nicknames are not allowed.
-
-  </p>
-
-
-  <form id="registrationForm">
+    <div class="form-subtitle">
+      Your registration is done once.
+      An administrator must approve your account.
+    </div>
 
 
     <!-- PHOTO -->
 
-    <div class="photo-area">
+    <div class="photo-box">
 
-      <div
+      <label class="photo-label">
+
+        📷 Choose Profile Photo
+
+        <input
+          type="file"
+          id="photoInput"
+          accept="image/jpeg,image/png,image/webp"
+        >
+
+      </label>
+
+      <img
+        id="photoPreview"
         class="photo-preview"
-        id="photoPreview">
+      >
 
-        Photo
-
+      <div class="small">
+        Profile photo is mandatory.
       </div>
 
-
-      <label
-        class="photo-label"
-        for="photoInput">
-
-        📷 Add profile photo
-
-      </label>
-
-
-      <input
-        type="file"
-        id="photoInput"
-        accept="image/jpeg,image/png,image/webp"
-        required>
-
     </div>
 
 
+    <!-- NAME -->
 
-    <!-- REAL NAME -->
+    <label>
+      Full Real Name
+    </label>
 
-    <div class="field">
+    <input
+      id="realName"
+      type="text"
+      placeholder="Enter your real full name"
+      autocomplete="name"
+    >
 
-      <label for="realName">
-        Full real name *
-      </label>
-
-      <input
-        id="realName"
-        type="text"
-        placeholder="Enter your full real name"
-        autocomplete="name"
-        required>
-
+    <div class="password-note">
+      Nicknames are not allowed.
     </div>
-
 
 
     <!-- JDA NUMBER -->
 
-    <div class="field">
+    <label>
+      JDA Networks Number
+    </label>
 
-      <label for="jdaNumber">
-        JDA Networks number *
-      </label>
-
-      <input
-        id="jdaNumber"
-        type="tel"
-        placeholder="+256 771 234 567"
-        autocomplete="tel"
-        required>
-
-    </div>
-
+    <input
+      id="jdaNumber"
+      type="tel"
+      placeholder="+256 771 234 567"
+      autocomplete="tel"
+    >
 
 
     <!-- EMAIL -->
 
-    <div class="field">
+    <label>
+      Email Address
+    </label>
 
-      <label for="email">
-        Email address *
-      </label>
-
-      <input
-        id="email"
-        type="email"
-        placeholder="you@example.com"
-        autocomplete="email"
-        required>
-
-    </div>
-
+    <input
+      id="email"
+      type="email"
+      placeholder="yourname@example.com"
+      autocomplete="email"
+    >
 
 
     <!-- PASSWORD -->
 
-    <div class="field">
+    <label>
+      Password
+    </label>
 
-      <label for="password">
-        Password *
-      </label>
-
-      <input
-        id="password"
-        type="password"
-        placeholder="Create a password"
-        autocomplete="new-password"
-        minlength="6"
-        required>
-
-    </div>
+    <input
+      id="password"
+      type="password"
+      placeholder="Create a password"
+      autocomplete="new-password"
+    >
 
 
+    <label>
+      Confirm Password
+    </label>
 
-    <!-- CONFIRM PASSWORD -->
-
-    <div class="field">
-
-      <label for="confirmPassword">
-        Confirm password *
-      </label>
-
-      <input
-        id="confirmPassword"
-        type="password"
-        placeholder="Repeat your password"
-        autocomplete="new-password"
-        minlength="6"
-        required>
-
-    </div>
-
+    <input
+      id="confirmPassword"
+      type="password"
+      placeholder="Repeat your password"
+      autocomplete="new-password"
+    >
 
 
     <!-- STUDENT -->
 
     <div id="studentFields">
 
-      <div class="field">
+      <label>
+        Class
+      </label>
 
-        <label for="studentClass">
-          Class *
-        </label>
+      <select id="studentClass">
 
-        <select id="studentClass">
+        <option value="">
+          Select class
+        </option>
 
-          <option value="">
-            Select class
-          </option>
+        <option>Form One</option>
+        <option>Form Two</option>
+        <option>Form Three</option>
+        <option>Form Four</option>
+        <option>Form Five</option>
+        <option>Form Six</option>
 
-          <option value="Form One">
-            Form One
-          </option>
-
-          <option value="Form Two">
-            Form Two
-          </option>
-
-          <option value="Form Three">
-            Form Three
-          </option>
-
-          <option value="Form Four">
-            Form Four
-          </option>
-
-          <option value="Form Five">
-            Form Five
-          </option>
-
-          <option value="Form Six">
-            Form Six
-          </option>
-
-        </select>
-
-      </div>
+      </select>
 
 
-      <div class="field">
+      <label>
+        Stream
+      </label>
 
-        <label for="studentStream">
-          Stream *
-        </label>
+      <select id="stream">
 
-        <select id="studentStream">
+        <option value="">
+          Select stream
+        </option>
 
-          <option value="">
-            Select stream
-          </option>
+        <option>Blue</option>
+        <option>Green</option>
 
-          <option value="Blue">
-            Blue
-          </option>
-
-          <option value="Green">
-            Green
-          </option>
-
-        </select>
-
-      </div>
+      </select>
 
     </div>
-
 
 
     <!-- STAFF -->
 
     <div
       id="staffFields"
-      class="hidden">
+      class="hidden"
+    >
 
-      <div class="field">
+      <label>
+        Department
+      </label>
 
-        <label for="department">
-          Department *
-        </label>
-
-        <input
-          id="department"
-          type="text"
-          placeholder="Enter your department">
-
-      </div>
+      <input
+        id="department"
+        type="text"
+        placeholder="Enter department"
+      >
 
     </div>
-
 
 
     <div class="notice">
 
-      Your registration will remain
-      <b>pending</b> until an administrator
-      checks your real name, photo and
-      registration information.
+      ✓ Real full name required<br>
+      ✓ Profile photo required<br>
+      ✓ Registration is once only<br>
+      ✓ Administrator approval required<br>
+      ✓ Only approved members can enter JDA Networks
 
     </div>
-
-
-    <button
-      type="submit"
-      class="register-btn"
-      id="registerBtn">
-
-      Submit Registration
-
-    </button>
 
 
     <div
-      class="status"
-      id="registrationStatus">
-    </div>
-
-  </form>
-
-</section>
-
-
-
-<!-- =====================================
-     LOGIN
-====================================== -->
-
-<section
-  id="loginStep"
-  class="form-section">
-
-
-  <button
-    type="button"
-    class="back-btn"
-    id="loginBackBtn">
-
-    ← Back
-
-  </button>
-
-
-  <h2 class="form-title">
-    JDA Networks Login
-  </h2>
-
-
-  <p class="form-description">
-
-    Login using the email and password
-    connected to your approved account.
-
-  </p>
-
-
-  <form id="loginForm">
-
-
-    <div class="field">
-
-      <label for="loginEmail">
-        Email *
-      </label>
-
-      <input
-        id="loginEmail"
-        type="email"
-        placeholder="you@example.com"
-        autocomplete="email"
-        required>
-
-    </div>
-
-
-    <div class="field">
-
-      <label for="loginPassword">
-        Password *
-      </label>
-
-      <input
-        id="loginPassword"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password"
-        required>
-
-    </div>
-
-
-    <button
-      type="submit"
-      class="login-btn"
-      id="loginBtn">
-
-      Log in
-
-    </button>
-
-
-    <div
-      class="status"
-      id="loginStatus">
-    </div>
-
-  </form>
-
-</section>
-
-
-
-<!-- =====================================
-     PENDING SCREEN
-====================================== -->
-
-<section
-  id="pendingStep"
-  class="form-section">
-
-
-  <div class="success-screen">
-
-    <div class="success-icon">
-      ✓
-    </div>
-
-    <h2>
-      Registration Submitted
-    </h2>
-
-    <p>
-
-      Your JDA Networks registration
-      has been submitted successfully.
-
-      <br><br>
-
-      Your account is currently
-      <b style="color:#25d366;">
-        pending approval
-      </b>.
-
-      <br><br>
-
-      An administrator must verify
-      your real name, photo and
-      registration information before
-      you can access JDA Networks.
-
-    </p>
-
-    <button
-      class="login-btn"
-      id="pendingBackBtn">
-
-      Back to Welcome
-
-    </button>
-
-  </div>
-
-</section>
-
-
-</div>
-</div>
-
-
-
-<!-- =====================================
-     FIREBASE
-====================================== -->
-
-<script type="module">
-
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-
-
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-
-
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  setDoc,
-  getDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
-
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
-
-
-
-/* =====================================
-   FIREBASE CONFIG
-====================================== */
-
-const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
-
-  authDomain:
-    "jda-network-fabde.firebaseapp.com",
-
-  projectId:
-    "jda-network-fabde",
-
-  storageBucket:
-    "jda-network-fabde.firebasestorage.app",
-
-  messagingSenderId:
-    "383915852673",
-
-  appId:
-    "1:383915852673:web:4b185c0387ed0bbad1de80"
-
-};
-
-
-const app =
-  initializeApp(firebaseConfig);
-
-const auth =
-  getAuth(app);
-
-const db =
-  getFirestore(app);
-
-const storage =
-  getStorage(app);
-
-
-
-/* =====================================
-   ELEMENTS
-====================================== */
-
-const accountStep =
-  document.getElementById("accountStep");
-
-const registrationStep =
-  document.getElementById("registrationStep");
-
-const loginStep =
-  document.getElementById("loginStep");
-
-const pendingStep =
-  document.getElementById("pendingStep");
-
-
-const studentChoice =
-  document.getElementById("studentChoice");
-
-const staffChoice =
-  document.getElementById("staffChoice");
-
-const continueBtn =
-  document.getElementById("continueBtn");
-
-
-const registrationForm =
-  document.getElementById("registrationForm");
-
-const loginForm =
-  document.getElementById("loginForm");
-
-
-const realNameInput =
-  document.getElementById("realName");
-
-const jdaNumberInput =
-  document.getElementById("jdaNumber");
-
-const emailInput =
-  document.getElementById("email");
-
-const passwordInput =
-  document.getElementById("password");
-
-const confirmPasswordInput =
-  document.getElementById("confirmPassword");
-
-
-const photoInput =
-  document.getElementById("photoInput");
-
-const photoPreview =
-  document.getElementById("photoPreview");
-
-
-const studentFields =
-  document.getElementById("studentFields");
-
-const staffFields =
-  document.getElementById("staffFields");
-
-
-const studentClass =
-  document.getElementById("studentClass");
-
-const studentStream =
-  document.getElementById("studentStream");
-
-const department =
-  document.getElementById("department");
-
-
-const registerBtn =
-  document.getElementById("registerBtn");
-
-const registrationStatus =
-  document.getElementById("registrationStatus");
-
-
-const loginEmail =
-  document.getElementById("loginEmail");
-
-const loginPassword =
-  document.getElementById("loginPassword");
-
-const loginBtn =
-  document.getElementById("loginBtn");
-
-const loginStatus =
-  document.getElementById("loginStatus");
-
-
-
-let accountType = "";
-
-let selectedPhoto = null;
-
-
-
-/* =====================================
-   SCREEN CONTROL
-====================================== */
-
-function showScreen(screen){
-
-  accountStep.style.display = "none";
-
-  registrationStep.classList.remove("active");
-
-  loginStep.classList.remove("active");
-
-  pendingStep.classList.remove("active");
-
-
-  if(screen === "account"){
-
-    accountStep.style.display = "block";
-
-  }
-
-
-  if(screen === "registration"){
-
-    registrationStep.classList.add("active");
-
-  }
-
-
-  if(screen === "login"){
-
-    loginStep.classList.add("active");
-
-  }
-
-
-  if(screen === "pending"){
-
-    pendingStep.classList.add("active");
-
-  }
-
-}
-
-
-
-/* =====================================
-   ACCOUNT SELECTION
-====================================== */
-
-studentChoice.addEventListener(
-  "click",
-  () => {
-
-    accountType = "student";
-
-    studentChoice.classList.add("selected");
-
-    staffChoice.classList.remove("selected");
-
-    continueBtn.disabled = false;
-
-  }
-);
-
-
-staffChoice.addEventListener(
-  "click",
-  () => {
-
-    accountType = "staff";
-
-    staffChoice.classList.add("selected");
-
-    studentChoice.classList.remove("selected");
-
-    continueBtn.disabled = false;
-
-  }
-);
-
-
-
-continueBtn.addEventListener(
-  "click",
-  () => {
-
-    if(!accountType) return;
-
-
-    document.getElementById(
-      "registrationTitle"
-    ).textContent =
-      accountType === "student"
-        ? "Student Registration"
-        : "Staff Registration";
-
-
-    if(accountType === "student"){
-
-      studentFields.classList.remove("hidden");
-
-      staffFields.classList.add("hidden");
-
-      studentClass.required = true;
-
-      studentStream.required = true;
-
-      department.required = false;
-
-    }else{
-
-      studentFields.classList.add("hidden");
-
-      staffFields.classList.remove("hidden");
-
-      studentClass.required = false;
-
-      studentStream.required = false;
-
-      department.required = true;
-
-    }
-
-
-    showScreen("registration");
-
-  }
-);
-
-
-
-/* =====================================
-   BACK
-====================================== */
-
-document.getElementById(
-  "backBtn"
-).addEventListener(
-  "click",
-  () => showScreen("account")
-);
-
-
-document.getElementById(
-  "loginBackBtn"
-).addEventListener(
-  "click",
-  () => showScreen("account")
-);
-
-
-document.getElementById(
-  "showLoginBtn"
-).addEventListener(
-  "click",
-  () => showScreen("login")
-);
-
-
-document.getElementById(
-  "pendingBackBtn"
-).addEventListener(
-  "click",
-  () => {
-
-    showScreen("account");
-
-  }
-);
-
-
-
-/* =====================================
-   PHOTO
-====================================== */
-
-photoInput.addEventListener(
-  "change",
-  event => {
-
-    const file =
-      event.target.files?.[0];
-
-    if(!file) return;
-
-
-    if(!file.type.startsWith("image/")){
-
-      alert(
-        "Please select an image."
-      );
-
-      photoInput.value = "";
-
-      return;
-    }
-
-
-    if(
-      file.size >
-      5 * 1024 * 1024
-    ){
-
-      alert(
-        "Photo must be smaller than 5 MB."
-      );
-
-      photoInput.value = "";
-
-      return;
-    }
-
-
-    selectedPhoto = file;
-
-
-    const reader =
-      new FileReader();
-
-
-    reader.onload =
-      event => {
-
-        photoPreview.innerHTML = `
-          <img
-            src="${event.target.result}"
-            alt="Profile photo">
-        `;
-
-      };
-
-
-    reader.readAsDataURL(file);
-
-  }
-);
-
-
-
-/* =====================================
-   PHONE VALIDATION
-====================================== */
-
-function normalizePhone(value){
-
-  return value
-    .replace(/[^\d+]/g,"")
-    .trim();
-
-}
-
-
-function validPhone(value){
-
-  return /^\+256\d{9}$/.test(value);
-
-}
-
-
-
-/* =====================================
-   REGISTRATION
-====================================== */
-
-registrationForm.addEventListener(
-  "submit",
-  async event => {
-
-    event.preventDefault();
-
-
-    const realName =
-      realNameInput.value
-        .replace(/\s+/g," ")
-        .trim();
-
-
-    const jdaNumber =
-      normalizePhone(
-        jdaNumberInput.value
-      );
-
-
-    const email =
-      emailInput.value
-        .trim()
-        .toLowerCase();
-
-
-    const password =
-      passwordInput.value;
-
-
-    const confirmPassword =
-      confirmPasswordInput.value;
-
-
-
-    /* PHOTO */
-
-    if(!selectedPhoto){
-
-      registrationStatus.textContent =
-        "Profile photo is required.";
-
-      registrationStatus.style.color =
-        "#ff6b6b";
-
-      return;
-    }
-
-
-
-    /* NAME */
-
-    if(
-      realName.split(" ").length < 2
-    ){
-
-      registrationStatus.textContent =
-        "Enter your full real name. Nicknames are not allowed.";
-
-      registrationStatus.style.color =
-        "#ff6b6b";
-
-      return;
-    }
-
-
-
-    /* PHONE */
-
-    if(!validPhone(jdaNumber)){
-
-      registrationStatus.textContent =
-        "Use a Uganda number such as +256771234567.";
-
-      registrationStatus.style.color =
-        "#ff6b6b";
-
-      return;
-    }
-
-
-
-    /* PASSWORD */
-
-    if(password.length < 6){
-
-      registrationStatus.textContent =
-        "Password must contain at least 6 characters.";
-
-      registrationStatus.style.color =
-        "#ff6b6b";
-
-      return;
-    }
-
-
-    if(password !== confirmPassword){
-
-      registrationStatus.textContent =
-        "Passwords do not match.";
-
-      registrationStatus.style.color =
-        "#ff6b6b";
-
-      return;
-    }
-
-
-
-    /* STUDENT */
-
-    if(accountType === "student"){
-
-      if(!studentClass.value){
-
-        registrationStatus.textContent =
-          "Select your class.";
-
-        registrationStatus.style.color =
-          "#ff6b6b";
-
-        return;
-      }
-
-
-      if(!studentStream.value){
-
-        registrationStatus.textContent =
-          "Select your stream.";
-
-        registrationStatus.style.color =
-          "#ff6b6b";
-
-        return;
-      }
-
-    }
-
-
-
-    /* STAFF */
-
-    if(accountType === "staff"){
-
-      if(!department.value.trim()){
-
-        registrationStatus.textContent =
-          "Enter your department.";
-
-        registrationStatus.style.color =
-          "#ff6b6b";
-
-        return;
-      }
-
-    }
-
-
-
-    registerBtn.disabled = true;
-
-    registerBtn.textContent =
-      "Creating account...";
-
-
-    try{
-
-
-      /* =================================
-         CHECK JDA NUMBER
-      ================================= */
-
-      const numberQuery =
-        query(
-          collection(db,"users"),
-          where(
-            "jdaNumber",
-            "==",
-            jdaNumber
-          )
-        );
-
-
-      const numberSnap =
-        await getDocs(numberQuery);
-
-
-      if(!numberSnap.empty){
-
-        throw new Error(
-          "This JDA Networks number is already registered."
-        );
-
-      }
-
-
-
-      /* =================================
-         CREATE AUTH ACCOUNT
-      ================================= */
-
-      registrationStatus.textContent =
-        "Creating secure account...";
-
-
-      const credential =
-        await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-
-      const user =
-        credential.user;
-
-
-
-      /* =================================
-         UPLOAD PHOTO
-      ================================= */
-
-      registrationStatus.textContent =
-        "Uploading profile photo...";
-
-
-      const extension =
-        selectedPhoto.name
-          .split(".")
-          .pop()
-          ?.toLowerCase() || "jpg";
-
-
-      const photoRef =
-        ref(
-          storage,
-          `profilePhotos/${user.uid}.${extension}`
-        );
-
-
-      await uploadBytes(
-        photoRef,
-        selectedPhoto,
-        {
-          contentType:
-            selectedPhoto.type
-        }
-      );
-
-
-      const profilePhoto =
-        await getDownloadURL(
-          photoRef
-        );
-
-
-
-      /* =================================
-         USER DATA
-      ================================= */
-
-      const userData = {
-
-        uid:user.uid,
-
-        email:email,
-
-        realName:realName,
-
-        jdaNumber:jdaNumber,
-
-        accountType:accountType,
-
-        profilePhoto:profilePhoto,
-
-        status:"pending",
-
-        approved:false,
-
-        createdAt:
-          serverTimestamp(),
-
-        updatedAt:
-          serverTimestamp()
-
-      };
-
-
-      if(accountType === "student"){
-
-        userData.class =
-          studentClass.value;
-
-        userData.stream =
-          studentStream.value;
-
-      }
-
-
-      if(accountType === "staff"){
-
-        userData.department =
-          department.value.trim();
-
-      }
-
-
-
-      registrationStatus.textContent =
-        "Submitting registration...";
-
-
-      await setDoc(
-        doc(db,"users",user.uid),
-        userData
-      );
-
-
-
-      /* =================================
-         SIGN OUT
-      ================================= */
-
-      await signOut(auth);
-
-
-
-      /* RESET */
-
-      registrationForm.reset();
-
-      selectedPhoto = null;
-
-      photoPreview.innerHTML =
-        "Photo";
-
-      accountType = "";
-
-      studentChoice.classList.remove(
-        "selected"
-      );
-
-      staffChoice.classList.remove(
-        "selected"
-      );
-
-      continueBtn.disabled = true;
-
-
-
-      showScreen("pending");
-
-
-    }catch(error){
-
-      console.error(
-        "Registration error:",
-        error
-      );
-
-
-      let message =
-        "Registration failed.";
-
-
-      if(
-        error.code ===
-        "auth/email-already-in-use"
-      ){
-
-        message =
-          "That email is already registered.";
-
-      }
-
-      else if(
-        error.code ===
-        "auth/invalid-email"
-      ){
-
-        message =
-          "Please enter a valid email.";
-
-      }
-
-      else if(
-        error.code ===
-        "auth/weak-password"
-      ){
-
-        message =
-          "Password is too weak.";
-
-      }
-
-      else if(error.message){
-
-        message =
-          error.message;
-
-      }
-
-
-      registrationStatus.textContent =
-        message;
-
-      registrationStatus.style.color =
-        "#ff6b6b";
-
-
-    }finally{
-
-      registerBtn.disabled = false;
-
-      registerBtn.textContent =
-        "Submit Registration";
-
-    }
-
-  }
-);
-
-
-
-/* =====================================
-   LOGIN
-====================================== */
-
-loginForm.addEventListener(
-  "submit",
-  async event => {
-
-    event.preventDefault();
-
-
-    const email =
-      loginEmail.value
-        .trim()
-        .toLowerCase();
-
-
-    const password =
-      loginPassword.value;
-
-
-    loginBtn.disabled = true;
-
-    loginBtn.textContent =
-      "Logging in...";
-
-
-    loginStatus.textContent =
-      "Checking account...";
-
-
-    try{
-
-
-      const credential =
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-
-      const user =
-        credential.user;
-
-
-      const userRef =
-        doc(db,"users",user.uid);
-
-
-      const snap =
-        await getDoc(userRef);
-
-
-      if(!snap.exists()){
-
-        await signOut(auth);
-
-        throw new Error(
-          "Account profile not found."
-        );
-
-      }
-
-
-      const profile =
-        snap.data();
-
-
-      /* PENDING */
-
-      if(
-        profile.status ===
-        "pending"
-      ){
-
-        await signOut(auth);
-
-        throw new Error(
-          "Your registration is still waiting for admin approval."
-        );
-
-      }
-
-
-      /* REJECTED */
-
-      if(
-        profile.status ===
-        "rejected"
-      ){
-
-        await signOut(auth);
-
-        throw new Error(
-          "Your registration was rejected."
-        );
-
-      }
-
-
-      /* DISABLED */
-
-      if(
-        profile.status ===
-        "disabled"
-      ){
-
-        await signOut(auth);
-
-        throw new Error(
-          "Your JDA Networks account has been disabled."
-        );
-
-      }
-
-
-      /* APPROVED */
-
-      if(
-        profile.status === "approved" ||
-        profile.status === "active"
-      ){
-
-        loginStatus.textContent =
-          "✓ Approved. Opening JDA Networks...";
-
-        loginStatus.style.color =
-          "#25d366";
-
-
-        /*
-          HOME PAGE WILL BE CREATED
-          IN THE NEXT STEP.
-        */
-
-        setTimeout(
-          () => {
-
-            window.location.href =
-              "./home.html";
-
-          },
-          700
-        );
-
-        return;
-
-      }
-
-
-      await signOut(auth);
-
-
-      throw new Error(
-        "Your account has not been approved."
-      );
-
-
-    }catch(error){
-
-      console.error(
-        "Login error:",
-        error
-      );
-
-
-      loginStatus.textContent =
-        error.message ||
-        "Login failed.";
-
-      loginStatus.style.color =
-        "#ff6b6b";
-
-    }finally{
-
-      loginBtn.disabled = false;
-
-      loginBtn.textContent =
-        "Log in";
-
-    }
-
-  }
-);
-
-
-</script>
-
-</body>
-</html>

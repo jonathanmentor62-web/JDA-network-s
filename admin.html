@@ -1,116 +1,1052 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JDA Networks — Admin FIXED</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JDA Networks — Administrator</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0b141a;color:white}header{position:sticky;top:0;z-index:20;background:#202c33;padding:16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #303c43}header h1{margin:0;font-size:20px}header small{color:#8696a0;display:block;margin-top:4px}button{border:0;cursor:pointer;font-weight:bold}.logout{background:#26343b;color:white;border-radius:20px;padding:9px 14px}.container{max-width:900px;margin:auto;padding:15px}.permission{background:#17252b;border:1px solid #2b3a40;border-radius:15px;padding:15px;margin-bottom:15px}.permission button{background:#25d366;color:#07120c;padding:10px 15px;border-radius:20px;margin-top:10px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}.stat{background:#202c33;border-radius:15px;padding:16px;text-align:center}.stat strong{display:block;font-size:26px}.stat span{color:#8696a0;font-size:12px}.section-title{margin:25px 0 10px;font-size:18px}.application{background:#202c33;border-radius:18px;padding:15px;margin-bottom:12px;display:flex;gap:15px}.application img{width:78px;height:78px;object-fit:cover;border-radius:50%;border:2px solid #25d366;flex-shrink:0}.details{flex:1;min-width:0}.name{font-size:18px;font-weight:bold;margin-bottom:5px}.number{color:#25d366;font-weight:bold;margin-bottom:7px}.info{color:#aebac1;font-size:13px;line-height:1.6;word-break:break-word}.buttons{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.approve{background:#25d366;color:#06130a;padding:9px 16px;border-radius:20px}.reject{background:transparent;border:1px solid #ea4335;color:#ff6b61;padding:8px 16px;border-radius:20px}.disable{background:#3b2b12;color:#ffca67;padding:9px 16px;border-radius:20px}.enable{background:#25d366;color:#06130a;padding:9px 16px;border-radius:20px}.empty{text-align:center;color:#8696a0;padding:40px 10px}.notification{background:#18282e;border-left:4px solid #25d366;border-radius:12px;padding:13px;margin-bottom:10px}.notification.unread{background:#20343b;border-left-color:#f59e0b}.notification-title{font-weight:bold}.notification-message{color:#c8d1d5;font-size:13px;margin-top:5px}.notification-time{color:#8696a0;font-size:11px;margin-top:6px}.error{background:#351b1b;color:#ffb4ae;padding:12px;border-radius:12px;margin-bottom:15px;display:none}.loading{text-align:center;padding:30px;color:#8696a0}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0b141a;
+  color:#e9edef;
+}
+
+header{
+  background:#202c33;
+  padding:18px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid #303c43;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+header h1{
+  margin:0;
+  font-size:23px;
+}
+
+header small{
+  display:block;
+  color:#8696a0;
+  margin-top:5px;
+  font-size:13px;
+}
+
+.logout{
+  background:#26343b;
+  color:#fff;
+  border:0;
+  padding:10px 16px;
+  border-radius:22px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.container{
+  width:100%;
+  max-width:900px;
+  margin:auto;
+  padding:16px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:25px;
+}
+
+.stat{
+  background:#202c33;
+  border-radius:17px;
+  padding:20px 10px;
+  text-align:center;
+}
+
+.stat strong{
+  display:block;
+  font-size:30px;
+  color:#fff;
+}
+
+.stat span{
+  display:block;
+  margin-top:5px;
+  color:#8696a0;
+  font-size:13px;
+}
+
+.section-title{
+  font-size:20px;
+  margin:28px 0 12px;
+}
+
+.application{
+  background:#202c33;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:12px;
+  display:flex;
+  gap:15px;
+}
+
+.application img{
+  width:75px;
+  height:75px;
+  border-radius:50%;
+  object-fit:cover;
+  flex-shrink:0;
+  border:2px solid #25d366;
+}
+
+.details{
+  flex:1;
+  min-width:0;
+}
+
+.name{
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+.number{
+  color:#25d366;
+  font-weight:bold;
+  margin-bottom:7px;
+  word-break:break-word;
+}
+
+.info{
+  color:#aebac1;
+  font-size:13px;
+  line-height:1.6;
+  word-break:break-word;
+}
+
+.buttons{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:13px;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.approve{
+  background:#25d366;
+  color:#06130a;
+  padding:10px 17px;
+  border-radius:22px;
+}
+
+.reject{
+  background:transparent;
+  color:#ff7168;
+  border:1px solid #ea4335;
+  padding:9px 17px;
+  border-radius:22px;
+}
+
+.disable{
+  background:#3b2b12;
+  color:#ffca67;
+  padding:10px 17px;
+  border-radius:22px;
+}
+
+.enable{
+  background:#25d366;
+  color:#06130a;
+  padding:10px 17px;
+  border-radius:22px;
+}
+
+.empty{
+  text-align:center;
+  color:#8696a0;
+  padding:35px 10px;
+  background:#111b21;
+  border-radius:15px;
+}
+
+.loading{
+  text-align:center;
+  color:#8696a0;
+  padding:35px;
+}
+
+.error{
+  display:none;
+  background:#351b1b;
+  color:#ffb4ae;
+  padding:13px;
+  border-radius:12px;
+  margin-bottom:15px;
+  line-height:1.5;
+}
+
+.success{
+  display:none;
+  background:#153c2a;
+  color:#8ff0b4;
+  padding:13px;
+  border-radius:12px;
+  margin-bottom:15px;
+}
+
+@media(max-width:600px){
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .application{
+    padding:14px;
+  }
+
+  .application img{
+    width:65px;
+    height:65px;
+  }
+}
 </style>
 </head>
+
 <body>
-<header><div><h1>JDA Networks</h1><small>Administrator Panel - FIXED</small></div><button class="logout" id="logoutBtn">Logout</button></header>
+
+<header>
+  <div>
+    <h1>JDA Networks</h1>
+    <small>Administrator Panel</small>
+  </div>
+
+  <button class="logout" id="logoutBtn">
+    Logout
+  </button>
+</header>
+
 <div class="container">
-<div id="errorBox" class="error"></div>
-<div id="permissionBox" class="permission" style="display:none;"><strong>🔔 Enable JDA Networks notifications</strong><div style="color:#aebac1;font-size:13px;margin-top:6px;">Allow notifications so your phone can alert you when someone registers.</div><button id="enableNotifications">Enable Notifications</button></div>
-<div class="stats"><div class="stat"><strong id="pendingCount">0</strong><span>Pending</span></div><div class="stat"><strong id="approvedCount">0</strong><span>Approved</span></div><div class="stat"><strong id="disabledCount">0</strong><span>Disabled</span></div></div>
-<h2 class="section-title">🔔 Notifications</h2><div id="notifications"><div class="loading">Loading...</div></div>
-<h2 class="section-title">⏳ Pending Registrations</h2><div id="pendingList"><div class="loading">Loading...</div></div>
-<h2 class="section-title">✅ Approved Members</h2><div id="approvedList"><div class="loading">Loading...</div></div>
-<h2 class="section-title">🚫 Disabled Members</h2><div id="disabledList"><div class="loading">Loading...</div></div>
+
+  <div id="errorBox" class="error"></div>
+  <div id="successBox" class="success"></div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <strong id="pendingCount">0</strong>
+      <span>Pending</span>
+    </div>
+
+    <div class="stat">
+      <strong id="approvedCount">0</strong>
+      <span>Approved</span>
+    </div>
+
+    <div class="stat">
+      <strong id="disabledCount">0</strong>
+      <span>Disabled</span>
+    </div>
+
+  </div>
+
+  <h2 class="section-title">
+    🔔 Approval Requests
+  </h2>
+
+  <div id="pendingList">
+    <div class="loading">
+      Loading registrations...
+    </div>
+  </div>
+
+  <h2 class="section-title">
+    ✅ Approved Members
+  </h2>
+
+  <div id="approvedList">
+    <div class="loading">
+      Loading approved members...
+    </div>
+  </div>
+
+  <h2 class="section-title">
+    🚫 Disabled Members
+  </h2>
+
+  <div id="disabledList">
+    <div class="loading">
+      Loading disabled members...
+    </div>
+  </div>
+
 </div>
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, updateDoc, query, where, serverTimestamp, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-messaging.js";
-const firebaseConfig = { apiKey: "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I", authDomain: "jda-network-fabde.firebaseapp.com", projectId: "jda-network-fabde", storageBucket: "jda-network-fabde.firebasestorage.app", messagingSenderId: "383915852673", appId: "1:383915852673:web:4b185c0387ed0bbad1de80" };
-const app = initializeApp(firebaseConfig); const auth = getAuth(app); const db = getFirestore(app); const messaging = getMessaging(app);
-const VAPID_KEY = "BC4q1e0S3m0Tvd8L4zB0MEF-4w9gPIevFFzOigEMJu9kNmMOlZzT6_CC3mo2Sw2YYb9JbiVxTQ4cy2lE6HfugVI";
-const SUPER_ADMIN_EMAIL = "jonathanmentor62@gmail.com";
-const errorBox = document.getElementById("errorBox"); const permissionBox = document.getElementById("permissionBox"); const enableNotifications = document.getElementById("enableNotifications"); const logoutBtn = document.getElementById("logoutBtn");
-function showError(m){ errorBox.textContent=m; errorBox.style.display="block"; }
-const jdaSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-function playAlert(){ jdaSound.play().catch(()=>{}); if(navigator.vibrate) navigator.vibrate([300,100,300]); }
-function timeAgo(ts){ if(!ts) return "just now"; const d=ts.toDate?ts.toDate():new Date(ts); const diff=Math.floor((Date.now()-d)/1000); if(diff<60) return diff+"s ago"; if(diff<3600) return Math.floor(diff/60)+"m ago"; if(diff<86400) return Math.floor(diff/3600)+"h ago"; return d.toLocaleString(); }
-async function checkAdmin(user){ if(!user){ location.href="./index.html"; return false; } if(user.email===SUPER_ADMIN_EMAIL) return true; try{ const adminDoc=await getDoc(doc(db,"admins",user.uid)); if(adminDoc.exists()) return true; const q=query(collection(db,"admins"),where("email","==",user.email)); const snap=await getDocs(q); if(!snap.empty) return true; showError("Access denied"); setTimeout(()=>location.href="./index.html",2000); return false; }catch(e){ return true; } }
 
-// FIXED: support both realName and fullName
-function getName(data){ return data.realName || data.fullName || data.displayName || data.username || data.name || "Unknown"; }
-function getPhone(data){ return data.jdaNumber || data.phone || data.phoneNumber || ""; }
-function getPhoto(data){ return data.photoURL || data.profileImage || "https://ui-avatars.com/api/?name="+encodeURIComponent(getName(data))+"&background=202c33&color=fff"; }
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
-function renderCard(data,id,status){ 
-  const name=getName(data); const phone=getPhone(data); const email=data.email||""; const photo=getPhoto(data); 
-  const district=data.department || data.district || data.location || data.class || ""; 
-  const stream=data.stream ? " • "+data.stream : "";
-  const created=data.createdAt?timeAgo(data.createdAt):""; 
-  let btns=""; 
-  if(status==="pending"){ btns=`<button class="approve" onclick="approveUser('${id}','${data.__col}')">Approve</button><button class="reject" onclick="rejectUser('${id}','${data.__col}')">Reject</button>`; } 
-  else if(status==="approved"){ btns=`<button class="disable" onclick="disableUser('${id}','${data.__col}')">Disable</button>`; } 
-  else { btns=`<button class="enable" onclick="enableUser('${id}','${data.__col}')">Enable</button><button class="reject" onclick="rejectUser('${id}','${data.__col}')">Delete</button>`; } 
-  return `<div class="application"><img src="${photo}"><div class="details"><div class="name">${name}</div><div class="number">${phone} ${email?'• '+email:''}</div><div class="info">${district?district+stream+'<br>':''}🕒 ${created}<br>UID: ${id.substring(0,10)}...</div><div class="buttons">${btns}</div></div></div>`; 
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
+  authDomain: "jda-network-fabde.firebaseapp.com",
+  projectId: "jda-network-fabde",
+  storageBucket: "jda-network-fabde.firebasestorage.app",
+  messagingSenderId: "383915852673",
+  appId: "1:383915852673:web:4b185c0387ed0bbad1de80"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const ADMIN_EMAIL = "jonathanmentor62@gmail.com";
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const pendingList =
+  document.getElementById("pendingList");
+
+const approvedList =
+  document.getElementById("approvedList");
+
+const disabledList =
+  document.getElementById("disabledList");
+
+const pendingCount =
+  document.getElementById("pendingCount");
+
+const approvedCount =
+  document.getElementById("approvedCount");
+
+const disabledCount =
+  document.getElementById("disabledCount");
+
+const errorBox =
+  document.getElementById("errorBox");
+
+const successBox =
+  document.getElementById("successBox");
+
+const logoutBtn =
+  document.getElementById("logoutBtn");
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function showError(message){
+
+  errorBox.textContent = message;
+  errorBox.style.display = "block";
+
+  setTimeout(()=>{
+    errorBox.style.display = "none";
+  },6000);
 }
-function renderNotification(data){ const name=getName(data); return `<div class="notification ${data.read?'':'unread'}"><div class="notification-title">🔥 New registration: ${name}</div><div class="notification-message">${data.email||''} ${getPhone(data)} wants approval. Status: ${data.status}</div><div class="notification-time">${data.createdAt?timeAgo(data.createdAt):'just now'}</div></div>`; }
 
-let firstPendingLoad=true;
-let allPending=[], allApproved=[], allDisabled=[];
+function showSuccess(message){
 
-function setupRealtime(){
-  const pendingList=document.getElementById("pendingList"); const approvedList=document.getElementById("approvedList"); const disabledList=document.getElementById("disabledList"); const notificationsBox=document.getElementById("notifications"); const pendingCount=document.getElementById("pendingCount"); const approvedCount=document.getElementById("approvedCount"); const disabledCount=document.getElementById("disabledCount");
+  successBox.textContent = message;
+  successBox.style.display = "block";
 
-  function updatePendingUI(){
-    if(allPending.length===0){ pendingList.innerHTML=`<div class="empty">No pending</div>`; notificationsBox.innerHTML=`<div class="empty">No new notifications</div>`; pendingCount.textContent="0"; return; }
-    allPending.sort((a,b)=>{ const ta=a.createdAt?.toMillis?.()||0; const tb=b.createdAt?.toMillis?.()||0; return tb-ta; });
-    pendingList.innerHTML=allPending.map(d=>renderCard(d,d.__id,"pending")).join(""); 
-    notificationsBox.innerHTML=allPending.slice(0,10).map(d=>renderNotification(d)).join(""); 
-    pendingCount.textContent=allPending.length;
-    if(!firstPendingLoad){ if(Notification&&Notification.permission==="granted"){ new Notification("🔥 New JDA Registration!",{body:`${getName(allPending[0])} registered - Approve now!`}); } playAlert(); }
-  }
-  function updateApprovedUI(){
-    approvedCount.textContent=allApproved.length;
-    if(allApproved.length===0){ approvedList.innerHTML=`<div class="empty">No approved</div>`; return; }
-    allApproved.sort((a,b)=>{ const ta=a.approvedAt?.toMillis?.()||a.createdAt?.toMillis?.()||0; const tb=b.approvedAt?.toMillis?.()||b.createdAt?.toMillis?.()||0; return tb-ta; });
-    approvedList.innerHTML=allApproved.map(d=>renderCard(d,d.__id,"approved")).join("");
-  }
-  function updateDisabledUI(){
-    disabledCount.textContent=allDisabled.length;
-    if(allDisabled.length===0){ disabledList.innerHTML=`<div class="empty">No disabled</div>`; return; }
-    disabledList.innerHTML=allDisabled.map(d=>renderCard(d,d.__id,"disabled")).join("");
-  }
-
-  ["members","users"].forEach(colName=>{
-    onSnapshot(query(collection(db,colName),where("status","==","pending")), (snap)=>{
-      allPending=allPending.filter(x=>x.__col!==colName);
-      snap.forEach(docSnap=>{ const d=docSnap.data(); d.__id=docSnap.id; d.__col=colName; allPending.push(d); });
-      updatePendingUI();
-      if(firstPendingLoad) setTimeout(()=>{firstPendingLoad=false;},1500);
-    },(err)=>{ pendingList.innerHTML=`<div class="empty">Error: ${err.message}</div>`; });
-
-    onSnapshot(query(collection(db,colName),where("status","==","approved")), (snap)=>{
-      allApproved=allApproved.filter(x=>x.__col!==colName);
-      snap.forEach(docSnap=>{ const d=docSnap.data(); d.__id=docSnap.id; d.__col=colName; allApproved.push(d); });
-      updateApprovedUI();
-    });
-
-    onSnapshot(query(collection(db,colName),where("status","==","disabled")), (snap)=>{
-      allDisabled=allDisabled.filter(x=>x.__col!==colName);
-      snap.forEach(docSnap=>{ const d=docSnap.data(); d.__id=docSnap.id; d.__col=colName; allDisabled.push(d); });
-      updateDisabledUI();
-    });
-  });
+  setTimeout(()=>{
+    successBox.style.display = "none";
+  },4000);
 }
-window.approveUser=async(id,col)=>{ try{ await updateDoc(doc(db,col,id),{status:"approved", approved:true, approvedAt:serverTimestamp(), updatedAt:serverTimestamp()}); playAlert(); }catch(e){ alert(e.message); } };
-window.rejectUser=async(id,col)=>{ if(!confirm("Reject/delete this?")) return; try{ await updateDoc(doc(db,col,id),{status:"rejected", updatedAt:serverTimestamp()}); }catch(e){ alert(e.message); } };
-window.disableUser=async(id,col)=>{ try{ await updateDoc(doc(db,col,id),{status:"disabled", updatedAt:serverTimestamp()}); }catch(e){ alert(e.message); } };
-window.enableUser=async(id,col)=>{ try{ await updateDoc(doc(db,col,id),{status:"approved", approved:true, updatedAt:serverTimestamp()}); }catch(e){ alert(e.message); } };
-onAuthStateChanged(auth, async(user)=>{
-  const ok=await checkAdmin(user); if(!ok) return; setupRealtime();
-  if("Notification" in window && Notification.permission==="default") permissionBox.style.display="block";
-  try{ const token=await getToken(messaging,{vapidKey:VAPID_KEY}); if(token) await setDoc(doc(db,"adminTokens",user.uid),{token,email:user.email,updatedAt:serverTimestamp()},{merge:true}); }catch(e){}
-  onMessage(messaging,(payload)=>{ playAlert(); if(Notification.permission==="granted"){ new Notification(payload.notification?.title||"🔥 New JDA Registration!",{body:payload.notification?.body||"New user waiting"}); } });
-});
-enableNotifications.onclick=async()=>{ try{ const perm=await Notification.requestPermission(); if(perm==="granted"){ permissionBox.style.display="none"; const token=await getToken(messaging,{vapidKey:VAPID_KEY}); if(auth.currentUser&&token){ await setDoc(doc(db,"adminTokens",auth.currentUser.uid),{token,email:auth.currentUser.email,updatedAt:serverTimestamp()},{merge:true}); } new Notification("✅ JDA Notifications Enabled!",{body:"You will now get alerts"}); playAlert(); } }catch(e){ showError(e.message); } };
-logoutBtn.onclick=()=>signOut(auth).then(()=>location.href="./index.html");
+
+function escapeHTML(value=""){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function getName(data){
+
+  return data.realName ||
+         data.fullName ||
+         "Unknown member";
+}
+
+function getPhoto(data){
+
+  if(data.photoURL){
+    return data.photoURL;
+  }
+
+  return "https://ui-avatars.com/api/?name="
+    + encodeURIComponent(getName(data))
+    + "&background=202c33&color=ffffff";
+}
+
+function formatDate(timestamp){
+
+  if(!timestamp){
+    return "Date unavailable";
+  }
+
+  try{
+
+    const date =
+      timestamp.toDate
+        ? timestamp.toDate()
+        : new Date(timestamp);
+
+    return date.toLocaleString();
+
+  }catch{
+
+    return "Date unavailable";
+  }
+}
+
+
+/* =========================
+   ADMIN CHECK
+========================= */
+
+async function checkAdmin(user){
+
+  if(!user){
+    location.href = "./index.html";
+    return false;
+  }
+
+  /*
+    SUPER ADMIN
+    Your Gmail automatically has
+    administrator access.
+  */
+
+  if(
+    user.email &&
+    user.email.toLowerCase() ===
+    ADMIN_EMAIL.toLowerCase()
+  ){
+
+    return true;
+  }
+
+  /*
+    Other administrators can be added
+    later through the admins collection.
+  */
+
+  try{
+
+    const adminQuery =
+      query(
+        collection(db,"admins"),
+        where("email","==",user.email)
+      );
+
+    const result =
+      await getDocs(adminQuery);
+
+    if(!result.empty){
+      return true;
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+  showError("You do not have administrator access.");
+
+  setTimeout(()=>{
+    location.href="./index.html";
+  },2500);
+
+  return false;
+}
+
+
+/* =========================
+   MEMBER CARD
+========================= */
+
+function memberCard(member,status){
+
+  const id = member.id;
+  const data = member.data;
+
+  const name =
+    escapeHTML(getName(data));
+
+  const phone =
+    escapeHTML(data.jdaNumber || "");
+
+  const email =
+    escapeHTML(data.email || "");
+
+  const photo =
+    escapeHTML(getPhoto(data));
+
+  let education = "";
+
+  if(data.accountType === "student"){
+
+    education =
+      data.className
+        ? escapeHTML(data.className)
+        : "";
+
+    if(data.stream){
+
+      education +=
+        education
+          ? " • " + escapeHTML(data.stream)
+          : escapeHTML(data.stream);
+    }
+
+  }else{
+
+    education =
+      data.department
+        ? escapeHTML(data.department)
+        : "";
+  }
+
+
+  let buttons = "";
+
+  if(status === "pending"){
+
+    buttons = `
+      <button
+        class="approve"
+        onclick="approveMember('${id}')">
+        ✓ Approve
+      </button>
+
+      <button
+        class="reject"
+        onclick="rejectMember('${id}')">
+        Reject
+      </button>
+    `;
+
+  }else if(status === "approved"){
+
+    buttons = `
+      <button
+        class="disable"
+        onclick="disableMember('${id}')">
+        Disable
+      </button>
+    `;
+
+  }else{
+
+    buttons = `
+      <button
+        class="enable"
+        onclick="enableMember('${id}')">
+        Enable
+      </button>
+    `;
+  }
+
+
+  return `
+    <div class="application">
+
+      <img
+        src="${photo}"
+        alt="Profile photo">
+
+      <div class="details">
+
+        <div class="name">
+          ${name}
+        </div>
+
+        <div class="number">
+          ${phone}
+        </div>
+
+        <div class="info">
+
+          ${email
+            ? "📧 " + email + "<br>"
+            : ""}
+
+          ${education
+            ? "🏫 " + education + "<br>"
+            : ""}
+
+          ${data.accountType
+            ? "👤 " +
+              escapeHTML(data.accountType) +
+              "<br>"
+            : ""}
+
+          🕒 Registered:
+          ${formatDate(data.createdAt)}
+
+        </div>
+
+        <div class="buttons">
+          ${buttons}
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================
+   REALTIME USERS
+========================= */
+
+function startRealtime(){
+
+  const usersRef =
+    collection(db,"users");
+
+
+  /*
+    PENDING
+  */
+
+  const pendingQuery =
+    query(
+      usersRef,
+      where("status","==","pending")
+    );
+
+  onSnapshot(
+    pendingQuery,
+    snapshot => {
+
+      const members = [];
+
+      snapshot.forEach(item => {
+
+        members.push({
+          id:item.id,
+          data:item.data()
+        });
+
+      });
+
+      pendingCount.textContent =
+        members.length;
+
+      if(members.length === 0){
+
+        pendingList.innerHTML = `
+          <div class="empty">
+            🎉 No pending registrations.
+          </div>
+        `;
+
+      }else{
+
+        members.sort(
+          (a,b) =>
+            (b.data.createdAt?.seconds || 0) -
+            (a.data.createdAt?.seconds || 0)
+        );
+
+        pendingList.innerHTML =
+          members
+            .map(m => memberCard(m,"pending"))
+            .join("");
+      }
+
+    },
+    error => {
+
+      console.error(error);
+
+      showError(
+        "Could not load registrations: " +
+        error.message
+      );
+    }
+  );
+
+
+  /*
+    APPROVED
+  */
+
+  const approvedQuery =
+    query(
+      usersRef,
+      where("status","==","approved")
+    );
+
+  onSnapshot(
+    approvedQuery,
+    snapshot => {
+
+      const members = [];
+
+      snapshot.forEach(item => {
+
+        members.push({
+          id:item.id,
+          data:item.data()
+        });
+
+      });
+
+      approvedCount.textContent =
+        members.length;
+
+      if(members.length === 0){
+
+        approvedList.innerHTML = `
+          <div class="empty">
+            No approved members yet.
+          </div>
+        `;
+
+      }else{
+
+        approvedList.innerHTML =
+          members
+            .map(m => memberCard(m,"approved"))
+            .join("");
+      }
+
+    },
+    error => {
+
+      console.error(error);
+
+      showError(
+        "Could not load approved members: " +
+        error.message
+      );
+    }
+  );
+
+
+  /*
+    DISABLED
+  */
+
+  const disabledQuery =
+    query(
+      usersRef,
+      where("status","==","disabled")
+    );
+
+  onSnapshot(
+    disabledQuery,
+    snapshot => {
+
+      const members = [];
+
+      snapshot.forEach(item => {
+
+        members.push({
+          id:item.id,
+          data:item.data()
+        });
+
+      });
+
+      disabledCount.textContent =
+        members.length;
+
+      if(members.length === 0){
+
+        disabledList.innerHTML = `
+          <div class="empty">
+            No disabled members.
+          </div>
+        `;
+
+      }else{
+
+        disabledList.innerHTML =
+          members
+            .map(m => memberCard(m,"disabled"))
+            .join("");
+      }
+
+    },
+    error => {
+
+      console.error(error);
+
+      showError(
+        "Could not load disabled members: " +
+        error.message
+      );
+    }
+  );
+
+}
+
+
+/* =========================
+   APPROVE
+========================= */
+
+window.approveMember =
+async function(uid){
+
+  if(
+    !confirm(
+      "Approve this member for JDA Networks?"
+    )
+  ){
+
+    return;
+  }
+
+  try{
+
+    await updateDoc(
+      doc(db,"users",uid),
+      {
+        status:"approved",
+        approved:true,
+        approvedAt:serverTimestamp(),
+        updatedAt:serverTimestamp()
+      }
+    );
+
+    showSuccess(
+      "✓ Member approved successfully."
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    showError(
+      "Approval failed: " +
+      error.message
+    );
+  }
+};
+
+
+/* =========================
+   REJECT
+========================= */
+
+window.rejectMember =
+async function(uid){
+
+  if(
+    !confirm(
+      "Reject this registration?"
+    )
+  ){
+
+    return;
+  }
+
+  try{
+
+    await updateDoc(
+      doc(db,"users",uid),
+      {
+        status:"rejected",
+        approved:false,
+        updatedAt:serverTimestamp()
+      }
+    );
+
+    showSuccess(
+      "Registration rejected."
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    showError(
+      "Reject failed: " +
+      error.message
+    );
+  }
+};
+
+
+/* =========================
+   DISABLE
+========================= */
+
+window.disableMember =
+async function(uid){
+
+  if(
+    !confirm(
+      "Disable this member?"
+    )
+  ){
+
+    return;
+  }
+
+  try{
+
+    await updateDoc(
+      doc(db,"users",uid),
+      {
+        status:"disabled",
+        approved:false,
+        updatedAt:serverTimestamp()
+      }
+    );
+
+    showSuccess(
+      "Member disabled."
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    showError(
+      "Disable failed: " +
+      error.message
+    );
+  }
+};
+
+
+/* =========================
+   ENABLE
+========================= */
+
+window.enableMember =
+async function(uid){
+
+  if(
+    !confirm(
+      "Enable this member again?"
+    )
+  ){
+
+    return;
+  }
+
+  try{
+
+    await updateDoc(
+      doc(db,"users",uid),
+      {
+        status:"approved",
+        approved:true,
+        updatedAt:serverTimestamp()
+      }
+    );
+
+    showSuccess(
+      "Member enabled."
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    showError(
+      "Enable failed: " +
+      error.message
+    );
+  }
+};
+
+
+/* =========================
+   AUTH
+========================= */
+
+onAuthStateChanged(
+  auth,
+  async user => {
+
+    const allowed =
+      await checkAdmin(user);
+
+    if(!allowed){
+      return;
+    }
+
+    startRealtime();
+
+  }
+);
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+logoutBtn.onclick =
+async function(){
+
+  try{
+
+    await signOut(auth);
+
+    location.href =
+      "./index.html";
+
+  }catch(error){
+
+    showError(error.message);
+  }
+
+};
+
 </script>
+
 </body>
 </html>

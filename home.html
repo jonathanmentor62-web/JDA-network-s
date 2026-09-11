@@ -63,7 +63,7 @@ button{
 .header-row{
   display:flex;
   align-items:center;
-  gap:8px;
+  gap:5px;
 }
 
 .brand{
@@ -75,7 +75,7 @@ button{
 }
 
 
-/* ================= ADMIN BUTTON ================= */
+/* ================= ADMIN PANEL ================= */
 
 .admin-panel-button{
   width:42px;
@@ -84,7 +84,7 @@ button{
   border-radius:50%;
   background:transparent;
   color:#e9edef;
-  display:none;
+  display:flex;
   align-items:center;
   justify-content:center;
   flex-shrink:0;
@@ -95,8 +95,8 @@ button{
 }
 
 .admin-icon{
-  width:22px;
-  height:22px;
+  width:23px;
+  height:23px;
   display:block;
 }
 
@@ -126,11 +126,11 @@ button{
 }
 
 
-/* WhatsApp-style three dots */
+/* ================= WHATSAPP THREE DOTS ================= */
 
 .whatsapp-menu-icon{
-  width:5px;
-  height:22px;
+  width:6px;
+  height:24px;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
@@ -138,8 +138,8 @@ button{
 }
 
 .whatsapp-menu-icon span{
-  width:4px;
-  height:4px;
+  width:5px;
+  height:5px;
   border-radius:50%;
   background:#e9edef;
 }
@@ -368,6 +368,49 @@ button{
 }
 
 
+/* ================= GROUPS ================= */
+
+.group-list{
+  padding:8px 18px 25px;
+}
+
+.group-card{
+  background:#202c33;
+  border-radius:14px;
+  padding:17px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.group-icon{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:#26343b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+
+.group-info{
+  flex:1;
+}
+
+.group-name{
+  font-size:15px;
+  font-weight:600;
+}
+
+.group-description{
+  color:#8696a0;
+  font-size:12px;
+  margin-top:4px;
+}
+
+
 /* ================= PROFILE ================= */
 
 .profile-header{
@@ -571,6 +614,48 @@ button{
 }
 
 
+/* ================= ADMIN MESSAGE ================= */
+
+.admin-message{
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:calc(100% - 40px);
+  max-width:400px;
+  background:#202c33;
+  border-radius:16px;
+  padding:22px;
+  text-align:center;
+  z-index:100000;
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  display:none;
+}
+
+.admin-message-title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.admin-message-text{
+  color:#8696a0;
+  font-size:14px;
+  line-height:1.5;
+  margin-bottom:18px;
+}
+
+.admin-message-close{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:12px;
+  background:#25d366;
+  color:#062b1d;
+  font-weight:700;
+}
+
+
 /* ================= MOBILE ================= */
 
 @media(max-width:480px){
@@ -618,6 +703,34 @@ button{
 </div>
 
 
+<!-- ================= ADMIN ACCESS MESSAGE ================= -->
+
+<div
+  class="admin-message"
+  id="adminMessage"
+>
+
+  <div class="admin-message-title">
+    Admin Panel
+  </div>
+
+  <div
+    class="admin-message-text"
+    id="adminMessageText"
+  >
+    Checking administrator access...
+  </div>
+
+  <button
+    class="admin-message-close"
+    id="adminMessageClose"
+  >
+    OK
+  </button>
+
+</div>
+
+
 <!-- ================= APP ================= -->
 
 <main id="app">
@@ -630,7 +743,8 @@ button{
   <div class="header-row">
 
 
-    <!-- ADMIN PANEL -->
+    <!-- ADMIN PANEL
+         ALWAYS VISIBLE -->
 
     <button
       class="admin-panel-button"
@@ -647,7 +761,7 @@ button{
       >
 
         <path
-          d="M4 5H20"
+          d="M4 6H20"
           stroke="currentColor"
           stroke-width="2"
           stroke-linecap="round"
@@ -661,7 +775,7 @@ button{
         />
 
         <path
-          d="M4 19H20"
+          d="M4 18H20"
           stroke="currentColor"
           stroke-width="2"
           stroke-linecap="round"
@@ -688,7 +802,7 @@ button{
       </button>
 
 
-      <!-- WHATSAPP STYLE THREE DOTS -->
+      <!-- EXACT SIMPLE WHATSAPP-STYLE VERTICAL DOTS -->
 
       <button
         class="icon-button"
@@ -697,11 +811,9 @@ button{
       >
 
         <span class="whatsapp-menu-icon">
-
           <span></span>
           <span></span>
           <span></span>
-
         </span>
 
       </button>
@@ -844,7 +956,6 @@ button{
 
 
   <div class="class-list">
-
 
     <button
       class="class-button"
@@ -997,6 +1108,53 @@ button{
 </section>
 
 
+<!-- ================= GROUPS ================= -->
+
+<section
+  class="screen"
+  data-screen="groups"
+>
+
+  <div class="page-container">
+
+    <div class="page-title">
+      Groups
+    </div>
+
+    <div class="page-subtitle">
+      JDA Networks groups.
+    </div>
+
+  </div>
+
+
+  <div class="group-list">
+
+    <div class="group-card">
+
+      <div class="group-icon">
+        👥
+      </div>
+
+      <div class="group-info">
+
+        <div class="group-name">
+          JDA Networks
+        </div>
+
+        <div class="group-description">
+          School groups will appear here.
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
 <!-- ================= CALLS ================= -->
 
 <section
@@ -1062,7 +1220,6 @@ button{
 
   <div class="profile-details">
 
-
     <div class="profile-item">
 
       <div class="profile-label">
@@ -1110,7 +1267,6 @@ button{
 
     </div>
 
-
   </div>
 
 </section>
@@ -1137,7 +1293,6 @@ button{
 
 
   <div class="settings-list">
-
 
     <div class="settings-row">
 
@@ -1201,7 +1356,6 @@ button{
 
     </div>
 
-
   </div>
 
 
@@ -1232,12 +1386,10 @@ button{
 
 <nav class="bottom-nav">
 
-
   <button
     class="nav-button active"
     data-page="chats"
   >
-
     <span class="nav-icon">
       💬
     </span>
@@ -1245,7 +1397,6 @@ button{
     <span>
       Chats
     </span>
-
   </button>
 
 
@@ -1253,7 +1404,6 @@ button{
     class="nav-button"
     data-page="updates"
   >
-
     <span class="nav-icon">
       ◉
     </span>
@@ -1261,7 +1411,6 @@ button{
     <span>
       Updates
     </span>
-
   </button>
 
 
@@ -1269,7 +1418,6 @@ button{
     class="nav-button"
     data-page="groups"
   >
-
     <span class="nav-icon">
       👥
     </span>
@@ -1277,7 +1425,6 @@ button{
     <span>
       Groups
     </span>
-
   </button>
 
 
@@ -1285,7 +1432,6 @@ button{
     class="nav-button"
     data-page="calls"
   >
-
     <span class="nav-icon">
       ☎
     </span>
@@ -1293,9 +1439,7 @@ button{
     <span>
       Calls
     </span>
-
   </button>
-
 
 </nav>
 
@@ -1343,6 +1487,7 @@ document.addEventListener(
 
     /* =========================
        ADMIN PANEL
+       BUTTON IS ALWAYS VISIBLE
     ========================= */
 
     const adminButton =
@@ -1350,61 +1495,156 @@ document.addEventListener(
         "adminPanelBtn"
       );
 
-    /*
-      The Admin Panel is shown ONLY
-      for the official administrator.
-    */
+    const adminMessage =
+      document.getElementById(
+        "adminMessage"
+      );
 
-    import("./firebase.js")
-      .then(({auth}) => {
+    const adminMessageText =
+      document.getElementById(
+        "adminMessageText"
+      );
 
-        auth.onAuthStateChanged(
-          user => {
+    const adminMessageClose =
+      document.getElementById(
+        "adminMessageClose"
+      );
+
+
+    if(adminMessageClose){
+
+      adminMessageClose.addEventListener(
+        "click",
+        () => {
+
+          adminMessage.style.display =
+            "none";
+
+        }
+      );
+
+    }
+
+
+    /* =========================
+       ADMIN BUTTON CLICK
+    ========================= */
+
+    if(adminButton){
+
+      adminButton.addEventListener(
+        "click",
+        async () => {
+
+          adminMessage.style.display =
+            "block";
+
+          adminMessageText.textContent =
+            "Checking administrator access...";
+
+
+          try{
+
+            const {
+              auth,
+              db
+            } = await import(
+              "./firebase.js"
+            );
+
+
+            const {
+              onAuthStateChanged,
+              getAuth
+            } = await import(
+              "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js"
+            );
+
+
+            const {
+              doc,
+              getDoc
+            } = await import(
+              "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js"
+            );
+
+
+            const user =
+              auth.currentUser;
+
+
+            if(!user){
+
+              adminMessageText.textContent =
+                "Please log in to JDA Networks first.";
+
+              return;
+
+            }
+
+
+            /* SUPER ADMIN */
 
             if(
-              user &&
               user.email &&
               user.email.toLowerCase() ===
               "jonathanmentor62@gmail.com"
             ){
 
-              adminButton.style.display =
-                "flex";
+              window.location.href =
+                "./admin.html";
 
-            }else{
-
-              adminButton.style.display =
-                "none";
+              return;
 
             }
 
+
+            /* OTHER APPROVED ADMINS */
+
+            const adminRef =
+              doc(
+                db,
+                "admins",
+                user.uid
+              );
+
+
+            const adminSnap =
+              await getDoc(
+                adminRef
+              );
+
+
+            if(adminSnap.exists()){
+
+              window.location.href =
+                "./admin.html";
+
+              return;
+
+            }
+
+
+            adminMessageText.textContent =
+              "This area is restricted to JDA Networks administrators.";
+
           }
-        );
+          catch(error){
 
-      })
-      .catch(error => {
+            console.error(
+              "Admin access error:",
+              error
+            );
 
-        console.error(
-          "Admin button error:",
-          error
-        );
+            adminMessageText.textContent =
+              "Administrator access could not be checked. Please try again.";
 
-      });
+          }
 
+        }
+      );
 
-    /* =========================
-       ADMIN PANEL OPEN
-    ========================= */
-
-    adminButton.addEventListener(
-      "click",
-      () => {
-
-        window.location.href =
-          "./admin.html";
-
-      }
-    );
+    }
 
 
     /* =========================
@@ -1425,19 +1665,7 @@ document.addEventListener(
               button.dataset.page;
 
 
-            document
-              .querySelectorAll(
-                "[data-screen]"
-              )
-              .forEach(screen => {
-
-                screen.classList.toggle(
-                  "active",
-                  screen.dataset.screen ===
-                  page
-                );
-
-              });
+            showScreen(page);
 
 
             document
@@ -1450,6 +1678,21 @@ document.addEventListener(
                   "active",
                   nav.dataset.page ===
                   page
+                );
+
+              });
+
+
+            /* Reset upper filter */
+
+            document
+              .querySelectorAll(
+                ".filter-button"
+              )
+              .forEach(filter => {
+
+                filter.classList.remove(
+                  "active"
                 );
 
               });
@@ -1498,17 +1741,23 @@ document.addEventListener(
 
             if(filter === "students"){
 
-              showScreen("students");
+              showScreen(
+                "students"
+              );
 
             }
             else if(filter === "staff"){
 
-              showScreen("staff");
+              showScreen(
+                "staff"
+              );
 
             }
             else{
 
-              showScreen("chats");
+              showScreen(
+                "chats"
+              );
 
             }
 
@@ -1579,7 +1828,7 @@ document.addEventListener(
 
 
     /* =========================
-       WHATSAPP STYLE MENU
+       THREE DOT MENU
     ========================= */
 
     const menuButton =
@@ -1604,14 +1853,18 @@ document.addEventListener(
 
           if(choice === "1"){
 
-            openPage("profile");
+            openPage(
+              "profile"
+            );
 
           }
 
 
           if(choice === "2"){
 
-            openPage("settings");
+            openPage(
+              "settings"
+            );
 
           }
 
@@ -1653,19 +1906,7 @@ function showScreen(page){
 
 function openPage(page){
 
-  document
-    .querySelectorAll(
-      "[data-screen]"
-    )
-    .forEach(screen => {
-
-      screen.classList.toggle(
-        "active",
-        screen.dataset.screen ===
-        page
-      );
-
-    });
+  showScreen(page);
 
 
   document

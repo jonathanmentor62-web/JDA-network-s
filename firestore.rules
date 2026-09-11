@@ -4,22 +4,19 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
 
-
     /* =====================================
-       BASIC SECURITY FUNCTIONS
+       BASIC SECURITY
     ===================================== */
 
     function signedIn() {
       return request.auth != null;
     }
 
-
     function superAdmin() {
       return signedIn()
         && request.auth.token.email
            == "jonathanmentor62@gmail.com";
     }
-
 
     function admin() {
       return superAdmin()
@@ -31,14 +28,12 @@ service cloud.firestore {
         );
     }
 
-
     function myUser() {
       return signedIn()
         && exists(
           /databases/$(database)/documents/users/$(request.auth.uid)
         );
     }
-
 
     function approved() {
       return myUser()
@@ -48,7 +43,6 @@ service cloud.firestore {
     }
 
 
-
     /* =====================================
        USERS
     ===================================== */
@@ -56,10 +50,8 @@ service cloud.firestore {
     match /users/{uid} {
 
       /*
-       NEW REGISTRATION
-
-       A person can create only their own
-       account and it must start as pending.
+       New registration must ALWAYS begin
+       as pending and unapproved.
       */
 
       allow create:
@@ -76,10 +68,9 @@ service cloud.firestore {
 
 
       /*
-       Administrators can review users.
-
-       Approved members can access the
-       JDA member directory.
+       Admins can review users.
+       Approved members can see the
+       member directory.
       */
 
       allow read:
@@ -87,12 +78,13 @@ service cloud.firestore {
 
 
       /*
-       ONLY ADMINISTRATORS can change:
+       ONLY ADMINISTRATORS can modify
+       member records.
 
-       - approval
-       - rejection
-       - disabled status
-       - identity/profile information
+       This prevents an approved member
+       from changing their own name,
+       photo, JDA number, class, stream,
+       department or approval status.
       */
 
       allow update:
@@ -101,7 +93,7 @@ service cloud.firestore {
 
       /*
        Only the super administrator can
-       permanently delete a user document.
+       permanently delete a user.
       */
 
       allow delete:
@@ -110,20 +102,11 @@ service cloud.firestore {
     }
 
 
-
     /* =====================================
-       ADMIN ACCOUNTS
+       ADMINS
     ===================================== */
 
     match /admins/{uid} {
-
-      /*
-       An administrator can see their own
-       admin record.
-
-       Existing administrators can also
-       see admin records.
-      */
 
       allow read:
         if signedIn()
@@ -132,10 +115,9 @@ service cloud.firestore {
           || admin()
         );
 
-
       /*
-       Only the super administrator can
-       create, change or remove administrators.
+       Only the main administrator can
+       create/update/delete administrators.
       */
 
       allow create, update, delete:
@@ -144,25 +126,11 @@ service cloud.firestore {
     }
 
 
-
     /* =====================================
        PRIVATE CONVERSATIONS
     ===================================== */
 
     match /conversations/{conversationId} {
-
-      /*
-       A conversation must contain exactly
-       two participant UIDs.
-
-       Example:
-
-       participantIds:
-       [
-         "USER_A",
-         "USER_B"
-       ]
-      */
 
       allow read:
         if approved()
@@ -170,11 +138,6 @@ service cloud.firestore {
         && request.auth.uid
            in resource.data.participantIds;
 
-
-      /*
-       Only an approved member can create
-       a conversation involving themselves.
-      */
 
       allow create:
         if approved()
@@ -184,12 +147,6 @@ service cloud.firestore {
            in request.resource.data.participantIds;
 
 
-      /*
-       Participants can update conversation
-       metadata, but cannot change who is
-       participating.
-      */
-
       allow update:
         if approved()
         && request.auth.uid
@@ -198,13 +155,8 @@ service cloud.firestore {
            == resource.data.participantIds;
 
 
-      /*
-       Admins can delete conversations.
-      */
-
       allow delete:
         if admin();
-
 
 
       /* =================================
@@ -213,11 +165,6 @@ service cloud.firestore {
 
       match /messages/{messageId} {
 
-        /*
-         Only conversation participants
-         can read messages.
-        */
-
         allow read:
           if approved()
           && request.auth.uid
@@ -225,13 +172,6 @@ service cloud.firestore {
                /databases/$(database)/documents/conversations/$(conversationId)
              ).data.participantIds;
 
-
-        /*
-         A member can send only as themselves.
-
-         The receiver must also be one of
-         the two conversation participants.
-        */
 
         allow create:
           if approved()
@@ -268,10 +208,6 @@ service cloud.firestore {
           if false;
 
 
-        /*
-         Admins can remove messages.
-        */
-
         allow delete:
           if admin();
 
@@ -280,19 +216,11 @@ service cloud.firestore {
     }
 
 
-
     /* =====================================
        CONNECTIONS
     ===================================== */
 
     match /connections/{connectionId} {
-
-      /*
-       A connection document contains:
-
-       requesterId
-       receiverId
-      */
 
       allow read:
         if approved()
@@ -305,11 +233,6 @@ service cloud.firestore {
         );
 
 
-      /*
-       Users can create a connection request
-       only as themselves.
-      */
-
       allow create:
         if approved()
         && request.resource.data.requesterId
@@ -317,11 +240,6 @@ service cloud.firestore {
         && request.resource.data.receiverId
            != request.auth.uid;
 
-
-      /*
-       Either participant can remove the
-       connection.
-      */
 
       allow delete:
         if approved()
@@ -336,7 +254,6 @@ service cloud.firestore {
     }
 
 
-
     /* =====================================
        NOTIFICATIONS
     ===================================== */
@@ -344,8 +261,8 @@ service cloud.firestore {
     match /notifications/{notificationId} {
 
       /*
-       A user can read only notifications
-       belonging to that user.
+       Users can read only notifications
+       belonging to themselves.
       */
 
       allow read:
@@ -355,21 +272,76 @@ service cloud.firestore {
 
 
       /*
-       A newly registering member can create
-       the temporary registration event.
+       The SERVER / Cloud Function creates
+       registration notifications.
 
-       IMPORTANT:
-       This does NOT itself send a phone push.
-       The server notification system will
-       handle the actual push later.
+       Normal users cannot create fake
+       administrator notifications.
       */
 
       allow create:
-        if signedIn()
-        && request.resource.data.type
-           == "new_registration"
+        if admin();
 
+
+      /*
+       Users may mark their own notification
+       as read, but cannot transfer it to
+       another account.
+      */
+
+      allow update:
+        if signedIn()
+        && resource.data.userId
+           == request.auth.uid
+        && request.resource.data.userId
+           == resource.data.userId
+        && request.resource.data.type
+           == resource.data.type;
+
+
+      allow delete:
+        if admin();
+
+    }
+
+
+    /* =====================================
+       DEVICE TOKENS
+    ===================================== */
+
+    match /deviceTokens/{tokenId} {
+
+      /*
+       A signed-in user can save only a
+       device token belonging to themselves.
+      */
+
+      allow create, update:
+        if signedIn()
         && request.resource.data.userId
            == request.auth.uid
+        && request.resource.data.token is string
+        && request.resource.data.token.size() > 0;
 
-        && request.resource.data.member
+
+      /*
+       Users can remove their own token.
+      */
+
+      allow delete:
+        if signedIn()
+        && resource.data.userId
+           == request.auth.uid;
+
+
+      /*
+       Device tokens are private.
+      */
+
+      allow read:
+        if false;
+
+    }
+
+  }
+}

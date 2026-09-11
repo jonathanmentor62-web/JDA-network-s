@@ -34,16 +34,25 @@ btn.addEventListener("click", async ()=>{
   }
   btn.innerText = "Sending..."; btn.disabled = true;
 
-  // Once only check
-  const q = query(collection(db,"jda_users_v2"), where("jdaNumber","==",jdaNumber));
-  const snap = await getDocs(q);
-  if(!snap.empty){ alert("This JDA Number already used! Once only Boss!"); btn.innerText="Register & Go Live 🚀"; btn.disabled=false; return; }
+  try {
+    // Once only check
+    const q = query(collection(db,"jda_users_v2"), where("jdaNumber","==",jdaNumber));
+    const snap = await getDocs(q);
+    if(!snap.empty){ alert("This JDA Number already used! Once only Boss!"); btn.innerText="Register & Go Live 🚀"; btn.disabled=false; return; }
 
-  await addDoc(collection(db,"jda_users_v2"),{
-    realName, jdaNumber, profilePhoto: photoBase64,
-    status:"pending", createdAt: new Date()
-  });
-  alert("✓ Sent to Admin! Wait approval!");
-  realNameInput.value=""; jdaNumberInput.value=""; photoBase64=""; preview.innerHTML="";
+    await addDoc(collection(db,"jda_users_v2"),{
+      realName, jdaNumber, profilePhoto: photoBase64,
+      status:"pending", createdAt: new Date(),
+      // --- ADDED NEEDED ONLY ---
+      approved: false,
+      isLive: false
+      // --- END ADDED ---
+    });
+    alert("✓ Sent to Admin! Wait approval!");
+    realNameInput.value=""; jdaNumberInput.value=""; photoBase64=""; preview.innerHTML="";
+  } catch(err){
+    alert("Error: " + err.message);
+    console.error(err);
+  }
   btn.innerText="Register & Go Live 🚀"; btn.disabled=false;
 });

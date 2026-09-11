@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JDA Networks — Administrator</title>
 
 <style>
@@ -29,24 +29,22 @@ header{
 
 header h1{
   margin:0;
-  font-size:23px;
+  font-size:22px;
 }
 
 header small{
   display:block;
   color:#8696a0;
   margin-top:5px;
-  font-size:13px;
 }
 
 .logout{
   background:#26343b;
-  color:#fff;
+  color:white;
   border:0;
   padding:10px 16px;
   border-radius:22px;
   font-weight:bold;
-  cursor:pointer;
 }
 
 .container{
@@ -54,6 +52,20 @@ header small{
   max-width:900px;
   margin:auto;
   padding:16px;
+}
+
+.admin-account{
+  background:#111b21;
+  border:1px solid #303c43;
+  border-radius:15px;
+  padding:12px 15px;
+  margin-bottom:15px;
+  color:#aebac1;
+  font-size:13px;
+}
+
+.admin-account b{
+  color:#25d366;
 }
 
 .stats{
@@ -73,7 +85,6 @@ header small{
 .stat strong{
   display:block;
   font-size:30px;
-  color:#fff;
 }
 
 .stat span{
@@ -121,7 +132,6 @@ header small{
   color:#25d366;
   font-weight:bold;
   margin-bottom:7px;
-  word-break:break-word;
 }
 
 .info{
@@ -173,18 +183,12 @@ button{
   border-radius:22px;
 }
 
-.empty{
+.empty,.loading{
   text-align:center;
   color:#8696a0;
   padding:35px 10px;
   background:#111b21;
   border-radius:15px;
-}
-
-.loading{
-  text-align:center;
-  color:#8696a0;
-  padding:35px;
 }
 
 .error{
@@ -238,11 +242,14 @@ button{
 
 <div class="container">
 
+  <div id="accountBox" class="admin-account">
+    Checking administrator account...
+  </div>
+
   <div id="errorBox" class="error"></div>
   <div id="successBox" class="success"></div>
 
   <div class="stats">
-
     <div class="stat">
       <strong id="pendingCount">0</strong>
       <span>Pending</span>
@@ -257,37 +264,24 @@ button{
       <strong id="disabledCount">0</strong>
       <span>Disabled</span>
     </div>
-
   </div>
 
-  <h2 class="section-title">
-    🔔 Approval Requests
-  </h2>
+  <h2 class="section-title">🔔 Approval Requests</h2>
 
   <div id="pendingList">
-    <div class="loading">
-      Loading registrations...
-    </div>
+    <div class="loading">Loading registrations...</div>
   </div>
 
-  <h2 class="section-title">
-    ✅ Approved Members
-  </h2>
+  <h2 class="section-title">✅ Approved Members</h2>
 
   <div id="approvedList">
-    <div class="loading">
-      Loading approved members...
-    </div>
+    <div class="loading">Loading approved members...</div>
   </div>
 
-  <h2 class="section-title">
-    🚫 Disabled Members
-  </h2>
+  <h2 class="section-title">🚫 Disabled Members</h2>
 
   <div id="disabledList">
-    <div class="loading">
-      Loading disabled members...
-    </div>
+    <div class="loading">Loading disabled members...</div>
   </div>
 
 </div>
@@ -335,7 +329,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const ADMIN_EMAIL = "jonathanmentor62@gmail.com";
+const SUPER_ADMIN =
+  "jonathanmentor62@gmail.com";
 
 
 /* =========================
@@ -366,12 +361,15 @@ const errorBox =
 const successBox =
   document.getElementById("successBox");
 
+const accountBox =
+  document.getElementById("accountBox");
+
 const logoutBtn =
   document.getElementById("logoutBtn");
 
 
 /* =========================
-   HELPERS
+   MESSAGES
 ========================= */
 
 function showError(message){
@@ -379,9 +377,6 @@ function showError(message){
   errorBox.textContent = message;
   errorBox.style.display = "block";
 
-  setTimeout(()=>{
-    errorBox.style.display = "none";
-  },6000);
 }
 
 function showSuccess(message){
@@ -392,7 +387,13 @@ function showSuccess(message){
   setTimeout(()=>{
     successBox.style.display = "none";
   },4000);
+
 }
+
+
+/* =========================
+   ESCAPE
+========================= */
 
 function escapeHTML(value=""){
 
@@ -402,31 +403,53 @@ function escapeHTML(value=""){
     .replaceAll(">","&gt;")
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
+
 }
+
+
+/* =========================
+   NAME
+========================= */
 
 function getName(data){
 
   return data.realName ||
          data.fullName ||
          "Unknown member";
+
 }
+
+
+/* =========================
+   PHOTO
+========================= */
 
 function getPhoto(data){
 
-  if(data.photoURL){
+  if(data.photoURL)
     return data.photoURL;
-  }
 
-  return "https://ui-avatars.com/api/?name="
-    + encodeURIComponent(getName(data))
-    + "&background=202c33&color=ffffff";
+  if(data.profilePhoto)
+    return data.profilePhoto;
+
+  if(data.photoUrl)
+    return data.photoUrl;
+
+  return "https://ui-avatars.com/api/?name="+
+    encodeURIComponent(getName(data))+
+    "&background=202c33&color=ffffff";
+
 }
+
+
+/* =========================
+   DATE
+========================= */
 
 function formatDate(timestamp){
 
-  if(!timestamp){
+  if(!timestamp)
     return "Date unavailable";
-  }
 
   try{
 
@@ -440,7 +463,9 @@ function formatDate(timestamp){
   }catch{
 
     return "Date unavailable";
+
   }
+
 }
 
 
@@ -451,58 +476,82 @@ function formatDate(timestamp){
 async function checkAdmin(user){
 
   if(!user){
-    location.href = "./index.html";
+
+    location.href="./index.html";
     return false;
+
   }
 
-  /*
-    SUPER ADMIN
-    Your Gmail automatically has
-    administrator access.
-  */
 
-  if(
-    user.email &&
-    user.email.toLowerCase() ===
-    ADMIN_EMAIL.toLowerCase()
-  ){
+  const email =
+    (user.email || "").trim().toLowerCase();
+
+
+  accountBox.innerHTML =
+    "Signed in as: <b>"+
+    escapeHTML(user.email || "No email")+
+    "</b>";
+
+
+  /* SUPER ADMIN */
+
+  if(email === SUPER_ADMIN.toLowerCase()){
+
+    accountBox.innerHTML =
+      "Administrator: <b>"+
+      escapeHTML(user.email)+
+      "</b> ✓ Super Admin";
 
     return true;
+
   }
 
-  /*
-    Other administrators can be added
-    later through the admins collection.
-  */
+
+  /* OTHER ADMIN */
 
   try{
 
     const adminQuery =
       query(
         collection(db,"admins"),
-        where("email","==",user.email)
+        where("uid","==",user.uid)
       );
 
     const result =
       await getDocs(adminQuery);
 
     if(!result.empty){
+
+      accountBox.innerHTML =
+        "Administrator: <b>"+
+        escapeHTML(user.email || "")+
+        "</b> ✓ Admin";
+
       return true;
+
     }
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "Admin collection error:",
+      error
+    );
 
   }
 
-  showError("You do not have administrator access.");
 
-  setTimeout(()=>{
-    location.href="./index.html";
-  },2500);
+  showError(
+    "Administrator access denied.\n\n"+
+    "Currently signed in as: "+
+    (user.email || "Unknown account")+
+    "\n\n"+
+    "The Super Admin account is: "+
+    SUPER_ADMIN
+  );
 
   return false;
+
 }
 
 
@@ -518,8 +567,13 @@ function memberCard(member,status){
   const name =
     escapeHTML(getName(data));
 
-  const phone =
-    escapeHTML(data.jdaNumber || "");
+  const number =
+    escapeHTML(
+      data.jdaNumber ||
+      data.phone ||
+      data.phoneNumber ||
+      ""
+    );
 
   const email =
     escapeHTML(data.email || "");
@@ -527,37 +581,43 @@ function memberCard(member,status){
   const photo =
     escapeHTML(getPhoto(data));
 
-  let education = "";
+  let education="";
 
   if(data.accountType === "student"){
 
     education =
-      data.className
-        ? escapeHTML(data.className)
-        : "";
+      data.className ||
+      data.class ||
+      data.studentClass ||
+      "";
+
+    education =
+      escapeHTML(education);
 
     if(data.stream){
 
       education +=
-        education
-          ? " • " + escapeHTML(data.stream)
-          : escapeHTML(data.stream);
+        " • "+
+        escapeHTML(data.stream);
+
     }
 
   }else{
 
     education =
-      data.department
-        ? escapeHTML(data.department)
-        : "";
+      escapeHTML(
+        data.department || ""
+      );
+
   }
 
 
-  let buttons = "";
+  let buttons="";
 
-  if(status === "pending"){
 
-    buttons = `
+  if(status==="pending"){
+
+    buttons=`
       <button
         class="approve"
         onclick="approveMember('${id}')">
@@ -571,9 +631,11 @@ function memberCard(member,status){
       </button>
     `;
 
-  }else if(status === "approved"){
+  }
 
-    buttons = `
+  else if(status==="approved"){
+
+    buttons=`
       <button
         class="disable"
         onclick="disableMember('${id}')">
@@ -581,15 +643,18 @@ function memberCard(member,status){
       </button>
     `;
 
-  }else{
+  }
 
-    buttons = `
+  else{
+
+    buttons=`
       <button
         class="enable"
         onclick="enableMember('${id}')">
         Enable
       </button>
     `;
+
   }
 
 
@@ -607,24 +672,30 @@ function memberCard(member,status){
         </div>
 
         <div class="number">
-          ${phone}
+          ${number}
         </div>
 
         <div class="info">
 
-          ${email
-            ? "📧 " + email + "<br>"
-            : ""}
+          ${
+            email
+              ? "📧 "+email+"<br>"
+              : ""
+          }
 
-          ${education
-            ? "🏫 " + education + "<br>"
-            : ""}
+          ${
+            education
+              ? "🏫 "+education+"<br>"
+              : ""
+          }
 
-          ${data.accountType
-            ? "👤 " +
-              escapeHTML(data.accountType) +
-              "<br>"
-            : ""}
+          ${
+            data.accountType
+              ? "👤 "+
+                escapeHTML(data.accountType)+
+                "<br>"
+              : ""
+          }
 
           🕒 Registered:
           ${formatDate(data.createdAt)}
@@ -639,6 +710,7 @@ function memberCard(member,status){
 
     </div>
   `;
+
 }
 
 
@@ -652,9 +724,7 @@ function startRealtime(){
     collection(db,"users");
 
 
-  /*
-    PENDING
-  */
+  /* PENDING */
 
   const pendingQuery =
     query(
@@ -664,11 +734,12 @@ function startRealtime(){
 
   onSnapshot(
     pendingQuery,
-    snapshot => {
 
-      const members = [];
+    snapshot=>{
 
-      snapshot.forEach(item => {
+      const members=[];
+
+      snapshot.forEach(item=>{
 
         members.push({
           id:item.id,
@@ -680,9 +751,10 @@ function startRealtime(){
       pendingCount.textContent =
         members.length;
 
-      if(members.length === 0){
 
-        pendingList.innerHTML = `
+      if(!members.length){
+
+        pendingList.innerHTML=`
           <div class="empty">
             🎉 No pending registrations.
           </div>
@@ -691,33 +763,36 @@ function startRealtime(){
       }else{
 
         members.sort(
-          (a,b) =>
-            (b.data.createdAt?.seconds || 0) -
-            (a.data.createdAt?.seconds || 0)
+          (a,b)=>
+            (b.data.createdAt?.seconds||0)-
+            (a.data.createdAt?.seconds||0)
         );
 
         pendingList.innerHTML =
           members
-            .map(m => memberCard(m,"pending"))
-            .join("");
+          .map(
+            m=>memberCard(m,"pending")
+          )
+          .join("");
+
       }
 
     },
-    error => {
+
+    error=>{
 
       console.error(error);
 
       showError(
-        "Could not load registrations: " +
+        "Could not load pending registrations:\n\n"+
         error.message
       );
+
     }
   );
 
 
-  /*
-    APPROVED
-  */
+  /* APPROVED */
 
   const approvedQuery =
     query(
@@ -727,11 +802,12 @@ function startRealtime(){
 
   onSnapshot(
     approvedQuery,
-    snapshot => {
 
-      const members = [];
+    snapshot=>{
 
-      snapshot.forEach(item => {
+      const members=[];
+
+      snapshot.forEach(item=>{
 
         members.push({
           id:item.id,
@@ -743,9 +819,10 @@ function startRealtime(){
       approvedCount.textContent =
         members.length;
 
-      if(members.length === 0){
 
-        approvedList.innerHTML = `
+      if(!members.length){
+
+        approvedList.innerHTML=`
           <div class="empty">
             No approved members yet.
           </div>
@@ -755,26 +832,29 @@ function startRealtime(){
 
         approvedList.innerHTML =
           members
-            .map(m => memberCard(m,"approved"))
-            .join("");
+          .map(
+            m=>memberCard(m,"approved")
+          )
+          .join("");
+
       }
 
     },
-    error => {
+
+    error=>{
 
       console.error(error);
 
       showError(
-        "Could not load approved members: " +
+        "Could not load approved members:\n\n"+
         error.message
       );
+
     }
   );
 
 
-  /*
-    DISABLED
-  */
+  /* DISABLED */
 
   const disabledQuery =
     query(
@@ -784,11 +864,12 @@ function startRealtime(){
 
   onSnapshot(
     disabledQuery,
-    snapshot => {
 
-      const members = [];
+    snapshot=>{
 
-      snapshot.forEach(item => {
+      const members=[];
+
+      snapshot.forEach(item=>{
 
         members.push({
           id:item.id,
@@ -800,9 +881,10 @@ function startRealtime(){
       disabledCount.textContent =
         members.length;
 
-      if(members.length === 0){
 
-        disabledList.innerHTML = `
+      if(!members.length){
+
+        disabledList.innerHTML=`
           <div class="empty">
             No disabled members.
           </div>
@@ -812,19 +894,24 @@ function startRealtime(){
 
         disabledList.innerHTML =
           members
-            .map(m => memberCard(m,"disabled"))
-            .join("");
+          .map(
+            m=>memberCard(m,"disabled")
+          )
+          .join("");
+
       }
 
     },
-    error => {
+
+    error=>{
 
       console.error(error);
 
       showError(
-        "Could not load disabled members: " +
+        "Could not load disabled members:\n\n"+
         error.message
       );
+
     }
   );
 
@@ -838,14 +925,10 @@ function startRealtime(){
 window.approveMember =
 async function(uid){
 
-  if(
-    !confirm(
-      "Approve this member for JDA Networks?"
-    )
-  ){
+  if(!confirm(
+    "Approve this member for JDA Networks?"
+  )) return;
 
-    return;
-  }
 
   try{
 
@@ -868,10 +951,12 @@ async function(uid){
     console.error(error);
 
     showError(
-      "Approval failed: " +
+      "Approval failed:\n\n"+
       error.message
     );
+
   }
+
 };
 
 
@@ -882,14 +967,10 @@ async function(uid){
 window.rejectMember =
 async function(uid){
 
-  if(
-    !confirm(
-      "Reject this registration?"
-    )
-  ){
+  if(!confirm(
+    "Reject this registration?"
+  )) return;
 
-    return;
-  }
 
   try{
 
@@ -911,10 +992,12 @@ async function(uid){
     console.error(error);
 
     showError(
-      "Reject failed: " +
+      "Reject failed:\n\n"+
       error.message
     );
+
   }
+
 };
 
 
@@ -925,14 +1008,10 @@ async function(uid){
 window.disableMember =
 async function(uid){
 
-  if(
-    !confirm(
-      "Disable this member?"
-    )
-  ){
+  if(!confirm(
+    "Disable this member?"
+  )) return;
 
-    return;
-  }
 
   try{
 
@@ -954,10 +1033,12 @@ async function(uid){
     console.error(error);
 
     showError(
-      "Disable failed: " +
+      "Disable failed:\n\n"+
       error.message
     );
+
   }
+
 };
 
 
@@ -968,14 +1049,10 @@ async function(uid){
 window.enableMember =
 async function(uid){
 
-  if(
-    !confirm(
-      "Enable this member again?"
-    )
-  ){
+  if(!confirm(
+    "Enable this member again?"
+  )) return;
 
-    return;
-  }
 
   try{
 
@@ -997,10 +1074,12 @@ async function(uid){
     console.error(error);
 
     showError(
-      "Enable failed: " +
+      "Enable failed:\n\n"+
       error.message
     );
+
   }
+
 };
 
 
@@ -1010,13 +1089,15 @@ async function(uid){
 
 onAuthStateChanged(
   auth,
-  async user => {
+  async user=>{
 
     const allowed =
       await checkAdmin(user);
 
     if(!allowed){
+
       return;
+
     }
 
     startRealtime();
@@ -1036,12 +1117,12 @@ async function(){
 
     await signOut(auth);
 
-    location.href =
-      "./index.html";
+    location.href="./index.html";
 
   }catch(error){
 
     showError(error.message);
+
   }
 
 };

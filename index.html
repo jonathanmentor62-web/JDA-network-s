@@ -2,271 +2,681 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0, user-scalable=no">
+
 <title>JDA Networks</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  background:#081116;
+  color:#f1f5f7;
+  font-family:Arial,Helvetica,sans-serif;
+}
 
 body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#0b141a;
-  color:#fff;
+  overflow-x:hidden;
 }
 
-.screen{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+button,
+input{
+  font:inherit;
 }
 
-.card{
-  width:100%;
-  max-width:470px;
-  background:#111b21;
-  border-radius:24px;
-  padding:25px;
-  box-shadow:0 10px 40px rgba(0,0,0,.35);
-}
-
-.logo{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  object-fit:cover;
-  display:block;
-  margin:0 auto 18px;
-}
-
-h1{
-  text-align:center;
-  margin:0;
-  font-size:27px;
-}
-
-.subtitle{
-  text-align:center;
-  color:#8696a0;
-  margin:8px 0 25px;
-  font-size:14px;
-}
-
-.type-buttons{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.type{
-  background:#202c33;
-  color:#fff;
-  padding:18px 10px;
-  border-radius:16px;
-  border:2px solid transparent;
-  font-weight:bold;
-  cursor:pointer;
-  font-size:15px;
-}
-
-.type.selected{
-  background:#164d39;
-  border-color:#25d366;
-}
-
-.type span{
-  display:block;
-  font-size:28px;
-  margin-bottom:7px;
-}
-
-.primary{
-  width:100%;
-  background:#25d366;
-  color:#06130b;
-  padding:14px;
-  border-radius:25px;
-  font-size:15px;
-  font-weight:800;
-  margin-top:18px;
+button{
   border:0;
   cursor:pointer;
-}
-
-.primary:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-}
-
-.secondary{
-  width:100%;
-  background:#202c33;
-  color:#fff;
-  padding:14px;
-  border-radius:25px;
-  margin-top:10px;
-  font-weight:bold;
-  border:0;
-  cursor:pointer;
-}
-
-.form-title{
-  font-size:22px;
-  font-weight:800;
-  margin-bottom:5px;
-}
-
-.form-subtitle{
-  color:#8696a0;
-  font-size:13px;
-  margin-bottom:20px;
-}
-
-label{
-  display:block;
-  color:#aebac1;
-  font-size:12px;
-  margin:14px 0 6px;
-}
-
-input,select{
-  width:100%;
-  border:0;
-  outline:0;
-  background:#202c33;
-  color:#fff;
-  padding:14px;
-  border-radius:12px;
-  font-size:14px;
-}
-
-select option{
-  background:#202c33;
-}
-
-.photo-box{
-  text-align:center;
-  margin:15px 0;
-}
-
-.photo-preview{
-  width:105px;
-  height:105px;
-  border-radius:50%;
-  object-fit:cover;
-  border:3px solid #25d366;
-  display:none;
-  margin:10px auto;
-}
-
-.photo-label{
-  display:inline-block;
-  background:#202c33;
-  padding:12px 18px;
-  border-radius:22px;
-  cursor:pointer;
-  color:#fff;
-}
-
-.photo-label input{
-  display:none;
-}
-
-.notice{
-  background:#1b2b32;
-  border-left:4px solid #25d366;
-  color:#cbd5da;
-  padding:12px;
-  border-radius:9px;
-  font-size:12px;
-  margin-top:16px;
-  line-height:1.5;
-}
-
-.status{
-  margin-top:15px;
-  padding:12px;
-  border-radius:10px;
-  display:none;
-  font-size:13px;
-  line-height:1.5;
-}
-
-.status.error{
-  display:block;
-  background:#3b2024;
-  color:#ff8a8a;
-}
-
-.status.success{
-  display:block;
-  background:#163c2c;
-  color:#7dffb0;
-}
-
-.status.info{
-  display:block;
-  background:#20333d;
-  color:#a8d8ea;
 }
 
 .hidden{
   display:none!important;
 }
 
-.pending-icon{
-  text-align:center;
-  font-size:60px;
-  margin-bottom:10px;
+/* =========================
+   APP
+========================= */
+
+.app{
+  width:100%;
+  min-height:100vh;
+  background:#081116;
+  padding-bottom:90px;
 }
 
-.center{
-  text-align:center;
+/* =========================
+   TOP HEADER
+========================= */
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:28px 22px 18px;
 }
 
-.small{
+.brand{
+  font-size:35px;
+  font-weight:800;
+  letter-spacing:-1.5px;
+}
+
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+.icon-btn{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  color:#f1f5f7;
+  font-size:27px;
+  border-radius:50%;
+}
+
+.icon-btn:active{
+  background:#18252c;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-wrap{
+  padding:0 22px;
+}
+
+.search{
+  width:100%;
+  height:58px;
+  border:0;
+  outline:0;
+  border-radius:19px;
+  background:#202c33;
+  color:#fff;
+  padding:0 20px 0 52px;
+  font-size:18px;
+}
+
+.search::placeholder{
   color:#8696a0;
-  font-size:12px;
-  line-height:1.6;
 }
 
-.password-note{
+.search-container{
+  position:relative;
+}
+
+.search-icon{
+  position:absolute;
+  left:18px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#71818a;
+  font-size:27px;
+  pointer-events:none;
+}
+
+/* =========================
+   FILTERS
+========================= */
+
+.filters{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding:18px 22px 12px;
+  scrollbar-width:none;
+}
+
+.filters::-webkit-scrollbar{
+  display:none;
+}
+
+.filter{
+  flex:0 0 auto;
+  padding:12px 21px;
+  border-radius:19px;
+  background:#202c33;
+  color:#aebac1;
+  font-weight:700;
+  font-size:16px;
+}
+
+.filter.active{
+  background:#075e54;
+  color:#7ff0a8;
+}
+
+/* =========================
+   CLASS FILTERS
+========================= */
+
+.class-title{
+  padding:10px 22px 4px;
   color:#8696a0;
-  font-size:11px;
+  font-size:13px;
+  font-weight:700;
+  text-transform:uppercase;
+}
+
+.class-filters{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:10px 22px 18px;
+  scrollbar-width:none;
+}
+
+.class-filters::-webkit-scrollbar{
+  display:none;
+}
+
+.class-filter{
+  flex:0 0 auto;
+  background:#1b272e;
+  color:#d7dee2;
+  padding:12px 15px;
+  border-radius:15px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.class-filter.active{
+  background:#075e54;
+  color:#fff;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.section-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:6px 22px 10px;
+}
+
+.section-title{
+  font-size:14px;
+  color:#8696a0;
+  font-weight:700;
+  text-transform:uppercase;
+}
+
+/* =========================
+   CHAT LIST
+========================= */
+
+.chat-list{
+  width:100%;
+}
+
+.chat-row{
+  width:100%;
+  min-height:86px;
+  display:flex;
+  align-items:center;
+  padding:12px 22px;
+  gap:15px;
+  background:transparent;
+  color:#fff;
+  text-align:left;
+}
+
+.chat-row:active{
+  background:#101c22;
+}
+
+.avatar{
+  width:58px;
+  height:58px;
+  min-width:58px;
+  border-radius:50%;
+  background:#075e54;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:20px;
+  font-weight:800;
+  overflow:hidden;
+}
+
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.chat-info{
+  min-width:0;
+  flex:1;
+  padding-bottom:9px;
+  border-bottom:1px solid #1d2a31;
+}
+
+.chat-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.chat-name{
+  font-size:18px;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.chat-time{
+  flex:0 0 auto;
+  color:#aebac1;
+  font-size:13px;
+}
+
+.chat-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
   margin-top:5px;
 }
 
-.back-btn{
-  background:none;
-  border:0;
-  color:#25d366;
-  font-weight:bold;
-  padding:0;
-  margin-bottom:18px;
-  cursor:pointer;
+.chat-preview{
+  color:#aebac1;
+  font-size:15px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.loading{
+.unread{
+  min-width:23px;
+  height:23px;
+  padding:0 7px;
+  border-radius:8px;
+  background:#25d366;
+  color:#07130c;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:800;
+}
+
+/* =========================
+   ONLINE DOT
+========================= */
+
+.online-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#25d366;
+  display:inline-block;
+  margin-left:5px;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty{
+  padding:65px 25px;
   text-align:center;
   color:#8696a0;
-  padding:20px;
 }
 
-.divider{
-  height:1px;
-  background:#26353d;
-  margin:20px 0;
+.empty-icon{
+  font-size:48px;
+  margin-bottom:12px;
 }
 
-@media(max-width:400px){
-  .card{
-    padding:19px;
+.empty-title{
+  color:#d7dee2;
+  font-size:19px;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.empty-text{
+  font-size:14px;
+  line-height:1.5;
+}
+
+/* =========================
+   FAB
+========================= */
+
+.fab{
+  position:fixed;
+  right:20px;
+  bottom:92px;
+  width:62px;
+  height:62px;
+  border-radius:50%;
+  background:#00a884;
+  color:white;
+  font-size:31px;
+  box-shadow:0 8px 25px rgba(0,0,0,.35);
+  z-index:50;
+}
+
+.fab:active{
+  transform:scale(.94);
+}
+
+/* =========================
+   BOTTOM NAV
+========================= */
+
+.bottom-nav{
+  position:fixed;
+  left:9px;
+  right:9px;
+  bottom:9px;
+  height:72px;
+  background:#202c33;
+  border-radius:27px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  z-index:100;
+  box-shadow:0 8px 30px rgba(0,0,0,.4);
+}
+
+.nav-btn{
+  background:transparent;
+  color:#aebac1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  font-size:12px;
+  font-weight:700;
+  border-radius:23px;
+}
+
+.nav-icon{
+  font-size:25px;
+  line-height:1;
+}
+
+.nav-btn.active{
+  color:#25d366;
+}
+
+/* =========================
+   PAGE PANELS
+========================= */
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+/* =========================
+   UPDATES
+========================= */
+
+.update-card{
+  margin:8px 22px;
+  padding:16px;
+  border-radius:18px;
+  background:#111c22;
+}
+
+.update-header{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.update-name{
+  font-weight:800;
+}
+
+.update-time{
+  color:#8696a0;
+  font-size:12px;
+}
+
+.update-text{
+  margin-top:12px;
+  color:#cbd5da;
+  line-height:1.5;
+}
+
+/* =========================
+   GROUPS
+========================= */
+
+.group-card{
+  margin:8px 22px;
+  padding:15px;
+  background:#111c22;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.group-icon{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#075e54;
+  font-size:25px;
+}
+
+.group-name{
+  font-weight:800;
+  font-size:17px;
+}
+
+.group-members{
+  margin-top:4px;
+  color:#8696a0;
+  font-size:13px;
+}
+
+/* =========================
+   CALLS
+========================= */
+
+.call-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:15px 22px;
+}
+
+.call-info{
+  flex:1;
+}
+
+.call-name{
+  font-weight:800;
+  font-size:17px;
+}
+
+.call-time{
+  color:#8696a0;
+  font-size:13px;
+  margin-top:4px;
+}
+
+.call-action{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  background:#075e54;
+  color:#25d366;
+  font-size:21px;
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile-panel{
+  padding:25px 22px;
+}
+
+.profile-head{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+
+.profile-avatar{
+  width:105px;
+  height:105px;
+  border-radius:50%;
+  background:#075e54;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:35px;
+  font-weight:800;
+  overflow:hidden;
+}
+
+.profile-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.profile-name{
+  margin-top:15px;
+  font-size:24px;
+  font-weight:800;
+}
+
+.profile-number{
+  margin-top:5px;
+  color:#8696a0;
+}
+
+.profile-details{
+  margin-top:25px;
+}
+
+.detail{
+  background:#111c22;
+  border-radius:16px;
+  padding:15px;
+  margin-bottom:10px;
+}
+
+.detail-label{
+  color:#8696a0;
+  font-size:12px;
+}
+
+.detail-value{
+  margin-top:5px;
+  font-weight:700;
+}
+
+/* =========================
+   MENU
+========================= */
+
+.menu{
+  position:fixed;
+  right:16px;
+  top:78px;
+  width:190px;
+  background:#202c33;
+  border-radius:15px;
+  padding:8px;
+  box-shadow:0 12px 35px rgba(0,0,0,.5);
+  z-index:200;
+}
+
+.menu button{
+  width:100%;
+  padding:13px;
+  background:transparent;
+  color:#fff;
+  text-align:left;
+  border-radius:10px;
+}
+
+.menu button:active{
+  background:#2b3941;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(min-width:700px){
+
+  .app{
+    max-width:700px;
+    margin:auto;
+    border-left:1px solid #17232a;
+    border-right:1px solid #17232a;
   }
 
-  h1{
-    font-size:23px;
+  .bottom-nav{
+    max-width:682px;
+    margin:auto;
+  }
+}
+
+@media(max-width:380px){
+
+  .brand{
+    font-size:29px;
+  }
+
+  .topbar{
+    padding-left:17px;
+    padding-right:17px;
+  }
+
+  .search-wrap{
+    padding-left:17px;
+    padding-right:17px;
+  }
+
+  .filters,
+  .class-filters{
+    padding-left:17px;
+    padding-right:17px;
+  }
+
+  .chat-row{
+    padding-left:17px;
+    padding-right:17px;
   }
 }
 </style>
@@ -274,461 +684,659 @@ select option{
 
 <body>
 
-<!-- WELCOME -->
-<section id="welcomeScreen" class="screen">
+<div class="app">
 
-  <div class="card">
+  <!-- ======================
+       HEADER
+  ======================= -->
 
-    <img
-      src="./logo.png"
-      class="logo"
-      alt="JDA Networks"
-      onerror="this.style.display='none'"
-    >
+  <header class="topbar">
 
-    <h1>Welcome to JDA Networks</h1>
-
-    <div class="subtitle">
-      The private communication network for JDA members.
+    <div class="brand">
+      JDA Networks
     </div>
 
-    <div class="type-buttons">
+    <div class="top-actions">
 
-      <button class="type" id="studentType" type="button">
-        <span>🎓</span>
-        Student
+      <button
+        id="cameraBtn"
+        class="icon-btn"
+        type="button"
+        aria-label="Camera">
+        ◉
       </button>
 
-      <button class="type" id="staffType" type="button">
-        <span>👨‍🏫</span>
-        Staff
+      <button
+        id="menuBtn"
+        class="icon-btn"
+        type="button"
+        aria-label="Menu">
+        ⋮
       </button>
 
     </div>
 
-    <button class="primary" id="continueBtn" type="button">
-      Continue
+  </header>
+
+
+  <!-- ======================
+       MENU
+  ======================= -->
+
+  <div
+    id="topMenu"
+    class="menu hidden">
+
+    <button id="profileMenuBtn">
+      👤 Profile
     </button>
 
-    <button class="secondary" id="loginBtn" type="button">
-      Already registered? Login
+    <button id="settingsMenuBtn">
+      ⚙️ Settings
+    </button>
+
+    <button id="logoutMenuBtn">
+      🚪 Logout
     </button>
 
   </div>
 
-</section>
 
+  <!-- ======================
+       CHATS
+  ======================= -->
 
-<!-- REGISTRATION -->
-<section id="registerScreen" class="screen hidden">
+  <section
+    id="chatsPage"
+    class="page active">
 
-  <div class="card">
+    <div class="search-wrap">
 
-    <button class="back-btn" id="backFromRegister" type="button">
-      ← Back
-    </button>
+      <div class="search-container">
 
-    <div class="form-title">
-      <span id="registerTypeTitle">Student Registration</span>
-    </div>
-
-    <div class="form-subtitle">
-      Registration is done once. An administrator must approve your account.
-    </div>
-
-    <div class="photo-box">
-
-      <label class="photo-label">
-        📷 Choose Profile Photo
+        <span class="search-icon">⌕</span>
 
         <input
-          type="file"
-          id="photoInput"
-          accept="image/jpeg,image/png,image/webp"
-        >
-      </label>
+          id="searchInput"
+          class="search"
+          type="search"
+          placeholder="Search"
+          autocomplete="off">
 
-      <img
-        id="photoPreview"
-        class="photo-preview"
-        alt="Profile preview"
-      >
-
-      <div class="small">
-        Profile photo is mandatory.
       </div>
 
     </div>
 
-    <label>Full Real Name</label>
 
-    <input
-      id="realName"
-      type="text"
-      placeholder="Enter your real full name"
-      autocomplete="name"
-    >
+    <div class="filters">
 
-    <div class="password-note">
-      Nicknames are not allowed.
-    </div>
+      <button
+        class="filter active"
+        data-filter="all">
+        All
+      </button>
 
-    <label>JDA Networks Number</label>
+      <button
+        class="filter"
+        data-filter="unread">
+        Unread
+      </button>
 
-    <input
-      id="jdaNumber"
-      type="tel"
-      placeholder="+256 771 234 567"
-      autocomplete="tel"
-    >
+      <button
+        class="filter"
+        data-filter="favorites">
+        Favorites
+      </button>
 
-    <label>Email Address</label>
-
-    <input
-      id="email"
-      type="email"
-      placeholder="yourname@example.com"
-      autocomplete="email"
-    >
-
-    <label>Password</label>
-
-    <input
-      id="password"
-      type="password"
-      placeholder="Create a password"
-      autocomplete="new-password"
-    >
-
-    <label>Confirm Password</label>
-
-    <input
-      id="confirmPassword"
-      type="password"
-      placeholder="Repeat your password"
-      autocomplete="new-password"
-    >
-
-    <div id="studentFields">
-
-      <label>Class</label>
-
-      <select id="studentClass">
-        <option value="">Select class</option>
-        <option>Form One</option>
-        <option>Form Two</option>
-        <option>Form Three</option>
-        <option>Form Four</option>
-        <option>Form Five</option>
-        <option>Form Six</option>
-      </select>
-
-      <label>Stream</label>
-
-      <select id="stream">
-        <option value="">Select stream</option>
-        <option>Blue</option>
-        <option>Green</option>
-      </select>
+      <button
+        class="filter"
+        data-filter="groups">
+        Groups
+      </button>
 
     </div>
 
-    <div id="staffFields" class="hidden">
 
-      <label>Department</label>
+    <div class="class-title">
+      Classes
+    </div>
 
-      <input
-        id="department"
-        type="text"
-        placeholder="Enter department"
-      >
+
+    <div class="class-filters">
+
+      <button
+        class="class-filter active"
+        data-class="all">
+        All
+      </button>
+
+      <button
+        class="class-filter"
+        data-class="Form One">
+        Form One
+      </button>
+
+      <button
+        class="class-filter"
+        data-class="Form Two">
+        Form Two
+      </button>
+
+      <button
+        class="class-filter"
+        data-class="Form Three">
+        Form Three
+      </button>
+
+      <button
+        class="class-filter"
+        data-class="Form Four">
+        Form Four
+      </button>
+
+      <button
+        class="class-filter"
+        data-class="Form Five">
+        Form Five
+      </button>
+
+      <button
+        class="class-filter"
+        data-class="Form Six">
+        Form Six
+      </button>
 
     </div>
 
-    <div class="notice">
-      ✓ Real full name required<br>
-      ✓ Profile photo required<br>
-      ✓ Registration is once only<br>
-      ✓ Administrator approval required<br>
-      ✓ Only approved members can enter JDA Networks
+
+    <div class="section-header">
+
+      <div class="section-title">
+        Conversations
+      </div>
+
     </div>
 
-    <div id="registerStatus" class="status"></div>
+
+    <div
+      id="chatList"
+      class="chat-list">
+
+      <!-- Real Firebase chats will be inserted here -->
+
+      <div
+        id="chatLoading"
+        class="loading"
+        style="padding:40px 20px;
+               text-align:center;
+               color:#8696a0;">
+        Loading your chats...
+      </div>
+
+    </div>
+
+
+    <div
+      id="chatEmpty"
+      class="empty hidden">
+
+      <div class="empty-icon">
+        💬
+      </div>
+
+      <div class="empty-title">
+        No conversations yet
+      </div>
+
+      <div class="empty-text">
+        Connect with JDA Networks members to start chatting.
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================
+       UPDATES
+  ======================= -->
+
+  <section
+    id="updatesPage"
+    class="page">
+
+    <div class="section-header"
+         style="padding-top:20px;">
+
+      <div class="section-title">
+        Updates
+      </div>
+
+    </div>
+
+    <div
+      id="updatesList">
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          🟢
+        </div>
+
+        <div class="empty-title">
+          No updates yet
+        </div>
+
+        <div class="empty-text">
+          Updates from JDA Networks members will appear here.
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================
+       GROUPS
+  ======================= -->
+
+  <section
+    id="groupsPage"
+    class="page">
+
+    <div class="section-header"
+         style="padding-top:20px;">
+
+      <div class="section-title">
+        Groups
+      </div>
+
+    </div>
+
+    <div
+      id="groupsList">
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          👥
+        </div>
+
+        <div class="empty-title">
+          No groups yet
+        </div>
+
+        <div class="empty-text">
+          Your JDA Networks groups will appear here.
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================
+       CALLS
+  ======================= -->
+
+  <section
+    id="callsPage"
+    class="page">
+
+    <div class="section-header"
+         style="padding-top:20px;">
+
+      <div class="section-title">
+        Calls
+      </div>
+
+    </div>
+
+    <div
+      id="callsList">
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          📞
+        </div>
+
+        <div class="empty-title">
+          No calls yet
+        </div>
+
+        <div class="empty-text">
+          Your recent JDA Networks calls will appear here.
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================
+       PROFILE
+  ======================= -->
+
+  <section
+    id="profilePage"
+    class="page">
+
+    <div class="profile-panel">
+
+      <div class="profile-head">
+
+        <div
+          id="profileAvatar"
+          class="profile-avatar">
+          J
+        </div>
+
+        <div
+          id="profileName"
+          class="profile-name">
+          JDA Member
+        </div>
+
+        <div
+          id="profileNumber"
+          class="profile-number">
+          JDA Networks
+        </div>
+
+      </div>
+
+
+      <div class="profile-details">
+
+        <div class="detail">
+
+          <div class="detail-label">
+            Email
+          </div>
+
+          <div
+            id="profileEmail"
+            class="detail-value">
+            —
+          </div>
+
+        </div>
+
+
+        <div class="detail">
+
+          <div class="detail-label">
+            Account
+          </div>
+
+          <div
+            id="profileType"
+            class="detail-value">
+            —
+          </div>
+
+        </div>
+
+
+        <div class="detail">
+
+          <div class="detail-label">
+            Status
+          </div>
+
+          <div
+            id="profileStatus"
+            class="detail-value">
+            Approved
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================
+       SETTINGS
+  ======================= -->
+
+  <section
+    id="settingsPage"
+    class="page">
+
+    <div class="section-header"
+         style="padding-top:20px;">
+
+      <div class="section-title">
+        Settings
+      </div>
+
+    </div>
+
+    <div style="padding:10px 22px;">
+
+      <button
+        id="settingsLogoutBtn"
+        style="
+          width:100%;
+          padding:16px;
+          border-radius:15px;
+          background:#3b2024;
+          color:#ff8a8a;
+          font-weight:800;
+          text-align:left;">
+        🚪 Log out
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================
+       ADD / NEW CHAT BUTTON
+  ======================= -->
+
+  <button
+    id="newChatBtn"
+    class="fab"
+    type="button"
+    aria-label="New chat">
+    +
+  </button>
+
+
+  <!-- ======================
+       BOTTOM NAV
+  ======================= -->
+
+  <nav class="bottom-nav">
 
     <button
-      class="primary"
-      id="registerBtn"
-      type="button"
-    >
-      Submit Registration
+      class="nav-btn active"
+      data-page="chats">
+
+      <span class="nav-icon">
+        💬
+      </span>
+
+      <span>
+        Chats
+      </span>
+
     </button>
 
-  </div>
-
-</section>
-
-
-<!-- LOGIN -->
-<section id="loginScreen" class="screen hidden">
-
-  <div class="card">
-
-    <button class="back-btn" id="backFromLogin" type="button">
-      ← Back
-    </button>
-
-    <div class="form-title">
-      Login
-    </div>
-
-    <div class="form-subtitle">
-      Login using the email and password you registered with.
-    </div>
-
-    <label>Email Address</label>
-
-    <input
-      id="loginEmail"
-      type="email"
-      placeholder="yourname@example.com"
-      autocomplete="email"
-    >
-
-    <label>Password</label>
-
-    <input
-      id="loginPassword"
-      type="password"
-      placeholder="Your password"
-      autocomplete="current-password"
-    >
-
-    <div id="loginStatus" class="status"></div>
 
     <button
-      class="primary"
-      id="doLoginBtn"
-      type="button"
-    >
-      Login
+      class="nav-btn"
+      data-page="updates">
+
+      <span class="nav-icon">
+        ◉
+      </span>
+
+      <span>
+        Updates
+      </span>
+
     </button>
 
-  </div>
-
-</section>
-
-
-<!-- MESSAGE -->
-<section id="messageScreen" class="screen hidden">
-
-  <div class="card center">
-
-    <div id="messageIcon" class="pending-icon">
-      ⏳
-    </div>
-
-    <h2 id="messageTitle">
-      Please wait
-    </h2>
-
-    <p id="messageText" class="small">
-      Checking your account...
-    </p>
-
-    <div id="messageStatus" class="status"></div>
 
     <button
-      id="messageLoginBtn"
-      class="primary hidden"
-      type="button"
-    >
-      Login Again
+      class="nav-btn"
+      data-page="groups">
+
+      <span class="nav-icon">
+        👥
+      </span>
+
+      <span>
+        Groups
+      </span>
+
     </button>
+
 
     <button
-      id="messageLogoutBtn"
-      class="secondary hidden"
-      type="button"
-    >
-      Logout
+      class="nav-btn"
+      data-page="calls">
+
+      <span class="nav-icon">
+        📞
+      </span>
+
+      <span>
+        Calls
+      </span>
+
     </button>
 
-  </div>
+  </nav>
 
-</section>
+</div>
 
 
 <script type="module">
 
 /*
   JDA NETWORKS
-  Main registration/login page
-*/
+  Renovated Home Interface
 
-/* =========================
-   FIREBASE
-========================= */
+  Firebase functionality will be connected
+  through app.js in the next renovation stage.
+*/
 
 import {
   auth,
-  db,
-  storage
+  db
 } from "./firebase.js";
 
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
   onAuthStateChanged,
-  deleteUser
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 import {
   doc,
-  getDoc,
-  setDoc,
-  serverTimestamp
+  getDoc
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
 
 
 /* =========================
    ELEMENTS
 ========================= */
 
-const welcomeScreen =
-  document.getElementById("welcomeScreen");
+const pages = {
+  chats:document.getElementById("chatsPage"),
+  updates:document.getElementById("updatesPage"),
+  groups:document.getElementById("groupsPage"),
+  calls:document.getElementById("callsPage"),
+  profile:document.getElementById("profilePage"),
+  settings:document.getElementById("settingsPage")
+};
 
-const registerScreen =
-  document.getElementById("registerScreen");
+const navButtons =
+  document.querySelectorAll(".nav-btn");
 
-const loginScreen =
-  document.getElementById("loginScreen");
+const topMenu =
+  document.getElementById("topMenu");
 
-const messageScreen =
-  document.getElementById("messageScreen");
+const menuBtn =
+  document.getElementById("menuBtn");
 
-const studentType =
-  document.getElementById("studentType");
+const profileMenuBtn =
+  document.getElementById("profileMenuBtn");
 
-const staffType =
-  document.getElementById("staffType");
+const settingsMenuBtn =
+  document.getElementById("settingsMenuBtn");
 
-const continueBtn =
-  document.getElementById("continueBtn");
+const logoutMenuBtn =
+  document.getElementById("logoutMenuBtn");
 
-const loginBtn =
-  document.getElementById("loginBtn");
+const settingsLogoutBtn =
+  document.getElementById("settingsLogoutBtn");
 
-const backFromRegister =
-  document.getElementById("backFromRegister");
+const profileName =
+  document.getElementById("profileName");
 
-const backFromLogin =
-  document.getElementById("backFromLogin");
+const profileNumber =
+  document.getElementById("profileNumber");
 
-const registerTypeTitle =
-  document.getElementById("registerTypeTitle");
+const profileEmail =
+  document.getElementById("profileEmail");
 
-const studentFields =
-  document.getElementById("studentFields");
+const profileType =
+  document.getElementById("profileType");
 
-const staffFields =
-  document.getElementById("staffFields");
+const profileStatus =
+  document.getElementById("profileStatus");
 
-const photoInput =
-  document.getElementById("photoInput");
+const profileAvatar =
+  document.getElementById("profileAvatar");
 
-const photoPreview =
-  document.getElementById("photoPreview");
+const searchInput =
+  document.getElementById("searchInput");
 
-const registerBtn =
-  document.getElementById("registerBtn");
+const newChatBtn =
+  document.getElementById("newChatBtn");
 
-const registerStatus =
-  document.getElementById("registerStatus");
-
-const loginStatus =
-  document.getElementById("loginStatus");
-
-const doLoginBtn =
-  document.getElementById("doLoginBtn");
-
-const messageIcon =
-  document.getElementById("messageIcon");
-
-const messageTitle =
-  document.getElementById("messageTitle");
-
-const messageText =
-  document.getElementById("messageText");
-
-const messageStatus =
-  document.getElementById("messageStatus");
-
-const messageLoginBtn =
-  document.getElementById("messageLoginBtn");
-
-const messageLogoutBtn =
-  document.getElementById("messageLogoutBtn");
-
-const realName =
-  document.getElementById("realName");
-
-const jdaNumber =
-  document.getElementById("jdaNumber");
-
-const email =
-  document.getElementById("email");
-
-const password =
-  document.getElementById("password");
-
-const confirmPassword =
-  document.getElementById("confirmPassword");
-
-const studentClass =
-  document.getElementById("studentClass");
-
-const stream =
-  document.getElementById("stream");
-
-const department =
-  document.getElementById("department");
-
-const loginEmail =
-  document.getElementById("loginEmail");
-
-const loginPassword =
-  document.getElementById("loginPassword");
-
-
-let selectedAccountType = "";
+const cameraBtn =
+  document.getElementById("cameraBtn");
 
 
 /* =========================
-   SCREEN CONTROL
+   NAVIGATION
 ========================= */
 
-function hideAllScreens(){
+function openPage(name){
 
-  welcomeScreen.classList.add("hidden");
-  registerScreen.classList.add("hidden");
-  loginScreen.classList.add("hidden");
-  messageScreen.classList.add("hidden");
+  Object.values(pages).forEach(page=>{
+    page.classList.remove("active");
+  });
 
-}
+  if(pages[name]){
+    pages[name].classList.add("active");
+  }
 
+  navButtons.forEach(button=>{
+    button.classList.remove("active");
 
-function showScreen(screen){
+    if(button.dataset.page === name){
+      button.classList.add("active");
+    }
+  });
 
-  hideAllScreens();
-
-  screen.classList.remove("hidden");
+  topMenu.classList.add("hidden");
 
   window.scrollTo({
     top:0,
@@ -739,963 +1347,381 @@ function showScreen(screen){
 
 
 /* =========================
-   STATUS
+   BOTTOM NAV
 ========================= */
 
-function showStatus(element,message,type="error"){
+navButtons.forEach(button=>{
 
-  element.textContent = message;
+  button.addEventListener("click",()=>{
 
-  element.className =
-    "status " + type;
+    openPage(button.dataset.page);
 
-}
-
-
-function clearStatus(element){
-
-  element.textContent = "";
-
-  element.className = "status";
-
-}
-
-
-/* =========================
-   ERROR MESSAGE
-========================= */
-
-function firebaseError(error){
-
-  const code = error?.code || "";
-
-  switch(code){
-
-    case "auth/email-already-in-use":
-      return "This email is already registered. Please use Login.";
-
-    case "auth/invalid-email":
-      return "Please enter a valid email address.";
-
-    case "auth/weak-password":
-      return "Password is too weak. Use at least 6 characters.";
-
-    case "auth/user-not-found":
-      return "No account was found with this email.";
-
-    case "auth/wrong-password":
-      return "Incorrect password.";
-
-    case "auth/invalid-credential":
-      return "The email or password is incorrect.";
-
-    case "auth/network-request-failed":
-      return "Network connection failed. Check your internet and try again.";
-
-    case "auth/too-many-requests":
-      return "Too many attempts. Please wait and try again.";
-
-    case "permission-denied":
-      return "Firebase permission denied. Please check your Firestore or Storage rules.";
-
-    default:
-      return error?.message || "Something went wrong. Please try again.";
-  }
-
-}
-
-
-/* =========================
-   ACCOUNT TYPE
-========================= */
-
-studentType.addEventListener("click",function(){
-
-  selectedAccountType = "student";
-
-  studentType.classList.add("selected");
-  staffType.classList.remove("selected");
-
-});
-
-
-staffType.addEventListener("click",function(){
-
-  selectedAccountType = "staff";
-
-  staffType.classList.add("selected");
-  studentType.classList.remove("selected");
+  });
 
 });
 
 
 /* =========================
-   CONTINUE
+   MENU
 ========================= */
 
-continueBtn.addEventListener("click",function(){
+menuBtn.addEventListener("click",event=>{
 
-  if(!selectedAccountType){
+  event.stopPropagation();
 
-    alert("Please select Student or Staff first.");
-    return;
+  topMenu.classList.toggle("hidden");
 
-  }
-
-  registerTypeTitle.textContent =
-    selectedAccountType === "student"
-      ? "Student Registration"
-      : "Staff Registration";
+});
 
 
-  if(selectedAccountType === "student"){
+document.addEventListener("click",event=>{
 
-    studentFields.classList.remove("hidden");
-    staffFields.classList.add("hidden");
+  if(
+    !topMenu.contains(event.target) &&
+    event.target !== menuBtn
+  ){
 
-  }else{
-
-    studentFields.classList.add("hidden");
-    staffFields.classList.remove("hidden");
+    topMenu.classList.add("hidden");
 
   }
 
-  clearStatus(registerStatus);
+});
 
-  showScreen(registerScreen);
+
+profileMenuBtn.addEventListener("click",()=>{
+
+  openPage("profile");
+
+});
+
+
+settingsMenuBtn.addEventListener("click",()=>{
+
+  openPage("settings");
 
 });
 
 
 /* =========================
-   LOGIN SCREEN
+   LOGOUT
 ========================= */
 
-loginBtn.addEventListener("click",function(){
-
-  clearStatus(loginStatus);
-
-  showScreen(loginScreen);
-
-});
-
-
-backFromRegister.addEventListener("click",function(){
-
-  showScreen(welcomeScreen);
-
-});
-
-
-backFromLogin.addEventListener("click",function(){
-
-  showScreen(welcomeScreen);
-
-});
-
-
-/* =========================
-   PHOTO
-========================= */
-
-photoInput.addEventListener("change",function(){
-
-  clearStatus(registerStatus);
-
-  const file = photoInput.files[0];
-
-  if(!file){
-
-    photoPreview.style.display = "none";
-    return;
-
-  }
-
-
-  if(!file.type.startsWith("image/")){
-
-    photoInput.value = "";
-    photoPreview.style.display = "none";
-
-    showStatus(
-      registerStatus,
-      "Please choose a valid image.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  if(file.size > 5 * 1024 * 1024){
-
-    photoInput.value = "";
-    photoPreview.style.display = "none";
-
-    showStatus(
-      registerStatus,
-      "Profile photo must be 5MB or smaller.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  const reader = new FileReader();
-
-  reader.onload = function(event){
-
-    photoPreview.src = event.target.result;
-
-    photoPreview.style.display = "block";
-
-  };
-
-  reader.readAsDataURL(file);
-
-});
-
-
-/* =========================
-   NAME VALIDATION
-========================= */
-
-function validRealName(name){
-
-  const cleaned =
-    name.trim().replace(/\s+/g," ");
-
-  if(cleaned.length < 3){
-    return false;
-  }
-
-  const parts =
-    cleaned.split(" ");
-
-  if(parts.length < 2){
-    return false;
-  }
-
-  for(const part of parts){
-
-    if(part.length < 2){
-      return false;
-    }
-
-  }
-
-  return true;
-
-}
-
-
-/* =========================
-   PHONE VALIDATION
-========================= */
-
-function validJDANumber(value){
-
-  const cleaned =
-    value.trim();
-
-  const normalized =
-    cleaned.replace(/[\s()-]/g,"");
-
-  return /^\+256\d{9}$/.test(normalized);
-
-}
-
-
-/* =========================
-   EMAIL
-========================= */
-
-function validEmail(value){
-
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-    value.trim()
-  );
-
-}
-
-
-/* =========================
-   REGISTRATION
-========================= */
-
-registerBtn.addEventListener("click",async function(){
-
-  clearStatus(registerStatus);
-
-  if(!selectedAccountType){
-
-    showStatus(
-      registerStatus,
-      "Please go back and select Student or Staff.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  const name =
-    realName.value.trim().replace(/\s+/g," ");
-
-  const number =
-    jdaNumber.value.trim();
-
-  const userEmail =
-    email.value.trim().toLowerCase();
-
-  const userPassword =
-    password.value;
-
-  const confirm =
-    confirmPassword.value;
-
-  const photo =
-    photoInput.files[0];
-
-
-  /* NAME */
-
-  if(!validRealName(name)){
-
-    showStatus(
-      registerStatus,
-      "Enter your full real name, for example: Jonathan Mentor.",
-      "error"
-    );
-
-    realName.focus();
-    return;
-
-  }
-
-
-  /* JDA NUMBER */
-
-  if(!validJDANumber(number)){
-
-    showStatus(
-      registerStatus,
-      "Enter a valid JDA Networks number such as +256 771 234 567.",
-      "error"
-    );
-
-    jdaNumber.focus();
-    return;
-
-  }
-
-
-  /* EMAIL */
-
-  if(!validEmail(userEmail)){
-
-    showStatus(
-      registerStatus,
-      "Enter a valid email address.",
-      "error"
-    );
-
-    email.focus();
-    return;
-
-  }
-
-
-  /* PASSWORD */
-
-  if(userPassword.length < 6){
-
-    showStatus(
-      registerStatus,
-      "Password must contain at least 6 characters.",
-      "error"
-    );
-
-    password.focus();
-    return;
-
-  }
-
-
-  /* CONFIRM */
-
-  if(userPassword !== confirm){
-
-    showStatus(
-      registerStatus,
-      "Passwords do not match.",
-      "error"
-    );
-
-    confirmPassword.focus();
-    return;
-
-  }
-
-
-  /* PHOTO */
-
-  if(!photo){
-
-    showStatus(
-      registerStatus,
-      "Please choose your profile photo.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  /* STUDENT */
-
-  if(selectedAccountType === "student"){
-
-    if(!studentClass.value){
-
-      showStatus(
-        registerStatus,
-        "Please select your class.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if(!stream.value){
-
-      showStatus(
-        registerStatus,
-        "Please select your stream.",
-        "error"
-      );
-
-      return;
-
-    }
-
-  }
-
-
-  /* STAFF */
-
-  if(selectedAccountType === "staff"){
-
-    if(!department.value.trim()){
-
-      showStatus(
-        registerStatus,
-        "Please enter your department.",
-        "error"
-      );
-
-      department.focus();
-      return;
-
-    }
-
-  }
-
-
-  registerBtn.disabled = true;
-
-  registerBtn.textContent = "Creating account...";
-
-
-  let createdUser = null;
-
+async function logout(){
 
   try{
-
-    /* CREATE AUTH ACCOUNT */
-
-    const credential =
-      await createUserWithEmailAndPassword(
-        auth,
-        userEmail,
-        userPassword
-      );
-
-    createdUser = credential.user;
-
-    const uid =
-      createdUser.uid;
-
-
-    /* PHOTO EXTENSION */
-
-    let extension = "jpg";
-
-    if(photo.type === "image/png"){
-      extension = "png";
-    }
-
-    if(photo.type === "image/webp"){
-      extension = "webp";
-    }
-
-
-    /* UPLOAD PHOTO */
-
-    registerBtn.textContent =
-      "Uploading photo...";
-
-
-    const photoRef =
-      ref(
-        storage,
-        `profilePhotos/${uid}.${extension}`
-      );
-
-
-    await uploadBytes(
-      photoRef,
-      photo
-    );
-
-
-    const photoURL =
-      await getDownloadURL(photoRef);
-
-
-    /* PROFILE */
-
-    const profile = {
-
-      uid: uid,
-
-      realName: name,
-
-      jdaNumber: number,
-
-      email: userEmail,
-
-      accountType: selectedAccountType,
-
-      photoURL: photoURL,
-
-      status: "pending",
-
-      approved: false,
-
-      createdAt: serverTimestamp(),
-
-      updatedAt: serverTimestamp()
-
-    };
-
-
-    if(selectedAccountType === "student"){
-
-      profile.class =
-        studentClass.value;
-
-      profile.stream =
-        stream.value;
-
-    }else{
-
-      profile.department =
-        department.value.trim();
-
-    }
-
-
-    /* SAVE PROFILE */
-
-    registerBtn.textContent =
-      "Submitting registration...";
-
-
-    await setDoc(
-      doc(db,"users",uid),
-      profile
-    );
-
-
-    /* SUCCESS */
-
-    showStatus(
-      registerStatus,
-      "Registration submitted successfully. Your account is waiting for administrator approval.",
-      "success"
-    );
-
 
     await signOut(auth);
 
-
-    setTimeout(function(){
-
-      showPendingScreen();
-
-    },800);
-
+    window.location.href="./index.html";
 
   }catch(error){
 
     console.error(
-      "JDA registration error:",
+      "Logout error:",
       error
     );
 
-
-    /*
-      If Firestore/Storage failed after
-      creating the account, try to remove it.
-    */
-
-    if(createdUser){
-
-      try{
-        await deleteUser(createdUser);
-      }catch(cleanupError){
-        console.warn(
-          "Account cleanup failed:",
-          cleanupError
-        );
-      }
-
-    }
-
-
-    showStatus(
-      registerStatus,
-      firebaseError(error),
-      "error"
+    alert(
+      "Unable to log out. Please try again."
     );
-
-
-  }finally{
-
-    registerBtn.disabled = false;
-
-    registerBtn.textContent =
-      "Submit Registration";
 
   }
-
-});
-
-
-/* =========================
-   LOGIN
-========================= */
-
-doLoginBtn.addEventListener("click",async function(){
-
-  clearStatus(loginStatus);
-
-  const userEmail =
-    loginEmail.value.trim().toLowerCase();
-
-  const userPassword =
-    loginPassword.value;
-
-
-  if(!validEmail(userEmail)){
-
-    showStatus(
-      loginStatus,
-      "Enter your registered email address.",
-      "error"
-    );
-
-    loginEmail.focus();
-    return;
-
-  }
-
-
-  if(!userPassword){
-
-    showStatus(
-      loginStatus,
-      "Enter your password.",
-      "error"
-    );
-
-    loginPassword.focus();
-    return;
-
-  }
-
-
-  doLoginBtn.disabled = true;
-
-  doLoginBtn.textContent = "Logging in...";
-
-
-  try{
-
-    await signInWithEmailAndPassword(
-      auth,
-      userEmail,
-      userPassword
-    );
-
-
-  }catch(error){
-
-    console.error(
-      "JDA login error:",
-      error
-    );
-
-
-    showStatus(
-      loginStatus,
-      firebaseError(error),
-      "error"
-    );
-
-
-  }finally{
-
-    doLoginBtn.disabled = false;
-
-    doLoginBtn.textContent = "Login";
-
-  }
-
-});
-
-
-/* =========================
-   PENDING SCREEN
-========================= */
-
-function showPendingScreen(){
-
-  messageIcon.textContent = "⏳";
-
-  messageTitle.textContent =
-    "Registration Pending";
-
-  messageText.textContent =
-    "Your JDA Networks registration has been submitted. An administrator must approve your account before you can enter the network.";
-
-  clearStatus(messageStatus);
-
-  messageLoginBtn.classList.add("hidden");
-
-  messageLogoutBtn.classList.remove("hidden");
-
-  showScreen(messageScreen);
 
 }
 
-
-/* =========================
-   DISABLED SCREEN
-========================= */
-
-function showDisabledScreen(){
-
-  messageIcon.textContent = "🚫";
-
-  messageTitle.textContent =
-    "Account Disabled";
-
-  messageText.textContent =
-    "Your JDA Networks account is currently disabled. Please contact an administrator.";
-
-  clearStatus(messageStatus);
-
-  messageLoginBtn.classList.add("hidden");
-
-  messageLogoutBtn.classList.remove("hidden");
-
-  showScreen(messageScreen);
-
-}
-
-
-/* =========================
-   APPROVED
-========================= */
-
-function showApprovedScreen(){
-
-  messageIcon.textContent = "✅";
-
-  messageTitle.textContent =
-    "Account Approved";
-
-  messageText.textContent =
-    "Your account is approved. Opening JDA Networks...";
-
-  clearStatus(messageStatus);
-
-  messageLoginBtn.classList.add("hidden");
-
-  messageLogoutBtn.classList.add("hidden");
-
-  showScreen(messageScreen);
-
-
-  setTimeout(function(){
-
-    window.location.href =
-      "./home.html";
-
-  },700);
-
-}
-
-
-/* =========================
-   AUTH STATE
-========================= */
-
-onAuthStateChanged(auth,async function(user){
-
-  if(!user){
-
-    showScreen(welcomeScreen);
-    return;
-
-  }
-
-
-  showScreen(messageScreen);
-
-
-  messageIcon.textContent = "⏳";
-
-  messageTitle.textContent =
-    "Checking account";
-
-  messageText.textContent =
-    "Please wait while we check your JDA Networks approval status.";
-
-  clearStatus(messageStatus);
-
-  messageLoginBtn.classList.add("hidden");
-
-  messageLogoutBtn.classList.remove("hidden");
-
-
-  try{
-
-    const userRef =
-      doc(db,"users",user.uid);
-
-    const userSnap =
-      await getDoc(userRef);
-
-
-    if(!userSnap.exists()){
-
-      showStatus(
-        messageStatus,
-        "Your login exists, but your JDA Networks profile could not be found.",
-        "error"
-      );
-
-      messageTitle.textContent =
-        "Profile not found";
-
-      return;
-
-    }
-
-
-    const profile =
-      userSnap.data();
-
-
-    if(profile.status === "approved"){
-
-      showApprovedScreen();
-      return;
-
-    }
-
-
-    if(profile.status === "disabled"){
-
-      showDisabledScreen();
-      return;
-
-    }
-
-
-    showPendingScreen();
-
-
-  }catch(error){
-
-    console.error(
-      "Account check error:",
-      error
-    );
-
-
-    messageTitle.textContent =
-      "Unable to check account";
-
-    messageText.textContent =
-      "We could not check your JDA Networks account right now.";
-
-    showStatus(
-      messageStatus,
-      firebaseError(error),
-      "error"
-    );
-
-  }
-
-});
-
-
-/* =========================
-   MESSAGE LOGIN
-========================= */
-
-messageLoginBtn.addEventListener(
+logoutMenuBtn.addEventListener(
   "click",
+  logout
+);
+
+settingsLogoutBtn.addEventListener(
+  "click",
+  logout
+);
+
+
+/* =========================
+   SEARCH
+========================= */
+
+searchInput.addEventListener(
+  "input",
   function(){
 
-    signOut(auth).finally(function(){
+    const query =
+      searchInput.value
+        .trim()
+        .toLowerCase();
 
-      showScreen(loginScreen);
+    document
+      .querySelectorAll(".chat-row")
+      .forEach(row=>{
 
-    });
+        const text =
+          row.textContent.toLowerCase();
+
+        row.style.display =
+          !query || text.includes(query)
+            ? "flex"
+            : "none";
+
+      });
 
   }
 );
 
 
 /* =========================
-   MESSAGE LOGOUT
+   CHAT FILTERS
 ========================= */
 
-messageLogoutBtn.addEventListener(
+document
+  .querySelectorAll(".filter")
+  .forEach(button=>{
+
+    button.addEventListener(
+      "click",
+      ()=>{
+
+        document
+          .querySelectorAll(".filter")
+          .forEach(item=>{
+            item.classList.remove("active");
+          });
+
+        button.classList.add("active");
+
+        const filter =
+          button.dataset.filter;
+
+        document
+          .querySelectorAll(".chat-row")
+          .forEach(row=>{
+
+            if(filter === "all"){
+              row.style.display="flex";
+              return;
+            }
+
+            if(filter === "unread"){
+
+              row.style.display =
+                row.dataset.unread === "true"
+                  ? "flex"
+                  : "none";
+
+              return;
+
+            }
+
+            if(filter === "favorites"){
+
+              row.style.display =
+                row.dataset.favorite === "true"
+                  ? "flex"
+                  : "none";
+
+              return;
+
+            }
+
+            if(filter === "groups"){
+
+              row.style.display =
+                row.dataset.type === "group"
+                  ? "flex"
+                  : "none";
+
+              return;
+
+            }
+
+          });
+
+      }
+    );
+
+  });
+
+
+/* =========================
+   CLASS FILTERS
+========================= */
+
+document
+  .querySelectorAll(".class-filter")
+  .forEach(button=>{
+
+    button.addEventListener(
+      "click",
+      ()=>{
+
+        document
+          .querySelectorAll(".class-filter")
+          .forEach(item=>{
+            item.classList.remove("active");
+          });
+
+        button.classList.add("active");
+
+        const selected =
+          button.dataset.class;
+
+        document
+          .querySelectorAll(".chat-row")
+          .forEach(row=>{
+
+            if(selected === "all"){
+
+              row.style.display="flex";
+              return;
+
+            }
+
+            row.style.display =
+              row.dataset.class === selected
+                ? "flex"
+                : "none";
+
+          });
+
+      }
+    );
+
+  });
+
+
+/* =========================
+   NEW CHAT
+========================= */
+
+newChatBtn.addEventListener(
   "click",
-  async function(){
+  ()=>{
+
+    alert(
+      "Member search and new chat will be connected to Firebase in the next step."
+    );
+
+  }
+);
+
+
+/* =========================
+   CAMERA
+========================= */
+
+cameraBtn.addEventListener(
+  "click",
+  ()=>{
+
+    alert(
+      "Camera and status posting will be connected in the Updates system."
+    );
+
+  }
+);
+
+
+/* =========================
+   LOAD PROFILE
+========================= */
+
+onAuthStateChanged(
+  auth,
+  async user=>{
+
+    if(!user){
+
+      window.location.href="./index.html";
+      return;
+
+    }
 
     try{
 
-      await signOut(auth);
+      const profileRef =
+        doc(
+          db,
+          "users",
+          user.uid
+        );
 
-      showScreen(welcomeScreen);
+      const snapshot =
+        await getDoc(profileRef);
+
+      if(!snapshot.exists()){
+
+        profileName.textContent =
+          user.displayName || "JDA Member";
+
+        profileEmail.textContent =
+          user.email || "—";
+
+        return;
+
+      }
+
+      const profile =
+        snapshot.data();
+
+      const name =
+        profile.realName ||
+        profile.name ||
+        profile.display ||
+        user.displayName ||
+        "JDA Member";
+
+      profileName.textContent =
+        name;
+
+      profileNumber.textContent =
+        profile.jdaNumber ||
+        profile.phone ||
+        "JDA Networks";
+
+      profileEmail.textContent =
+        profile.email ||
+        user.email ||
+        "—";
+
+      profileType.textContent =
+        profile.accountType ||
+        "Member";
+
+      profileStatus.textContent =
+        profile.status ||
+        "approved";
+
+      /* Avatar */
+
+      if(profile.photoURL){
+
+        profileAvatar.innerHTML =
+          `<img src="${profile.photoURL}"
+                alt="Profile photo">`;
+
+      }else{
+
+        profileAvatar.textContent =
+          getInitials(name);
+
+      }
 
     }catch(error){
 
       console.error(
-        "Logout error:",
+        "Profile loading error:",
         error
       );
+
+      profileName.textContent =
+        user.displayName ||
+        "JDA Member";
+
+      profileEmail.textContent =
+        user.email ||
+        "—";
 
     }
 
@@ -1704,20 +1730,33 @@ messageLogoutBtn.addEventListener(
 
 
 /* =========================
-   GLOBAL SAFETY
+   INITIALS
 ========================= */
 
-window.addEventListener(
-  "error",
-  function(event){
+function getInitials(name){
 
-    console.error(
-      "JDA page error:",
-      event.error || event.message
-    );
+  const parts =
+    String(name)
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
 
+  if(!parts.length){
+    return "J";
   }
-);
+
+  if(parts.length === 1){
+    return parts[0]
+      .slice(0,2)
+      .toUpperCase();
+  }
+
+  return (
+    parts[0][0] +
+    parts[parts.length-1][0]
+  ).toUpperCase();
+
+}
 
 </script>
 

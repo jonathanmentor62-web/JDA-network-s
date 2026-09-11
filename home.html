@@ -6,26 +6,23 @@
 <title>JDA Networks</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box}
 
 body{
+  margin:0;
   font-family:Arial,sans-serif;
   background:#0b141a;
-  color:#e9edef;
-  height:100vh;
-  overflow:hidden;
+  color:white;
 }
 
-button,input{font:inherit}
-button{cursor:pointer;border:0}
-
-.app{
-  height:100vh;
-  display:flex;
-  flex-direction:column;
+button,input{
+  font-family:inherit;
 }
 
-/* HEADER */
+button{
+  cursor:pointer;
+  border:0;
+}
 
 .header{
   height:64px;
@@ -34,7 +31,9 @@ button{cursor:pointer;border:0}
   align-items:center;
   justify-content:space-between;
   padding:0 15px;
-  border-bottom:1px solid #303b41;
+  position:sticky;
+  top:0;
+  z-index:10;
 }
 
 .brand{
@@ -43,240 +42,183 @@ button{cursor:pointer;border:0}
   gap:10px;
 }
 
-.logo{
+.brand img{
   width:42px;
   height:42px;
   border-radius:50%;
   object-fit:cover;
 }
 
-.brand h1{
-  font-size:19px;
+.brand-title{
+  font-size:18px;
+  font-weight:bold;
 }
 
-.brand p{
-  color:#8696a0;
-  font-size:11px;
-  margin-top:3px;
-}
-
-.header-actions{
+.header-buttons{
   display:flex;
-  gap:4px;
+  gap:8px;
 }
 
-.icon{
+.icon-btn{
   width:40px;
   height:40px;
-  background:transparent;
-  color:#e9edef;
   border-radius:50%;
-  font-size:20px;
+  background:#374952;
+  color:white;
+  font-size:18px;
 }
 
-.icon:hover{
-  background:#2a3942;
-}
-
-/* MAIN */
-
-.main{
-  flex:1;
-  display:flex;
-  overflow:hidden;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-  width:390px;
-  background:#111b21;
-  border-right:1px solid #303b41;
-  display:flex;
-  flex-direction:column;
+.container{
+  max-width:900px;
+  margin:auto;
+  padding-bottom:80px;
 }
 
 .search{
-  padding:10px;
+  padding:12px;
 }
 
-.search-box{
-  height:42px;
-  background:#202c33;
-  border-radius:9px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:0 13px;
-}
-
-.search-box span{
-  color:#8696a0;
-}
-
-.search-box input{
-  flex:1;
+.search input{
+  width:100%;
+  padding:13px 17px;
   border:0;
   outline:0;
-  background:transparent;
-  color:#fff;
+  border-radius:25px;
+  background:#202c33;
+  color:white;
 }
 
-.search-box input::placeholder{
+.search input::placeholder{
   color:#8696a0;
 }
 
-.filters,
-.classes{
+.filters{
   display:flex;
-  gap:7px;
+  gap:8px;
   overflow-x:auto;
-  padding:0 10px 9px;
+  padding:0 12px 12px;
 }
 
-.filters::-webkit-scrollbar,
-.classes::-webkit-scrollbar{
-  display:none;
-}
-
-.filter,
-.class-btn{
+.filter{
   white-space:nowrap;
+  padding:8px 15px;
   border-radius:18px;
   background:#202c33;
   color:#aebac1;
-  padding:7px 13px;
-  font-size:12px;
 }
 
 .filter.active{
-  background:#103c2a;
-  color:#53d98b;
-}
-
-.class-btn{
-  padding:6px 10px;
-  font-size:11px;
-}
-
-.class-btn.active{
   background:#25d366;
-  color:#071b11;
+  color:#07130b;
 }
 
-/* CHAT LIST */
-
-.list{
-  flex:1;
-  overflow-y:auto;
+.section{
+  padding:10px 15px;
+  color:#8696a0;
+  font-size:13px;
+  font-weight:bold;
 }
 
-.chat{
-  height:72px;
+.member{
   display:flex;
   align-items:center;
-  gap:12px;
-  padding:8px 14px;
+  gap:13px;
+  padding:12px 15px;
   border-bottom:1px solid #202c33;
+  cursor:pointer;
 }
 
-.chat:hover{
+.member:hover{
   background:#202c33;
 }
 
-.avatar{
-  width:50px;
-  height:50px;
+.member img{
+  width:52px;
+  height:52px;
   border-radius:50%;
   object-fit:cover;
-  background:#26343b;
-  flex-shrink:0;
 }
 
-.chat-info{
+.member-info{
   flex:1;
   min-width:0;
 }
 
-.chat-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.chat-name{
+.member-name{
+  font-weight:bold;
   font-size:15px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
 
-.chat-time{
-  font-size:10px;
+.member-detail{
   color:#8696a0;
-}
-
-.chat-bottom{
-  margin-top:5px;
-}
-
-.last-message{
   font-size:12px;
-  color:#8696a0;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  margin-top:4px;
 }
 
-/* CONTENT */
-
-.content{
-  flex:1;
-  background:#0b141a;
-  position:relative;
-}
-
-.welcome{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:30px;
-}
-
-.welcome-logo{
-  width:100px;
-  height:100px;
+.status{
+  width:9px;
+  height:9px;
   border-radius:50%;
-  object-fit:cover;
-  margin-bottom:20px;
+  background:#25d366;
 }
 
-.welcome h2{
-  font-size:27px;
-  margin-bottom:10px;
+.empty{
+  text-align:center;
+  padding:45px 20px;
+  color:#667781;
 }
 
-.welcome p{
-  max-width:500px;
-  color:#8696a0;
-  line-height:1.6;
-  font-size:14px;
-}
-
-/* CONVERSATION */
-
-.conversation{
-  position:absolute;
-  inset:0;
-  display:none;
-  flex-direction:column;
-  background:#0b141a;
-}
-
-.conversation.show{
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:65px;
+  background:#202c33;
   display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:20;
+}
+
+.nav{
+  background:none;
+  color:#8696a0;
+  font-size:11px;
+  text-align:center;
+}
+
+.nav span{
+  display:block;
+  font-size:20px;
+  margin-bottom:2px;
+}
+
+.nav.active{
+  color:#25d366;
+}
+
+.new-chat{
+  position:fixed;
+  right:20px;
+  bottom:82px;
+  width:55px;
+  height:55px;
+  border-radius:18px;
+  background:#25d366;
+  color:#07130b;
+  font-size:25px;
+  z-index:15;
+}
+
+/* CHAT */
+
+.chat{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0b141a;
+  z-index:50;
 }
 
 .chat-header{
@@ -286,96 +228,94 @@ button{cursor:pointer;border:0}
   align-items:center;
   gap:10px;
   padding:0 12px;
-  border-bottom:1px solid #303b41;
 }
 
 .back{
-  width:38px;
-  height:38px;
-  background:transparent;
-  color:#fff;
-  font-size:23px;
+  background:none;
+  color:white;
+  font-size:25px;
+  padding:5px;
 }
 
-.chat-header-info{
+.chat-header img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.chat-user{
   flex:1;
 }
 
-.chat-header-name{
-  font-weight:bold;
-  font-size:15px;
+.chat-user strong{
+  display:block;
 }
 
-.chat-header-status{
+.chat-user small{
   color:#8696a0;
-  font-size:10px;
-  margin-top:3px;
 }
 
 .messages{
-  flex:1;
+  position:absolute;
+  top:64px;
+  bottom:65px;
+  left:0;
+  right:0;
   overflow-y:auto;
-  padding:18px;
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-
-.messages::-webkit-scrollbar{
-  width:5px;
-}
-
-.messages::-webkit-scrollbar-thumb{
-  background:#26343b;
+  padding:15px 10px 20px;
+  background:#0b141a;
 }
 
 .message{
-  max-width:75%;
-  padding:8px 10px 6px;
-  border-radius:8px;
-  position:relative;
+  max-width:78%;
+  padding:9px 12px;
+  margin:5px 0;
+  border-radius:9px;
   font-size:14px;
-  line-height:1.4;
-  word-break:break-word;
+  line-height:1.35;
+  word-wrap:break-word;
 }
 
-.message.me{
-  align-self:flex-end;
+.message.mine{
+  margin-left:auto;
   background:#005c4b;
-  border-top-right-radius:2px;
 }
 
-.message.them{
-  align-self:flex-start;
+.message.theirs{
+  margin-right:auto;
   background:#202c33;
-  border-top-left-radius:2px;
 }
 
 .message-time{
+  display:block;
   color:#8696a0;
   font-size:9px;
-  margin-left:8px;
-  float:right;
-  padding-top:4px;
+  text-align:right;
+  margin-top:4px;
 }
 
 .message-form{
-  min-height:62px;
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:65px;
   background:#202c33;
   display:flex;
-  align-items:center;
   gap:8px;
-  padding:9px;
+  align-items:center;
+  padding:8px;
 }
 
-.message-input{
+.message-form input{
   flex:1;
-  background:#111b21;
   border:0;
   outline:0;
-  border-radius:22px;
-  padding:11px 15px;
-  color:#fff;
+  border-radius:24px;
+  background:#111b21;
+  color:white;
+  padding:13px 16px;
 }
 
 .send{
@@ -383,282 +323,76 @@ button{cursor:pointer;border:0}
   height:45px;
   border-radius:50%;
   background:#25d366;
-  color:#071b11;
-  font-size:19px;
-  font-weight:bold;
-}
-
-/* FLOAT BUTTON */
-
-.new-chat{
-  position:fixed;
-  right:28px;
-  bottom:28px;
-  width:58px;
-  height:58px;
-  border-radius:50%;
-  background:#25d366;
-  color:#071b11;
-  font-size:25px;
-  box-shadow:0 5px 20px #0008;
-}
-
-/* MOBILE NAV */
-
-.bottom-nav{
-  display:none;
-  height:62px;
-  background:#202c33;
-  border-top:1px solid #303b41;
-}
-
-.bottom-item{
-  flex:1;
-  background:transparent;
-  color:#8696a0;
-  font-size:11px;
-}
-
-.bottom-item.active{
-  color:#25d366;
-}
-
-.bottom-item div{
-  font-size:20px;
-  margin-bottom:3px;
-}
-
-/* MODAL */
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:#0009;
-  display:none;
-  align-items:flex-end;
-  justify-content:center;
-  z-index:50;
-}
-
-.modal.show{
-  display:flex;
-}
-
-.modal-card{
-  width:100%;
-  max-width:500px;
-  max-height:85vh;
-  overflow:auto;
-  background:#202c33;
-  border-radius:20px 20px 0 0;
-  padding:20px;
-}
-
-.modal-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:18px;
-}
-
-.modal-header h2{
-  font-size:20px;
-}
-
-.close{
-  width:35px;
-  height:35px;
-  border-radius:50%;
-  background:#2a3942;
-  color:#fff;
-}
-
-.network-search{
-  display:flex;
-  gap:8px;
-}
-
-.network-search input{
-  flex:1;
-  background:#111b21;
-  border:1px solid #37454c;
-  border-radius:8px;
-  padding:11px;
-  color:#fff;
-  outline:0;
-}
-
-.network-search button{
-  background:#25d366;
-  color:#071b11;
-  padding:0 15px;
-  border-radius:8px;
-  font-weight:bold;
-}
-
-.result{
-  margin-top:12px;
-  background:#111b21;
-  border-radius:12px;
-  padding:12px;
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.result-info{
-  flex:1;
-}
-
-.result-name{
-  font-weight:bold;
-}
-
-.result-meta{
-  color:#8696a0;
-  font-size:11px;
-  margin-top:4px;
-}
-
-.message-btn{
-  background:#25d366;
-  color:#071b11;
-  padding:8px 12px;
-  border-radius:15px;
-  font-size:11px;
-  font-weight:bold;
-}
-
-.empty{
-  text-align:center;
-  padding:50px 20px;
-  color:#8696a0;
-}
-
-.empty-icon{
-  font-size:42px;
-  margin-bottom:12px;
+  color:#07130b;
+  font-size:18px;
 }
 
 /* PROFILE */
 
-.profile{
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  z-index:80;
+  align-items:flex-end;
+  justify-content:center;
+}
+
+.modal-card{
+  width:100%;
+  max-width:600px;
+  background:#202c33;
+  border-radius:20px 20px 0 0;
+  padding:25px;
+}
+
+.profile-center{
   text-align:center;
 }
 
-.profile-photo{
-  width:90px;
-  height:90px;
+.profile-center img{
+  width:100px;
+  height:100px;
   border-radius:50%;
   object-fit:cover;
-  margin-bottom:12px;
 }
 
 .profile-name{
   font-size:21px;
   font-weight:bold;
+  margin-top:12px;
 }
 
-.profile-number{
-  color:#25d366;
-  font-size:13px;
-  margin-top:5px;
-}
-
-.profile-details{
-  background:#111b21;
-  margin-top:20px;
-  border-radius:12px;
-  text-align:left;
-  padding:15px;
-}
-
-.detail{
-  padding:10px 0;
-  border-bottom:1px solid #26343b;
-}
-
-.detail:last-child{
-  border:0;
-}
-
-.detail-label{
+.profile-info{
   color:#8696a0;
-  font-size:10px;
+  margin-top:8px;
 }
 
-.detail-value{
-  margin-top:4px;
+.close{
+  width:100%;
+  margin-top:20px;
+  padding:13px;
+  border-radius:25px;
+  background:#374952;
+  color:white;
 }
 
-/* TOAST */
-
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:90px;
-  transform:translateX(-50%);
-  background:#202c33;
-  color:#fff;
-  padding:12px 18px;
-  border-radius:10px;
-  display:none;
-  z-index:100;
-}
-
-.toast.show{
-  display:block;
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-  .header{
-    height:60px;
-  }
-
-  .sidebar{
-    width:100%;
-    border:0;
-  }
-
-  .content{
-    display:none;
-  }
-
-  .bottom-nav{
-    display:flex;
+@media(min-width:700px){
+  .bottom{
+    left:50%;
+    transform:translateX(-50%);
+    max-width:900px;
   }
 
   .new-chat{
-    right:18px;
-    bottom:78px;
-  }
-
-  .conversation{
-    position:fixed;
-    z-index:40;
-    top:0;
-    bottom:62px;
-    left:0;
-    right:0;
-  }
-
-  .conversation.show{
-    display:flex;
-  }
-
-  .message{
-    max-width:85%;
+    right:30px;
   }
 }
 </style>
 </head>
 
 <body>
-
-<div class="app">
 
 <!-- HEADER -->
 
@@ -668,38 +402,31 @@ button{cursor:pointer;border:0}
 
     <img
       src="./logo.png"
-      class="logo"
-      id="headerLogo"
+      onerror="this.style.display='none'"
     >
 
-    <div>
-      <h1>JDA Networks</h1>
-      <p id="onlineText">Connecting...</p>
+    <div class="brand-title">
+      JDA Networks
     </div>
 
   </div>
 
-  <div class="header-actions">
+  <div class="header-buttons">
 
     <button
-      class="icon"
-      id="networkBtn"
-    >👥</button>
+      class="icon-btn"
+      id="adminBtn"
+      style="display:none"
+    >
+      🛡️
+    </button>
 
     <button
-      class="icon"
-      id="notificationBtn"
-    >🔔</button>
-
-    <button
-      class="icon"
+      class="icon-btn"
       id="profileBtn"
-    >👤</button>
-
-    <button
-      class="icon"
-      id="menuBtn"
-    >⋮</button>
+    >
+      👤
+    </button>
 
   </div>
 
@@ -708,554 +435,84 @@ button{cursor:pointer;border:0}
 
 <!-- MAIN -->
 
-<main class="main">
-
-<!-- SIDEBAR -->
-
-<section class="sidebar">
+<main class="container">
 
   <div class="search">
 
-    <div class="search-box">
-
-      <span>🔍</span>
-
-      <input
-        id="chatSearch"
-        placeholder="Search chats"
-      >
-
-    </div>
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search JDA Networks"
+    >
 
   </div>
 
 
   <div class="filters">
 
-    <button
-      class="filter active"
-      data-filter="all"
-    >
+    <button class="filter active" data-filter="all">
       All
     </button>
 
-    <button
-      class="filter"
-      data-filter="unread"
-    >
-      Unread
+    <button class="filter" data-filter="student">
+      Students
     </button>
 
-    <button
-      class="filter"
-      data-filter="favorites"
-    >
-      Favorites
+    <button class="filter" data-filter="staff">
+      Staff
     </button>
 
-    <button
-      class="filter"
-      data-filter="class"
-    >
-      Class
+    <button class="filter" data-filter="Form One">
+      Form One
+    </button>
+
+    <button class="filter" data-filter="Form Two">
+      Form Two
+    </button>
+
+    <button class="filter" data-filter="Form Three">
+      Form Three
+    </button>
+
+    <button class="filter" data-filter="Form Four">
+      Form Four
+    </button>
+
+    <button class="filter" data-filter="Form Five">
+      Form Five
+    </button>
+
+    <button class="filter" data-filter="Form Six">
+      Form Six
     </button>
 
   </div>
 
 
-  <div class="classes">
-
-    <button
-      class="class-btn active"
-      data-class="all"
-    >All</button>
-
-    <button
-      class="class-btn"
-      data-class="Form One"
-    >Form 1</button>
-
-    <button
-      class="class-btn"
-      data-class="Form Two"
-    >Form 2</button>
-
-    <button
-      class="class-btn"
-      data-class="Form Three"
-    >Form 3</button>
-
-    <button
-      class="class-btn"
-      data-class="Form Four"
-    >Form 4</button>
-
-    <button
-      class="class-btn"
-      data-class="Form Five"
-    >Form 5</button>
-
-    <button
-      class="class-btn"
-      data-class="Form Six"
-    >Form 6</button>
-
+  <div class="section">
+    JDA NETWORK MEMBERS
   </div>
 
-
-  <div
-    class="list"
-    id="chatList"
-  >
-
-    <div class="empty">
-
-      <div class="empty-icon">
-        💬
-      </div>
-
-      Loading JDA Network...
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- DESKTOP CONTENT -->
-
-<section class="content">
-
-  <div
-    class="welcome"
-    id="welcomeScreen"
-  >
-
-    <div>
-
-      <img
-        src="./logo.png"
-        class="welcome-logo"
-      >
-
-      <h2>JDA Networks</h2>
-
-      <p>
-        Select a member to start a private
-        conversation.
-      </p>
-
-    </div>
-
-  </div>
-
-
-  <!-- CONVERSATION -->
-
-  <div
-    class="conversation"
-    id="conversation"
-  >
-
-    <div class="chat-header">
-
-      <button
-        class="back"
-        id="backBtn"
-      >
-        ←
-      </button>
-
-      <img
-        class="avatar"
-        id="chatAvatar"
-        src="./logo.png"
-      >
-
-      <div class="chat-header-info">
-
-        <div
-          class="chat-header-name"
-          id="chatName"
-        >
-          Member
-        </div>
-
-        <div
-          class="chat-header-status"
-          id="chatStatus"
-        >
-          JDA Networks member
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <div
-      class="messages"
-      id="messages"
-    >
-
-    </div>
-
-
-    <form
-      class="message-form"
-      id="messageForm"
-    >
-
-      <input
-        class="message-input"
-        id="messageInput"
-        autocomplete="off"
-        placeholder="Type a message"
-      >
-
-      <button
-        class="send"
-        type="submit"
-      >
-        ➤
-      </button>
-
-    </form>
-
-  </div>
-
-</section>
+  <div id="members"></div>
 
 </main>
 
 
-<!-- MOBILE NAV -->
+<!-- NEW CHAT -->
 
-<nav class="bottom-nav">
-
-  <button class="bottom-item active">
-    <div>💬</div>
-    Chats
-  </button>
-
-  <button
-    class="bottom-item"
-    id="mobileNetwork"
-  >
-    <div>👥</div>
-    Network
-  </button>
-
-  <button
-    class="bottom-item"
-    id="mobileNotifications"
-  >
-    <div>🔔</div>
-    Alerts
-  </button>
-
-  <button
-    class="bottom-item"
-    id="mobileProfile"
-  >
-    <div>👤</div>
-    Profile
-  </button>
-
-</nav>
-
-
-<button
-  class="new-chat"
-  id="newChatBtn"
->
+<button class="new-chat" id="newChat">
   ✎
 </button>
 
 
-<!-- NETWORK MODAL -->
+<!-- BOTTOM NAV -->
 
-<div
-  class="modal"
-  id="networkModal"
->
+<nav class="bottom">
 
-  <div class="modal-card">
+  <button class="nav active">
+    <span>💬</span>
+    Chats
+  </button>
 
-    <div class="modal-header">
-
-      <h2>JDA Network</h2>
-
-      <button
-        class="close"
-        data-close="networkModal"
-      >
-        ✕
-      </button>
-
-    </div>
-
-    <div class="network-search">
-
-      <input
-        id="networkInput"
-        placeholder="Search name or JDA number"
-      >
-
-      <button id="networkSearchBtn">
-        Search
-      </button>
-
-    </div>
-
-    <div id="networkResults"></div>
-
-  </div>
-
-</div>
-
-
-<!-- PROFILE MODAL -->
-
-<div
-  class="modal"
-  id="profileModal"
->
-
-  <div class="modal-card">
-
-    <div class="modal-header">
-
-      <h2>My Profile</h2>
-
-      <button
-        class="close"
-        data-close="profileModal"
-      >
-        ✕
-      </button>
-
-    </div>
-
-    <div class="profile">
-
-      <img
-        id="profilePhoto"
-        class="profile-photo"
-        src="./logo.png"
-      >
-
-      <div
-        id="profileName"
-        class="profile-name"
-      >
-        Loading...
-      </div>
-
-      <div
-        id="profileNumber"
-        class="profile-number"
-      ></div>
-
-      <div class="profile-details">
-
-        <div class="detail">
-
-          <div class="detail-label">
-            ACCOUNT TYPE
-          </div>
-
-          <div
-            class="detail-value"
-            id="profileType"
-          >-</div>
-
-        </div>
-
-
-        <div
-          class="detail"
-          id="classDetail"
-        >
-
-          <div class="detail-label">
-            CLASS
-          </div>
-
-          <div
-            class="detail-value"
-            id="profileClass"
-          >-</div>
-
-        </div>
-
-
-        <div
-          class="detail"
-          id="streamDetail"
-        >
-
-          <div class="detail-label">
-            STREAM
-          </div>
-
-          <div
-            class="detail-value"
-            id="profileStream"
-          >-</div>
-
-        </div>
-
-
-        <div
-          class="detail"
-          id="departmentDetail"
-        >
-
-          <div class="detail-label">
-            DEPARTMENT
-          </div>
-
-          <div
-            class="detail-value"
-            id="profileDepartment"
-          >-</div>
-
-        </div>
-
-
-        <div class="detail">
-
-          <div class="detail-label">
-            EMAIL
-          </div>
-
-          <div
-            class="detail-value"
-            id="profileEmail"
-          >-</div>
-
-        </div>
-
-      </div>
-
-
-      <button
-        id="logoutBtn"
-        style="
-          margin-top:20px;
-          width:100%;
-          padding:13px;
-          border-radius:10px;
-          background:#d9534f;
-          color:white;
-          font-weight:bold;
-        "
-      >
-        Log out
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- NOTIFICATIONS -->
-
-<div
-  class="modal"
-  id="notificationModal"
->
-
-  <div class="modal-card">
-
-    <div class="modal-header">
-
-      <h2>Notifications</h2>
-
-      <button
-        class="close"
-        data-close="notificationModal"
-      >
-        ✕
-      </button>
-
-    </div>
-
-    <div class="empty">
-
-      <div class="empty-icon">
-        🔔
-      </div>
-
-      No notifications yet.
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- MENU -->
-
-<div
-  class="modal"
-  id="menuModal"
->
-
-  <div class="modal-card">
-
-    <div class="modal-header">
-
-      <h2>JDA Networks</h2>
-
-      <button
-        class="close"
-        data-close="menuModal"
-      >
-        ✕
-      </button>
-
-    </div>
-
-    <button
-      id="menuProfile"
-      style="
-        width:100%;
-        padding:14px;
-        background:#111b21;
-        color:#fff;
-        border-radius:10px;
-        text-align:left;
-        margin-bottom:8px;
-      "
-    >
-      👤 Profile
-    </button>
-
-    <button
-      id="menuNetwork"
-      style="
-        width:100%;
-        padding:14px;
-        background:#111b21;
-        color:#fff;
-        border-radius:10px;
-        text-align:left;
-        margin-bottom:8px;
-      "
-    >
-      👥 Network
-    </button>
-
-    <button
-      id="menuLogout"
-      style="
-        width:100%;
-        padding:14px;
-        background:#3a2020;
-        color:#ff777
+  <button class="nav" id="networkBtn">
+    <span>👥</span>

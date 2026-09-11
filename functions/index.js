@@ -32,7 +32,7 @@ const messaging = getMessaging();
 
 
 /* =========================================
-   SUPER ADMIN EMAIL
+   SUPER ADMIN
 ========================================= */
 
 const SUPER_ADMIN_EMAIL =
@@ -40,328 +40,508 @@ const SUPER_ADMIN_EMAIL =
 
 
 /* =========================================
-   NEW JDA NETWORKS REGISTRATION
+   NEW REGISTRATION
 ========================================= */
 
 exports.notifyNewRegistration = onDocumentCreated(
   "users/{uid}",
   async (event) => {
 
-    const snapshot = event.data;
-
-    if (!snapshot) {
-      console.log("No registration document found.");
-      return;
-    }
-
-
-    const newUser = snapshot.data();
-
-    console.log(
-      "New JDA Networks registration:",
-      newUser.realName
-    );
-
-
-    /* =====================================
-       ONLY PROCESS PENDING REGISTRATIONS
-    ===================================== */
-
-    if (newUser.status !== "pending") {
-      console.log(
-        "User is not pending. Notification skipped."
-      );
-      return;
-    }
-
-
-    const registrationUid = event.params.uid;
-
-
-    /* =====================================
-       FIND ADMINISTRATORS
-    ===================================== */
-
-    const adminIds = new Set();
-
-
-    /*
-      Add the main/super administrator.
-    */
-
     try {
 
-      const superAdminUser =
-        await adminAuth.getUserByEmail(
-          SUPER_ADMIN_EMAIL
+      const snapshot = event.data;
+
+      if (!snapshot) {
+        console.log("No registration document found.");
+        return;
+      }
+
+
+      /* =====================================
+         AUTOMATIC UID
+      ===================================== */
+
+      const registrationUid =
+        event.params.uid;
+
+      const newUser =
+        snapshot.data();
+
+
+      console.log(
+        "================================="
+      );
+
+      console.log(
+        "NEW JDA REGISTRATION"
+      );
+
+      console.log(
+        "UID:",
+        registrationUid
+      );
+
+      console.log(
+        "Name:",
+        newUser.realName
+      );
+
+      console.log(
+        "================================="
+      );
+
+
+      /* =====================================
+         ONLY PENDING REGISTRATIONS
+      ===================================== */
+
+      if (newUser.status !== "pending") {
+
+        console.log(
+          "Registration is not pending. Skipping."
         );
 
-      adminIds.add(superAdminUser.uid);
-
-    } catch (error) {
-
-      console.error(
-        "Could not find super administrator:",
-        error
-      );
-
-    }
+        return;
+      }
 
 
-    /*
-      Add all users listed in admins collection.
-    */
+      /* =====================================
+         MEMBER INFORMATION
+      ===================================== */
 
-    try {
-
-      const adminsSnapshot =
-        await db.collection("admins").get();
-
-      adminsSnapshot.forEach((adminDoc) => {
-
-        adminIds.add(adminDoc.id);
-
-      });
-
-    } catch (error) {
-
-      console.error(
-        "Could not load admin accounts:",
-        error
-      );
-
-    }
+      const memberName =
+        String(
+          newUser.realName || "New member"
+        ).trim();
 
 
-    console.log(
-      "Administrators found:",
-      Array.from(adminIds)
-    );
+      const accountType =
+        String(
+          newUser.accountType || "member"
+        ).trim();
 
 
-    /* =====================================
-       INFORMATION ABOUT NEW MEMBER
-    ===================================== */
-
-    const memberName =
-      newUser.realName || "New member";
-
-    const accountType =
-      newUser.accountType || "member";
-
-    const jdaNumber =
-      newUser.jdaNumber || "";
-
-    let extraInformation = "";
+      const jdaNumber =
+        String(
+          newUser.jdaNumber || ""
+        ).trim();
 
 
-    if (accountType === "student") {
-
-      extraInformation =
-        `${newUser.class || ""} ${newUser.stream || ""}`
-          .trim();
-
-    }
+      const email =
+        String(
+          newUser.email || ""
+        ).trim();
 
 
-    if (accountType === "staff") {
-
-      extraInformation =
-        newUser.department || "";
-
-    }
-
-
-    const notificationTitle =
-      "New JDA Networks Registration";
+      const studentClass =
+        String(
+          newUser.class ||
+          newUser.studentClass ||
+          ""
+        ).trim();
 
 
-    const notificationMessage =
-      `${memberName} has registered as a ${accountType}.`;
+      const stream =
+        String(
+          newUser.stream || ""
+        ).trim();
 
 
-    /* =====================================
-       CREATE ADMIN NOTIFICATIONS
-    ===================================== */
+      const department =
+        String(
+          newUser.department || ""
+        ).trim();
 
-    for (const adminUid of adminIds) {
+
+      /*
+       * Support either photoURL or profilePhoto.
+       */
+
+      const profilePhoto =
+        String(
+          newUser.photoURL ||
+          newUser.profilePhoto ||
+          newUser.photoUrl ||
+          ""
+        ).trim();
+
+
+      /* =====================================
+         FIND ADMINISTRATORS
+      ===================================== */
+
+      const adminIds =
+        new Set();
+
+
+      /* =====================================
+         ADD SUPER ADMIN
+      ===================================== */
 
       try {
 
-        const notificationId =
-          `${adminUid}_${registrationUid}`;
+        const superAdminUser =
+          await adminAuth.getUserByEmail(
+            SUPER_ADMIN_EMAIL
+          );
 
-
-        await db
-          .collection("notifications")
-          .doc(notificationId)
-          .set({
-
-            type: "new_registration",
-
-            userId: adminUid,
-
-            registrationUid: registrationUid,
-
-            title: notificationTitle,
-
-            message: notificationMessage,
-
-            memberName: memberName,
-
-            jdaNumber: jdaNumber,
-
-            accountType: accountType,
-
-            class:
-              accountType === "student"
-                ? newUser.class || ""
-                : "",
-
-            stream:
-              accountType === "student"
-                ? newUser.stream || ""
-                : "",
-
-            department:
-              accountType === "staff"
-                ? newUser.department || ""
-                : "",
-
-            profilePhoto:
-              newUser.profilePhoto || "",
-
-            email:
-              newUser.email || "",
-
-            extraInformation:
-
-              extraInformation,
-
-            read: false,
-
-            createdAt:
-              FieldValue.serverTimestamp()
-
-          });
-
-
-        console.log(
-          "Admin notification created for:",
-          adminUid
+        adminIds.add(
+          superAdminUser.uid
         );
 
+        console.log(
+          "Super admin found:",
+          superAdminUser.uid
+        );
 
-        /* =================================
-           GET ADMIN DEVICE TOKENS
-        ================================= */
+      } catch (error) {
 
-        const tokenSnapshot =
+        console.error(
+          "Could not find super admin:",
+          error
+        );
+
+      }
+
+
+      /* =====================================
+         ADD OTHER ADMINS
+      ===================================== */
+
+      try {
+
+        const adminsSnapshot =
           await db
-            .collection("deviceTokens")
-            .where(
-              "userId",
-              "==",
-              adminUid
-            )
+            .collection("admins")
             .get();
 
 
-        const tokens = [];
+        adminsSnapshot.forEach(
+          adminDoc => {
 
-
-        tokenSnapshot.forEach((tokenDoc) => {
-
-          const tokenData =
-            tokenDoc.data();
-
-          if (tokenData.token) {
-
-            tokens.push({
-              token: tokenData.token,
-              documentId: tokenDoc.id
-            });
+            adminIds.add(
+              adminDoc.id
+            );
 
           }
-
-        });
-
-
-        /* =================================
-           SEND PHONE PUSH NOTIFICATION
-        ================================= */
-
-        if (tokens.length > 0) {
-
-          const tokenValues =
-            tokens.map((item) => item.token);
+        );
 
 
-          const response =
-            await messaging.sendEachForMulticast({
+        console.log(
+          "Admins collection loaded."
+        );
 
-              tokens: tokenValues,
+      } catch (error) {
 
-              notification: {
+        console.error(
+          "Could not load admins:",
+          error
+        );
 
-                title:
-                  "JDA Networks",
+      }
 
-                body:
-                  `${memberName} has submitted a new registration.`
 
-              },
+      /* =====================================
+         CHECK ADMINS
+      ===================================== */
 
-              data: {
+      if (adminIds.size === 0) {
 
-                type:
-                  "new_registration",
+        console.error(
+          "NO ADMINISTRATORS FOUND."
+        );
 
-                registrationUid:
-                  registrationUid,
+        return;
+      }
 
-                memberName:
-                  memberName,
 
-                accountType:
-                  accountType,
+      console.log(
+        "Administrators:",
+        Array.from(adminIds)
+      );
 
-                jdaNumber:
-                  jdaNumber
+
+      /* =====================================
+         EXTRA INFORMATION
+      ===================================== */
+
+      let extraInformation =
+        "";
+
+
+      if (
+        accountType ===
+        "student"
+      ) {
+
+        extraInformation =
+          [
+            studentClass,
+            stream
+          ]
+          .filter(Boolean)
+          .join(" • ");
+
+      }
+
+
+      if (
+        accountType ===
+        "staff"
+      ) {
+
+        extraInformation =
+          department;
+
+      }
+
+
+      /* =====================================
+         NOTIFICATION TEXT
+      ===================================== */
+
+      const notificationTitle =
+        "New JDA Networks Registration";
+
+
+      const notificationMessage =
+        `${memberName} has registered and is waiting for approval.`;
+
+
+      /* =====================================
+         CREATE NOTIFICATION FOR EACH ADMIN
+      ===================================== */
+
+      for (
+        const adminUid of adminIds
+      ) {
+
+        try {
+
+          const notificationId =
+            `${adminUid}_${registrationUid}`;
+
+
+          /* =================================
+             SAVE IN-APP NOTIFICATION
+          ================================= */
+
+          await db
+            .collection("notifications")
+            .doc(notificationId)
+            .set({
+
+              type:
+                "new_registration",
+
+              userId:
+                adminUid,
+
+              registrationUid:
+                registrationUid,
+
+              /*
+               * This is the actual Firebase Auth UID
+               * of the person who registered.
+               */
+
+              memberUid:
+                registrationUid,
+
+              title:
+                notificationTitle,
+
+              message:
+                notificationMessage,
+
+              memberName:
+                memberName,
+
+              jdaNumber:
+                jdaNumber,
+
+              accountType:
+                accountType,
+
+              class:
+                accountType === "student"
+                  ? studentClass
+                  : "",
+
+              stream:
+                accountType === "student"
+                  ? stream
+                  : "",
+
+              department:
+                accountType === "staff"
+                  ? department
+                  : "",
+
+              profilePhoto:
+                profilePhoto,
+
+              email:
+                email,
+
+              extraInformation:
+                extraInformation,
+
+              read:
+                false,
+
+              createdAt:
+                FieldValue.serverTimestamp()
+
+            });
+
+
+          console.log(
+            "In-app notification created for:",
+            adminUid
+          );
+
+
+          /* =================================
+             FIND ADMIN DEVICE TOKENS
+          ================================= */
+
+          const tokenSnapshot =
+            await db
+              .collection("deviceTokens")
+              .where(
+                "userId",
+                "==",
+                adminUid
+              )
+              .get();
+
+
+          const tokens =
+            [];
+
+
+          tokenSnapshot.forEach(
+            tokenDoc => {
+
+              const tokenData =
+                tokenDoc.data();
+
+
+              if (
+                tokenData.token
+              ) {
+
+                tokens.push({
+
+                  token:
+                    tokenData.token,
+
+                  documentId:
+                    tokenDoc.id
+
+                });
 
               }
 
-            });
-
-
-          console.log(
-            `Push notifications sent: ${response.successCount}`
+            }
           );
 
 
-          console.log(
-            `Push notifications failed: ${response.failureCount}`
-          );
+          /* =================================
+             SEND PUSH NOTIFICATION
+          ================================= */
 
-
-          /* ===============================
-             REMOVE INVALID TOKENS
-          =============================== */
-
-          for (
-            let i = 0;
-            i < response.responses.length;
-            i++
+          if (
+            tokens.length > 0
           ) {
 
-            const result =
-              response.responses[i];
+            const tokenValues =
+              tokens.map(
+                item =>
+                  item.token
+              );
 
 
-            if (!result.success) {
+            const response =
+              await messaging
+                .sendEachForMulticast({
+
+                  tokens:
+                    tokenValues,
+
+                  notification: {
+
+                    title:
+                      "JDA Networks",
+
+                    body:
+                      `${memberName} registered and needs your approval.`
+
+                  },
+
+                  data: {
+
+                    type:
+                      "new_registration",
+
+                    registrationUid:
+                      registrationUid,
+
+                    memberUid:
+                      registrationUid,
+
+                    memberName:
+                      memberName,
+
+                    accountType:
+                      accountType,
+
+                    jdaNumber:
+                      jdaNumber,
+
+                    click_action:
+                      "OPEN_ADMIN"
+
+                  }
+
+                });
+
+
+            console.log(
+              "Push notification results:",
+              response.successCount,
+              "sent,",
+              response.failureCount,
+              "failed."
+            );
+
+
+            /* ===============================
+               REMOVE INVALID TOKENS
+            =============================== */
+
+            for (
+              let i = 0;
+              i < response.responses.length;
+              i++
+            ) {
+
+              const result =
+                response.responses[i];
+
+
+              if (
+                result.success
+              ) {
+
+                continue;
+              }
+
 
               const errorCode =
-                result.error?.code || "";
+                result.error?.code ||
+                "";
 
 
               if (
@@ -382,18 +562,20 @@ exports.notifyNewRegistration = onDocumentCreated(
 
                   await db
                     .collection("deviceTokens")
-                    .doc(tokens[i].documentId)
+                    .doc(
+                      tokens[i].documentId
+                    )
                     .delete();
 
 
                   console.log(
-                    "Removed invalid device token."
+                    "Removed invalid FCM token."
                   );
 
                 } catch (deleteError) {
 
                   console.error(
-                    "Could not remove invalid token:",
+                    "Could not delete invalid token:",
                     deleteError
                   );
 
@@ -403,31 +585,59 @@ exports.notifyNewRegistration = onDocumentCreated(
 
             }
 
+          } else {
+
+            console.log(
+              "No device token for admin:",
+              adminUid
+            );
+
           }
 
-        } else {
 
-          console.log(
-            "No admin device token found. In-app notification was still created."
+        } catch (adminError) {
+
+          console.error(
+            "Notification failed for admin:",
+            adminUid,
+            adminError
           );
 
         }
 
-      } catch (error) {
-
-        console.error(
-          `Notification failed for admin ${adminUid}:`,
-          error
-        );
-
       }
 
+
+      /* =====================================
+         FINISHED
+      ===================================== */
+
+      console.log(
+        "================================="
+      );
+
+      console.log(
+        "REGISTRATION NOTIFICATION COMPLETE"
+      );
+
+      console.log(
+        "Registration UID:",
+        registrationUid
+      );
+
+      console.log(
+        "================================="
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "REGISTRATION FUNCTION FAILED:",
+        error
+      );
+
     }
-
-
-    console.log(
-      "New registration notification process completed."
-    );
 
   }
 );

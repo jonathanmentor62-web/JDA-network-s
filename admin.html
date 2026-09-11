@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JDA Networks • Admin</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#0b141a;
+  color:#fff;
+}
+
+button{
+  border:0;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.top{
+  height:64px;
+  background:#202c33;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brand img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.brand h1{
+  font-size:19px;
+  margin:0;
+}
+
+.brand small{
+  display:block;
+  color:#8696a0;
+  font-size:11px;
+  margin-top:3px;
+}
+
+.logout{
+  background:#374952;
+  color:#fff;
+  padding:10px 15px;
+  border-radius:20px;
+}
+
+.container{
+  width:100%;
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+.admin-card{
+  background:#111b21;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:20px;
+  border:1px solid #26343b;
+}
+
+.title{
+  font-size:21px;
+  font-weight:800;
+  margin-bottom:5px;
+}
+
+.subtitle{
+  color:#8696a0;
+  font-size:13px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+
+.stat{
+  background:#202c33;
+  border-radius:14px;
+  padding:15px;
+}
+
+.stat strong{
+  display:block;
+  font-size:25px;
+}
+
+.stat span{
+  color:#8696a0;
+  font-size:12px;
+}
+
+.section-title{
+  font-size:18px;
+  font-weight:800;
+  margin:20px 0 12px;
+}
+
+.user-card{
+  background:#202c33;
+  border-radius:17px;
+  padding:15px;
+  margin-bottom:12px;
+  display:flex;
+  gap:14px;
+}
+
+.photo{
+  width:75px;
+  height:75px;
+  min-width:75px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#374952;
+}
+
+.info{
+  flex:1;
+  min-width:0;
+}
+
+.name{
+  font-size:17px;
+  font-weight:800;
+  word-break:break-word;
+}
+
+.line{
+  color:#aebac1;
+  font-size:13px;
+  margin-top:5px;
+}
+
+.green{
+  color:#25d366;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:12px;
+  font-size:11px;
+  margin-top:7px;
+  background:#374952;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:13px;
+  flex-wrap:wrap;
+}
+
+.approve{
+  background:#25d366;
+  color:#07130b;
+  padding:10px 16px;
+  border-radius:20px;
+}
+
+.reject{
+  background:#3b2024;
+  color:#ff6b6b;
+  padding:10px 16px;
+  border-radius:20px;
+}
+
+.disable{
+  background:#374952;
+  color:#fff;
+  padding:10px 16px;
+  border-radius:20px;
+}
+
+.enable{
+  background:#25d366;
+  color:#07130b;
+  padding:10px 16px;
+  border-radius:20px;
+}
+
+.empty{
+  text-align:center;
+  padding:35px 10px;
+  color:#667781;
+}
+
+.loading{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#8696a0;
+}
+
+.notice{
+  background:#1d3038;
+  border-left:4px solid #25d366;
+  padding:12px;
+  border-radius:10px;
+  font-size:13px;
+  color:#cbd5da;
+  margin-top:15px;
+}
+
+@media(max-width:650px){
+  .container{
+    padding:12px;
+  }
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .user-card{
+    align-items:flex-start;
+  }
+
+  .photo{
+    width:62px;
+    height:62px;
+    min-width:62px;
+  }
+
+  .name{
+    font-size:16px;
+  }
+
+  .line{
+    font-size:12px;
+  }
+
+  .top{
+    padding:0 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading" class="loading">
+  Checking administrator access...
+</div>
+
+<div id="app" style="display:none">
+
+  <div class="top">
+
+    <div class="brand">
+      <img src="./logo.png" onerror="this.style.display='none'">
+
+      <div>
+        <h1>JDA Networks</h1>
+        <small>Administrator Panel</small>
+      </div>
+    </div>
+
+    <button class="logout" id="logoutBtn">
+      Logout
+    </button>
+
+  </div>
+
+  <main class="container">
+
+    <div class="admin-card">
+
+      <div class="title">
+        Admin Dashboard
+      </div>
+
+      <div class="subtitle">
+        Review and control JDA Networks membership.
+      </div>
+
+      <div class="stats">
+
+        <div class="stat">
+          <strong id="pendingCount">0</strong>
+          <span>Pending</span>
+        </div>
+
+        <div class="stat">
+          <strong id="approvedCount">0</strong>
+          <span>Approved</span>
+        </div>
+
+        <div class="stat">
+          <strong id="disabledCount">0</strong>
+          <span>Disabled</span>
+        </div>
+
+      </div>
+
+      <div class="notice">
+        Every new member must have a real full name and a profile photo.
+        Registration approval is controlled by the administrator.
+      </div>
+
+    </div>
+
+
+    <!-- PENDING -->
+
+    <div class="section-title">
+      Pending Registrations
+    </div>
+
+    <div id="pendingList"></div>
+
+
+    <!-- APPROVED -->
+
+    <div class="section-title">
+      Approved Members
+    </div>
+
+    <div id="approvedList"></div>
+
+
+    <!-- DISABLED -->
+
+    <div class="section-title">
+      Disabled Members
+    </div>
+
+    <div id="disabledList"></div>
+
+  </main>
+
+</div>
+
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+/* =========================
+   FIREBASE
+========================= */
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyAPnOHdVISPw_fGBLdMLELSU9fI1WMTC3I",
+
+  authDomain: "jda-network-fabde.firebaseapp.com",
+
+  projectId: "jda-network-fabde",
+
+  storageBucket: "jda-network-fabde.firebasestorage.app",
+
+  messagingSenderId: "383915852673",
+
+  appId: "1:383915852673:web:4b185c0387ed0bbad1de80"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const loading = document.getElementById("loading");
+const appBox = document.getElementById("app");
+
+const pendingList =
+  document.getElementById("pendingList");
+
+const approvedList =
+  document.getElementById("approvedList");
+
+const disabledList =
+  document.getElementById("disabledList");
+
+const pendingCount =
+  document.getElementById("pendingCount");
+
+const approvedCount =
+  document.getElementById("approvedCount");
+
+const disabledCount =
+  document.getElementById("disabledCount");
+
+const logoutBtn =
+  document.getElementById("logoutBtn");
+
+
+/* =========================
+   ADMIN CHECK
+========================= */
+
+async function checkAdmin(user){
+
+  const superAdmin =
+    user.email === "jonathanmentor62@gmail.com";
+
+  if(superAdmin){
+    return true;
+  }
+
+  try{
+
+    const adminDoc = await getDocs(
+      collection(db,"admins")
+    );
+
+    return adminDoc.docs.some(
+      d => d.id === user.uid
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    return false;
+  }
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+function formatDate(value){
+
+  if(!value) return "Unknown date";
+
+  try{
+
+    if(value.toDate){
+      return value.toDate().toLocaleString();
+    }
+
+    return new Date(value).toLocaleString();
+
+  }catch{
+    return "Unknown date";
+  }
+}
+
+
+/* =========================
+   ESCAPE HTML
+========================= */
+
+function escapeHTML(text){
+
+  if(text === undefined || text === null){
+    return "";
+  }
+
+  return String(text)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+/* =========================
+   MEMBER CARD
+========================= */
+
+function createMemberCard(user, type){
+
+  const card = document.createElement("div");
+
+  card.className = "user-card";
+
+
+  const photo =
+    user.profilePhoto ||
+    "./logo.png";
+
+
+  let extra = "";
+
+
+  if(user.accountType === "student"){
+
+    extra = `
+      <div class="line">
+        Class:
+        <span class="green">
+          ${escapeHTML(user.class || "Not provided")}
+        </span>
+      </div>
+
+      <div class="line">
+        Stream:
+        <span class="green">
+          ${escapeHTML(user.stream || "Not provided")}
+        </span>
+      </div>
+    `;
+
+  }else{
+
+    extra = `
+      <div class="line">
+        Department:
+        <span class="green">
+          ${escapeHTML(user.department || "Not provided")}
+        </span>
+      </div>
+    `;
+
+  }
+
+
+  let actions = "";
+
+
+  if(type === "pending"){
+
+    actions = `
+      <div class="actions">
+
+        <button class="approve">
+          ✓ Approve
+        </button>
+
+        <button class="reject">
+          ✕ Reject
+        </button>
+
+      </div>
+    `;
+
+  }
+
+
+  if(type === "approved"){
+
+    actions = `
+      <div class="actions">
+
+        <button class="disable">
+          Disable Member
+        </button>
+
+      </div>
+    `;
+
+  }
+
+
+  if(type === "disabled"){
+
+    actions = `
+      <div class="actions">
+
+        <button class="enable">
+          Enable Member
+        </button>
+
+      </div>
+    `;
+
+  }
+
+
+  card.innerHTML = `
+
+    <img
+      class="photo"
+      src="${escapeHTML(photo)}"
+      onerror="this.src='./logo.png'"
+    >
+
+    <div class="info">
+
+      <div class="name">
+        ${escapeHTML(user.realName)}
+      </div>
+
+      <div class="line">
+        JDA Number:
+        <span class="green">
+          ${escapeHTML(user.jdaNumber)}
+        </span>
+      </div>
+
+      <div class="line">
+        Account:
+        ${escapeHTML(user.accountType)}
+      </div>
+
+      ${extra}
+
+      <div class="line">
+        Email:
+        ${escapeHTML(user.email)}
+      </div>
+
+      <div class="line">
+        Registered:
+        ${formatDate(user.createdAt)}
+      </div>
+
+      <div class="badge">
+        ${escapeHTML(user.status || "unknown")}
+      </div>
+
+      ${actions}
+
+    </div>
+
+  `;
+
+
+  /* APPROVE */
+
+  const approveBtn =
+    card.querySelector(".approve");
+
+  if(approveBtn){
+
+    approveBtn.onclick = async ()=>{
+
+      const yes = confirm(
+        `Approve ${user.realName}?\n\n` +
+        `Confirm that the name and profile photo are genuine.`
+      );
+
+      if(!yes) return;
+
+
+      approveBtn.disabled = true;
+
+      approveBtn.innerText =
+        "Approving...";
+
+
+      try{
+
+        await updateDoc(
+          doc(db,"

@@ -4,6 +4,10 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
 
+    // =====================================================
+    // BASIC FUNCTIONS
+    // =====================================================
+
     function signedIn() {
       return request.auth != null;
     }
@@ -39,12 +43,14 @@ service cloud.firestore {
     }
 
 
-    /* ================================
-       USERS
-    ================================= */
+    // =====================================================
+    // USERS
+    // =====================================================
 
     match /users/{uid} {
 
+      // A newly registered user can create ONLY their own
+      // pending account.
       allow create:
         if signedIn()
         && request.auth.uid == uid
@@ -58,16 +64,9 @@ service cloud.firestore {
            in ["student", "staff"];
 
 
-      /*
-       Users can always read their OWN
-       account, including while pending.
-
-       Approved users can read the
-       member directory.
-
-       Admins can read everything.
-      */
-
+      // Users can read their own account.
+      // Approved members can read approved member profiles.
+      // Admins can read users.
       allow read:
         if signedIn()
         && (
@@ -77,23 +76,33 @@ service cloud.firestore {
         );
 
 
-      /*
-       Only administrators can modify
-       member records.
-      */
-
+      // Admins can change user accounts.
+      //
+      // Approved users may update ONLY their own
+      // online-presence fields.
       allow update:
-        if admin();
+        if admin()
+        || (
+          signedIn()
+          && request.auth.uid == uid
+          && request.resource.data.diff(resource.data)
+             .affectedKeys()
+             .hasOnly([
+               "isOnline",
+               "lastSeen"
+             ])
+        );
 
 
+      // Only the super admin can delete users.
       allow delete:
         if superAdmin();
     }
 
 
-    /* ================================
-       ADMINS
-    ================================= */
+    // =====================================================
+    // ADMINS
+    // =====================================================
 
     match /admins/{uid} {
 
@@ -109,9 +118,9 @@ service cloud.firestore {
     }
 
 
-    /* ================================
-       CONVERSATIONS
-    ================================= */
+    // =====================================================
+    // CONVERSATIONS
+    // =====================================================
 
     match /conversations/{conversationId} {
 
@@ -142,9 +151,9 @@ service cloud.firestore {
         if admin();
 
 
-      /* ==============================
-         MESSAGES
-      ============================== */
+      // ===================================================
+      // MESSAGES
+      // ===================================================
 
       match /messages/{messageId} {
 
@@ -158,30 +167,24 @@ service cloud.firestore {
 
         allow create:
           if approved()
-
           && request.auth.uid
              in get(
                /databases/$(database)/documents/conversations/$(conversationId)
              ).data.participantIds
-
           && request.resource.data.senderId
              == request.auth.uid
-
           && request.resource.data.receiverId
              in get(
                /databases/$(database)/documents/conversations/$(conversationId)
              ).data.participantIds
-
           && request.resource.data.receiverId
              != request.auth.uid
-
           && request.resource.data.text is string
-
           && request.resource.data.text.size() > 0
-
           && request.resource.data.text.size() <= 5000;
 
 
+        // Messages cannot be edited for now.
         allow update:
           if false;
 
@@ -192,53 +195,62 @@ service cloud.firestore {
     }
 
 
-    /* ================================
-       CONNECTIONS
-    ================================= */
+    // =====================================================
+    // CONNECTIONS
+    // =====================================================
 
     match /connections/{connectionId} {
 
       allow read:
         if approved()
         && (
-          resource.data.requesterId == request.auth.uid
-          || resource.data.receiverId == request.auth.uid
+          resource.data.requesterId
+            == request.auth.uid
+          || resource.data.receiverId
+            == request.auth.uid
         );
 
 
       allow create:
         if approved()
-        && request.resource.data.requesterId == request.auth.uid
-        && request.resource.data.receiverId != request.auth.uid;
+        && request.resource.data.requesterId
+           == request.auth.uid
+        && request.resource.data.receiverId
+           != request.auth.uid;
 
 
       allow delete:
         if approved()
         && (
-          resource.data.requesterId == request.auth.uid
-          || resource.data.receiverId == request.auth.uid
+          resource.data.requesterId
+            == request.auth.uid
+          || resource.data.receiverId
+            == request.auth.uid
         );
     }
 
 
-    /* ================================
-       NOTIFICATIONS
-    ================================= */
+    // =====================================================
+    // NOTIFICATIONS
+    // =====================================================
 
     match /notifications/{notificationId} {
 
       allow read:
         if signedIn()
-        && resource.data.userId == request.auth.uid;
+        && resource.data.userId
+           == request.auth.uid;
 
 
+      // Only admins can currently create notifications.
       allow create:
         if admin();
 
 
       allow update:
         if signedIn()
-        && resource.data.userId == request.auth.uid
+        && resource.data.userId
+           == request.auth.uid
         && request.resource.data.userId
            == resource.data.userId
         && request.resource.data.type
@@ -250,24 +262,27 @@ service cloud.firestore {
     }
 
 
-    /* ================================
-       DEVICE TOKENS
-    ================================= */
+    // =====================================================
+    // DEVICE TOKENS
+    // =====================================================
 
     match /deviceTokens/{tokenId} {
 
       allow create, update:
         if signedIn()
-        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userId
+           == request.auth.uid
         && request.resource.data.token is string
         && request.resource.data.token.size() > 0;
 
 
       allow delete:
         if signedIn()
-        && resource.data.userId == request.auth.uid;
+        && resource.data.userId
+           == request.auth.uid;
 
 
+      // Device tokens should never be readable by clients.
       allow read:
         if false;
     }

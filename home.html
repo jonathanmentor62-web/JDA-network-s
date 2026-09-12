@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <meta name="theme-color" content="#111b21">
 
@@ -31,7 +31,9 @@ body{
   overflow-x:hidden;
 }
 
-button,input,textarea{
+button,
+input,
+textarea{
   font:inherit;
 }
 
@@ -50,11 +52,13 @@ button{
 }
 
 
-/* ================= HEADER ================= */
+/* =====================================================
+   HEADER
+===================================================== */
 
 .top-header{
   background:#111b21;
-  padding:10px 14px 10px;
+  padding:10px 14px 8px;
   position:sticky;
   top:0;
   z-index:50;
@@ -63,11 +67,12 @@ button{
 .header-row{
   display:flex;
   align-items:center;
-  gap:5px;
+  gap:4px;
 }
 
 .brand{
   flex:1;
+  min-width:0;
   font-size:21px;
   font-weight:700;
   color:#e9edef;
@@ -75,7 +80,9 @@ button{
 }
 
 
-/* ================= ADMIN PANEL ================= */
+/* =====================================================
+   ADMIN BUTTON
+===================================================== */
 
 .admin-panel-button{
   width:42px;
@@ -97,16 +104,17 @@ button{
 .admin-icon{
   width:23px;
   height:23px;
-  display:block;
 }
 
 
-/* ================= HEADER ACTIONS ================= */
+/* =====================================================
+   HEADER ACTIONS
+===================================================== */
 
 .header-actions{
   display:flex;
   align-items:center;
-  gap:3px;
+  gap:2px;
 }
 
 .icon-button{
@@ -126,11 +134,13 @@ button{
 }
 
 
-/* ================= WHATSAPP THREE DOTS ================= */
+/* =====================================================
+   WHATSAPP THREE DOTS
+===================================================== */
 
 .whatsapp-menu-icon{
   width:6px;
-  height:24px;
+  height:23px;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
@@ -145,22 +155,24 @@ button{
 }
 
 
-/* ================= SEARCH ================= */
+/* =====================================================
+   SEARCH
+===================================================== */
 
 .search-box{
-  margin-top:10px;
+  margin-top:9px;
+  height:44px;
   background:#202c33;
   border-radius:12px;
-  height:44px;
   display:flex;
   align-items:center;
-  padding:0 13px;
   gap:10px;
+  padding:0 13px;
 }
 
 .search-icon{
   color:#8696a0;
-  font-size:18px;
+  font-size:17px;
 }
 
 #chatSearch{
@@ -178,13 +190,15 @@ button{
 }
 
 
-/* ================= UPPER TABS ================= */
+/* =====================================================
+   FILTERS
+===================================================== */
 
 .filters{
   display:flex;
   gap:8px;
   overflow-x:auto;
-  padding:11px 0 2px;
+  padding:10px 0 2px;
   scrollbar-width:none;
 }
 
@@ -208,11 +222,13 @@ button{
 }
 
 
-/* ================= MAIN ================= */
+/* =====================================================
+   CONTENT
+===================================================== */
 
 .content{
-  min-height:calc(100vh - 154px);
-  padding-bottom:85px;
+  min-height:calc(100vh - 150px);
+  padding-bottom:90px;
 }
 
 .screen{
@@ -224,11 +240,9 @@ button{
 }
 
 
-/* ================= CHAT ================= */
-
-#chatList{
-  width:100%;
-}
+/* =====================================================
+   EMPTY
+===================================================== */
 
 .empty{
   min-height:50vh;
@@ -242,8 +256,8 @@ button{
 }
 
 .empty-icon{
-  font-size:50px;
-  margin-bottom:15px;
+  font-size:48px;
+  margin-bottom:14px;
 }
 
 .empty-title{
@@ -254,7 +268,114 @@ button{
 }
 
 
-/* ================= PAGES ================= */
+/* =====================================================
+   CHAT LIST
+===================================================== */
+
+#chatList{
+  width:100%;
+}
+
+.chat-item{
+  width:100%;
+  min-height:74px;
+  padding:10px 15px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#0b141a;
+  border:0;
+  border-bottom:1px solid rgba(255,255,255,.045);
+  color:#e9edef;
+  text-align:left;
+}
+
+.chat-item:active{
+  background:#202c33;
+}
+
+.chat-avatar{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:#26343b;
+  flex-shrink:0;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:19px;
+}
+
+.chat-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.chat-info{
+  flex:1;
+  min-width:0;
+}
+
+.chat-top{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.chat-name{
+  flex:1;
+  min-width:0;
+  font-size:16px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.chat-time{
+  color:#8696a0;
+  font-size:11px;
+  flex-shrink:0;
+}
+
+.chat-bottom{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-top:5px;
+}
+
+.chat-preview{
+  flex:1;
+  min-width:0;
+  color:#8696a0;
+  font-size:13px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.unread-badge{
+  min-width:20px;
+  height:20px;
+  border-radius:10px;
+  background:#25d366;
+  color:#062b1d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 6px;
+  font-size:11px;
+  font-weight:700;
+}
+
+
+/* =====================================================
+   PAGES
+===================================================== */
 
 .page-container{
   padding:24px 18px;
@@ -291,7 +412,9 @@ button{
 }
 
 
-/* ================= STUDENTS ================= */
+/* =====================================================
+   CLASSES
+===================================================== */
 
 .class-list{
   padding:8px 18px 25px;
@@ -319,31 +442,78 @@ button{
 
 .class-arrow{
   color:#8696a0;
-  font-size:20px;
+  font-size:21px;
 }
 
 .class-members{
   display:none;
-  margin-top:-8px;
+  margin-top:-10px;
   margin-bottom:10px;
   background:#111b21;
   border-radius:0 0 14px 14px;
-  padding:10px;
+  padding:8px;
 }
 
 .class-members.open{
   display:block;
 }
 
-.class-members-empty{
+
+/* =====================================================
+   MEMBER CARD
+===================================================== */
+
+.member-card{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:11px 8px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.member-card:last-child{
+  border-bottom:0;
+}
+
+.member-avatar{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:#26343b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex-shrink:0;
+  font-weight:700;
+}
+
+.member-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.member-info{
+  flex:1;
+  min-width:0;
+}
+
+.member-name{
+  font-size:14px;
+  font-weight:600;
+}
+
+.member-detail{
   color:#8696a0;
-  text-align:center;
-  padding:15px;
-  font-size:13px;
+  font-size:12px;
+  margin-top:3px;
 }
 
 
-/* ================= STAFF ================= */
+/* =====================================================
+   STAFF
+===================================================== */
 
 .staff-list{
   padding:8px 18px 25px;
@@ -368,50 +538,9 @@ button{
 }
 
 
-/* ================= GROUPS ================= */
-
-.group-list{
-  padding:8px 18px 25px;
-}
-
-.group-card{
-  background:#202c33;
-  border-radius:14px;
-  padding:17px;
-  margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-
-.group-icon{
-  width:48px;
-  height:48px;
-  border-radius:50%;
-  background:#26343b;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-}
-
-.group-info{
-  flex:1;
-}
-
-.group-name{
-  font-size:15px;
-  font-weight:600;
-}
-
-.group-description{
-  color:#8696a0;
-  font-size:12px;
-  margin-top:4px;
-}
-
-
-/* ================= PROFILE ================= */
+/* =====================================================
+   PROFILE
+===================================================== */
 
 .profile-header{
   background:#111b21;
@@ -432,6 +561,12 @@ button{
   font-size:35px;
   font-weight:700;
   overflow:hidden;
+}
+
+#profilePhoto img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
 #profileName{
@@ -467,7 +602,9 @@ button{
 }
 
 
-/* ================= SETTINGS ================= */
+/* =====================================================
+   SETTINGS
+===================================================== */
 
 .settings-list{
   padding:8px 0;
@@ -514,12 +651,58 @@ button{
 }
 
 
-/* ================= FAB ================= */
+/* =====================================================
+   ADMIN MESSAGE
+===================================================== */
+
+.admin-message{
+  position:fixed;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:calc(100% - 40px);
+  max-width:400px;
+  background:#202c33;
+  border-radius:16px;
+  padding:22px;
+  text-align:center;
+  z-index:100000;
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  display:none;
+}
+
+.admin-message-title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.admin-message-text{
+  color:#8696a0;
+  font-size:14px;
+  line-height:1.5;
+  margin-bottom:18px;
+}
+
+.admin-message-close{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:12px;
+  background:#25d366;
+  color:#062b1d;
+  font-weight:700;
+}
+
+
+/* =====================================================
+   FAB
+===================================================== */
 
 #fab{
   position:fixed;
   right:max(20px,calc((100vw - 700px)/2 + 20px));
-  bottom:80px;
+  bottom:82px;
   width:56px;
   height:56px;
   border:0;
@@ -531,8 +714,15 @@ button{
   z-index:40;
 }
 
+#fab:active{
+  transform:scale(.95);
+}
 
-/* ================= BOTTOM NAV ================= */
+
+/* =====================================================
+   BOTTOM NAVIGATION
+   5 ITEMS
+===================================================== */
 
 .bottom-nav{
   position:fixed;
@@ -541,11 +731,11 @@ button{
   transform:translateX(-50%);
   width:100%;
   max-width:700px;
-  height:68px;
+  height:70px;
   background:#111b21;
   border-top:1px solid rgba(255,255,255,.06);
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   z-index:45;
   padding-bottom:env(safe-area-inset-bottom);
 }
@@ -559,11 +749,12 @@ button{
   align-items:center;
   justify-content:center;
   gap:4px;
-  font-size:11px;
+  font-size:10px;
 }
 
 .nav-icon{
-  font-size:22px;
+  font-size:21px;
+  line-height:1;
 }
 
 .nav-button.active{
@@ -571,7 +762,9 @@ button{
 }
 
 
-/* ================= LOADING ================= */
+/* =====================================================
+   LOADING
+===================================================== */
 
 #loadingScreen{
   position:fixed;
@@ -614,49 +807,9 @@ button{
 }
 
 
-/* ================= ADMIN MESSAGE ================= */
-
-.admin-message{
-  position:fixed;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:calc(100% - 40px);
-  max-width:400px;
-  background:#202c33;
-  border-radius:16px;
-  padding:22px;
-  text-align:center;
-  z-index:100000;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);
-  display:none;
-}
-
-.admin-message-title{
-  font-size:18px;
-  font-weight:700;
-  margin-bottom:8px;
-}
-
-.admin-message-text{
-  color:#8696a0;
-  font-size:14px;
-  line-height:1.5;
-  margin-bottom:18px;
-}
-
-.admin-message-close{
-  width:100%;
-  border:0;
-  border-radius:10px;
-  padding:12px;
-  background:#25d366;
-  color:#062b1d;
-  font-weight:700;
-}
-
-
-/* ================= MOBILE ================= */
+/* =====================================================
+   MOBILE
+===================================================== */
 
 @media(max-width:480px){
 
@@ -682,13 +835,17 @@ button{
 <body>
 
 
-<!-- ================= LOADING ================= -->
+<!-- =====================================================
+     LOADING SCREEN
+===================================================== -->
 
 <div id="loadingScreen">
 
   <div class="loading-box">
 
-    <div class="loading-logo">J</div>
+    <div class="loading-logo">
+      J
+    </div>
 
     <div class="loading-title">
       JDA Networks
@@ -703,7 +860,9 @@ button{
 </div>
 
 
-<!-- ================= ADMIN ACCESS MESSAGE ================= -->
+<!-- =====================================================
+     ADMIN ACCESS MESSAGE
+===================================================== -->
 
 <div
   class="admin-message"
@@ -731,12 +890,16 @@ button{
 </div>
 
 
-<!-- ================= APP ================= -->
+<!-- =====================================================
+     APP
+===================================================== -->
 
 <main id="app">
 
 
-<!-- ================= HEADER ================= -->
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
 <header class="top-header">
 
@@ -802,8 +965,6 @@ button{
       </button>
 
 
-      <!-- EXACT SIMPLE WHATSAPP-STYLE VERTICAL DOTS -->
-
       <button
         class="icon-button"
         id="menuBtn"
@@ -811,9 +972,11 @@ button{
       >
 
         <span class="whatsapp-menu-icon">
+
           <span></span>
           <span></span>
           <span></span>
+
         </span>
 
       </button>
@@ -841,7 +1004,7 @@ button{
   </div>
 
 
-  <!-- UPPER TABS -->
+  <!-- UPPER FILTERS -->
 
   <div class="filters">
 
@@ -878,12 +1041,16 @@ button{
 </header>
 
 
-<!-- ================= CONTENT ================= -->
+<!-- =====================================================
+     CONTENT
+===================================================== -->
 
 <section class="content">
 
 
-<!-- ================= CHATS ================= -->
+<!-- =====================================================
+     CHATS
+===================================================== -->
 
 <section
   class="screen active"
@@ -913,7 +1080,9 @@ button{
 </section>
 
 
-<!-- ================= UPDATES ================= -->
+<!-- =====================================================
+     UPDATES
+===================================================== -->
 
 <section
   class="screen"
@@ -930,26 +1099,41 @@ button{
       Stay connected with your JDA Networks community.
     </div>
 
+
+    <div class="feature-card">
+
+      <div class="feature-card-title">
+        JDA Updates
+      </div>
+
+      <div class="feature-card-text">
+        School announcements and community updates will appear here.
+      </div>
+
+    </div>
+
   </div>
 
 </section>
 
 
-<!-- ================= STUDENTS ================= -->
+<!-- =====================================================
+     CLASSES
+===================================================== -->
 
 <section
   class="screen"
-  data-screen="students"
+  data-screen="classes"
 >
 
   <div class="page-container">
 
     <div class="page-title">
-      Students
+      Classes
     </div>
 
     <div class="page-subtitle">
-      Select a class to view students.
+      Select a class to view approved students.
     </div>
 
   </div>
@@ -957,111 +1141,178 @@ button{
 
   <div class="class-list">
 
+
+    <!-- FORM 1 -->
+
     <button
       class="class-button"
       data-class="Form 1"
     >
-      <span>Form 1</span>
-      <span class="class-arrow">›</span>
+
+      <span>
+        Form 1
+      </span>
+
+      <span class="class-arrow">
+        ›
+      </span>
+
     </button>
 
     <div
       class="class-members"
       id="form1Members"
     >
+
       <div class="class-members-empty">
-        Students in Form 1 will appear here.
+        Loading students...
       </div>
+
     </div>
 
+
+    <!-- FORM 2 -->
 
     <button
       class="class-button"
       data-class="Form 2"
     >
-      <span>Form 2</span>
-      <span class="class-arrow">›</span>
+
+      <span>
+        Form 2
+      </span>
+
+      <span class="class-arrow">
+        ›
+      </span>
+
     </button>
 
     <div
       class="class-members"
       id="form2Members"
     >
+
       <div class="class-members-empty">
-        Students in Form 2 will appear here.
+        Loading students...
       </div>
+
     </div>
 
+
+    <!-- FORM 3 -->
 
     <button
       class="class-button"
       data-class="Form 3"
     >
-      <span>Form 3</span>
-      <span class="class-arrow">›</span>
+
+      <span>
+        Form 3
+      </span>
+
+      <span class="class-arrow">
+        ›
+      </span>
+
     </button>
 
     <div
       class="class-members"
       id="form3Members"
     >
+
       <div class="class-members-empty">
-        Students in Form 3 will appear here.
+        Loading students...
       </div>
+
     </div>
 
+
+    <!-- FORM 4 -->
 
     <button
       class="class-button"
       data-class="Form 4"
     >
-      <span>Form 4</span>
-      <span class="class-arrow">›</span>
+
+      <span>
+        Form 4
+      </span>
+
+      <span class="class-arrow">
+        ›
+      </span>
+
     </button>
 
     <div
       class="class-members"
       id="form4Members"
     >
+
       <div class="class-members-empty">
-        Students in Form 4 will appear here.
+        Loading students...
       </div>
+
     </div>
 
+
+    <!-- FORM 5 -->
 
     <button
       class="class-button"
       data-class="Form 5"
     >
-      <span>Form 5</span>
-      <span class="class-arrow">›</span>
+
+      <span>
+        Form 5
+      </span>
+
+      <span class="class-arrow">
+        ›
+      </span>
+
     </button>
 
     <div
       class="class-members"
       id="form5Members"
     >
+
       <div class="class-members-empty">
-        Students in Form 5 will appear here.
+        Loading students...
       </div>
+
     </div>
 
+
+    <!-- FORM 6 -->
 
     <button
       class="class-button"
       data-class="Form 6"
     >
-      <span>Form 6</span>
-      <span class="class-arrow">›</span>
+
+      <span>
+        Form 6
+      </span>
+
+      <span class="class-arrow">
+        ›
+      </span>
+
     </button>
 
     <div
       class="class-members"
       id="form6Members"
     >
+
       <div class="class-members-empty">
-        Students in Form 6 will appear here.
+        Loading students...
       </div>
+
     </div>
 
   </div>
@@ -1069,7 +1320,9 @@ button{
 </section>
 
 
-<!-- ================= STAFF ================= -->
+<!-- =====================================================
+     STAFF
+===================================================== -->
 
 <section
   class="screen"
@@ -1083,13 +1336,16 @@ button{
     </div>
 
     <div class="page-subtitle">
-      JDA Networks staff contacts.
+      Approved JDA Networks staff members.
     </div>
 
   </div>
 
 
-  <div class="staff-list">
+  <div
+    class="staff-list"
+    id="staffList"
+  >
 
     <div class="staff-card">
 
@@ -1108,54 +1364,9 @@ button{
 </section>
 
 
-<!-- ================= GROUPS ================= -->
-
-<section
-  class="screen"
-  data-screen="groups"
->
-
-  <div class="page-container">
-
-    <div class="page-title">
-      Groups
-    </div>
-
-    <div class="page-subtitle">
-      JDA Networks groups.
-    </div>
-
-  </div>
-
-
-  <div class="group-list">
-
-    <div class="group-card">
-
-      <div class="group-icon">
-        👥
-      </div>
-
-      <div class="group-info">
-
-        <div class="group-name">
-          JDA Networks
-        </div>
-
-        <div class="group-description">
-          School groups will appear here.
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- ================= CALLS ================= -->
+<!-- =====================================================
+     CALLS
+===================================================== -->
 
 <section
   class="screen"
@@ -1190,7 +1401,9 @@ button{
 </section>
 
 
-<!-- ================= PROFILE ================= -->
+<!-- =====================================================
+     PROFILE
+===================================================== -->
 
 <section
   class="screen"
@@ -1219,6 +1432,7 @@ button{
 
 
   <div class="profile-details">
+
 
     <div class="profile-item">
 
@@ -1272,7 +1486,9 @@ button{
 </section>
 
 
-<!-- ================= SETTINGS ================= -->
+<!-- =====================================================
+     SETTINGS
+===================================================== -->
 
 <section
   class="screen"
@@ -1293,6 +1509,7 @@ button{
 
 
   <div class="settings-list">
+
 
     <div class="settings-row">
 
@@ -1372,7 +1589,9 @@ button{
 </section>
 
 
-<!-- ================= FAB ================= -->
+<!-- =====================================================
+     NEW CHAT FAB
+===================================================== -->
 
 <button
   id="fab"
@@ -1382,14 +1601,20 @@ button{
 </button>
 
 
-<!-- ================= BOTTOM NAV ================= -->
+<!-- =====================================================
+     BOTTOM NAVIGATION
+===================================================== -->
 
 <nav class="bottom-nav">
+
+
+  <!-- CHATS -->
 
   <button
     class="nav-button active"
     data-page="chats"
   >
+
     <span class="nav-icon">
       💬
     </span>
@@ -1397,13 +1622,17 @@ button{
     <span>
       Chats
     </span>
+
   </button>
 
+
+  <!-- UPDATES -->
 
   <button
     class="nav-button"
     data-page="updates"
   >
+
     <span class="nav-icon">
       ◉
     </span>
@@ -1411,27 +1640,53 @@ button{
     <span>
       Updates
     </span>
+
   </button>
 
+
+  <!-- CLASSES -->
 
   <button
     class="nav-button"
-    data-page="groups"
+    data-page="classes"
   >
+
     <span class="nav-icon">
-      👥
+      🎓
     </span>
 
     <span>
-      Groups
+      Classes
     </span>
+
   </button>
 
+
+  <!-- STAFF -->
+
+  <button
+    class="nav-button"
+    data-page="staff"
+  >
+
+    <span class="nav-icon">
+      👨‍🏫
+    </span>
+
+    <span>
+      Staff
+    </span>
+
+  </button>
+
+
+  <!-- CALLS -->
 
   <button
     class="nav-button"
     data-page="calls"
   >
+
     <span class="nav-icon">
       ☎
     </span>
@@ -1439,6 +1694,7 @@ button{
     <span>
       Calls
     </span>
+
   </button>
 
 </nav>
@@ -1447,7 +1703,9 @@ button{
 </main>
 
 
-<!-- ================= FIREBASE APP ================= -->
+<!-- =====================================================
+     APP.JS
+===================================================== -->
 
 <script
   type="module"
@@ -1455,7 +1713,9 @@ button{
 ></script>
 
 
-<!-- ================= UI CONTROLLER ================= -->
+<!-- =====================================================
+     UI CONTROLLER
+===================================================== -->
 
 <script>
 
@@ -1464,9 +1724,9 @@ document.addEventListener(
   () => {
 
 
-    /* =========================
+    /* =================================================
        LOADING
-    ========================= */
+    ================================================= */
 
     setTimeout(
       () => {
@@ -1477,7 +1737,10 @@ document.addEventListener(
           );
 
         if(loading){
-          loading.style.display = "none";
+
+          loading.style.display =
+            "none";
+
         }
 
       },
@@ -1485,10 +1748,9 @@ document.addEventListener(
     );
 
 
-    /* =========================
+    /* =================================================
        ADMIN PANEL
-       BUTTON IS ALWAYS VISIBLE
-    ========================= */
+    ================================================= */
 
     const adminButton =
       document.getElementById(
@@ -1517,8 +1779,12 @@ document.addEventListener(
         "click",
         () => {
 
-          adminMessage.style.display =
-            "none";
+          if(adminMessage){
+
+            adminMessage.style.display =
+              "none";
+
+          }
 
         }
       );
@@ -1526,39 +1792,39 @@ document.addEventListener(
     }
 
 
-    /* =========================
-       ADMIN BUTTON CLICK
-    ========================= */
-
     if(adminButton){
 
       adminButton.addEventListener(
         "click",
         async () => {
 
-          adminMessage.style.display =
-            "block";
+          if(adminMessage){
 
-          adminMessageText.textContent =
-            "Checking administrator access...";
+            adminMessage.style.display =
+              "block";
+
+          }
+
+          if(adminMessageText){
+
+            adminMessageText.textContent =
+              "Checking administrator access...";
+
+          }
 
 
           try{
 
-            const {
-              auth,
-              db
-            } = await import(
-              "./firebase.js"
-            );
+            const firebase =
+              await import(
+                "./firebase.js"
+              );
 
+            const auth =
+              firebase.auth;
 
-            const {
-              onAuthStateChanged,
-              getAuth
-            } = await import(
-              "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js"
-            );
+            const db =
+              firebase.db;
 
 
             const {
@@ -1599,7 +1865,7 @@ document.addEventListener(
             }
 
 
-            /* OTHER APPROVED ADMINS */
+            /* OTHER ADMINS */
 
             const adminRef =
               doc(
@@ -1647,9 +1913,9 @@ document.addEventListener(
     }
 
 
-    /* =========================
+    /* =================================================
        BOTTOM NAVIGATION
-    ========================= */
+    ================================================= */
 
     document
       .querySelectorAll(
@@ -1683,7 +1949,7 @@ document.addEventListener(
               });
 
 
-            /* Reset upper filter */
+            /* Reset upper filters */
 
             document
               .querySelectorAll(
@@ -1703,9 +1969,9 @@ document.addEventListener(
       });
 
 
-    /* =========================
-       UPPER TABS
-    ========================= */
+    /* =================================================
+       UPPER FILTERS
+    ================================================= */
 
     document
       .querySelectorAll(
@@ -1742,7 +2008,11 @@ document.addEventListener(
             if(filter === "students"){
 
               showScreen(
-                "students"
+                "classes"
+              );
+
+              setBottomActive(
+                "classes"
               );
 
             }
@@ -1752,10 +2022,18 @@ document.addEventListener(
                 "staff"
               );
 
+              setBottomActive(
+                "staff"
+              );
+
             }
             else{
 
               showScreen(
+                "chats"
+              );
+
+              setBottomActive(
                 "chats"
               );
 
@@ -1767,9 +2045,9 @@ document.addEventListener(
       });
 
 
-    /* =========================
+    /* =================================================
        CLASS BUTTONS
-    ========================= */
+    ================================================= */
 
     document
       .querySelectorAll(
@@ -1784,11 +2062,13 @@ document.addEventListener(
             const className =
               button.dataset.class;
 
+
             const number =
               className.replace(
                 "Form ",
                 ""
               );
+
 
             const members =
               document.getElementById(
@@ -1797,7 +2077,10 @@ document.addEventListener(
                 "Members"
               );
 
-            if(!members) return;
+
+            if(!members){
+              return;
+            }
 
 
             document
@@ -1827,9 +2110,9 @@ document.addEventListener(
       });
 
 
-    /* =========================
+    /* =================================================
        THREE DOT MENU
-    ========================= */
+    ================================================= */
 
     const menuButton =
       document.getElementById(
@@ -1873,13 +2156,188 @@ document.addEventListener(
 
     }
 
+
+    /* =================================================
+       NEW CHAT BUTTON
+    ================================================= */
+
+    const newChatButton =
+      document.getElementById(
+        "newChatBtn"
+      );
+
+    const fab =
+      document.getElementById(
+        "fab"
+      );
+
+
+    const newChatAction =
+      () => {
+
+        const search =
+          document.getElementById(
+            "chatSearch"
+          );
+
+
+        showScreen(
+          "chats"
+        );
+
+
+        setBottomActive(
+          "chats"
+        );
+
+
+        if(search){
+
+          search.focus();
+
+        }
+
+      };
+
+
+    if(newChatButton){
+
+      newChatButton.addEventListener(
+        "click",
+        newChatAction
+      );
+
+    }
+
+
+    if(fab){
+
+      fab.addEventListener(
+        "click",
+        newChatAction
+      );
+
+    }
+
+
+    /* =================================================
+       SEARCH
+    ================================================= */
+
+    const searchInput =
+      document.getElementById(
+        "chatSearch"
+      );
+
+
+    if(searchInput){
+
+      searchInput.addEventListener(
+        "input",
+        () => {
+
+          const query =
+            searchInput.value
+              .trim()
+              .toLowerCase();
+
+
+          document
+            .querySelectorAll(
+              ".chat-item"
+            )
+            .forEach(item => {
+
+              const name =
+                (
+                  item.dataset.name ||
+                  ""
+                ).toLowerCase();
+
+
+              const detail =
+                (
+                  item.dataset.detail ||
+                  ""
+                ).toLowerCase();
+
+
+              const match =
+                !query ||
+                name.includes(query) ||
+                detail.includes(query);
+
+
+              item.style.display =
+                match ?
+                "flex" :
+                "none";
+
+            });
+
+        }
+      );
+
+    }
+
+
+    /* =================================================
+       LOGOUT
+    ================================================= */
+
+    const logoutButton =
+      document.getElementById(
+        "logoutBtn"
+      );
+
+
+    if(logoutButton){
+
+      logoutButton.addEventListener(
+        "click",
+        async () => {
+
+          try{
+
+            const {
+              auth
+            } = await import(
+              "./firebase.js"
+            );
+
+
+            await auth.signOut();
+
+
+            window.location.href =
+              "./index.html";
+
+          }
+          catch(error){
+
+            console.error(
+              "Logout error:",
+              error
+            );
+
+            alert(
+              "Could not log out. Please try again."
+            );
+
+          }
+
+        }
+      );
+
+    }
+
   }
 );
 
 
-/* =========================
+/* =====================================================
    SHOW SCREEN
-========================= */
+===================================================== */
 
 function showScreen(page){
 
@@ -1900,14 +2358,11 @@ function showScreen(page){
 }
 
 
-/* =========================
-   OPEN PAGE
-========================= */
+/* =====================================================
+   BOTTOM ACTIVE
+===================================================== */
 
-function openPage(page){
-
-  showScreen(page);
-
+function setBottomActive(page){
 
   document
     .querySelectorAll(
@@ -1915,15 +2370,31 @@ function openPage(page){
     )
     .forEach(button => {
 
-      button.classList.remove(
-        "active"
+      button.classList.toggle(
+        "active",
+        button.dataset.page ===
+        page
       );
 
     });
 
 }
 
+
+/* =====================================================
+   OPEN PAGE
+===================================================== */
+
+function openPage(page){
+
+  showScreen(page);
+
+  setBottomActive("");
+
+}
+
 </script>
+
 
 </body>
 </html>

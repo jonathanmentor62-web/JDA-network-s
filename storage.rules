@@ -25,25 +25,22 @@ service firebase.storage {
     }
 
 
-    /* =========================
-       PROFILE PHOTOS
-    ========================= */
+    // =====================================================
+    // PROFILE PHOTOS
+    // =====================================================
 
-    match /profilePhotos/{uid}.{extension} {
+    // Current path used by index.html:
+    // profilePhotos/{uid}/profile.{extension}
 
-      /*
-       Everyone can view approved profile photos.
-      */
+    match /profilePhotos/{uid}/{fileName} {
 
+      // Signed-in members can view profile photos.
       allow read:
         if signedIn();
 
 
-      /*
-       A user can upload only their own photo.
-       Admin can manage photos when necessary.
-      */
-
+      // User can upload only their own profile photo.
+      // Admins can also upload/manage photos.
       allow write:
         if signedIn()
         && (
@@ -57,10 +54,42 @@ service firebase.storage {
 
 
       allow delete:
-        if isAdmin()
-        || (
-          signedIn()
-          && request.auth.uid == uid
+        if signedIn()
+        && (
+          request.auth.uid == uid
+          || isAdmin()
+        );
+    }
+
+
+    // =====================================================
+    // LEGACY PROFILE PHOTO PATH
+    // =====================================================
+
+    // Keeps compatibility with older code that may use:
+    // profilePhotos/{uid}.{extension}
+
+    match /profilePhotos/{uid}.{extension} {
+
+      allow read:
+        if signedIn();
+
+      allow write:
+        if signedIn()
+        && (
+          request.auth.uid == uid
+          || isAdmin()
+        )
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches(
+          'image/.*'
+        );
+
+      allow delete:
+        if signedIn()
+        && (
+          request.auth.uid == uid
+          || isAdmin()
         );
     }
 

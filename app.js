@@ -39,10 +39,10 @@ import {
    ========================================================= */
 
 const METERED_TURN_USERNAME =
-  "PASTE_YOUR_METERED_USERNAME_HERE";
+  "3e34f2edd42777aac34b9a4f";
 
 const METERED_TURN_CREDENTIAL =
-  "PASTE_YOUR_METERED_CREDENTIAL_HERE";
+  "hSQcaWCgT3jN4xUe";
 
 
 const RTC_CONFIG = {

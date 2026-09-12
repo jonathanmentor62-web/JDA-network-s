@@ -2,31 +2,48 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#075E54">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="theme-color" content="#0757ff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
 <title>JDA Networks</title>
 
 <style>
+/* =========================================================
+   JDA NETWORKS
+   LIVE ANIMATED REGISTRATION
+========================================================= */
+
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
   margin:0;
   padding:0;
   width:100%;
   min-height:100%;
-  font-family:Arial,Helvetica,sans-serif;
-  background:#050908;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+  background:#0757ff;
   color:#fff;
 }
 
 body{
   min-height:100vh;
+  overflow-x:hidden;
 }
 
-button,input,select{
+button,
+input,
+select{
   font:inherit;
 }
 
@@ -34,136 +51,987 @@ button{
   cursor:pointer;
 }
 
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
 .hidden{
   display:none!important;
 }
 
-/* =========================
-   APP
-========================= */
+/* =========================================================
+   ANIMATED BACKGROUND
+========================================================= */
 
 .app{
+  position:relative;
   min-height:100vh;
+  width:100%;
+  overflow:hidden;
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(255,255,255,.18),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(128,0,255,.25),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      #0757ff 0%,
+      #174cff 42%,
+      #5019df 100%
+    );
+}
+
+.app::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,.035) 1px,
+      transparent 1px
+    );
+  background-size:35px 35px;
+  mask-image:linear-gradient(
+    to bottom,
+    rgba(0,0,0,.9),
+    rgba(0,0,0,.25)
+  );
+}
+
+.glow-orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(3px);
+  pointer-events:none;
+  animation:orbFloat 7s ease-in-out infinite;
+}
+
+.orb-one{
+  width:180px;
+  height:180px;
+  left:-70px;
+  top:15%;
+  background:rgba(0,255,255,.13);
+}
+
+.orb-two{
+  width:240px;
+  height:240px;
+  right:-110px;
+  bottom:8%;
+  background:rgba(255,0,255,.13);
+  animation-delay:2s;
+}
+
+@keyframes orbFloat{
+  0%,100%{
+    transform:translateY(0) scale(1);
+  }
+  50%{
+    transform:translateY(-22px) scale(1.05);
+  }
+}
+
+/* =========================================================
+   MAIN STAGE
+========================================================= */
+
+.stage{
+  position:relative;
+  z-index:2;
+  width:100%;
+  min-height:100vh;
+  padding:15px;
   display:flex;
   justify-content:center;
-  background:#050908;
+  align-items:center;
 }
 
-.container{
+.stage-frame{
+  position:relative;
   width:100%;
-  max-width:520px;
-  min-height:100vh;
-  padding:20px 18px 30px;
+  max-width:1100px;
+  min-height:calc(100vh - 30px);
+  overflow:hidden;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,.38);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.09),
+      rgba(255,255,255,.025)
+    );
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.1),
+    0 0 35px rgba(0,0,0,.22),
+    inset 0 0 70px rgba(255,255,255,.04);
+  backdrop-filter:blur(8px);
 }
 
-/* =========================
-   WELCOME
-========================= */
+/* =========================================================
+   TOP BRAND
+========================================================= */
 
-.logo{
-  width:90px;
-  height:90px;
-  display:block;
-  margin:35px auto 20px;
+.brand{
+  position:absolute;
+  z-index:30;
+  top:22px;
+  left:25px;
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.brand-logo{
+  width:46px;
+  height:46px;
   border-radius:50%;
   object-fit:cover;
-  border:2px solid #25D366;
-  background:#10251b;
+  border:2px solid rgba(255,255,255,.8);
+  background:#0b2b88;
+  box-shadow:
+    0 0 15px rgba(255,255,255,.25);
 }
 
-h1{
+.brand-text{
+  font-weight:800;
+  font-size:18px;
+  letter-spacing:.2px;
+}
+
+.brand-small{
+  font-size:10px;
+  opacity:.72;
+  margin-top:2px;
+}
+
+/* =========================================================
+   SCREEN SYSTEM
+========================================================= */
+
+.screen{
+  width:100%;
+  min-height:calc(100vh - 30px);
+}
+
+.center-screen{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:90px 20px 35px;
+}
+
+.loading-card{
   text-align:center;
+}
+
+.spinner{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  border:4px solid rgba(255,255,255,.2);
+  border-top-color:#fff;
+  animation:spin .8s linear infinite;
+  margin:0 auto 18px;
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+/* =========================================================
+   WELCOME
+========================================================= */
+
+.welcome-layout{
+  min-height:calc(100vh - 30px);
+  padding:105px 45px 45px;
+  display:grid;
+  grid-template-columns:1fr 420px;
+  gap:45px;
+  align-items:center;
+}
+
+.welcome-copy{
+  max-width:600px;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 13px;
+  border-radius:999px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:18px;
+}
+
+.eyebrow-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#57ffad;
+  box-shadow:0 0 12px #57ffad;
+}
+
+.welcome-title{
   margin:0;
-  font-size:28px;
+  font-size:clamp(38px,6vw,72px);
+  line-height:.98;
+  letter-spacing:-3px;
 }
 
-.subtitle{
-  text-align:center;
-  color:#9ca8a1;
+.welcome-title span{
+  color:#7effff;
+  text-shadow:
+    0 0 18px rgba(126,255,255,.35);
+}
+
+.welcome-subtitle{
+  max-width:530px;
+  margin:22px 0 0;
+  color:rgba(255,255,255,.76);
+  line-height:1.7;
+  font-size:16px;
+}
+
+.welcome-features{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:25px;
+}
+
+.feature-pill{
+  padding:9px 12px;
+  border-radius:12px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  font-size:12px;
+}
+
+.welcome-card{
+  padding:25px;
+  border-radius:25px;
+  background:rgba(3,12,55,.45);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.22),
+    inset 0 0 35px rgba(255,255,255,.025);
+}
+
+.card-title{
+  font-size:21px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+
+.card-subtitle{
+  color:rgba(255,255,255,.62);
+  font-size:13px;
   line-height:1.5;
-  margin:9px 0 28px;
+  margin-bottom:22px;
 }
 
-.card{
-  background:#0c1511;
-  border:1px solid #1b2b23;
+.account-choice{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.account-btn{
+  min-height:115px;
+  padding:16px;
   border-radius:18px;
-  padding:18px;
-  margin-bottom:15px;
+  color:#fff;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.16);
+  transition:.2s ease;
+}
+
+.account-btn:hover{
+  transform:translateY(-2px);
+}
+
+.account-btn.active{
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0,255,255,.2),
+      rgba(119,0,255,.3)
+    );
+  border-color:#71ffff;
+  box-shadow:
+    0 0 25px rgba(80,255,255,.18);
+}
+
+.account-icon{
+  display:block;
+  font-size:30px;
+  margin-bottom:8px;
+}
+
+.account-label{
+  font-weight:800;
+  display:block;
+}
+
+.account-description{
+  display:block;
+  margin-top:4px;
+  color:rgba(255,255,255,.55);
+  font-size:10px;
+}
+
+.primary{
+  width:100%;
+  border:0;
+  border-radius:15px;
+  padding:15px;
+  margin-top:14px;
+  background:
+    linear-gradient(
+      135deg,
+      #46ffd0,
+      #1fe68b
+    );
+  color:#03150f;
+  font-weight:900;
+  box-shadow:
+    0 10px 25px rgba(0,255,160,.15);
+}
+
+.primary:active{
+  transform:scale(.99);
+}
+
+.secondary{
+  width:100%;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:15px;
+  padding:14px;
+  margin-top:10px;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-weight:700;
+}
+
+/* =========================================================
+   ANIMATED REGISTRATION SCENE
+========================================================= */
+
+.registration-screen{
+  position:relative;
+  overflow:hidden;
+}
+
+.registration-scene{
+  min-height:calc(100vh - 30px);
+  display:grid;
+  grid-template-columns:minmax(280px,1fr) minmax(340px,460px);
+  align-items:center;
+  gap:20px;
+  padding:80px 45px 35px;
+}
+
+/* ---------------------------------------------------------
+   ANIMATION AREA
+--------------------------------------------------------- */
+
+.animation-area{
+  position:relative;
+  min-height:570px;
+  overflow:hidden;
+  border-radius:28px;
+  background:
+    radial-gradient(
+      circle at 50% 38%,
+      rgba(255,255,255,.08),
+      transparent 34%
+    ),
+    linear-gradient(
+      160deg,
+      rgba(0,42,180,.22),
+      rgba(69,0,173,.24)
+    );
+  border:1px solid rgba(255,255,255,.13);
+}
+
+.scene-title{
+  position:absolute;
+  z-index:5;
+  top:27px;
+  left:28px;
+}
+
+.scene-title h2{
+  margin:0;
+  font-size:27px;
+}
+
+.scene-title p{
+  margin:6px 0 0;
+  color:rgba(255,255,255,.56);
+  font-size:12px;
+}
+
+/* Floor */
+
+.floor{
+  position:absolute;
+  left:8%;
+  right:8%;
+  bottom:12%;
+  height:2px;
+  background:rgba(255,255,255,.32);
+  box-shadow:
+    0 0 15px rgba(255,255,255,.2);
+}
+
+.floor::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:10px;
+  height:90px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.035),
+      transparent
+    );
+  transform:perspective(250px) rotateX(55deg);
+  transform-origin:top;
+}
+
+/* Glow */
+
+.character-glow{
+  position:absolute;
+  z-index:1;
+  width:170px;
+  height:170px;
+  left:50%;
+  bottom:22%;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:rgba(0,255,255,.12);
+  filter:blur(25px);
+  animation:characterGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes characterGlow{
+  0%,100%{
+    opacity:.45;
+    transform:translateX(-50%) scale(.9);
+  }
+  50%{
+    opacity:.8;
+    transform:translateX(-50%) scale(1.1);
+  }
+}
+
+/* ---------------------------------------------------------
+   CHARACTER
+--------------------------------------------------------- */
+
+.character{
+  position:absolute;
+  z-index:8;
+  width:105px;
+  height:220px;
+  left:-130px;
+  bottom:12%;
+  animation:
+    personWalkIn 3.8s ease-in-out forwards,
+    personWalk 1s 3.8s ease-in-out infinite;
+}
+
+.character-head{
+  position:absolute;
+  width:50px;
+  height:50px;
+  top:0;
+  left:27px;
+  border-radius:50%;
+  background:
+    radial-gradient(
+      circle at 38% 35%,
+      #c98661,
+      #8e513b 75%
+    );
+  border:2px solid rgba(255,255,255,.16);
+}
+
+.character-hair{
+  position:absolute;
+  top:-4px;
+  left:23px;
+  width:58px;
+  height:29px;
+  border-radius:50px 50px 18px 18px;
+  background:#111;
+}
+
+.character-body{
+  position:absolute;
+  top:50px;
+  left:22px;
+  width:61px;
+  height:86px;
+  border-radius:17px 17px 11px 11px;
+  background:
+    linear-gradient(
+      180deg,
+      #101b54,
+      #081238
+    );
+  border:2px solid rgba(255,255,255,.12);
+}
+
+.character-shirt-line{
+  position:absolute;
+  left:50%;
+  top:0;
+  width:2px;
+  height:100%;
+  transform:translateX(-50%);
+  background:rgba(255,255,255,.08);
+}
+
+.arm{
+  position:absolute;
+  top:58px;
+  width:18px;
+  height:78px;
+  border-radius:15px;
+  background:#c27b59;
+  transform-origin:top center;
+}
+
+.arm-left{
+  left:8px;
+  transform:rotate(18deg);
+}
+
+.arm-right{
+  right:8px;
+  transform:rotate(-18deg);
+}
+
+.leg{
+  position:absolute;
+  top:128px;
+  width:21px;
+  height:88px;
+  border-radius:14px;
+  background:#10132a;
+  transform-origin:top center;
+}
+
+.leg-left{
+  left:26px;
+  transform:rotate(6deg);
+}
+
+.leg-right{
+  right:26px;
+  transform:rotate(-6deg);
+}
+
+.shoe{
+  position:absolute;
+  bottom:-3px;
+  width:36px;
+  height:14px;
+  border-radius:12px 18px 6px 6px;
+  background:#080b18;
+}
+
+.leg-left .shoe{
+  left:-5px;
+}
+
+.leg-right .shoe{
+  right:-5px;
+}
+
+/* Walking */
+
+@keyframes personWalkIn{
+  0%{
+    left:-130px;
+    transform:scale(.92);
+  }
+
+  60%{
+    left:38%;
+    transform:scale(1);
+  }
+
+  75%{
+    left:45%;
+    transform:scale(1);
+  }
+
+  100%{
+    left:43%;
+    transform:scale(1);
+  }
+}
+
+@keyframes personWalk{
+  0%,100%{
+    transform:translateY(0);
+  }
+  50%{
+    transform:translateY(-3px);
+  }
+}
+
+/* ---------------------------------------------------------
+   BAG
+--------------------------------------------------------- */
+
+.jda-bag{
+  position:absolute;
+  z-index:7;
+  width:82px;
+  height:65px;
+  left:43%;
+  bottom:10%;
+  opacity:0;
+  transform:translateY(-40px) scale(.8);
+  animation:
+    bagAppear .8s 2.9s ease-out forwards,
+    bagDrop .9s 3.7s ease-in-out forwards;
+}
+
+.bag-body{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:82px;
+  height:53px;
+  border-radius:8px 8px 13px 13px;
+  background:
+    linear-gradient(
+      135deg,
+      #0b1020,
+      #192e66
+    );
+  border:2px solid rgba(255,255,255,.2);
+  box-shadow:
+    0 7px 20px rgba(0,0,0,.3);
+}
+
+.bag-handle{
+  position:absolute;
+  z-index:2;
+  left:23px;
+  top:0;
+  width:37px;
+  height:25px;
+  border:5px solid #17295a;
+  border-bottom:0;
+  border-radius:20px 20px 0 0;
+}
+
+.bag-logo{
+  position:absolute;
+  z-index:3;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:8px;
+  font-weight:900;
+  color:#fff;
+  background:#0757ff;
+}
+
+@keyframes bagAppear{
+  from{
+    opacity:0;
+    transform:translateY(-40px) scale(.8);
+  }
+  to{
+    opacity:1;
+    transform:translateY(-20px) scale(.9);
+  }
+}
+
+@keyframes bagDrop{
+  0%{
+    transform:translateY(-20px) scale(.9);
+  }
+  65%{
+    transform:translateY(0) scale(1);
+  }
+  100%{
+    transform:translateY(0) scale(1);
+  }
+}
+
+/* ---------------------------------------------------------
+   KNEEL EFFECT
+--------------------------------------------------------- */
+
+.kneel-shadow{
+  position:absolute;
+  z-index:5;
+  left:43%;
+  bottom:10%;
+  width:115px;
+  height:15px;
+  border-radius:50%;
+  background:rgba(0,0,0,.25);
+  filter:blur(7px);
+  opacity:0;
+  animation:
+    shadowAppear .7s 3.6s ease forwards;
+}
+
+@keyframes shadowAppear{
+  from{
+    opacity:0;
+    transform:scale(.6);
+  }
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+/* ---------------------------------------------------------
+   ANIMATION BADGES
+--------------------------------------------------------- */
+
+.live-badge{
+  position:absolute;
+  z-index:15;
+  right:20px;
+  top:22px;
+  padding:8px 11px;
+  border-radius:999px;
+  background:rgba(0,0,0,.16);
+  border:1px solid rgba(255,255,255,.18);
+  font-size:10px;
+  font-weight:800;
+  display:flex;
+  gap:7px;
+  align-items:center;
+}
+
+.live-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#57ffb0;
+  box-shadow:0 0 12px #57ffb0;
+  animation:blink 1.2s infinite;
+}
+
+@keyframes blink{
+  50%{
+    opacity:.25;
+  }
+}
+
+/* =========================================================
+   REGISTRATION FORM
+========================================================= */
+
+.form-panel{
+  position:relative;
+  z-index:20;
+  padding:25px;
+  border-radius:27px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(4,12,50,.78),
+      rgba(12,8,47,.76)
+    );
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:
+    0 25px 70px rgba(0,0,0,.3),
+    inset 0 0 35px rgba(255,255,255,.025);
+  backdrop-filter:blur(14px);
+  animation:formIn .8s ease both;
+}
+
+@keyframes formIn{
+  from{
+    opacity:0;
+    transform:translateX(45px);
+  }
+  to{
+    opacity:1;
+    transform:translateX(0);
+  }
+}
+
+.form-heading{
+  margin-bottom:18px;
+}
+
+.form-heading h2{
+  margin:0;
+  font-size:25px;
+}
+
+.form-heading p{
+  margin:6px 0 0;
+  color:rgba(255,255,255,.55);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.step-line{
+  display:flex;
+  gap:5px;
+  margin:0 0 18px;
+}
+
+.step{
+  height:4px;
+  flex:1;
+  border-radius:999px;
+  background:rgba(255,255,255,.12);
+}
+
+.step.active{
+  background:#57ffdc;
+  box-shadow:0 0 10px rgba(87,255,220,.4);
+}
+
+.form-scroll{
+  max-height:calc(100vh - 250px);
+  overflow-y:auto;
+  padding-right:3px;
+}
+
+.form-scroll::-webkit-scrollbar{
+  width:3px;
+}
+
+.form-scroll::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.2);
+  border-radius:5px;
 }
 
 label{
   display:block;
-  color:#b8c4bd;
-  font-size:13px;
-  margin:14px 0 7px;
+  margin:13px 0 6px;
+  color:rgba(255,255,255,.7);
+  font-size:11px;
+  font-weight:700;
 }
 
 input,
 select{
   width:100%;
-  padding:14px;
+  min-height:47px;
+  padding:12px 13px;
   color:#fff;
-  background:#09100d;
-  border:1px solid #27382f;
+  background:rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.15);
   border-radius:12px;
   outline:none;
 }
 
+input::placeholder{
+  color:rgba(255,255,255,.32);
+}
+
 input:focus,
 select:focus{
-  border-color:#25D366;
+  border-color:#57ffff;
+  box-shadow:
+    0 0 0 3px rgba(87,255,255,.07);
 }
 
-button{
-  width:100%;
-  padding:14px;
-  margin-top:14px;
-  border:0;
-  border-radius:13px;
-  font-weight:700;
-}
-
-.primary{
-  background:#25D366;
-  color:#031008;
-}
-
-.secondary{
-  background:#17231d;
+select option{
+  background:#10183d;
   color:#fff;
-  border:1px solid #27382f;
 }
 
-.choice-row{
-  display:flex;
-  gap:10px;
+/* =========================================================
+   PHOTO
+========================================================= */
+
+.photo-area{
+  text-align:center;
+  padding:7px 0 8px;
 }
 
-.choice{
-  flex:1;
-  margin-top:0;
-  background:#101b16;
-  color:#b8c4bd;
-  border:1px solid #26382e;
+.photo-preview{
+  display:block;
+  width:105px;
+  height:105px;
+  margin:0 auto 11px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#081332;
+  border:2px dashed rgba(255,255,255,.3);
+  box-shadow:
+    0 0 25px rgba(0,255,255,.08);
 }
 
-.choice.active{
-  background:#25D366;
-  color:#041009;
-  border-color:#25D366;
+.photo-button{
+  display:inline-block;
+  padding:10px 14px;
+  border-radius:11px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
 }
 
-/* =========================
+.small{
+  color:rgba(255,255,255,.4);
+  font-size:10px;
+  line-height:1.5;
+  margin-top:7px;
+}
+
+/* =========================================================
    MESSAGES
-========================= */
+========================================================= */
 
 .message{
   display:none;
-  padding:12px;
-  border-radius:12px;
-  margin:12px 0;
-  font-size:14px;
+  padding:11px 12px;
+  border-radius:11px;
+  margin:11px 0;
+  font-size:12px;
   line-height:1.45;
 }
 
@@ -172,102 +1040,112 @@ button{
 }
 
 .message.error{
-  background:#351416;
-  color:#ffb9b9;
-  border:1px solid #67272a;
+  background:rgba(255,50,70,.12);
+  color:#ffb5bd;
+  border:1px solid rgba(255,80,90,.25);
 }
 
 .message.success{
-  background:#0d2d1d;
-  color:#9bf0bd;
-  border:1px solid #1a6840;
+  background:rgba(30,255,145,.1);
+  color:#9bffd2;
+  border:1px solid rgba(30,255,145,.25);
 }
 
 .message.info{
-  background:#10222d;
-  color:#a9d8f0;
-  border:1px solid #24516a;
+  background:rgba(50,180,255,.1);
+  color:#a9e7ff;
+  border:1px solid rgba(50,180,255,.22);
 }
 
-/* =========================
-   PHOTO
-========================= */
+/* =========================================================
+   ACCOUNT TYPE SMALL
+========================================================= */
 
-.photo-area{
-  text-align:center;
-  margin:12px 0 18px;
+.type-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:13px;
 }
 
-.photo-preview{
-  width:105px;
-  height:105px;
-  display:block;
-  margin:0 auto 12px;
-  object-fit:cover;
-  border-radius:50%;
-  background:#101a15;
-  border:2px dashed #345040;
-}
-
-.photo-button{
-  display:inline-block;
-  padding:11px 16px;
-  background:#17231d;
-  border:1px solid #2a3d32;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.small{
-  color:#87958d;
-  font-size:12px;
-  line-height:1.5;
-  margin-top:8px;
-}
-
-.top-title{
-  text-align:center;
-  font-size:21px;
+.type-btn{
+  flex:1;
+  padding:10px;
+  border-radius:11px;
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.6);
+  border:1px solid rgba(255,255,255,.13);
+  font-size:11px;
   font-weight:700;
-  margin:8px 0 22px;
 }
 
-/* =========================
-   STATUS
-========================= */
+.type-btn.active{
+  color:#001b18;
+  background:#57ffcf;
+  border-color:#57ffcf;
+}
 
-.status-box{
+/* =========================================================
+   STATUS SCREENS
+========================================================= */
+
+.status-layout{
+  min-height:calc(100vh - 30px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:100px 20px 40px;
+}
+
+.status-card{
+  width:100%;
+  max-width:500px;
+  padding:35px 25px;
   text-align:center;
-  padding:30px 15px;
+  border-radius:27px;
+  background:rgba(4,10,43,.56);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:
+    0 25px 70px rgba(0,0,0,.25);
 }
 
 .status-icon{
-  font-size:52px;
-  margin-bottom:12px;
+  width:82px;
+  height:82px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 18px;
+  border-radius:50%;
+  font-size:38px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
 }
 
-.status-box h2{
-  margin:8px 0;
+.status-card h2{
+  margin:0 0 10px;
+  font-size:27px;
 }
 
-.status-box p{
-  color:#aab6af;
+.status-card p{
+  color:rgba(255,255,255,.62);
   line-height:1.6;
+  font-size:13px;
 }
 
 .profile-summary{
   display:flex;
   align-items:center;
-  gap:14px;
-  margin-bottom:18px;
+  gap:13px;
+  text-align:left;
+  margin-bottom:17px;
 }
 
 .profile-summary img{
-  width:65px;
-  height:65px;
+  width:64px;
+  height:64px;
   border-radius:50%;
   object-fit:cover;
-  border:2px solid #25D366;
+  border:2px solid #57ffcf;
 }
 
 .profile-summary strong{
@@ -276,36 +1154,184 @@ button{
 
 .profile-summary span{
   display:block;
-  color:#93a098;
-  font-size:13px;
+  color:rgba(255,255,255,.55);
+  font-size:11px;
   margin-top:4px;
 }
 
+/* =========================================================
+   FOOTER
+========================================================= */
+
 .footer{
+  position:absolute;
+  bottom:13px;
+  left:0;
+  right:0;
   text-align:center;
-  color:#66736c;
-  font-size:11px;
-  margin-top:25px;
+  color:rgba(255,255,255,.3);
+  font-size:9px;
+  z-index:10;
 }
 
-.loading{
-  text-align:center;
-  padding:45px 20px;
-  color:#9ca8a1;
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:850px){
+
+  .stage{
+    padding:8px;
+  }
+
+  .stage-frame{
+    min-height:calc(100vh - 16px);
+    border-radius:22px;
+  }
+
+  .welcome-layout{
+    min-height:calc(100vh - 16px);
+    display:block;
+    padding:95px 20px 50px;
+  }
+
+  .welcome-copy{
+    text-align:center;
+    margin-bottom:28px;
+  }
+
+  .welcome-title{
+    font-size:44px;
+    letter-spacing:-2px;
+  }
+
+  .welcome-subtitle{
+    margin-left:auto;
+    margin-right:auto;
+    font-size:14px;
+  }
+
+  .welcome-features{
+    justify-content:center;
+  }
+
+  .welcome-card{
+    padding:20px;
+  }
+
+  .registration-scene{
+    min-height:calc(100vh - 16px);
+    display:block;
+    padding:82px 12px 25px;
+  }
+
+  .animation-area{
+    min-height:260px;
+    max-height:300px;
+    margin-bottom:15px;
+  }
+
+  .scene-title{
+    top:17px;
+    left:18px;
+  }
+
+  .scene-title h2{
+    font-size:20px;
+  }
+
+  .scene-title p{
+    font-size:10px;
+  }
+
+  .live-badge{
+    top:15px;
+    right:15px;
+  }
+
+  .character{
+    transform:scale(.72);
+    transform-origin:bottom center;
+    bottom:10%;
+  }
+
+  @keyframes personWalkIn{
+    0%{
+      left:-130px;
+      transform:scale(.72);
+    }
+    60%{
+      left:39%;
+      transform:scale(.72);
+    }
+    75%{
+      left:45%;
+      transform:scale(.72);
+    }
+    100%{
+      left:43%;
+      transform:scale(.72);
+    }
+  }
+
+  .jda-bag{
+    transform:scale(.75);
+    transform-origin:bottom center;
+  }
+
+  .form-panel{
+    padding:19px;
+    border-radius:21px;
+  }
+
+  .form-heading h2{
+    font-size:21px;
+  }
+
+  .form-scroll{
+    max-height:none;
+    overflow:visible;
+  }
+
+  .footer{
+    position:relative;
+    bottom:auto;
+    margin-top:20px;
+  }
 }
 
-.spinner{
-  width:35px;
-  height:35px;
-  border:3px solid #26372e;
-  border-top-color:#25D366;
-  border-radius:50%;
-  margin:0 auto 15px;
-  animation:spin .8s linear infinite;
-}
+@media(max-width:420px){
 
-@keyframes spin{
-  to{transform:rotate(360deg)}
+  .brand{
+    top:15px;
+    left:17px;
+  }
+
+  .brand-logo{
+    width:38px;
+    height:38px;
+  }
+
+  .brand-text{
+    font-size:15px;
+  }
+
+  .welcome-title{
+    font-size:38px;
+  }
+
+  .account-choice{
+    gap:7px;
+  }
+
+  .account-btn{
+    min-height:105px;
+    padding:12px 7px;
+  }
+
+  .account-icon{
+    font-size:25px;
+  }
 }
 </style>
 </head>
@@ -313,803 +1339,1133 @@ button{
 <body>
 
 <div class="app">
-<main class="container">
 
-<!-- =========================
-     LOADING
-========================= -->
+  <div class="glow-orb orb-one"></div>
+  <div class="glow-orb orb-two"></div>
 
-<section id="loadingScreen">
+  <div class="stage">
 
-<div class="loading">
-<div class="spinner"></div>
-<div>Loading JDA Networks...</div>
-</div>
+    <div class="stage-frame">
 
-</section>
+      <!-- ==================================================
+           BRAND
+      =================================================== -->
 
+      <div class="brand">
 
-<!-- =========================
-     WELCOME
-========================= -->
+        <img
+          class="brand-logo"
+          src="https://via.placeholder.com/100/0757ff/ffffff?text=JDA"
+          alt="JDA Networks">
 
-<section id="welcomeScreen" class="hidden">
+        <div>
+          <div class="brand-text">JDA Networks</div>
+          <div class="brand-small">School communication network</div>
+        </div>
 
-<img
-class="logo"
-src="https://via.placeholder.com/180/0d2017/25D366?text=JDA"
-alt="JDA Networks"
->
+      </div>
 
-<h1>Welcome to JDA Networks</h1>
 
-<p class="subtitle">
-The official communication network for<br>
-JDA students and staff.
-</p>
+      <!-- ==================================================
+           LOADING
+      =================================================== -->
 
-<div class="card">
+      <section
+        id="loadingScreen"
+        class="screen center-screen">
 
-<label>Choose your account type</label>
+        <div class="loading-card">
 
-<div class="choice-row">
+          <div class="spinner"></div>
 
-<button
-id="studentChoice"
-class="choice"
-type="button">
-🎓 Student
-</button>
+          <strong>Loading JDA Networks...</strong>
 
-<button
-id="staffChoice"
-class="choice"
-type="button">
-👨‍🏫 Staff
-</button>
+          <p style="color:rgba(255,255,255,.55);font-size:12px;">
+            Connecting securely...
+          </p>
 
-</div>
+        </div>
 
-<button
-id="continueRegister"
-class="primary"
-type="button">
-Continue
-</button>
+      </section>
 
-<button
-id="loginButton"
-class="secondary"
-type="button">
-Already registered? Login
-</button>
 
-</div>
+      <!-- ==================================================
+           WELCOME
+      =================================================== -->
 
-<div class="footer">
-JDA Networks
-</div>
+      <section
+        id="welcomeScreen"
+        class="screen hidden">
 
-</section>
+        <div class="welcome-layout">
 
+          <div class="welcome-copy">
 
-<!-- =========================
-     REGISTER
-========================= -->
+            <div class="eyebrow">
+              <span class="eyebrow-dot"></span>
+              JDA NETWORKS IS LIVE
+            </div>
 
-<section id="registerScreen" class="hidden">
+            <h1 class="welcome-title">
+              Welcome to
+              <span>JDA Networks</span>
+            </h1>
 
-<div class="top-title">
-Create JDA Networks Account
-</div>
+            <p class="welcome-subtitle">
+              The official communication network for
+              JDA students and staff. Connect with your
+              school community in one place.
+            </p>
 
-<div class="card">
+            <div class="welcome-features">
 
-<div class="profile-summary">
+              <span class="feature-pill">💬 Private chats</span>
+              <span class="feature-pill">🎓 Classes</span>
+              <span class="feature-pill">👨‍🏫 Staff</span>
+              <span class="feature-pill">📞 Calls</span>
+              <span class="feature-pill">🔔 Updates</span>
 
-<div>
+            </div>
 
-<strong id="registerTypeTitle">
-Student Registration
-</strong>
+          </div>
 
-<span>
-Registration requires admin approval.
-</span>
 
-</div>
+          <div class="welcome-card">
 
-</div>
+            <div class="card-title">
+              Join JDA Networks
+            </div>
 
+            <div class="card-subtitle">
+              Choose your account type to begin
+              your registration.
+            </div>
 
-<div class="photo-area">
 
-<img
-id="photoPreview"
-class="photo-preview"
-src="https://via.placeholder.com/200/101a15/66736c?text=PHOTO"
-alt="Profile preview"
->
+            <div class="account-choice">
 
-<label
-for="photoInput"
-class="photo-button">
-📷 Choose Profile Photo
-</label>
+              <button
+                id="studentChoice"
+                class="account-btn"
+                type="button">
 
-<input
-id="photoInput"
-type="file"
-accept="image/*"
-class="hidden"
->
+                <span class="account-icon">🎓</span>
 
-<div class="small">
-Profile photo is required.
-</div>
+                <span class="account-label">
+                  Student
+                </span>
 
-</div>
+                <span class="account-description">
+                  Student account
+                </span>
 
+              </button>
 
-<div
-id="registerMessage"
-class="message">
-</div>
 
+              <button
+                id="staffChoice"
+                class="account-btn"
+                type="button">
 
-<label for="realName">
-Full real name
-</label>
+                <span class="account-icon">👨‍🏫</span>
 
-<input
-id="realName"
-type="text"
-autocomplete="name"
-placeholder="Enter your full real name"
->
+                <span class="account-label">
+                  Staff
+                </span>
 
+                <span class="account-description">
+                  Staff account
+                </span>
 
-<label for="jdaNumber">
-JDA Networks number
-</label>
+              </button>
 
-<input
-id="jdaNumber"
-type="tel"
-autocomplete="tel"
-placeholder="+256 771 234 567"
->
+            </div>
 
 
-<label for="email">
-Email address
-</label>
+            <button
+              id="continueRegister"
+              class="primary"
+              type="button">
 
-<input
-id="email"
-type="email"
-autocomplete="email"
-placeholder="Enter your email"
->
+              Start Registration
 
+            </button>
 
-<label for="password">
-Password
-</label>
 
-<input
-id="password"
-type="password"
-autocomplete="new-password"
-placeholder="Create a password"
->
+            <button
+              id="loginButton"
+              class="secondary"
+              type="button">
 
+              Already registered? Login
 
-<label for="confirmPassword">
-Confirm password
-</label>
+            </button>
 
-<input
-id="confirmPassword"
-type="password"
-autocomplete="new-password"
-placeholder="Repeat your password"
->
+          </div>
 
+        </div>
 
-<!-- STUDENT -->
 
-<div id="studentFields">
+        <div class="footer">
+          JDA Networks • Secure school communication
+        </div>
 
-<label for="studentClass">
-Class / Form
-</label>
+      </section>
 
-<select id="studentClass">
 
-<option value="">
-Select Form
-</option>
+      <!-- ==================================================
+           ANIMATED REGISTRATION
+      =================================================== -->
 
-<option value="Form One">
-Form One
-</option>
+      <section
+        id="registerScreen"
+        class="screen registration-screen hidden">
 
-<option value="Form Two">
-Form Two
-</option>
+        <div class="registration-scene">
 
-<option value="Form Three">
-Form Three
-</option>
 
-<option value="Form Four">
-Form Four
-</option>
+          <!-- ==============================================
+               ANIMATION
+          =============================================== -->
 
-<option value="Form Five">
-Form Five
-</option>
+          <div class="animation-area">
 
-<option value="Form Six">
-Form Six
-</option>
+            <div class="scene-title">
 
-</select>
+              <h2>
+                Welcome to JDA
+              </h2>
 
+              <p>
+                Your school network starts here.
+              </p>
 
-<label for="stream">
-Stream
-</label>
+            </div>
 
-<select id="stream">
 
-<option value="">
-Select Stream
-</option>
+            <div class="live-badge">
+              <span class="live-dot"></span>
+              LIVE REGISTRATION
+            </div>
 
-<option value="Blue">
-Blue
-</option>
 
-<option value="Green">
-Green
-</option>
+            <div class="character-glow"></div>
 
-</select>
 
-</div>
+            <div class="floor"></div>
 
 
-<!-- STAFF -->
+            <!-- CHARACTER -->
 
-<div
-id="staffFields"
-class="hidden">
+            <div class="character">
 
-<label for="department">
-Department
-</label>
+              <div class="character-head"></div>
 
-<input
-id="department"
-type="text"
-placeholder="Enter your department"
->
+              <div class="character-hair"></div>
 
-</div>
+              <div class="character-body">
+                <div class="character-shirt-line"></div>
+              </div>
 
+              <div class="arm arm-left"></div>
+              <div class="arm arm-right"></div>
 
-<button
-id="submitRegistration"
-class="primary"
-type="button">
-Submit Registration
-</button>
+              <div class="leg leg-left">
+                <div class="shoe"></div>
+              </div>
 
-<button
-id="backToWelcome"
-class="secondary"
-type="button">
-Back
-</button>
+              <div class="leg leg-right">
+                <div class="shoe"></div>
+              </div>
 
-</div>
+            </div>
 
-<div class="footer">
-Your account will remain pending until approved by JDA Networks administration.
-</div>
 
-</section>
+            <!-- BAG -->
 
+            <div class="jda-bag">
 
-<!-- =========================
-     LOGIN
-========================= -->
+              <div class="bag-handle"></div>
 
-<section id="loginScreen" class="hidden">
+              <div class="bag-body">
 
-<div class="top-title">
-Login to JDA Networks
-</div>
+                <div class="bag-logo">
+                  JDA
+                </div>
 
-<div class="card">
+              </div>
 
-<div
-id="loginMessage"
-class="message">
-</div>
+            </div>
 
-<label for="loginEmail">
-Email address
-</label>
 
-<input
-id="loginEmail"
-type="email"
-autocomplete="email"
-placeholder="Enter your email"
->
+            <div class="kneel-shadow"></div>
 
-<label for="loginPassword">
-Password
-</label>
+          </div>
 
-<input
-id="loginPassword"
-type="password"
-autocomplete="current-password"
-placeholder="Enter your password"
->
 
-<button
-id="submitLogin"
-class="primary"
-type="button">
-Login
-</button>
+          <!-- ==============================================
+               FORM
+          =============================================== -->
 
-<button
-id="forgotPassword"
-class="secondary"
-type="button">
-Forgot password?
-</button>
+          <div class="form-panel">
 
-<button
-id="backFromLogin"
-class="secondary"
-type="button">
-Back
-</button>
+            <div class="form-heading">
 
-</div>
+              <h2 id="registerTypeTitle">
+                Student Registration
+              </h2>
 
-</section>
+              <p>
+                Create your account. An administrator
+                will approve it before you enter the network.
+              </p>
 
+            </div>
 
-<!-- =========================
-     COMPLETE PROFILE
-========================= -->
 
-<section
-id="completeProfileScreen"
-class="hidden">
+            <div class="step-line">
 
-<div class="top-title">
-Complete Registration
-</div>
+              <div class="step active"></div>
+              <div class="step active"></div>
+              <div class="step"></div>
 
-<div class="card">
+            </div>
 
-<div class="message info show">
-Your Firebase account already exists.
-Complete your JDA Networks profile below.
-</div>
 
-<div
-id="completeMessage"
-class="message">
-</div>
+            <div class="form-scroll">
 
 
-<div class="photo-area">
+              <!-- ACCOUNT TYPE -->
 
-<img
-id="completePhotoPreview"
-class="photo-preview"
-src="https://via.placeholder.com/200/101a15/66736c?text=PHOTO"
-alt="Profile preview"
->
+              <div class="type-row">
 
-<label
-for="completePhotoInput"
-class="photo-button">
-📷 Choose Profile Photo
-</label>
+                <button
+                  id="registerStudentType"
+                  class="type-btn active"
+                  type="button">
 
-<input
-id="completePhotoInput"
-type="file"
-accept="image/*"
-class="hidden"
->
+                  🎓 Student
 
-</div>
+                </button>
 
+                <button
+                  id="registerStaffType"
+                  class="type-btn"
+                  type="button">
 
-<label for="completeRealName">
-Full real name
-</label>
+                  👨‍🏫 Staff
 
-<input
-id="completeRealName"
-type="text"
-placeholder="Enter your full real name"
->
+                </button>
 
+              </div>
 
-<label for="completeJdaNumber">
-JDA Networks number
-</label>
 
-<input
-id="completeJdaNumber"
-type="tel"
-placeholder="+256 771 234 567"
->
+              <!-- PHOTO -->
 
+              <div class="photo-area">
 
-<div id="completeStudentFields">
+                <img
+                  id="photoPreview"
+                  class="photo-preview"
+                  src="https://via.placeholder.com/200/081332/ffffff?text=PHOTO"
+                  alt="Profile preview">
 
-<label for="completeStudentClass">
-Class / Form
-</label>
+                <label
+                  for="photoInput"
+                  class="photo-button">
 
-<select id="completeStudentClass">
+                  📷 Choose Profile Photo
 
-<option value="">
-Select Form
-</option>
+                </label>
 
-<option value="Form One">
-Form One
-</option>
+                <input
+                  id="photoInput"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  class="hidden">
 
-<option value="Form Two">
-Form Two
-</option>
+                <div class="small">
+                  Profile photo is required.
+                </div>
 
-<option value="Form Three">
-Form Three
-</option>
+              </div>
 
-<option value="Form Four">
-Form Four
-</option>
 
-<option value="Form Five">
-Form Five
-</option>
+              <div
+                id="registerMessage"
+                class="message">
+              </div>
 
-<option value="Form Six">
-Form Six
-</option>
 
-</select>
+              <!-- REAL NAME -->
 
+              <label for="realName">
+                Full real name
+              </label>
 
-<label for="completeStream">
-Stream
-</label>
+              <input
+                id="realName"
+                type="text"
+                autocomplete="name"
+                placeholder="Enter your full real name">
 
-<select id="completeStream">
 
-<option value="">
-Select Stream
-</option>
+              <!-- JDA NUMBER -->
 
-<option value="Blue">
-Blue
-</option>
+              <label for="jdaNumber">
+                JDA Networks number
+              </label>
 
-<option value="Green">
-Green
-</option>
+              <input
+                id="jdaNumber"
+                type="tel"
+                autocomplete="tel"
+                inputmode="tel"
+                placeholder="+256 771 234 567">
 
-</select>
 
-</div>
+              <!-- EMAIL -->
 
+              <label for="email">
+                Email address
+              </label>
 
-<div
-id="completeStaffFields"
-class="hidden">
+              <input
+                id="email"
+                type="email"
+                autocomplete="email"
+                placeholder="Enter your email">
 
-<label for="completeDepartment">
-Department
-</label>
 
-<input
-id="completeDepartment"
-type="text"
-placeholder="Enter your department"
->
+              <!-- PASSWORD -->
 
-</div>
+              <label for="password">
+                Password
+              </label>
 
+              <input
+                id="password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Create a password">
 
-<button
-id="submitCompleteProfile"
-class="primary"
-type="button">
-Submit Registration
-</button>
 
-<button
-id="completeLogout"
-class="secondary"
-type="button">
-Logout
-</button>
+              <!-- CONFIRM -->
 
-</div>
+              <label for="confirmPassword">
+                Confirm password
+              </label>
 
-</section>
+              <input
+                id="confirmPassword"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Repeat your password">
 
 
-<!-- =========================
-     PENDING
-========================= -->
+              <!-- STUDENT -->
 
-<section
-id="pendingScreen"
-class="hidden">
+              <div id="studentFields">
 
-<div class="card status-box">
+                <label for="studentClass">
+                  Class / Form
+                </label>
 
-<div class="status-icon">
-⏳
-</div>
+                <select id="studentClass">
 
-<h2>
-Registration Pending
-</h2>
+                  <option value="">
+                    Select Form
+                  </option>
 
-<p>
-Your JDA Networks registration has been submitted successfully.
-</p>
+                  <option value="Form One">
+                    Form One
+                  </option>
 
-<p>
-An administrator must approve your account before you can enter JDA Networks.
-</p>
+                  <option value="Form Two">
+                    Form Two
+                  </option>
 
-<button
-id="pendingRefresh"
-class="primary"
-type="button">
-Check Approval
-</button>
+                  <option value="Form Three">
+                    Form Three
+                  </option>
 
-<button
-id="pendingLogout"
-class="secondary"
-type="button">
-Logout
-</button>
+                  <option value="Form Four">
+                    Form Four
+                  </option>
 
-</div>
+                  <option value="Form Five">
+                    Form Five
+                  </option>
 
-</section>
+                  <option value="Form Six">
+                    Form Six
+                  </option>
 
+                </select>
 
-<!-- =========================
-     REJECTED
-========================= -->
 
-<section
-id="rejectedScreen"
-class="hidden">
+                <label for="stream">
+                  Stream
+                </label>
 
-<div class="card status-box">
+                <select id="stream">
 
-<div class="status-icon">
-❌
-</div>
+                  <option value="">
+                    Select Stream
+                  </option>
 
-<h2>
-Registration Rejected
-</h2>
+                  <option value="Blue">
+                    Blue
+                  </option>
 
-<p>
-Your JDA Networks registration was rejected by an administrator.
-</p>
+                  <option value="Green">
+                    Green
+                  </option>
 
-<p id="rejectionReason">
-</p>
+                </select>
 
-<button
-id="rejectedLogout"
-class="secondary"
-type="button">
-Logout
-</button>
+              </div>
 
-</div>
 
-</section>
+              <!-- STAFF -->
 
+              <div
+                id="staffFields"
+                class="hidden">
 
-<!-- =========================
-     DISABLED
-========================= -->
+                <label for="department">
+                  Department
+                </label>
 
-<section
-id="disabledScreen"
-class="hidden">
+                <input
+                  id="department"
+                  type="text"
+                  placeholder="Enter your department">
 
-<div class="card status-box">
+              </div>
 
-<div class="status-icon">
-🔒
-</div>
 
-<h2>
-Account Disabled
-</h2>
+              <button
+                id="submitRegistration"
+                class="primary"
+                type="button">
 
-<p>
-Your JDA Networks account has been disabled by an administrator.
-</p>
+                Submit Registration
 
-<button
-id="disabledLogout"
-class="secondary"
-type="button">
-Logout
-</button>
+              </button>
 
-</div>
 
-</section>
+              <button
+                id="backToWelcome"
+                class="secondary"
+                type="button">
 
+                Back
 
-<!-- =========================
-     APPROVED
-========================= -->
+              </button>
 
-<section
-id="approvedScreen"
-class="hidden">
 
-<div class="top-title">
-JDA Networks
-</div>
+              <div class="small" style="text-align:center;margin-top:12px;">
+                By registering, your information is sent securely
+                to JDA Networks administration for approval.
+              </div>
 
-<div class="card">
+            </div>
 
-<div class="profile-summary">
+          </div>
 
-<img
-id="approvedPhoto"
-src="https://via.placeholder.com/100/101a15/66736c?text=JDA"
-alt="Profile"
->
+        </div>
 
-<div>
+      </section>
 
-<strong id="approvedName">
-Member
-</strong>
 
-<span id="approvedDetails">
-Approved member
-</span>
+      <!-- ==================================================
+           LOGIN
+      =================================================== -->
 
-</div>
+      <section
+        id="loginScreen"
+        class="screen hidden">
 
-</div>
+        <div class="status-layout">
 
+          <div
+            class="status-card"
+            style="text-align:left;">
 
-<div class="message success show">
-Your account has been approved.
-</div>
+            <h2 style="text-align:center;">
+              Login to JDA Networks
+            </h2>
 
+            <p style="text-align:center;">
+              Use the email and password you registered with.
+            </p>
 
-<button
-id="enterNetwork"
-class="primary"
-type="button">
-Enter JDA Networks
-</button>
 
+            <div
+              id="loginMessage"
+              class="message">
+            </div>
 
-<button
-id="approvedLogout"
-class="secondary"
-type="button">
-Logout
-</button>
 
-</div>
+            <label for="loginEmail">
+              Email address
+            </label>
 
-</section>
+            <input
+              id="loginEmail"
+              type="email"
+              autocomplete="email"
+              placeholder="Enter your email">
 
-</main>
+
+            <label for="loginPassword">
+              Password
+            </label>
+
+            <input
+              id="loginPassword"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Enter your password">
+
+
+            <button
+              id="submitLogin"
+              class="primary"
+              type="button">
+
+              Login
+
+            </button>
+
+
+            <button
+              id="forgotPassword"
+              class="secondary"
+              type="button">
+
+              Forgot password?
+
+            </button>
+
+
+            <button
+              id="backFromLogin"
+              class="secondary"
+              type="button">
+
+              Back
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ==================================================
+           COMPLETE PROFILE
+      =================================================== -->
+
+      <section
+        id="completeProfileScreen"
+        class="screen hidden">
+
+        <div class="status-layout">
+
+          <div
+            class="status-card"
+            style="text-align:left;">
+
+            <h2 style="text-align:center;">
+              Complete Registration
+            </h2>
+
+            <p style="text-align:center;">
+              Your Firebase account exists.
+              Complete your JDA Networks profile.
+            </p>
+
+
+            <div
+              id="completeMessage"
+              class="message">
+            </div>
+
+
+            <div class="type-row">
+
+              <button
+                id="completeStudentType"
+                class="type-btn active"
+                type="button">
+
+                🎓 Student
+
+              </button>
+
+              <button
+                id="completeStaffType"
+                class="type-btn"
+                type="button">
+
+                👨‍🏫 Staff
+
+              </button>
+
+            </div>
+
+
+            <div class="photo-area">
+
+              <img
+                id="completePhotoPreview"
+                class="photo-preview"
+                src="https://via.placeholder.com/200/081332/ffffff?text=PHOTO"
+                alt="Profile preview">
+
+              <label
+                for="completePhotoInput"
+                class="photo-button">
+
+                📷 Choose Profile Photo
+
+              </label>
+
+              <input
+                id="completePhotoInput"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                class="hidden">
+
+            </div>
+
+
+            <label for="completeRealName">
+              Full real name
+            </label>
+
+            <input
+              id="completeRealName"
+              type="text"
+              placeholder="Enter your full real name">
+
+
+            <label for="completeJdaNumber">
+              JDA Networks number
+            </label>
+
+            <input
+              id="completeJdaNumber"
+              type="tel"
+              placeholder="+256 771 234 567">
+
+
+            <div id="completeStudentFields">
+
+              <label for="completeStudentClass">
+                Class / Form
+              </label>
+
+              <select id="completeStudentClass">
+
+                <option value="">
+                  Select Form
+                </option>
+
+                <option value="Form One">
+                  Form One
+                </option>
+
+                <option value="Form Two">
+                  Form Two
+                </option>
+
+                <option value="Form Three">
+                  Form Three
+                </option>
+
+                <option value="Form Four">
+                  Form Four
+                </option>
+
+                <option value="Form Five">
+                  Form Five
+                </option>
+
+                <option value="Form Six">
+                  Form Six
+                </option>
+
+              </select>
+
+
+              <label for="completeStream">
+                Stream
+              </label>
+
+              <select id="completeStream">
+
+                <option value="">
+                  Select Stream
+                </option>
+
+                <option value="Blue">
+                  Blue
+                </option>
+
+                <option value="Green">
+                  Green
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <div
+              id="completeStaffFields"
+              class="hidden">
+
+              <label for="completeDepartment">
+                Department
+              </label>
+
+              <input
+                id="completeDepartment"
+                type="text"
+                placeholder="Enter your department">
+
+            </div>
+
+
+            <button
+              id="submitCompleteProfile"
+              class="primary"
+              type="button">
+
+              Submit Registration
+
+            </button>
+
+
+            <button
+              id="completeLogout"
+              class="secondary"
+              type="button">
+
+              Logout
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ==================================================
+           PENDING
+      =================================================== -->
+
+      <section
+        id="pendingScreen"
+        class="screen hidden">
+
+        <div class="status-layout">
+
+          <div class="status-card">
+
+            <div class="status-icon">
+              ⏳
+            </div>
+
+            <h2>
+              Registration Pending
+            </h2>
+
+            <p>
+              Your JDA Networks registration has been
+              submitted successfully.
+            </p>
+
+            <p>
+              An administrator must approve your account
+              before you can enter JDA Networks.
+            </p>
+
+
+            <button
+              id="pendingRefresh"
+              class="primary"
+              type="button">
+
+              Check Approval
+
+            </button>
+
+
+            <button
+              id="pendingLogout"
+              class="secondary"
+              type="button">
+
+              Logout
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ==================================================
+           REJECTED
+      =================================================== -->
+
+      <section
+        id="rejectedScreen"
+        class="screen hidden">
+
+        <div class="status-layout">
+
+          <div class="status-card">
+
+            <div class="status-icon">
+              ❌
+            </div>
+
+            <h2>
+              Registration Rejected
+            </h2>
+
+            <p>
+              Your JDA Networks registration was rejected
+              by an administrator.
+            </p>
+
+            <p id="rejectionReason"></p>
+
+
+            <button
+              id="rejectedLogout"
+              class="secondary"
+              type="button">
+
+              Logout
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ==================================================
+           DISABLED
+      =================================================== -->
+
+      <section
+        id="disabledScreen"
+        class="screen hidden">
+
+        <div class="status-layout">
+
+          <div class="status-card">
+
+            <div class="status-icon">
+              🔒
+            </div>
+
+            <h2>
+              Account Disabled
+            </h2>
+
+            <p>
+              Your JDA Networks account has been disabled
+              by an administrator.
+            </p>
+
+
+            <button
+              id="disabledLogout"
+              class="secondary"
+              type="button">
+
+              Logout
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ==================================================
+           APPROVED
+      =================================================== -->
+
+      <section
+        id="approvedScreen"
+        class="screen hidden">
+
+        <div class="status-layout">
+
+          <div class="status-card">
+
+            <div class="status-icon">
+              ✅
+            </div>
+
+            <h2>
+              You're Approved
+            </h2>
+
+            <p>
+              Your JDA Networks account has been approved.
+            </p>
+
+
+            <div class="profile-summary">
+
+              <img
+                id="approvedPhoto"
+                src="https://via.placeholder.com/100/081332/ffffff?text=JDA"
+                alt="Profile">
+
+              <div>
+
+                <strong id="approvedName">
+                  Member
+                </strong>
+
+                <span id="approvedDetails">
+                  Approved member
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="message success show">
+              Your account is ready.
+            </div>
+
+
+            <button
+              id="enterNetwork"
+              class="primary"
+              type="button">
+
+              Enter JDA Networks
+
+            </button>
+
+
+            <button
+              id="approvedLogout"
+              class="secondary"
+              type="button">
+
+              Logout
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </div>
+
 </div>
 
 
 <script type="module">
 
-/* ==========================================================
+/* =========================================================
    FIREBASE
-========================================================== */
+========================================================= */
 
 import {
-initializeApp
+  initializeApp
 } from
 "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
 import {
-getAuth,
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-sendPasswordResetEmail,
-onAuthStateChanged,
-signOut
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  onAuthStateChanged,
+  signOut
 } from
 "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 import {
-getFirestore,
-doc,
-getDoc,
-setDoc,
-serverTimestamp
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
 } from
 "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-/* ==========================================================
-   CORRECT FIREBASE CONFIG
-========================================================== */
+/* =========================================================
+   FIREBASE CONFIG
+========================================================= */
 
 const firebaseConfig = {
 
-apiKey:
-"AIzaSyAPnOHdVISPw_fGBLdMLELSU9f1IWMTC3I",
+  apiKey:
+    "AIzaSyAPnOHdVISPw_fGBLdMLEL9su1F1WMTC3I",
 
-authDomain:
-"jda-network-fabde.firebaseapp.com",
+  authDomain:
+    "jda-network-fabde.firebaseapp.com",
 
-projectId:
-"jda-network-fabde",
+  projectId:
+    "jda-network-fabde",
 
-storageBucket:
-"jda-network-fabde.firebasestorage.app",
+  storageBucket:
+    "jda-network-fabde.firebasestorage.app",
 
-messagingSenderId:
-"383915852673",
+  messagingSenderId:
+    "383915852673",
 
-appId:
-"1:383915852673:web:4b185c0387ed0bbad1de80"
+  appId:
+    "1:383915852673:web:4b185c0387ed0bbad1de80"
 
 };
 
 
 const app =
-initializeApp(firebaseConfig);
+  initializeApp(firebaseConfig);
 
 const auth =
-getAuth(app);
+  getAuth(app);
 
 const db =
-getFirestore(app);
+  getFirestore(app);
 
 
-/* ==========================================================
+/* =========================================================
    VARIABLES
-========================================================== */
+========================================================= */
 
 let selectedAccountType = null;
 let selectedPhotoData = "";
@@ -1117,1564 +2473,2002 @@ let completePhotoData = "";
 let currentUser = null;
 
 
-/* ==========================================================
-   HELPERS
-========================================================== */
+/* =========================================================
+   ELEMENT HELPER
+========================================================= */
 
 const $ = id =>
-document.getElementById(id);
+  document.getElementById(id);
 
+
+/* =========================================================
+   SCREENS
+========================================================= */
 
 const screens = [
 
-"loadingScreen",
-"welcomeScreen",
-"registerScreen",
-"loginScreen",
-"completeProfileScreen",
-"pendingScreen",
-"rejectedScreen",
-"disabledScreen",
-"approvedScreen"
+  "loadingScreen",
+  "welcomeScreen",
+  "registerScreen",
+  "loginScreen",
+  "completeProfileScreen",
+  "pendingScreen",
+  "rejectedScreen",
+  "disabledScreen",
+  "approvedScreen"
 
 ];
 
 
 function showScreen(id){
 
-screens.forEach(screen => {
+  screens.forEach(screen => {
 
-$(screen).classList.add("hidden");
+    const element = $(screen);
 
-});
+    if(element){
+      element.classList.add("hidden");
+    }
 
-$(id).classList.remove("hidden");
+  });
+
+  const target = $(id);
+
+  if(target){
+    target.classList.remove("hidden");
+  }
 
 }
 
 
+/* =========================================================
+   MESSAGES
+========================================================= */
+
 function message(id,text,type){
 
-const box = $(id);
+  const box = $(id);
 
-box.textContent = text;
+  if(!box)return;
 
-box.className =
-"message show " + type;
+  box.textContent = text;
+
+  box.className =
+    "message show " + type;
 
 }
 
 
 function clearMessage(id){
 
-$(id).textContent = "";
+  const box = $(id);
 
-$(id).className =
-"message";
+  if(!box)return;
+
+  box.textContent = "";
+
+  box.className =
+    "message";
 
 }
 
 
-/* ==========================================================
-   PHONE
-========================================================== */
+/* =========================================================
+   PHONE NUMBER
+========================================================= */
 
 function normalizeNumber(value){
 
-let number =
-value.trim()
-.replace(/\s+/g,"");
+  let number =
+    value
+      .trim()
+      .replace(/\s+/g,"");
 
-if(number.startsWith("0")){
+  if(number.startsWith("0")){
 
-number =
-"+256" +
-number.substring(1);
+    number =
+      "+256" +
+      number.substring(1);
 
-}
+  }
 
-return number;
+  return number;
 
 }
 
 
 function validNumber(number){
 
-return /^\+256\d{9}$/.test(number);
+  return /^\+256\d{9}$/.test(number);
 
 }
 
 
-/* ==========================================================
+/* =========================================================
    PHOTO COMPRESSION
-========================================================== */
+========================================================= */
 
 function compressPhoto(file){
 
-return new Promise((resolve,reject)=>{
+  return new Promise((resolve,reject)=>{
 
-if(!file){
+    if(!file){
 
-reject(
-new Error("Please select a photo.")
-);
+      reject(
+        new Error("Please select a photo.")
+      );
 
-return;
+      return;
+    }
+
+
+    if(!file.type.startsWith("image/")){
+
+      reject(
+        new Error("Please select an image.")
+      );
+
+      return;
+    }
+
+
+    /*
+      Keep the image small enough for Firestore.
+    */
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload = event => {
+
+      const image =
+        new Image();
+
+
+      image.onload = () => {
+
+        const max = 420;
+
+        let width =
+          image.width;
+
+        let height =
+          image.height;
+
+
+        if(width > height){
+
+          if(width > max){
+
+            height =
+              Math.round(
+                height * max / width
+              );
+
+            width = max;
+
+          }
+
+        }else{
+
+          if(height > max){
+
+            width =
+              Math.round(
+                width * max / height
+              );
+
+            height = max;
+
+          }
+
+        }
+
+
+        const canvas =
+          document.createElement(
+            "canvas"
+          );
+
+        canvas.width =
+          width;
+
+        canvas.height =
+          height;
+
+
+        const ctx =
+          canvas.getContext("2d");
+
+
+        ctx.drawImage(
+          image,
+          0,
+          0,
+          width,
+          height
+        );
+
+
+        let data =
+          canvas.toDataURL(
+            "image/jpeg",
+            0.55
+          );
+
+
+        /*
+          Additional compression if necessary.
+        */
+
+        if(data.length > 500000){
+
+          data =
+            canvas.toDataURL(
+              "image/jpeg",
+              0.38
+            );
+
+        }
+
+
+        if(data.length > 700000){
+
+          reject(
+            new Error(
+              "Photo is too large. Please choose another photo."
+            )
+          );
+
+          return;
+
+        }
+
+
+        resolve(data);
+
+      };
+
+
+      image.onerror = () => {
+
+        reject(
+          new Error(
+            "Could not read the photo."
+          )
+        );
+
+      };
+
+
+      image.src =
+        event.target.result;
+
+    };
+
+
+    reader.onerror = () => {
+
+      reject(
+        new Error(
+          "Could not read the selected file."
+        )
+      );
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+  });
 
 }
 
 
-if(!file.type.startsWith("image/")){
+/* =========================================================
+   ACCOUNT TYPE UI
+========================================================= */
 
-reject(
-new Error("Please select an image.")
-);
+function setAccountType(type){
 
-return;
-
-}
-
-
-const reader =
-new FileReader();
+  selectedAccountType =
+    type;
 
 
-reader.onload = event => {
+  if(type === "student"){
 
-const image =
-new Image();
+    $("studentChoice")
+      ?.classList
+      .add("active");
 
-
-image.onload = () => {
-
-const max = 450;
-
-let width =
-image.width;
-
-let height =
-image.height;
+    $("staffChoice")
+      ?.classList
+      .remove("active");
 
 
-if(width > height){
+    $("registerStudentType")
+      ?.classList
+      .add("active");
 
-if(width > max){
-
-height =
-Math.round(
-height * max / width
-);
-
-width = max;
-
-}
-
-}else{
-
-if(height > max){
-
-width =
-Math.round(
-width * max / height
-);
-
-height = max;
-
-}
-
-}
+    $("registerStaffType")
+      ?.classList
+      .remove("active");
 
 
-const canvas =
-document.createElement("canvas");
+    $("studentFields")
+      ?.classList
+      .remove("hidden");
 
-canvas.width =
-width;
-
-canvas.height =
-height;
-
-
-const ctx =
-canvas.getContext("2d");
-
-ctx.drawImage(
-image,
-0,
-0,
-width,
-height
-);
+    $("staffFields")
+      ?.classList
+      .add("hidden");
 
 
-let data =
-canvas.toDataURL(
-"image/jpeg",
-0.60
-);
+    $("registerTypeTitle")
+      .textContent =
+      "Student Registration";
+
+  }else{
+
+    $("studentChoice")
+      ?.classList
+      .remove("active");
+
+    $("staffChoice")
+      ?.classList
+      .add("active");
 
 
-if(data.length > 600000){
+    $("registerStudentType")
+      ?.classList
+      .remove("active");
 
-data =
-canvas.toDataURL(
-"image/jpeg",
-0.40
-);
+    $("registerStaffType")
+      ?.classList
+      .add("active");
+
+
+    $("studentFields")
+      ?.classList
+      .add("hidden");
+
+    $("staffFields")
+      ?.classList
+      .remove("hidden");
+
+
+    $("registerTypeTitle")
+      .textContent =
+      "Staff Registration";
+
+  }
 
 }
 
 
-resolve(data);
-
-};
-
-
-image.onerror = () => {
-
-reject(
-new Error("Could not read the photo.")
-);
-
-};
-
-
-image.src =
-event.target.result;
-
-};
-
-
-reader.onerror = () => {
-
-reject(
-new Error("Could not read the selected file.")
-);
-
-};
-
-
-reader.readAsDataURL(file);
-
-});
-
-}
-
-
-/* ==========================================================
-   ACCOUNT TYPE
-========================================================== */
+/* =========================================================
+   WELCOME ACCOUNT BUTTONS
+========================================================= */
 
 $("studentChoice")
-.addEventListener("click",()=>{
-
-selectedAccountType =
-"student";
-
-$("studentChoice")
-.classList.add("active");
-
-$("staffChoice")
-.classList.remove("active");
-
-});
+  .addEventListener(
+    "click",
+    () => setAccountType("student")
+  );
 
 
 $("staffChoice")
-.addEventListener("click",()=>{
+  .addEventListener(
+    "click",
+    () => setAccountType("staff")
+  );
 
-selectedAccountType =
-"staff";
 
-$("staffChoice")
-.classList.add("active");
+$("registerStudentType")
+  .addEventListener(
+    "click",
+    () => setAccountType("student")
+  );
 
-$("studentChoice")
-.classList.remove("active");
 
-});
+$("registerStaffType")
+  .addEventListener(
+    "click",
+    () => setAccountType("staff")
+  );
 
+
+/* =========================================================
+   CONTINUE REGISTRATION
+========================================================= */
 
 $("continueRegister")
-.addEventListener("click",()=>{
+  .addEventListener(
+    "click",
+    () => {
 
-if(!selectedAccountType){
+      if(!selectedAccountType){
 
-alert(
-"Choose Student or Staff first."
-);
+        alert(
+          "Choose Student or Staff first."
+        );
 
-return;
+        return;
 
-}
-
-
-$("registerTypeTitle").textContent =
-selectedAccountType === "student"
-? "Student Registration"
-: "Staff Registration";
+      }
 
 
-if(selectedAccountType === "student"){
+      showScreen(
+        "registerScreen"
+      );
 
-$("studentFields")
-.classList.remove("hidden");
-
-$("staffFields")
-.classList.add("hidden");
-
-}else{
-
-$("studentFields")
-.classList.add("hidden");
-
-$("staffFields")
-.classList.remove("hidden");
-
-}
+    }
+  );
 
 
-showScreen("registerScreen");
-
-});
-
-
-/* ==========================================================
+/* =========================================================
    PHOTO
-========================================================== */
+========================================================= */
 
 $("photoInput")
-.addEventListener("change",async event=>{
+  .addEventListener(
+    "change",
+    async event => {
 
-const file =
-event.target.files[0];
+      const file =
+        event.target.files[0];
 
-if(!file)return;
+      if(!file)return;
 
 
-try{
+      try{
 
-message(
-"registerMessage",
-"Preparing photo...",
-"info"
-);
+        message(
+          "registerMessage",
+          "Preparing your profile photo...",
+          "info"
+        );
 
-selectedPhotoData =
-await compressPhoto(file);
 
-$("photoPreview").src =
-selectedPhotoData;
+        selectedPhotoData =
+          await compressPhoto(file);
 
-message(
-"registerMessage",
-"Photo ready.",
-"success"
-);
 
-}catch(error){
+        $("photoPreview").src =
+          selectedPhotoData;
 
-selectedPhotoData = "";
 
-message(
-"registerMessage",
-error.message,
-"error"
-);
+        message(
+          "registerMessage",
+          "Profile photo ready.",
+          "success"
+        );
 
-}
 
-});
+      }catch(error){
 
+        selectedPhotoData = "";
+
+        message(
+          "registerMessage",
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   COMPLETE PROFILE PHOTO
+========================================================= */
 
 $("completePhotoInput")
-.addEventListener("change",async event=>{
+  .addEventListener(
+    "change",
+    async event => {
 
-const file =
-event.target.files[0];
+      const file =
+        event.target.files[0];
 
-if(!file)return;
-
-
-try{
-
-message(
-"completeMessage",
-"Preparing photo...",
-"info"
-);
-
-completePhotoData =
-await compressPhoto(file);
-
-$("completePhotoPreview").src =
-completePhotoData;
-
-message(
-"completeMessage",
-"Photo ready.",
-"success"
-);
-
-}catch(error){
-
-completePhotoData = "";
-
-message(
-"completeMessage",
-error.message,
-"error"
-);
-
-}
-
-});
+      if(!file)return;
 
 
-/* ==========================================================
+      try{
+
+        message(
+          "completeMessage",
+          "Preparing your profile photo...",
+          "info"
+        );
+
+
+        completePhotoData =
+          await compressPhoto(file);
+
+
+        $("completePhotoPreview").src =
+          completePhotoData;
+
+
+        message(
+          "completeMessage",
+          "Profile photo ready.",
+          "success"
+        );
+
+
+      }catch(error){
+
+        completePhotoData = "";
+
+        message(
+          "completeMessage",
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
    REGISTRATION
-========================================================== */
+========================================================= */
 
 $("submitRegistration")
-.addEventListener(
-"click",
-register
-);
+  .addEventListener(
+    "click",
+    register
+  );
 
 
 async function register(){
 
-clearMessage(
-"registerMessage"
-);
+  clearMessage(
+    "registerMessage"
+  );
 
 
-const realName =
-$("realName").value.trim();
+  if(!selectedAccountType){
 
-const jdaNumber =
-normalizeNumber(
-$("jdaNumber").value
-);
+    message(
+      "registerMessage",
+      "Choose Student or Staff.",
+      "error"
+    );
 
-const email =
-$("email").value.trim()
-.toLowerCase();
+    return;
 
-const password =
-$("password").value;
-
-const confirm =
-$("confirmPassword").value;
+  }
 
 
-if(realName.length < 3){
+  const realName =
+    $("realName")
+      .value
+      .trim();
 
-message(
-"registerMessage",
-"Enter your full real name.",
-"error"
-);
 
-return;
+  const jdaNumber =
+    normalizeNumber(
+      $("jdaNumber")
+        .value
+    );
+
+
+  const email =
+    $("email")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const password =
+    $("password")
+      .value;
+
+
+  const confirmPassword =
+    $("confirmPassword")
+      .value;
+
+
+  /* -----------------------------------------------
+     VALIDATION
+  ------------------------------------------------ */
+
+  if(realName.length < 3){
+
+    message(
+      "registerMessage",
+      "Enter your full real name.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(/\d/.test(realName)){
+
+    message(
+      "registerMessage",
+      "Use your real name, not a nickname or number.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!validNumber(jdaNumber)){
+
+    message(
+      "registerMessage",
+      "Enter a valid Uganda number, e.g. +256 771 234 567.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!email.includes("@")){
+
+    message(
+      "registerMessage",
+      "Enter a valid email address.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(password.length < 6){
+
+    message(
+      "registerMessage",
+      "Password must have at least 6 characters.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(password !== confirmPassword){
+
+    message(
+      "registerMessage",
+      "Passwords do not match.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if(!selectedPhotoData){
+
+    message(
+      "registerMessage",
+      "Profile photo is required.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  let studentClass = "";
+  let stream = "";
+  let department = "";
+
+
+  if(selectedAccountType === "student"){
+
+    studentClass =
+      $("studentClass")
+        .value;
+
+
+    stream =
+      $("stream")
+        .value;
+
+
+    if(!studentClass || !stream){
+
+      message(
+        "registerMessage",
+        "Select your Form and Stream.",
+        "error"
+      );
+
+      return;
+
+    }
+
+  }else{
+
+    department =
+      $("department")
+        .value
+        .trim();
+
+
+    if(!department){
+
+      message(
+        "registerMessage",
+        "Enter your department.",
+        "error"
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  const button =
+    $("submitRegistration");
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Creating account...";
+
+
+  try{
+
+    /* -----------------------------------------------
+       FIREBASE AUTH
+    ------------------------------------------------ */
+
+    const credential =
+      await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+
+    const uid =
+      credential.user.uid;
+
+
+    /* -----------------------------------------------
+       FIRESTORE PROFILE
+    ------------------------------------------------ */
+
+    const userData = {
+
+      uid,
+
+      realName,
+
+      jdaNumber,
+
+      email,
+
+      accountType:
+        selectedAccountType,
+
+      photoURL:
+        selectedPhotoData,
+
+      status:
+        "pending",
+
+      approved:
+        false,
+
+      createdAt:
+        serverTimestamp(),
+
+      updatedAt:
+        serverTimestamp()
+
+    };
+
+
+    if(
+      selectedAccountType ===
+      "student"
+    ){
+
+      userData.className =
+        studentClass;
+
+      userData.studentClass =
+        studentClass;
+
+      userData.stream =
+        stream;
+
+    }else{
+
+      userData.department =
+        department;
+
+    }
+
+
+    await setDoc(
+      doc(
+        db,
+        "users",
+        uid
+      ),
+      userData
+    );
+
+
+    /*
+      Registration completed.
+      User remains logged in and sees pending screen.
+    */
+
+    showScreen(
+      "pendingScreen"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Registration error:",
+      error
+    );
+
+
+    let text =
+      "Registration failed.";
+
+
+    if(
+      error.code ===
+      "auth/email-already-in-use"
+    ){
+
+      text =
+        "This email is already registered. Please login.";
+
+    }
+
+    else if(
+      error.code ===
+      "auth/invalid-email"
+    ){
+
+      text =
+        "Invalid email address.";
+
+    }
+
+    else if(
+      error.code ===
+      "auth/weak-password"
+    ){
+
+      text =
+        "Password is too weak. Use at least 6 characters.";
+
+    }
+
+    else if(
+      error.code ===
+      "auth/network-request-failed"
+    ){
+
+      text =
+        "Network connection failed. Check your internet.";
+
+    }
+
+    else if(
+      error.code ===
+      "permission-denied"
+    ){
+
+      text =
+        "Firebase permission denied. Check your Firestore rules.";
+
+    }
+
+    else{
+
+      text =
+        error.message ||
+        text;
+
+    }
+
+
+    message(
+      "registerMessage",
+      text,
+      "error"
+    );
+
+
+  }finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "Submit Registration";
+
+  }
 
 }
 
 
-if(!validNumber(jdaNumber)){
-
-message(
-"registerMessage",
-"Enter a valid Uganda number, e.g. +256 771 234 567.",
-"error"
-);
-
-return;
-
-}
-
-
-if(!email.includes("@")){
-
-message(
-"registerMessage",
-"Enter a valid email address.",
-"error"
-);
-
-return;
-
-}
-
-
-if(password.length < 6){
-
-message(
-"registerMessage",
-"Password must have at least 6 characters.",
-"error"
-);
-
-return;
-
-}
-
-
-if(password !== confirm){
-
-message(
-"registerMessage",
-"Passwords do not match.",
-"error"
-);
-
-return;
-
-}
-
-
-if(!selectedPhotoData){
-
-message(
-"registerMessage",
-"Profile photo is required.",
-"error"
-);
-
-return;
-
-}
-
-
-let studentClass = "";
-let stream = "";
-let department = "";
-
-
-if(selectedAccountType === "student"){
-
-studentClass =
-$("studentClass").value;
-
-stream =
-$("stream").value;
-
-
-if(!studentClass || !stream){
-
-message(
-"registerMessage",
-"Select your Form and Stream.",
-"error"
-);
-
-return;
-
-}
-
-}else{
-
-department =
-$("department").value.trim();
-
-
-if(!department){
-
-message(
-"registerMessage",
-"Enter your department.",
-"error"
-);
-
-return;
-
-}
-
-}
-
-
-const button =
-$("submitRegistration");
-
-button.disabled = true;
-
-button.textContent =
-"Creating account...";
-
-
-try{
-
-const credential =
-await createUserWithEmailAndPassword(
-auth,
-email,
-password
-);
-
-
-const uid =
-credential.user.uid;
-
-
-const userData = {
-
-uid,
-
-realName,
-
-jdaNumber,
-
-email,
-
-accountType:
-selectedAccountType,
-
-photoURL:
-selectedPhotoData,
-
-status:
-"pending",
-
-approved:
-false,
-
-createdAt:
-serverTimestamp(),
-
-updatedAt:
-serverTimestamp()
-
-};
-
-
-if(selectedAccountType === "student"){
-
-userData.className =
-studentClass;
-
-userData.studentClass =
-studentClass;
-
-userData.stream =
-stream;
-
-}else{
-
-userData.department =
-department;
-
-}
-
-
-await setDoc(
-doc(db,"users",uid),
-userData
-);
-
-
-showScreen(
-"pendingScreen"
-);
-
-
-}catch(error){
-
-console.error(error);
-
-
-let text =
-"Registration failed.";
-
-
-if(error.code ===
-"auth/email-already-in-use"){
-
-text =
-"This email is already registered. Please login.";
-
-}
-
-else if(
-error.code ===
-"auth/invalid-email"
-){
-
-text =
-"Invalid email address.";
-
-}
-
-else if(
-error.code ===
-"auth/weak-password"
-){
-
-text =
-"Password is too weak.";
-
-}
-
-else if(
-error.code ===
-"auth/network-request-failed"
-){
-
-text =
-"Network connection failed.";
-
-}
-
-else{
-
-text =
-error.message ||
-text;
-
-}
-
-
-message(
-"registerMessage",
-text,
-"error"
-);
-
-
-}finally{
-
-button.disabled = false;
-
-button.textContent =
-"Submit Registration";
-
-}
-
-}
-
-
-/* ==========================================================
+/* =========================================================
    LOGIN
-========================================================== */
+========================================================= */
 
 $("loginButton")
-.addEventListener("click",()=>{
+  .addEventListener(
+    "click",
+    () => {
 
-showScreen("loginScreen");
+      showScreen(
+        "loginScreen"
+      );
 
-});
+    }
+  );
 
 
 $("backFromLogin")
-.addEventListener("click",()=>{
+  .addEventListener(
+    "click",
+    () => {
 
-showScreen("welcomeScreen");
+      showScreen(
+        "welcomeScreen"
+      );
 
-});
+    }
+  );
 
 
 $("submitLogin")
-.addEventListener(
-"click",
-login
-);
+  .addEventListener(
+    "click",
+    login
+  );
 
 
 async function login(){
 
-clearMessage(
-"loginMessage"
-);
+  clearMessage(
+    "loginMessage"
+  );
 
 
-const email =
-$("loginEmail").value.trim();
+  const email =
+    $("loginEmail")
+      .value
+      .trim()
+      .toLowerCase();
 
-const password =
-$("loginPassword").value;
+
+  const password =
+    $("loginPassword")
+      .value;
 
 
-if(!email || !password){
+  if(!email || !password){
 
-message(
-"loginMessage",
-"Enter your email and password.",
-"error"
-);
+    message(
+      "loginMessage",
+      "Enter your email and password.",
+      "error"
+    );
 
-return;
+    return;
+
+  }
+
+
+  const button =
+    $("submitLogin");
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Logging in...";
+
+
+  try{
+
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Login error:",
+      error
+    );
+
+
+    let text =
+      "Login failed.";
+
+
+    if(
+      error.code ===
+      "auth/invalid-credential"
+    ){
+
+      text =
+        "Email or password is incorrect.";
+
+    }
+
+    else if(
+      error.code ===
+      "auth/user-not-found"
+    ){
+
+      text =
+        "No account was found.";
+
+    }
+
+    else if(
+      error.code ===
+      "auth/wrong-password"
+    ){
+
+      text =
+        "Incorrect password.";
+
+    }
+
+    else if(
+      error.code ===
+      "auth/network-request-failed"
+    ){
+
+      text =
+        "Network connection failed.";
+
+    }
+
+    else{
+
+      text =
+        error.message ||
+        text;
+
+    }
+
+
+    message(
+      "loginMessage",
+      text,
+      "error"
+    );
+
+
+  }finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "Login";
+
+  }
 
 }
 
 
-const button =
-$("submitLogin");
-
-button.disabled = true;
-
-button.textContent =
-"Logging in...";
-
-
-try{
-
-await signInWithEmailAndPassword(
-auth,
-email,
-password
-);
-
-
-}catch(error){
-
-console.error(error);
-
-
-let text =
-"Login failed.";
-
-
-if(
-error.code ===
-"auth/invalid-credential"
-){
-
-text =
-"Email or password is incorrect.";
-
-}
-
-else if(
-error.code ===
-"auth/user-not-found"
-){
-
-text =
-"No account was found.";
-
-}
-
-else if(
-error.code ===
-"auth/wrong-password"
-){
-
-text =
-"Incorrect password.";
-
-}
-
-else{
-
-text =
-error.message ||
-text;
-
-}
-
-
-message(
-"loginMessage",
-text,
-"error"
-);
-
-
-}finally{
-
-button.disabled = false;
-
-button.textContent =
-"Login";
-
-}
-
-}
-
-
-/* ==========================================================
+/* =========================================================
    PASSWORD RESET
-========================================================== */
+========================================================= */
 
 $("forgotPassword")
-.addEventListener("click",async()=>{
+  .addEventListener(
+    "click",
+    async () => {
 
-const email =
-$("loginEmail").value.trim();
-
-
-if(!email){
-
-alert(
-"Enter your email first."
-);
-
-return;
-
-}
+      const email =
+        $("loginEmail")
+          .value
+          .trim();
 
 
-try{
+      if(!email){
 
-await sendPasswordResetEmail(
-auth,
-email
-);
+        message(
+          "loginMessage",
+          "Enter your email first.",
+          "error"
+        );
 
+        return;
 
-message(
-"loginMessage",
-"Password reset email sent.",
-"success"
-);
+      }
 
 
-}catch(error){
+      try{
 
-message(
-"loginMessage",
-error.message,
-"error"
-);
-
-}
-
-});
+        await sendPasswordResetEmail(
+          auth,
+          email
+        );
 
 
-/* ==========================================================
-   EXISTING AUTH USER
-========================================================== */
+        message(
+          "loginMessage",
+          "Password reset email sent.",
+          "success"
+        );
+
+
+      }catch(error){
+
+        message(
+          "loginMessage",
+          error.message ||
+          "Could not send password reset email.",
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   COMPLETE PROFILE ACCOUNT TYPE
+========================================================= */
+
+$("completeStudentType")
+  .addEventListener(
+    "click",
+    () => {
+
+      selectedAccountType =
+        "student";
+
+
+      $("completeStudentType")
+        .classList
+        .add("active");
+
+      $("completeStaffType")
+        .classList
+        .remove("active");
+
+
+      $("completeStudentFields")
+        .classList
+        .remove("hidden");
+
+      $("completeStaffFields")
+        .classList
+        .add("hidden");
+
+    }
+  );
+
+
+$("completeStaffType")
+  .addEventListener(
+    "click",
+    () => {
+
+      selectedAccountType =
+        "staff";
+
+
+      $("completeStaffType")
+        .classList
+        .add("active");
+
+      $("completeStudentType")
+        .classList
+        .remove("active");
+
+
+      $("completeStaffFields")
+        .classList
+        .remove("hidden");
+
+      $("completeStudentFields")
+        .classList
+        .add("hidden");
+
+    }
+  );
+
+
+/* =========================================================
+   COMPLETE PROFILE
+========================================================= */
 
 async function completeProfile(user){
 
-currentUser = user;
+  currentUser =
+    user;
 
 
-if(!selectedAccountType){
+  /*
+    If Firebase account exists but the JDA profile
+    does not, let the user choose Student or Staff.
+  */
 
-selectedAccountType =
-"student";
+  selectedAccountType =
+    "student";
+
+
+  $("completeStudentType")
+    .classList
+    .add("active");
+
+  $("completeStaffType")
+    .classList
+    .remove("active");
+
+
+  $("completeStudentFields")
+    .classList
+    .remove("hidden");
+
+  $("completeStaffFields")
+    .classList
+    .add("hidden");
+
+
+  showScreen(
+    "completeProfileScreen"
+  );
 
 }
 
 
-if(selectedAccountType === "student"){
-
-$("completeStudentFields")
-.classList.remove("hidden");
-
-$("completeStaffFields")
-.classList.add("hidden");
-
-}else{
-
-$("completeStudentFields")
-.classList.add("hidden");
-
-$("completeStaffFields")
-.classList.remove("hidden");
-
-}
-
-
-showScreen(
-"completeProfileScreen"
-);
-
-}
-
+/* =========================================================
+   SAVE COMPLETE PROFILE
+========================================================= */
 
 $("submitCompleteProfile")
-.addEventListener(
-"click",
-async()=>{
+  .addEventListener(
+    "click",
+    async () => {
 
-clearMessage(
-"completeMessage"
-);
+      clearMessage(
+        "completeMessage"
+      );
 
 
-if(!currentUser){
+      if(!currentUser){
 
-return;
+        return;
+
+      }
+
+
+      const realName =
+        $("completeRealName")
+          .value
+          .trim();
+
+
+      const jdaNumber =
+        normalizeNumber(
+          $("completeJdaNumber")
+            .value
+        );
+
+
+      if(realName.length < 3){
+
+        message(
+          "completeMessage",
+          "Enter your full real name.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if(/\d/.test(realName)){
+
+        message(
+          "completeMessage",
+          "Use your real name, not a nickname.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if(!validNumber(jdaNumber)){
+
+        message(
+          "completeMessage",
+          "Enter a valid Uganda number.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if(!completePhotoData){
+
+        message(
+          "completeMessage",
+          "Profile photo is required.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      const data = {
+
+        uid:
+          currentUser.uid,
+
+        realName,
+
+        jdaNumber,
+
+        email:
+          currentUser.email ||
+          "",
+
+        accountType:
+          selectedAccountType,
+
+        photoURL:
+          completePhotoData,
+
+        status:
+          "pending",
+
+        approved:
+          false,
+
+        createdAt:
+          serverTimestamp(),
+
+        updatedAt:
+          serverTimestamp()
+
+      };
+
+
+      if(
+        selectedAccountType ===
+        "student"
+      ){
+
+        const studentClass =
+          $("completeStudentClass")
+            .value;
+
+
+        const stream =
+          $("completeStream")
+            .value;
+
+
+        if(
+          !studentClass ||
+          !stream
+        ){
+
+          message(
+            "completeMessage",
+            "Select your Form and Stream.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        data.className =
+          studentClass;
+
+        data.studentClass =
+          studentClass;
+
+        data.stream =
+          stream;
+
+      }else{
+
+        const department =
+          $("completeDepartment")
+            .value
+            .trim();
+
+
+        if(!department){
+
+          message(
+            "completeMessage",
+            "Enter your department.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        data.department =
+          department;
+
+      }
+
+
+      const button =
+        $("submitCompleteProfile");
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "Submitting...";
+
+
+      try{
+
+        await setDoc(
+          doc(
+            db,
+            "users",
+            currentUser.uid
+          ),
+          data
+        );
+
+
+        showScreen(
+          "pendingScreen"
+        );
+
+
+      }catch(error){
+
+        console.error(
+          "Complete profile:",
+          error
+        );
+
+
+        message(
+          "completeMessage",
+          error.message ||
+          "Could not save your profile.",
+          "error"
+        );
+
+
+      }finally{
+
+        button.disabled = false;
+
+        button.textContent =
+          "Submit Registration";
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   DISPLAY APPROVED USER
+========================================================= */
+
+function displayApprovedProfile(profile){
+
+  $("approvedName")
+    .textContent =
+    profile.realName ||
+    "Member";
+
+
+  if(
+    profile.accountType ===
+    "student"
+  ){
+
+    const className =
+      profile.className ||
+      profile.studentClass ||
+      "Student";
+
+
+    const stream =
+      profile.stream ||
+      "";
+
+
+    $("approvedDetails")
+      .textContent =
+      className +
+      (
+        stream
+          ? " • " + stream
+          : ""
+      );
+
+  }else{
+
+    $("approvedDetails")
+      .textContent =
+      "Staff • " +
+      (
+        profile.department ||
+        "Staff"
+      );
+
+  }
+
+
+  if(profile.photoURL){
+
+    $("approvedPhoto").src =
+      profile.photoURL;
+
+  }
 
 }
 
 
-const realName =
-$("completeRealName")
-.value.trim();
-
-const jdaNumber =
-normalizeNumber(
-$("completeJdaNumber")
-.value
-);
-
-
-if(realName.length < 3){
-
-message(
-"completeMessage",
-"Enter your full real name.",
-"error"
-);
-
-return;
-
-}
-
-
-if(!validNumber(jdaNumber)){
-
-message(
-"completeMessage",
-"Enter a valid Uganda number.",
-"error"
-);
-
-return;
-
-}
-
-
-if(!completePhotoData){
-
-message(
-"completeMessage",
-"Profile photo is required.",
-"error"
-);
-
-return;
-
-}
-
-
-const data = {
-
-uid:
-currentUser.uid,
-
-realName,
-
-jdaNumber,
-
-email:
-currentUser.email || "",
-
-accountType:
-selectedAccountType,
-
-photoURL:
-completePhotoData,
-
-status:
-"pending",
-
-approved:
-false,
-
-createdAt:
-serverTimestamp(),
-
-updatedAt:
-serverTimestamp()
-
-};
-
-
-if(selectedAccountType === "student"){
-
-const studentClass =
-$("completeStudentClass").value;
-
-const stream =
-$("completeStream").value;
-
-
-if(!studentClass || !stream){
-
-message(
-"completeMessage",
-"Select your Form and Stream.",
-"error"
-);
-
-return;
-
-}
-
-
-data.className =
-studentClass;
-
-data.studentClass =
-studentClass;
-
-data.stream =
-stream;
-
-}else{
-
-const department =
-$("completeDepartment")
-.value.trim();
-
-
-if(!department){
-
-message(
-"completeMessage",
-"Enter your department.",
-"error"
-);
-
-return;
-
-}
-
-
-data.department =
-department;
-
-}
-
-
-try{
-
-await setDoc(
-doc(db,"users",currentUser.uid),
-data
-);
-
-
-showScreen(
-"pendingScreen"
-);
-
-
-}catch(error){
-
-console.error(error);
-
-message(
-"completeMessage",
-error.message ||
-"Could not save your profile.",
-"error"
-);
-
-}
-
-});
-
-
-/* ==========================================================
+/* =========================================================
    AUTH STATE
-========================================================== */
+========================================================= */
 
 onAuthStateChanged(
-auth,
-async user=>{
+  auth,
+  async user => {
 
-if(!user){
+    if(!user){
 
-showScreen(
-"welcomeScreen"
+      currentUser = null;
+
+      showScreen(
+        "welcomeScreen"
+      );
+
+      return;
+
+    }
+
+
+    currentUser =
+      user;
+
+
+    try{
+
+      const ref =
+        doc(
+          db,
+          "users",
+          user.uid
+        );
+
+
+      const snap =
+        await getDoc(ref);
+
+
+      /*
+        Firebase Auth exists but JDA profile does not.
+      */
+
+      if(!snap.exists()){
+
+        await completeProfile(
+          user
+        );
+
+        return;
+
+      }
+
+
+      const profile =
+        snap.data();
+
+
+      if(profile.accountType){
+
+        selectedAccountType =
+          profile.accountType;
+
+      }
+
+
+      /* APPROVED */
+
+      if(
+        profile.status ===
+        "approved"
+      ){
+
+        displayApprovedProfile(
+          profile
+        );
+
+
+        showScreen(
+          "approvedScreen"
+        );
+
+        return;
+
+      }
+
+
+      /* REJECTED */
+
+      if(
+        profile.status ===
+        "rejected"
+      ){
+
+        $("rejectionReason")
+          .textContent =
+          "Reason: " +
+          (
+            profile.rejectionReason ||
+            "No reason provided."
+          );
+
+
+        showScreen(
+          "rejectedScreen"
+        );
+
+        return;
+
+      }
+
+
+      /* DISABLED */
+
+      if(
+        profile.status ===
+        "disabled"
+      ){
+
+        showScreen(
+          "disabledScreen"
+        );
+
+        return;
+
+      }
+
+
+      /* PENDING */
+
+      showScreen(
+        "pendingScreen"
+      );
+
+
+    }catch(error){
+
+      console.error(
+        "Account check:",
+        error
+      );
+
+
+      /*
+        Do not destroy the user's session.
+        Show login/welcome if Firestore is temporarily unavailable.
+      */
+
+      message(
+        "loginMessage",
+        "Could not check your JDA profile. Please try again.",
+        "error"
+      );
+
+
+      showScreen(
+        "welcomeScreen"
+      );
+
+    }
+
+  }
 );
 
-return;
 
-}
-
-
-currentUser = user;
-
-
-try{
-
-const ref =
-doc(db,"users",user.uid);
-
-const snap =
-await getDoc(ref);
-
-
-if(!snap.exists()){
-
-await completeProfile(user);
-
-return;
-
-}
-
-
-const profile =
-snap.data();
-
-
-if(profile.accountType){
-
-selectedAccountType =
-profile.accountType;
-
-}
-
-
-if(profile.status ===
-"approved"){
-
-$("approvedName")
-.textContent =
-profile.realName ||
-"Member";
-
-
-if(profile.accountType ===
-"student"){
-
-$("approvedDetails")
-.textContent =
-(
-profile.className ||
-profile.studentClass ||
-"Student"
-) +
-" • " +
-(profile.stream || "");
-
-}else{
-
-$("approvedDetails")
-.textContent =
-"Staff • " +
-(profile.department || "");
-
-}
-
-
-if(profile.photoURL){
-
-$("approvedPhoto")
-.src =
-profile.photoURL;
-
-}
-
-
-showScreen(
-"approvedScreen"
-);
-
-return;
-
-}
-
-
-if(profile.status ===
-"rejected"){
-
-$("rejectionReason")
-.textContent =
-"Reason: " +
-(
-profile.rejectionReason ||
-"No reason provided."
-);
-
-
-showScreen(
-"rejectedScreen"
-);
-
-return;
-
-}
-
-
-if(profile.status ===
-"disabled"){
-
-showScreen(
-"disabledScreen"
-);
-
-return;
-
-}
-
-
-showScreen(
-"pendingScreen"
-);
-
-
-}catch(error){
-
-console.error(
-"Account check:",
-error
-);
-
-
-showScreen(
-"welcomeScreen"
-);
-
-}
-
-});
-
-
-/* ==========================================================
+/* =========================================================
    CHECK APPROVAL
-========================================================== */
+========================================================= */
 
 $("pendingRefresh")
-.addEventListener(
-"click",
-async()=>{
+  .addEventListener(
+    "click",
+    async () => {
 
-if(!currentUser)return;
-
-
-const button =
-$("pendingRefresh");
-
-button.disabled = true;
-
-button.textContent =
-"Checking...";
+      if(!currentUser)return;
 
 
-try{
-
-const snap =
-await getDoc(
-doc(
-db,
-"users",
-currentUser.uid
-)
-);
+      const button =
+        $("pendingRefresh");
 
 
-if(!snap.exists()){
+      button.disabled = true;
 
-alert(
-"Your profile was not found."
-);
-
-return;
-
-}
+      button.textContent =
+        "Checking...";
 
 
-const profile =
-snap.data();
+      try{
+
+        const snap =
+          await getDoc(
+            doc(
+              db,
+              "users",
+              currentUser.uid
+            )
+          );
 
 
-if(profile.status ===
-"approved"){
+        if(!snap.exists()){
 
-$("approvedName")
-.textContent =
-profile.realName ||
-"Member";
+          alert(
+            "Your profile was not found."
+          );
 
+          return;
 
-if(profile.photoURL){
-
-$("approvedPhoto")
-.src =
-profile.photoURL;
-
-}
+        }
 
 
-if(profile.accountType ===
-"student"){
-
-$("approvedDetails")
-.textContent =
-(
-profile.className ||
-profile.studentClass ||
-"Student"
-) +
-" • " +
-(profile.stream || "");
-
-}else{
-
-$("approvedDetails")
-.textContent =
-"Staff • " +
-(profile.department || "");
-
-}
+        const profile =
+          snap.data();
 
 
-showScreen(
-"approvedScreen"
-);
+        if(
+          profile.status ===
+          "approved"
+        ){
 
-}else if(
-profile.status === "rejected"
-){
-
-$("rejectionReason")
-.textContent =
-"Reason: " +
-(
-profile.rejectionReason ||
-"No reason provided."
-);
-
-showScreen(
-"rejectedScreen"
-);
-
-}else if(
-profile.status === "disabled"
-){
-
-showScreen(
-"disabledScreen"
-);
-
-}else{
-
-alert(
-"Your registration is still pending."
-);
-
-}
+          displayApprovedProfile(
+            profile
+          );
 
 
-}catch(error){
+          showScreen(
+            "approvedScreen"
+          );
 
-alert(
-error.message ||
-"Could not check approval."
-);
+        }
 
-}finally{
+        else if(
+          profile.status ===
+          "rejected"
+        ){
 
-button.disabled = false;
+          $("rejectionReason")
+            .textContent =
+            "Reason: " +
+            (
+              profile.rejectionReason ||
+              "No reason provided."
+            );
 
-button.textContent =
-"Check Approval";
 
-}
+          showScreen(
+            "rejectedScreen"
+          );
 
-});
+        }
+
+        else if(
+          profile.status ===
+          "disabled"
+        ){
+
+          showScreen(
+            "disabledScreen"
+          );
+
+        }
+
+        else{
+
+          alert(
+            "Your registration is still pending."
+          );
+
+        }
 
 
-/* ==========================================================
+      }catch(error){
+
+        console.error(
+          "Approval check:",
+          error
+        );
+
+
+        alert(
+          error.message ||
+          "Could not check approval."
+        );
+
+
+      }finally{
+
+        button.disabled = false;
+
+        button.textContent =
+          "Check Approval";
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
    ENTER NETWORK
-========================================================== */
+========================================================= */
 
 $("enterNetwork")
-.addEventListener(
-"click",
-()=>{
+  .addEventListener(
+    "click",
+    () => {
 
-window.location.href =
-"./home.html";
+      window.location.href =
+        "./home.html";
 
-});
+    }
+  );
 
 
-/* ==========================================================
+/* =========================================================
    LOGOUT
-========================================================== */
+========================================================= */
 
 async function logout(){
 
-try{
+  try{
 
-await signOut(auth);
+    await signOut(auth);
 
-selectedAccountType =
-null;
 
-selectedPhotoData =
-"";
+    selectedAccountType =
+      null;
 
-completePhotoData =
-"";
+    selectedPhotoData =
+      "";
 
-currentUser =
-null;
+    completePhotoData =
+      "";
 
-showScreen(
-"welcomeScreen"
-);
+    currentUser =
+      null;
 
-}catch(error){
 
-console.error(error);
+    showScreen(
+      "welcomeScreen"
+    );
 
-}
+
+  }catch(error){
+
+    console.error(
+      "Logout:",
+      error
+    );
+
+  }
 
 }
 
 
 $("pendingLogout")
-.addEventListener(
-"click",
-logout
-);
+  .addEventListener(
+    "click",
+    logout
+  );
+
 
 $("rejectedLogout")
-.addEventListener(
-"click",
-logout
-);
+  .addEventListener(
+    "click",
+    logout
+  );
+
 
 $("disabledLogout")
-.addEventListener(
-"click",
-logout
-);
+  .addEventListener(
+    "click",
+    logout
+  );
+
 
 $("approvedLogout")
-.addEventListener(
-"click",
-logout
-);
+  .addEventListener(
+    "click",
+    logout
+  );
+
 
 $("completeLogout")
-.addEventListener(
-"click",
-logout
-);
+  .addEventListener(
+    "click",
+    logout
+  );
 
 
-/* ==========================================================
-   BACK
-========================================================== */
+/* =========================================================
+   BACK TO WELCOME
+========================================================= */
 
 $("backToWelcome")
-.addEventListener(
-"click",
-()=>{
+  .addEventListener(
+    "click",
+    () => {
+
+      showScreen(
+        "welcomeScreen"
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   INITIAL SCREEN
+========================================================= */
 
 showScreen(
-"welcomeScreen"
-);
-
-});
-
-
-/* ==========================================================
-   START
-========================================================== */
-
-showScreen(
-"loadingScreen"
+  "loadingScreen"
 );
 
 </script>

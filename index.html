@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0, user-scalable=no">
 
 <meta name="theme-color" content="#0757ff">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,7 +16,7 @@
 <style>
 /* =========================================================
    JDA NETWORKS
-   LIVE ANIMATED REGISTRATION
+   LIVE VIDEO-STYLE REGISTRATION
 ========================================================= */
 
 *{
@@ -28,10 +30,7 @@ body{
   padding:0;
   width:100%;
   min-height:100%;
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:#0757ff;
   color:#fff;
 }
@@ -52,7 +51,7 @@ button{
 }
 
 button:disabled{
-  opacity:.6;
+  opacity:.55;
   cursor:not-allowed;
 }
 
@@ -60,8 +59,9 @@ button:disabled{
   display:none!important;
 }
 
+
 /* =========================================================
-   ANIMATED BACKGROUND
+   BACKGROUND
 ========================================================= */
 
 .app{
@@ -69,157 +69,211 @@ button:disabled{
   min-height:100vh;
   width:100%;
   overflow:hidden;
+
   background:
     radial-gradient(
-      circle at 15% 20%,
+      circle at 15% 15%,
       rgba(255,255,255,.18),
       transparent 25%
     ),
     radial-gradient(
-      circle at 85% 75%,
-      rgba(128,0,255,.25),
+      circle at 90% 80%,
+      rgba(190,0,255,.25),
       transparent 30%
     ),
     linear-gradient(
       135deg,
       #0757ff 0%,
-      #174cff 42%,
-      #5019df 100%
+      #164cff 42%,
+      #5218df 100%
     );
 }
 
-.app::before{
+.app:before{
   content:"";
   position:absolute;
   inset:0;
   pointer-events:none;
+
   background-image:
     linear-gradient(
-      rgba(255,255,255,.035) 1px,
+      rgba(255,255,255,.04) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(255,255,255,.035) 1px,
+      rgba(255,255,255,.04) 1px,
       transparent 1px
     );
+
   background-size:35px 35px;
-  mask-image:linear-gradient(
-    to bottom,
-    rgba(0,0,0,.9),
-    rgba(0,0,0,.25)
-  );
 }
 
-.glow-orb{
+.glow{
   position:absolute;
   border-radius:50%;
-  filter:blur(3px);
   pointer-events:none;
-  animation:orbFloat 7s ease-in-out infinite;
+  filter:blur(3px);
+  animation:floatGlow 7s ease-in-out infinite;
 }
 
-.orb-one{
-  width:180px;
-  height:180px;
-  left:-70px;
+.glow.one{
+  width:190px;
+  height:190px;
+  left:-80px;
   top:15%;
   background:rgba(0,255,255,.13);
 }
 
-.orb-two{
-  width:240px;
-  height:240px;
-  right:-110px;
-  bottom:8%;
-  background:rgba(255,0,255,.13);
+.glow.two{
+  width:250px;
+  height:250px;
+  right:-100px;
+  bottom:5%;
+  background:rgba(255,0,255,.14);
   animation-delay:2s;
 }
 
-@keyframes orbFloat{
+@keyframes floatGlow{
   0%,100%{
     transform:translateY(0) scale(1);
   }
+
   50%{
-    transform:translateY(-22px) scale(1.05);
+    transform:translateY(-25px) scale(1.06);
   }
 }
 
+
 /* =========================================================
-   MAIN STAGE
+   STAGE
 ========================================================= */
 
 .stage{
   position:relative;
   z-index:2;
+
   width:100%;
   min-height:100vh;
+
   padding:15px;
+
   display:flex;
   justify-content:center;
   align-items:center;
 }
 
-.stage-frame{
+.frame{
   position:relative;
+
   width:100%;
-  max-width:1100px;
+  max-width:1120px;
   min-height:calc(100vh - 30px);
+
   overflow:hidden;
+
   border-radius:28px;
-  border:1px solid rgba(255,255,255,.38);
+
+  border:1px solid rgba(255,255,255,.42);
+
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.08),
+    0 0 45px rgba(0,0,0,.25),
+    inset 0 0 80px rgba(255,255,255,.04);
+
   background:
     linear-gradient(
       135deg,
-      rgba(255,255,255,.09),
+      rgba(255,255,255,.10),
       rgba(255,255,255,.025)
     );
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.1),
-    0 0 35px rgba(0,0,0,.22),
-    inset 0 0 70px rgba(255,255,255,.04);
+
   backdrop-filter:blur(8px);
 }
 
+
 /* =========================================================
-   TOP BRAND
+   JDA LOGO / DP
 ========================================================= */
 
 .brand{
   position:absolute;
-  z-index:30;
-  top:22px;
-  left:25px;
+  z-index:100;
+
+  top:21px;
+  left:24px;
+
   display:flex;
   align-items:center;
   gap:11px;
 }
 
-.brand-logo{
-  width:46px;
-  height:46px;
+.jda-logo{
+  position:relative;
+
+  width:48px;
+  height:48px;
+
   border-radius:50%;
-  object-fit:cover;
-  border:2px solid rgba(255,255,255,.8);
-  background:#0b2b88;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #69ffff,
+      #0757ff 48%,
+      #3610a8 100%
+    );
+
+  border:2px solid rgba(255,255,255,.9);
+
   box-shadow:
-    0 0 15px rgba(255,255,255,.25);
+    0 0 10px rgba(255,255,255,.25),
+    0 0 24px rgba(75,240,255,.25);
 }
 
-.brand-text{
-  font-weight:800;
+.jda-logo:before{
+  content:"";
+  position:absolute;
+
+  inset:4px;
+
+  border-radius:50%;
+
+  border:1px solid rgba(255,255,255,.45);
+}
+
+.jda-logo span{
+  position:relative;
+  z-index:2;
+
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:-.5px;
+
+  text-shadow:
+    0 1px 3px rgba(0,0,0,.35);
+}
+
+.brand-name{
+  font-weight:900;
   font-size:18px;
-  letter-spacing:.2px;
 }
 
 .brand-small{
-  font-size:10px;
-  opacity:.72;
   margin-top:2px;
+  font-size:10px;
+  color:rgba(255,255,255,.68);
 }
 
+
 /* =========================================================
-   SCREEN SYSTEM
+   SCREENS
 ========================================================= */
 
 .screen{
@@ -227,25 +281,38 @@ button:disabled{
   min-height:calc(100vh - 30px);
 }
 
-.center-screen{
+.hidden{
+  display:none!important;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.center{
   display:flex;
   justify-content:center;
   align-items:center;
   padding:90px 20px 35px;
 }
 
-.loading-card{
+.loading{
   text-align:center;
 }
 
 .spinner{
   width:52px;
   height:52px;
-  border-radius:50%;
-  border:4px solid rgba(255,255,255,.2);
-  border-top-color:#fff;
-  animation:spin .8s linear infinite;
+
   margin:0 auto 18px;
+
+  border-radius:50%;
+
+  border:4px solid rgba(255,255,255,.18);
+  border-top-color:#fff;
+
+  animation:spin .8s linear infinite;
 }
 
 @keyframes spin{
@@ -254,131 +321,162 @@ button:disabled{
   }
 }
 
+
 /* =========================================================
    WELCOME
 ========================================================= */
 
-.welcome-layout{
+.welcome{
   min-height:calc(100vh - 30px);
-  padding:105px 45px 45px;
+
+  padding:110px 45px 45px;
+
   display:grid;
   grid-template-columns:1fr 420px;
   gap:45px;
+
   align-items:center;
-}
-
-.welcome-copy{
-  max-width:600px;
-}
-
-.eyebrow{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:8px 13px;
-  border-radius:999px;
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.2);
-  font-size:12px;
-  font-weight:700;
-  margin-bottom:18px;
-}
-
-.eyebrow-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#57ffad;
-  box-shadow:0 0 12px #57ffad;
 }
 
 .welcome-title{
   margin:0;
-  font-size:clamp(38px,6vw,72px);
+
+  font-size:clamp(40px,6vw,72px);
+
   line-height:.98;
   letter-spacing:-3px;
 }
 
 .welcome-title span{
   color:#7effff;
+
   text-shadow:
-    0 0 18px rgba(126,255,255,.35);
+    0 0 20px rgba(126,255,255,.35);
 }
 
-.welcome-subtitle{
-  max-width:530px;
+.welcome-text{
+  max-width:560px;
+
   margin:22px 0 0;
-  color:rgba(255,255,255,.76);
+
+  color:rgba(255,255,255,.72);
+
   line-height:1.7;
-  font-size:16px;
 }
 
-.welcome-features{
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+
+  padding:8px 13px;
+
+  margin-bottom:18px;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,.09);
+
+  border:1px solid rgba(255,255,255,.2);
+
+  font-size:11px;
+  font-weight:800;
+}
+
+.pill-dot{
+  width:8px;
+  height:8px;
+
+  border-radius:50%;
+
+  background:#57ffad;
+
+  box-shadow:0 0 12px #57ffad;
+}
+
+.features{
   display:flex;
   flex-wrap:wrap;
-  gap:9px;
-  margin-top:25px;
+  gap:8px;
+
+  margin-top:24px;
 }
 
-.feature-pill{
+.feature{
   padding:9px 12px;
+
   border-radius:12px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.16);
-  font-size:12px;
+
+  background:rgba(255,255,255,.07);
+
+  border:1px solid rgba(255,255,255,.14);
+
+  font-size:11px;
 }
 
-.welcome-card{
+.choice-card{
   padding:25px;
+
   border-radius:25px;
-  background:rgba(3,12,55,.45);
+
+  background:rgba(4,12,50,.55);
+
   border:1px solid rgba(255,255,255,.2);
+
   box-shadow:
-    0 20px 60px rgba(0,0,0,.22),
-    inset 0 0 35px rgba(255,255,255,.025);
+    0 25px 70px rgba(0,0,0,.25);
 }
 
-.card-title{
-  font-size:21px;
-  font-weight:800;
-  margin-bottom:6px;
+.choice-title{
+  font-size:22px;
+  font-weight:900;
 }
 
-.card-subtitle{
-  color:rgba(255,255,255,.62);
-  font-size:13px;
+.choice-sub{
+  margin-top:6px;
+
+  color:rgba(255,255,255,.6);
+
+  font-size:12px;
   line-height:1.5;
-  margin-bottom:22px;
 }
 
-.account-choice{
+.account-grid{
   display:grid;
+
   grid-template-columns:1fr 1fr;
+
   gap:10px;
+
+  margin-top:20px;
 }
 
-.account-btn{
+.account{
   min-height:115px;
-  padding:16px;
+
+  padding:15px;
+
   border-radius:18px;
+
   color:#fff;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.16);
-  transition:.2s ease;
+
+  background:rgba(255,255,255,.055);
+
+  border:1px solid rgba(255,255,255,.15);
+
+  transition:.2s;
 }
 
-.account-btn:hover{
-  transform:translateY(-2px);
-}
-
-.account-btn.active{
+.account.active{
   background:
     linear-gradient(
       135deg,
       rgba(0,255,255,.2),
-      rgba(119,0,255,.3)
+      rgba(120,0,255,.3)
     );
-  border-color:#71ffff;
+
+  border-color:#72ffff;
+
   box-shadow:
     0 0 25px rgba(80,255,255,.18);
 }
@@ -390,306 +488,480 @@ button:disabled{
 }
 
 .account-label{
-  font-weight:800;
   display:block;
+  font-weight:900;
 }
 
-.account-description{
+.account-small{
   display:block;
+
   margin-top:4px;
-  color:rgba(255,255,255,.55);
+
+  color:rgba(255,255,255,.5);
+
   font-size:10px;
 }
 
-.primary{
+.primary,
+.secondary{
   width:100%;
-  border:0;
-  border-radius:15px;
+
   padding:15px;
-  margin-top:14px;
+
+  border-radius:14px;
+
+  font-weight:900;
+}
+
+.primary{
+  margin-top:15px;
+
+  border:0;
+
+  color:#03150f;
+
   background:
     linear-gradient(
       135deg,
       #46ffd0,
       #1fe68b
     );
-  color:#03150f;
-  font-weight:900;
+
   box-shadow:
     0 10px 25px rgba(0,255,160,.15);
 }
 
-.primary:active{
-  transform:scale(.99);
+.secondary{
+  margin-top:10px;
+
+  color:#fff;
+
+  background:rgba(255,255,255,.06);
+
+  border:1px solid rgba(255,255,255,.15);
 }
 
-.secondary{
-  width:100%;
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:15px;
-  padding:14px;
-  margin-top:10px;
-  background:rgba(255,255,255,.06);
-  color:#fff;
-  font-weight:700;
-}
 
 /* =========================================================
-   ANIMATED REGISTRATION SCENE
+   REGISTRATION SCENE
 ========================================================= */
 
-.registration-screen{
+.registration{
   position:relative;
   overflow:hidden;
 }
 
-.registration-scene{
+.registration-grid{
   min-height:calc(100vh - 30px);
+
+  padding:88px 35px 30px;
+
   display:grid;
-  grid-template-columns:minmax(280px,1fr) minmax(340px,460px);
+
+  grid-template-columns:
+    minmax(280px,1fr)
+    minmax(350px,455px);
+
+  gap:25px;
+
   align-items:center;
-  gap:20px;
-  padding:80px 45px 35px;
 }
 
-/* ---------------------------------------------------------
-   ANIMATION AREA
---------------------------------------------------------- */
 
-.animation-area{
+/* =========================================================
+   VIDEO STYLE ANIMATION
+========================================================= */
+
+.scene{
   position:relative;
-  min-height:570px;
+
+  min-height:590px;
+
   overflow:hidden;
+
   border-radius:28px;
+
+  border:1px solid rgba(255,255,255,.16);
+
   background:
     radial-gradient(
-      circle at 50% 38%,
-      rgba(255,255,255,.08),
-      transparent 34%
+      circle at 50% 35%,
+      rgba(255,255,255,.10),
+      transparent 32%
     ),
     linear-gradient(
       160deg,
-      rgba(0,42,180,.22),
-      rgba(69,0,173,.24)
+      rgba(0,35,170,.28),
+      rgba(70,0,180,.28)
     );
-  border:1px solid rgba(255,255,255,.13);
 }
 
-.scene-title{
+.scene-heading{
   position:absolute;
-  z-index:5;
-  top:27px;
-  left:28px;
+  z-index:20;
+
+  top:25px;
+  left:27px;
 }
 
-.scene-title h2{
+.scene-heading h2{
   margin:0;
-  font-size:27px;
+  font-size:28px;
 }
 
-.scene-title p{
+.scene-heading p{
   margin:6px 0 0;
-  color:rgba(255,255,255,.56);
+
+  color:rgba(255,255,255,.58);
+
   font-size:12px;
 }
 
-/* Floor */
+.live{
+  position:absolute;
+  z-index:20;
+
+  top:22px;
+  right:20px;
+
+  padding:8px 11px;
+
+  border-radius:999px;
+
+  background:rgba(0,0,0,.16);
+
+  border:1px solid rgba(255,255,255,.17);
+
+  font-size:10px;
+  font-weight:900;
+}
+
+.live i{
+  display:inline-block;
+
+  width:7px;
+  height:7px;
+
+  margin-right:6px;
+
+  border-radius:50%;
+
+  background:#57ffb0;
+
+  box-shadow:0 0 12px #57ffb0;
+
+  animation:blink 1.1s infinite;
+}
+
+@keyframes blink{
+  50%{
+    opacity:.2;
+  }
+}
+
+
+/* FLOOR */
 
 .floor{
   position:absolute;
+
   left:8%;
   right:8%;
-  bottom:12%;
+
+  bottom:13%;
+
   height:2px;
-  background:rgba(255,255,255,.32);
+
+  background:rgba(255,255,255,.35);
+
   box-shadow:
     0 0 15px rgba(255,255,255,.2);
 }
 
-.floor::before{
+.floor:after{
   content:"";
+
   position:absolute;
+
   left:0;
   right:0;
+
   top:10px;
+
   height:90px;
+
   background:
     linear-gradient(
       180deg,
-      rgba(255,255,255,.035),
+      rgba(255,255,255,.045),
       transparent
     );
-  transform:perspective(250px) rotateX(55deg);
+
+  transform:
+    perspective(250px)
+    rotateX(55deg);
+
   transform-origin:top;
 }
 
-/* Glow */
 
-.character-glow{
-  position:absolute;
-  z-index:1;
-  width:170px;
-  height:170px;
-  left:50%;
-  bottom:22%;
-  transform:translateX(-50%);
-  border-radius:50%;
-  background:rgba(0,255,255,.12);
-  filter:blur(25px);
-  animation:characterGlow 2.8s ease-in-out infinite;
-}
-
-@keyframes characterGlow{
-  0%,100%{
-    opacity:.45;
-    transform:translateX(-50%) scale(.9);
-  }
-  50%{
-    opacity:.8;
-    transform:translateX(-50%) scale(1.1);
-  }
-}
-
-/* ---------------------------------------------------------
+/* =========================================================
    CHARACTER
---------------------------------------------------------- */
+========================================================= */
 
-.character{
+.person{
   position:absolute;
-  z-index:8;
-  width:105px;
-  height:220px;
-  left:-130px;
-  bottom:12%;
+
+  z-index:12;
+
+  width:100px;
+  height:225px;
+
+  left:-125px;
+  bottom:13%;
+
   animation:
-    personWalkIn 3.8s ease-in-out forwards,
-    personWalk 1s 3.8s ease-in-out infinite;
+    walkIn 4.5s cubic-bezier(.25,.8,.25,1) forwards,
+    idle 1.1s 4.5s ease-in-out infinite;
 }
 
-.character-head{
+.head{
   position:absolute;
+
   width:50px;
   height:50px;
+
+  left:25px;
   top:0;
-  left:27px;
+
   border-radius:50%;
+
   background:
     radial-gradient(
-      circle at 38% 35%,
-      #c98661,
+      circle at 35% 30%,
+      #d89570,
       #8e513b 75%
     );
-  border:2px solid rgba(255,255,255,.16);
+
+  border:2px solid rgba(255,255,255,.15);
 }
 
-.character-hair{
+.hair{
   position:absolute;
-  top:-4px;
-  left:23px;
+
   width:58px;
-  height:29px;
-  border-radius:50px 50px 18px 18px;
+  height:30px;
+
+  left:21px;
+  top:-4px;
+
+  border-radius:
+    50px 50px 16px 16px;
+
   background:#111;
 }
 
-.character-body{
+.eye{
   position:absolute;
+
+  width:4px;
+  height:4px;
+
+  border-radius:50%;
+
+  background:#111;
+
+  top:22px;
+}
+
+.eye.one{
+  left:38px;
+}
+
+.eye.two{
+  left:52px;
+}
+
+.body{
+  position:absolute;
+
   top:50px;
-  left:22px;
-  width:61px;
-  height:86px;
-  border-radius:17px 17px 11px 11px;
+  left:21px;
+
+  width:58px;
+  height:87px;
+
+  border-radius:
+    17px 17px 11px 11px;
+
   background:
     linear-gradient(
       180deg,
-      #101b54,
+      #172b68,
       #081238
     );
+
   border:2px solid rgba(255,255,255,.12);
 }
 
-.character-shirt-line{
+.body:after{
+  content:"JDA";
+
   position:absolute;
+
   left:50%;
-  top:0;
-  width:2px;
-  height:100%;
+  top:32px;
+
   transform:translateX(-50%);
-  background:rgba(255,255,255,.08);
+
+  font-size:8px;
+  font-weight:900;
+
+  color:#68ffff;
 }
 
 .arm{
   position:absolute;
-  top:58px;
-  width:18px;
-  height:78px;
+
+  top:56px;
+
+  width:17px;
+  height:79px;
+
   border-radius:15px;
-  background:#c27b59;
+
+  background:#bd7657;
+
   transform-origin:top center;
 }
 
-.arm-left{
-  left:8px;
-  transform:rotate(18deg);
+.arm.left{
+  left:7px;
+
+  animation:
+    armLeft .55s infinite alternate;
 }
 
-.arm-right{
-  right:8px;
-  transform:rotate(-18deg);
+.arm.right{
+  right:7px;
+
+  animation:
+    armRight .55s infinite alternate;
+}
+
+@keyframes armLeft{
+  from{
+    transform:rotate(24deg);
+  }
+
+  to{
+    transform:rotate(-18deg);
+  }
+}
+
+@keyframes armRight{
+  from{
+    transform:rotate(-18deg);
+  }
+
+  to{
+    transform:rotate(24deg);
+  }
 }
 
 .leg{
   position:absolute;
-  top:128px;
-  width:21px;
-  height:88px;
-  border-radius:14px;
-  background:#10132a;
+
+  top:130px;
+
+  width:20px;
+  height:90px;
+
+  border-radius:15px;
+
+  background:#11152c;
+
   transform-origin:top center;
 }
 
-.leg-left{
-  left:26px;
-  transform:rotate(6deg);
+.leg.left{
+  left:25px;
+
+  animation:
+    legLeft .55s infinite alternate;
 }
 
-.leg-right{
-  right:26px;
-  transform:rotate(-6deg);
+.leg.right{
+  right:25px;
+
+  animation:
+    legRight .55s infinite alternate;
+}
+
+@keyframes legLeft{
+  from{
+    transform:rotate(10deg);
+  }
+
+  to{
+    transform:rotate(-12deg);
+  }
+}
+
+@keyframes legRight{
+  from{
+    transform:rotate(-12deg);
+  }
+
+  to{
+    transform:rotate(10deg);
+  }
 }
 
 .shoe{
   position:absolute;
+
   bottom:-3px;
+
   width:36px;
   height:14px;
-  border-radius:12px 18px 6px 6px;
-  background:#080b18;
+
+  border-radius:
+    12px 18px 6px 6px;
+
+  background:#070a16;
 }
 
-.leg-left .shoe{
+.leg.left .shoe{
   left:-5px;
 }
 
-.leg-right .shoe{
+.leg.right .shoe{
   right:-5px;
 }
 
-/* Walking */
 
-@keyframes personWalkIn{
+/* WALK IN */
+
+@keyframes walkIn{
+
   0%{
-    left:-130px;
-    transform:scale(.92);
+    left:-125px;
+    transform:scale(.9);
   }
 
-  60%{
-    left:38%;
+  25%{
+    left:8%;
+    transform:scale(.94);
+  }
+
+  55%{
+    left:29%;
     transform:scale(1);
   }
 
-  75%{
-    left:45%;
+  78%{
+    left:39%;
     transform:scale(1);
   }
 
@@ -699,282 +971,317 @@ button:disabled{
   }
 }
 
-@keyframes personWalk{
+@keyframes idle{
+
   0%,100%{
     transform:translateY(0);
   }
+
   50%{
     transform:translateY(-3px);
   }
 }
 
-/* ---------------------------------------------------------
-   BAG
---------------------------------------------------------- */
 
-.jda-bag{
+/* =========================================================
+   BRIEFCASE
+========================================================= */
+
+.briefcase{
   position:absolute;
-  z-index:7;
-  width:82px;
-  height:65px;
+
+  z-index:13;
+
+  width:88px;
+  height:63px;
+
   left:43%;
   bottom:10%;
+
   opacity:0;
-  transform:translateY(-40px) scale(.8);
+
   animation:
-    bagAppear .8s 2.9s ease-out forwards,
-    bagDrop .9s 3.7s ease-in-out forwards;
+    caseIn .8s 2.5s ease forwards,
+    caseDrop .8s 3.3s ease forwards;
 }
 
-.bag-body{
+.case-handle{
   position:absolute;
+
+  left:25px;
+  top:0;
+
+  width:38px;
+  height:25px;
+
+  border:5px solid #15285a;
+
+  border-bottom:0;
+
+  border-radius:
+    20px 20px 0 0;
+}
+
+.case-body{
+  position:absolute;
+
   left:0;
   bottom:0;
-  width:82px;
-  height:53px;
+
+  width:88px;
+  height:52px;
+
   border-radius:8px 8px 13px 13px;
+
   background:
     linear-gradient(
       135deg,
-      #0b1020,
-      #192e66
+      #10172c,
+      #20376f
     );
-  border:2px solid rgba(255,255,255,.2);
+
+  border:2px solid rgba(255,255,255,.22);
+
   box-shadow:
-    0 7px 20px rgba(0,0,0,.3);
+    0 8px 25px rgba(0,0,0,.3);
 }
 
-.bag-handle{
+.case-logo{
   position:absolute;
-  z-index:2;
-  left:23px;
-  top:0;
-  width:37px;
-  height:25px;
-  border:5px solid #17295a;
-  border-bottom:0;
-  border-radius:20px 20px 0 0;
-}
 
-.bag-logo{
-  position:absolute;
-  z-index:3;
   left:50%;
   top:50%;
+
   transform:translate(-50%,-50%);
-  width:30px;
-  height:30px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.5);
+
+  width:31px;
+  height:31px;
+
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:8px;
-  font-weight:900;
-  color:#fff;
+
+  border-radius:50%;
+
   background:#0757ff;
+
+  border:1px solid rgba(255,255,255,.65);
+
+  font-size:8px;
+  font-weight:1000;
 }
 
-@keyframes bagAppear{
+@keyframes caseIn{
   from{
     opacity:0;
-    transform:translateY(-40px) scale(.8);
+    transform:translateY(-50px) scale(.7);
   }
+
   to{
     opacity:1;
-    transform:translateY(-20px) scale(.9);
+    transform:translateY(-15px) scale(.9);
   }
 }
 
-@keyframes bagDrop{
+@keyframes caseDrop{
   0%{
-    transform:translateY(-20px) scale(.9);
+    transform:translateY(-15px) scale(.9);
   }
-  65%{
+
+  70%{
     transform:translateY(0) scale(1);
   }
+
   100%{
     transform:translateY(0) scale(1);
   }
 }
 
-/* ---------------------------------------------------------
-   KNEEL EFFECT
---------------------------------------------------------- */
-
-.kneel-shadow{
+.shadow{
   position:absolute;
-  z-index:5;
-  left:43%;
-  bottom:10%;
-  width:115px;
-  height:15px;
+
+  left:41%;
+  bottom:9%;
+
+  width:125px;
+  height:16px;
+
   border-radius:50%;
-  background:rgba(0,0,0,.25);
+
+  background:rgba(0,0,0,.28);
+
   filter:blur(7px);
+
   opacity:0;
+
   animation:
-    shadowAppear .7s 3.6s ease forwards;
+    shadowIn .7s 3.2s forwards;
 }
 
-@keyframes shadowAppear{
-  from{
-    opacity:0;
-    transform:scale(.6);
-  }
+@keyframes shadowIn{
   to{
     opacity:1;
-    transform:scale(1);
   }
 }
 
-/* ---------------------------------------------------------
-   ANIMATION BADGES
---------------------------------------------------------- */
-
-.live-badge{
-  position:absolute;
-  z-index:15;
-  right:20px;
-  top:22px;
-  padding:8px 11px;
-  border-radius:999px;
-  background:rgba(0,0,0,.16);
-  border:1px solid rgba(255,255,255,.18);
-  font-size:10px;
-  font-weight:800;
-  display:flex;
-  gap:7px;
-  align-items:center;
-}
-
-.live-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:#57ffb0;
-  box-shadow:0 0 12px #57ffb0;
-  animation:blink 1.2s infinite;
-}
-
-@keyframes blink{
-  50%{
-    opacity:.25;
-  }
-}
 
 /* =========================================================
-   REGISTRATION FORM
+   FORM PANEL
 ========================================================= */
 
 .form-panel{
   position:relative;
-  z-index:20;
+  z-index:30;
+
   padding:25px;
+
   border-radius:27px;
+
   background:
     linear-gradient(
       145deg,
-      rgba(4,12,50,.78),
-      rgba(12,8,47,.76)
+      rgba(4,12,50,.84),
+      rgba(12,8,47,.82)
     );
-  border:1px solid rgba(255,255,255,.2);
+
+  border:1px solid rgba(255,255,255,.22);
+
   box-shadow:
-    0 25px 70px rgba(0,0,0,.3),
+    0 25px 70px rgba(0,0,0,.32),
     inset 0 0 35px rgba(255,255,255,.025);
-  backdrop-filter:blur(14px);
-  animation:formIn .8s ease both;
+
+  backdrop-filter:blur(15px);
+
+  animation:
+    panelReveal 1s 2.9s both;
 }
 
-@keyframes formIn{
+@keyframes panelReveal{
   from{
     opacity:0;
-    transform:translateX(45px);
+    transform:
+      translateX(70px)
+      scale(.94);
   }
+
+  to{
+    opacity:1;
+    transform:
+      translateX(0)
+      scale(1);
+  }
+}
+
+.form-title h2{
+  margin:0;
+  font-size:25px;
+}
+
+.form-title p{
+  margin:6px 0 18px;
+
+  color:rgba(255,255,255,.57);
+
+  font-size:12px;
+  line-height:1.5;
+}
+
+
+/* STEPS */
+
+.steps{
+  display:flex;
+  gap:5px;
+  margin-bottom:18px;
+}
+
+.step{
+  flex:1;
+  height:4px;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,.12);
+
+  transition:.3s;
+}
+
+.step.active{
+  background:#57ffdc;
+
+  box-shadow:
+    0 0 12px rgba(87,255,220,.45);
+}
+
+
+/* FORM STEP */
+
+.form-step{
+  display:none;
+
+  animation:
+    stepIn .35s ease;
+}
+
+.form-step.active{
+  display:block;
+}
+
+@keyframes stepIn{
+  from{
+    opacity:0;
+    transform:translateX(15px);
+  }
+
   to{
     opacity:1;
     transform:translateX(0);
   }
 }
 
-.form-heading{
-  margin-bottom:18px;
-}
 
-.form-heading h2{
-  margin:0;
-  font-size:25px;
-}
-
-.form-heading p{
-  margin:6px 0 0;
-  color:rgba(255,255,255,.55);
-  font-size:12px;
-  line-height:1.5;
-}
-
-.step-line{
-  display:flex;
-  gap:5px;
-  margin:0 0 18px;
-}
-
-.step{
-  height:4px;
-  flex:1;
-  border-radius:999px;
-  background:rgba(255,255,255,.12);
-}
-
-.step.active{
-  background:#57ffdc;
-  box-shadow:0 0 10px rgba(87,255,220,.4);
-}
-
-.form-scroll{
-  max-height:calc(100vh - 250px);
-  overflow-y:auto;
-  padding-right:3px;
-}
-
-.form-scroll::-webkit-scrollbar{
-  width:3px;
-}
-
-.form-scroll::-webkit-scrollbar-thumb{
-  background:rgba(255,255,255,.2);
-  border-radius:5px;
-}
+/* INPUTS */
 
 label{
   display:block;
+
   margin:13px 0 6px;
-  color:rgba(255,255,255,.7);
+
+  color:rgba(255,255,255,.72);
+
   font-size:11px;
-  font-weight:700;
+  font-weight:800;
 }
 
 input,
 select{
   width:100%;
-  min-height:47px;
-  padding:12px 13px;
-  color:#fff;
-  background:rgba(0,0,0,.22);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:12px;
-  outline:none;
-}
 
-input::placeholder{
-  color:rgba(255,255,255,.32);
+  min-height:47px;
+
+  padding:12px 13px;
+
+  color:#fff;
+
+  background:rgba(0,0,0,.23);
+
+  border:1px solid rgba(255,255,255,.16);
+
+  border-radius:12px;
+
+  outline:none;
 }
 
 input:focus,
 select:focus{
   border-color:#57ffff;
+
   box-shadow:
     0 0 0 3px rgba(87,255,255,.07);
+}
+
+input::placeholder{
+  color:rgba(255,255,255,.3);
 }
 
 select option{
@@ -982,56 +1289,119 @@ select option{
   color:#fff;
 }
 
-/* =========================================================
-   PHOTO
-========================================================= */
 
-.photo-area{
+/* TYPE */
+
+.type-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:8px;
+}
+
+.type-btn{
+  flex:1;
+
+  padding:10px;
+
+  border-radius:11px;
+
+  color:rgba(255,255,255,.62);
+
+  background:rgba(255,255,255,.05);
+
+  border:1px solid rgba(255,255,255,.13);
+
+  font-size:11px;
+  font-weight:800;
+}
+
+.type-btn.active{
+  color:#001b18;
+
+  background:#57ffcf;
+
+  border-color:#57ffcf;
+}
+
+
+/* PHOTO */
+
+.photo-box{
   text-align:center;
-  padding:7px 0 8px;
+
+  padding:3px 0 7px;
 }
 
 .photo-preview{
   display:block;
+
   width:105px;
   height:105px;
-  margin:0 auto 11px;
+
+  margin:0 auto 10px;
+
   border-radius:50%;
+
   object-fit:cover;
-  background:#081332;
-  border:2px dashed rgba(255,255,255,.3);
+
+  background:
+    radial-gradient(
+      circle,
+      #172d72,
+      #081332
+    );
+
+  border:2px dashed rgba(255,255,255,.35);
+
   box-shadow:
     0 0 25px rgba(0,255,255,.08);
 }
 
-.photo-button{
+.photo-label{
   display:inline-block;
+
+  margin:0;
+
   padding:10px 14px;
+
   border-radius:11px;
+
   background:rgba(255,255,255,.08);
+
   border:1px solid rgba(255,255,255,.15);
-  font-size:12px;
-  font-weight:700;
+
+  color:#fff;
+
+  font-size:11px;
+  font-weight:800;
+
   cursor:pointer;
 }
 
 .small{
-  color:rgba(255,255,255,.4);
-  font-size:10px;
-  line-height:1.5;
   margin-top:7px;
+
+  color:rgba(255,255,255,.4);
+
+  font-size:10px;
+
+  line-height:1.5;
 }
 
-/* =========================================================
-   MESSAGES
-========================================================= */
+
+/* MESSAGES */
 
 .message{
   display:none;
+
   padding:11px 12px;
+
+  margin:10px 0;
+
   border-radius:11px;
-  margin:11px 0;
+
   font-size:12px;
+
   line-height:1.45;
 }
 
@@ -1040,70 +1410,100 @@ select option{
 }
 
 .message.error{
+  color:#ffbdc4;
+
   background:rgba(255,50,70,.12);
-  color:#ffb5bd;
+
   border:1px solid rgba(255,80,90,.25);
 }
 
 .message.success{
+  color:#a1ffd3;
+
   background:rgba(30,255,145,.1);
-  color:#9bffd2;
+
   border:1px solid rgba(30,255,145,.25);
 }
 
 .message.info{
-  background:rgba(50,180,255,.1);
   color:#a9e7ff;
+
+  background:rgba(50,180,255,.1);
+
   border:1px solid rgba(50,180,255,.22);
 }
 
+
 /* =========================================================
-   ACCOUNT TYPE SMALL
+   CONFIRMATION
 ========================================================= */
 
-.type-row{
-  display:flex;
-  gap:8px;
-  margin-bottom:13px;
-}
+.confirm-box{
+  padding:14px;
 
-.type-btn{
-  flex:1;
-  padding:10px;
-  border-radius:11px;
+  border-radius:15px;
+
   background:rgba(255,255,255,.05);
-  color:rgba(255,255,255,.6);
-  border:1px solid rgba(255,255,255,.13);
-  font-size:11px;
-  font-weight:700;
+
+  border:1px solid rgba(255,255,255,.12);
 }
 
-.type-btn.active{
-  color:#001b18;
-  background:#57ffcf;
-  border-color:#57ffcf;
+.confirm-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+
+  padding:8px 0;
+
+  border-bottom:
+    1px solid rgba(255,255,255,.07);
+
+  font-size:12px;
 }
+
+.confirm-row:last-child{
+  border-bottom:0;
+}
+
+.confirm-label{
+  color:rgba(255,255,255,.48);
+}
+
+.confirm-value{
+  font-weight:800;
+  text-align:right;
+}
+
 
 /* =========================================================
    STATUS SCREENS
 ========================================================= */
 
-.status-layout{
+.status{
   min-height:calc(100vh - 30px);
+
   display:flex;
+
   justify-content:center;
   align-items:center;
+
   padding:100px 20px 40px;
 }
 
 .status-card{
   width:100%;
   max-width:500px;
+
   padding:35px 25px;
+
   text-align:center;
+
   border-radius:27px;
-  background:rgba(4,10,43,.56);
+
+  background:rgba(4,10,43,.6);
+
   border:1px solid rgba(255,255,255,.2);
+
   box-shadow:
     0 25px 70px rgba(0,0,0,.25);
 }
@@ -1111,40 +1511,57 @@ select option{
 .status-icon{
   width:82px;
   height:82px;
+
   display:flex;
+
   align-items:center;
   justify-content:center;
+
   margin:0 auto 18px;
+
   border-radius:50%;
+
   font-size:38px;
+
   background:rgba(255,255,255,.08);
+
   border:1px solid rgba(255,255,255,.15);
 }
 
 .status-card h2{
   margin:0 0 10px;
+
   font-size:27px;
 }
 
 .status-card p{
   color:rgba(255,255,255,.62);
+
   line-height:1.6;
+
   font-size:13px;
 }
 
 .profile-summary{
   display:flex;
+
   align-items:center;
+
   gap:13px;
+
   text-align:left;
+
   margin-bottom:17px;
 }
 
 .profile-summary img{
   width:64px;
   height:64px;
+
   border-radius:50%;
+
   object-fit:cover;
+
   border:2px solid #57ffcf;
 }
 
@@ -1154,25 +1571,14 @@ select option{
 
 .profile-summary span{
   display:block;
+
   color:rgba(255,255,255,.55);
+
   font-size:11px;
+
   margin-top:4px;
 }
 
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer{
-  position:absolute;
-  bottom:13px;
-  left:0;
-  right:0;
-  text-align:center;
-  color:rgba(255,255,255,.3);
-  font-size:9px;
-  z-index:10;
-}
 
 /* =========================================================
    MOBILE
@@ -1184,15 +1590,15 @@ select option{
     padding:8px;
   }
 
-  .stage-frame{
+  .frame{
     min-height:calc(100vh - 16px);
     border-radius:22px;
   }
 
-  .welcome-layout{
-    min-height:calc(100vh - 16px);
+  .welcome{
     display:block;
-    padding:95px 20px 50px;
+
+    padding:95px 20px 45px;
   }
 
   .welcome-copy{
@@ -1201,80 +1607,91 @@ select option{
   }
 
   .welcome-title{
-    font-size:44px;
+    font-size:43px;
     letter-spacing:-2px;
   }
 
-  .welcome-subtitle{
+  .welcome-text{
     margin-left:auto;
     margin-right:auto;
+
     font-size:14px;
   }
 
-  .welcome-features{
+  .features{
     justify-content:center;
   }
 
-  .welcome-card{
+  .choice-card{
     padding:20px;
   }
 
-  .registration-scene{
-    min-height:calc(100vh - 16px);
+  .registration-grid{
     display:block;
-    padding:82px 12px 25px;
+
+    padding:
+      82px 12px 25px;
   }
 
-  .animation-area{
-    min-height:260px;
-    max-height:300px;
+  .scene{
+    min-height:285px;
+    max-height:310px;
+
     margin-bottom:15px;
   }
 
-  .scene-title{
+  .scene-heading{
     top:17px;
     left:18px;
   }
 
-  .scene-title h2{
+  .scene-heading h2{
     font-size:20px;
   }
 
-  .scene-title p{
+  .scene-heading p{
     font-size:10px;
   }
 
-  .live-badge{
+  .live{
     top:15px;
     right:15px;
   }
 
-  .character{
-    transform:scale(.72);
+  .person{
+    transform:scale(.7);
     transform-origin:bottom center;
-    bottom:10%;
   }
 
-  @keyframes personWalkIn{
+  @keyframes walkIn{
+
     0%{
-      left:-130px;
-      transform:scale(.72);
+      left:-125px;
+      transform:scale(.7);
     }
+
+    30%{
+      left:10%;
+      transform:scale(.7);
+    }
+
     60%{
-      left:39%;
-      transform:scale(.72);
+      left:32%;
+      transform:scale(.7);
     }
-    75%{
-      left:45%;
-      transform:scale(.72);
+
+    80%{
+      left:40%;
+      transform:scale(.7);
     }
+
     100%{
       left:43%;
-      transform:scale(.72);
+      transform:scale(.7);
     }
   }
 
-  .jda-bag{
+  .briefcase{
     transform:scale(.75);
     transform-origin:bottom center;
   }
@@ -1284,53 +1701,62 @@ select option{
     border-radius:21px;
   }
 
-  .form-heading h2{
+  .form-title h2{
     font-size:21px;
-  }
-
-  .form-scroll{
-    max-height:none;
-    overflow:visible;
-  }
-
-  .footer{
-    position:relative;
-    bottom:auto;
-    margin-top:20px;
   }
 }
 
 @media(max-width:420px){
 
   .brand{
-    top:15px;
-    left:17px;
+    top:14px;
+    left:16px;
   }
 
-  .brand-logo{
-    width:38px;
-    height:38px;
+  .jda-logo{
+    width:40px;
+    height:40px;
   }
 
-  .brand-text{
+  .brand-name{
     font-size:15px;
   }
 
-  .welcome-title{
-    font-size:38px;
+  .brand-small{
+    font-size:9px;
   }
 
-  .account-choice{
+  .welcome-title{
+    font-size:37px;
+  }
+
+  .account-grid{
     gap:7px;
   }
 
-  .account-btn{
+  .account{
     min-height:105px;
     padding:12px 7px;
   }
 
   .account-icon{
     font-size:25px;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+  *,
+  *:before,
+  *:after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
   }
 }
 </style>
@@ -1340,45 +1766,51 @@ select option{
 
 <div class="app">
 
-  <div class="glow-orb orb-one"></div>
-  <div class="glow-orb orb-two"></div>
+  <div class="glow one"></div>
+  <div class="glow two"></div>
 
   <div class="stage">
 
-    <div class="stage-frame">
+    <div class="frame">
 
-      <!-- ==================================================
-           BRAND
-      =================================================== -->
+      <!-- =================================================
+           JDA BRAND
+      ================================================== -->
 
       <div class="brand">
 
-        <img
-          class="brand-logo"
-          src="https://via.placeholder.com/100/0757ff/ffffff?text=JDA"
-          alt="JDA Networks">
+        <div class="jda-logo">
+          <span>JDA</span>
+        </div>
 
         <div>
-          <div class="brand-text">JDA Networks</div>
-          <div class="brand-small">School communication network</div>
+          <div class="brand-name">
+            JDA Networks
+          </div>
+
+          <div class="brand-small">
+            School communication network
+          </div>
         </div>
 
       </div>
 
 
-      <!-- ==================================================
+      <!-- =================================================
            LOADING
-      =================================================== -->
+      ================================================== -->
 
       <section
         id="loadingScreen"
-        class="screen center-screen">
+        class="screen center">
 
-        <div class="loading-card">
+        <div class="loading">
 
           <div class="spinner"></div>
 
-          <strong>Loading JDA Networks...</strong>
+          <strong>
+            Loading JDA Networks...
+          </strong>
 
           <p style="color:rgba(255,255,255,.55);font-size:12px;">
             Connecting securely...
@@ -1389,73 +1821,95 @@ select option{
       </section>
 
 
-      <!-- ==================================================
+      <!-- =================================================
            WELCOME
-      =================================================== -->
+      ================================================== -->
 
       <section
         id="welcomeScreen"
         class="screen hidden">
 
-        <div class="welcome-layout">
+        <div class="welcome">
 
           <div class="welcome-copy">
 
-            <div class="eyebrow">
-              <span class="eyebrow-dot"></span>
+            <div class="pill">
+
+              <span class="pill-dot"></span>
+
               JDA NETWORKS IS LIVE
+
             </div>
 
             <h1 class="welcome-title">
+
               Welcome to
               <span>JDA Networks</span>
+
             </h1>
 
-            <p class="welcome-subtitle">
+            <p class="welcome-text">
+
               The official communication network for
               JDA students and staff. Connect with your
               school community in one place.
+
             </p>
 
-            <div class="welcome-features">
+            <div class="features">
 
-              <span class="feature-pill">💬 Private chats</span>
-              <span class="feature-pill">🎓 Classes</span>
-              <span class="feature-pill">👨‍🏫 Staff</span>
-              <span class="feature-pill">📞 Calls</span>
-              <span class="feature-pill">🔔 Updates</span>
+              <span class="feature">
+                💬 Private chats
+              </span>
+
+              <span class="feature">
+                🎓 Classes
+              </span>
+
+              <span class="feature">
+                👨‍🏫 Staff
+              </span>
+
+              <span class="feature">
+                📞 Calls
+              </span>
+
+              <span class="feature">
+                🔔 Updates
+              </span>
 
             </div>
 
           </div>
 
 
-          <div class="welcome-card">
+          <div class="choice-card">
 
-            <div class="card-title">
+            <div class="choice-title">
               Join JDA Networks
             </div>
 
-            <div class="card-subtitle">
-              Choose your account type to begin
-              your registration.
+            <div class="choice-sub">
+              Choose your account type to begin.
             </div>
 
 
-            <div class="account-choice">
+            <div class="account-grid">
 
               <button
                 id="studentChoice"
-                class="account-btn"
+                class="account"
                 type="button">
 
-                <span class="account-icon">🎓</span>
+                <span class="account-icon">
+                  🎓
+                </span>
 
                 <span class="account-label">
                   Student
                 </span>
 
-                <span class="account-description">
+                <span class="account-small">
                   Student account
                 </span>
 
@@ -1464,16 +1918,18 @@ select option{
 
               <button
                 id="staffChoice"
-                class="account-btn"
+                class="account"
                 type="button">
 
-                <span class="account-icon">👨‍🏫</span>
+                <span class="account-icon">
+                  👨‍🏫
+                </span>
 
                 <span class="account-label">
                   Staff
                 </span>
 
-                <span class="account-description">
+                <span class="account-small">
                   Staff account
                 </span>
 
@@ -1505,32 +1961,27 @@ select option{
 
         </div>
 
-
-        <div class="footer">
-          JDA Networks • Secure school communication
-        </div>
-
       </section>
 
 
-      <!-- ==================================================
-           ANIMATED REGISTRATION
-      =================================================== -->
+      <!-- =================================================
+           REGISTRATION
+      ================================================== -->
 
       <section
         id="registerScreen"
-        class="screen registration-screen hidden">
+        class="screen registration hidden">
 
-        <div class="registration-scene">
+        <div class="registration-grid">
 
 
-          <!-- ==============================================
-               ANIMATION
-          =============================================== -->
+          <!-- =============================================
+               LIVE ANIMATION
+          ============================================== -->
 
-          <div class="animation-area">
+          <div class="scene">
 
-            <div class="scene-title">
+            <div class="scene-heading">
 
               <h2>
                 Welcome to JDA
@@ -1543,53 +1994,56 @@ select option{
             </div>
 
 
-            <div class="live-badge">
-              <span class="live-dot"></span>
+            <div class="live">
+
+              <i></i>
+
               LIVE REGISTRATION
+
             </div>
-
-
-            <div class="character-glow"></div>
 
 
             <div class="floor"></div>
 
 
-            <!-- CHARACTER -->
+            <!-- PERSON -->
 
-            <div class="character">
+            <div class="person">
 
-              <div class="character-head"></div>
+              <div class="head">
 
-              <div class="character-hair"></div>
+                <span class="eye one"></span>
+                <span class="eye two"></span>
 
-              <div class="character-body">
-                <div class="character-shirt-line"></div>
               </div>
 
-              <div class="arm arm-left"></div>
-              <div class="arm arm-right"></div>
+              <div class="hair"></div>
 
-              <div class="leg leg-left">
+              <div class="body"></div>
+
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+
+              <div class="leg left">
                 <div class="shoe"></div>
               </div>
 
-              <div class="leg leg-right">
+              <div class="leg right">
                 <div class="shoe"></div>
               </div>
 
             </div>
 
 
-            <!-- BAG -->
+            <!-- BRIEFCASE -->
 
-            <div class="jda-bag">
+            <div class="briefcase">
 
-              <div class="bag-handle"></div>
+              <div class="case-handle"></div>
 
-              <div class="bag-body">
+              <div class="case-body">
 
-                <div class="bag-logo">
+                <div class="case-logo">
                   JDA
                 </div>
 
@@ -1598,36 +2052,47 @@ select option{
             </div>
 
 
-            <div class="kneel-shadow"></div>
+            <div class="shadow"></div>
 
           </div>
 
 
-          <!-- ==============================================
+          <!-- =============================================
                FORM
-          =============================================== -->
+          ============================================== -->
 
           <div class="form-panel">
 
-            <div class="form-heading">
+            <div class="form-title">
 
               <h2 id="registerTypeTitle">
                 Student Registration
               </h2>
 
               <p>
-                Create your account. An administrator
-                will approve it before you enter the network.
+                Register your real identity.
+                An administrator must approve your account.
               </p>
 
             </div>
 
 
-            <div class="step-line">
+            <div class="steps">
 
-              <div class="step active"></div>
-              <div class="step active"></div>
-              <div class="step"></div>
+              <div
+                id="stepBar1"
+                class="step active">
+              </div>
+
+              <div
+                id="stepBar2"
+                class="step">
+              </div>
+
+              <div
+                id="stepBar3"
+                class="step">
+              </div>
 
             </div>
 
@@ -1635,7 +2100,9 @@ select option{
             <div class="form-scroll">
 
 
-              <!-- ACCOUNT TYPE -->
+              <!-- =========================================
+                   ACCOUNT TYPE
+              ========================================== -->
 
               <div class="type-row">
 
@@ -1660,214 +2127,339 @@ select option{
               </div>
 
 
-              <!-- PHOTO -->
-
-              <div class="photo-area">
-
-                <img
-                  id="photoPreview"
-                  class="photo-preview"
-                  src="https://via.placeholder.com/200/081332/ffffff?text=PHOTO"
-                  alt="Profile preview">
-
-                <label
-                  for="photoInput"
-                  class="photo-button">
-
-                  📷 Choose Profile Photo
-
-                </label>
-
-                <input
-                  id="photoInput"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  class="hidden">
-
-                <div class="small">
-                  Profile photo is required.
-                </div>
-
-              </div>
-
-
               <div
                 id="registerMessage"
                 class="message">
               </div>
 
 
-              <!-- REAL NAME -->
-
-              <label for="realName">
-                Full real name
-              </label>
-
-              <input
-                id="realName"
-                type="text"
-                autocomplete="name"
-                placeholder="Enter your full real name">
-
-
-              <!-- JDA NUMBER -->
-
-              <label for="jdaNumber">
-                JDA Networks number
-              </label>
-
-              <input
-                id="jdaNumber"
-                type="tel"
-                autocomplete="tel"
-                inputmode="tel"
-                placeholder="+256 771 234 567">
-
-
-              <!-- EMAIL -->
-
-              <label for="email">
-                Email address
-              </label>
-
-              <input
-                id="email"
-                type="email"
-                autocomplete="email"
-                placeholder="Enter your email">
-
-
-              <!-- PASSWORD -->
-
-              <label for="password">
-                Password
-              </label>
-
-              <input
-                id="password"
-                type="password"
-                autocomplete="new-password"
-                placeholder="Create a password">
-
-
-              <!-- CONFIRM -->
-
-              <label for="confirmPassword">
-                Confirm password
-              </label>
-
-              <input
-                id="confirmPassword"
-                type="password"
-                autocomplete="new-password"
-                placeholder="Repeat your password">
-
-
-              <!-- STUDENT -->
-
-              <div id="studentFields">
-
-                <label for="studentClass">
-                  Class / Form
-                </label>
-
-                <select id="studentClass">
-
-                  <option value="">
-                    Select Form
-                  </option>
-
-                  <option value="Form One">
-                    Form One
-                  </option>
-
-                  <option value="Form Two">
-                    Form Two
-                  </option>
-
-                  <option value="Form Three">
-                    Form Three
-                  </option>
-
-                  <option value="Form Four">
-                    Form Four
-                  </option>
-
-                  <option value="Form Five">
-                    Form Five
-                  </option>
-
-                  <option value="Form Six">
-                    Form Six
-                  </option>
-
-                </select>
-
-
-                <label for="stream">
-                  Stream
-                </label>
-
-                <select id="stream">
-
-                  <option value="">
-                    Select Stream
-                  </option>
-
-                  <option value="Blue">
-                    Blue
-                  </option>
-
-                  <option value="Green">
-                    Green
-                  </option>
-
-                </select>
-
-              </div>
-
-
-              <!-- STAFF -->
+              <!-- =========================================
+                   STEP 1
+              ========================================== -->
 
               <div
-                id="staffFields"
-                class="hidden">
+                id="formStep1"
+                class="form-step active">
 
-                <label for="department">
-                  Department
+                <label for="realName">
+                  Full real name
                 </label>
 
                 <input
-                  id="department"
+                  id="realName"
                   type="text"
-                  placeholder="Enter your department">
+                  autocomplete="name"
+                  placeholder="Enter your full real name">
+
+
+                <label for="jdaNumber">
+                  JDA Networks number
+                </label>
+
+                <input
+                  id="jdaNumber"
+                  type="tel"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  placeholder="+256 771 234 567">
+
+
+                <label for="email">
+                  Email address
+                </label>
+
+                <input
+                  id="email"
+                  type="email"
+                  autocomplete="email"
+                  placeholder="Enter your email">
+
+
+                <label for="password">
+                  Password
+                </label>
+
+                <input
+                  id="password"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="Create a password">
+
+
+                <label for="confirmPassword">
+                  Confirm password
+                </label>
+
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  autocomplete="new-password"
+                  placeholder="Repeat your password">
+
+
+                <button
+                  id="nextStep1"
+                  class="primary"
+                  type="button">
+
+                  Next
+
+                </button>
 
               </div>
 
 
-              <button
-                id="submitRegistration"
-                class="primary"
-                type="button">
+              <!-- =========================================
+                   STEP 2
+              ========================================== -->
 
-                Submit Registration
+              <div
+                id="formStep2"
+                class="form-step">
 
-              </button>
+                <div class="photo-box">
+
+                  <div class="small"
+                       style="margin-bottom:9px;">
+                    Profile photo is required
+                  </div>
+
+                  <img
+                    id="photoPreview"
+                    class="photo-preview"
+                    alt="Profile preview">
+
+                  <label
+                    for="photoInput"
+                    class="photo-label">
+
+                    📷 Choose Profile Photo
+
+                  </label>
+
+                  <input
+                    id="photoInput"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    class="hidden">
+
+                </div>
 
 
-              <button
-                id="backToWelcome"
-                class="secondary"
-                type="button">
+                <!-- STUDENT -->
 
-                Back
+                <div id="studentFields">
 
-              </button>
+                  <label for="studentClass">
+                    Class / Form
+                  </label>
+
+                  <select id="studentClass">
+
+                    <option value="">
+                      Select Form
+                    </option>
+
+                    <option value="Form One">
+                      Form One
+                    </option>
+
+                    <option value="Form Two">
+                      Form Two
+                    </option>
+
+                    <option value="Form Three">
+                      Form Three
+                    </option>
+
+                    <option value="Form Four">
+                      Form Four
+                    </option>
+
+                    <option value="Form Five">
+                      Form Five
+                    </option>
+
+                    <option value="Form Six">
+                      Form Six
+                    </option>
+
+                  </select>
 
 
-              <div class="small" style="text-align:center;margin-top:12px;">
-                By registering, your information is sent securely
-                to JDA Networks administration for approval.
+                  <label for="stream">
+                    Stream
+                  </label>
+
+                  <select id="stream">
+
+                    <option value="">
+                      Select Stream
+                    </option>
+
+                    <option value="Blue">
+                      Blue
+                    </option>
+
+                    <option value="Green">
+                      Green
+                    </option>
+
+                  </select>
+
+                </div>
+
+
+                <!-- STAFF -->
+
+                <div
+                  id="staffFields"
+                  class="hidden">
+
+                  <label for="department">
+                    Department
+                  </label>
+
+                  <input
+                    id="department"
+                    type="text"
+                    placeholder="Enter your department">
+
+                </div>
+
+
+                <button
+                  id="nextStep2"
+                  class="primary"
+                  type="button">
+
+                  Review Registration
+
+                </button>
+
+
+                <button
+                  id="backStep2"
+                  class="secondary"
+                  type="button">
+
+                  Back
+
+                </button>
+
+              </div>
+
+
+              <!-- =========================================
+                   STEP 3
+              ========================================== -->
+
+              <div
+                id="formStep3"
+                class="form-step">
+
+                <div class="confirm-box">
+
+                  <div class="confirm-row">
+
+                    <span class="confirm-label">
+                      Name
+                    </span>
+
+                    <span
+                      id="confirmName"
+                      class="confirm-value">
+                    </span>
+
+                  </div>
+
+
+                  <div class="confirm-row">
+
+                    <span class="confirm-label">
+                      JDA Number
+                    </span>
+
+                    <span
+                      id="confirmNumber"
+                      class="confirm-value">
+                    </span>
+
+                  </div>
+
+
+                  <div class="confirm-row">
+
+                    <span class="confirm-label">
+                      Email
+                    </span>
+
+                    <span
+                      id="confirmEmail"
+                      class="confirm-value">
+                    </span>
+
+                  </div>
+
+
+                  <div class="confirm-row">
+
+                    <span class="confirm-label">
+                      Account
+                    </span>
+
+                    <span
+                      id="confirmAccount"
+                      class="confirm-value">
+                    </span>
+
+                  </div>
+
+
+                  <div class="confirm-row">
+
+                    <span class="confirm-label">
+                      School details
+                    </span>
+
+                    <span
+                      id="confirmDetails"
+                      class="confirm-value">
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div class="small"
+                     style="margin-top:12px;">
+
+                  Make sure everything is correct.
+                  Your registration will be sent to JDA administration.
+
+                </div>
+
+
+                <button
+                  id="submitRegistration"
+                  class="primary"
+                  type="button">
+
+                  Submit Registration
+
+                </button>
+
+
+                <button
+                  id="backStep3"
+                  class="secondary"
+                  type="button">
+
+                  Back
+
+                </button>
+
               </div>
 
             </div>
@@ -1879,15 +2471,15 @@ select option{
       </section>
 
 
-      <!-- ==================================================
+      <!-- =================================================
            LOGIN
-      =================================================== -->
+      ================================================== -->
 
       <section
         id="loginScreen"
         class="screen hidden">
 
-        <div class="status-layout">
+        <div class="status">
 
           <div
             class="status-card"
@@ -1966,15 +2558,15 @@ select option{
       </section>
 
 
-      <!-- ==================================================
+      <!-- =================================================
            COMPLETE PROFILE
-      =================================================== -->
+      ================================================== -->
 
       <section
         id="completeProfileScreen"
         class="screen hidden">
 
-        <div class="status-layout">
+        <div class="status">
 
           <div
             class="status-card"
@@ -2019,17 +2611,16 @@ select option{
             </div>
 
 
-            <div class="photo-area">
+            <div class="photo-box">
 
               <img
                 id="completePhotoPreview"
                 class="photo-preview"
-                src="https://via.placeholder.com/200/081332/ffffff?text=PHOTO"
                 alt="Profile preview">
 
               <label
                 for="completePhotoInput"
-                class="photo-button">
+                class="photo-label">
 
                 📷 Choose Profile Photo
 
@@ -2168,15 +2759,15 @@ select option{
       </section>
 
 
-      <!-- ==================================================
+      <!-- =================================================
            PENDING
-      =================================================== -->
+      ================================================== -->
 
       <section
         id="pendingScreen"
         class="screen hidden">
 
-        <div class="status-layout">
+        <div class="status">
 
           <div class="status-card">
 
@@ -2225,15 +2816,15 @@ select option{
       </section>
 
 
-      <!-- ==================================================
+      <!-- =================================================
            REJECTED
-      =================================================== -->
+      ================================================== -->
 
       <section
         id="rejectedScreen"
         class="screen hidden">
 
-        <div class="status-layout">
+        <div class="status">
 
           <div class="status-card">
 
@@ -2269,15 +2860,15 @@ select option{
       </section>
 
 
-      <!-- ==================================================
+      <!-- =================================================
            DISABLED
-      =================================================== -->
+      ================================================== -->
 
       <section
         id="disabledScreen"
         class="screen hidden">
 
-        <div class="status-layout">
+        <div class="status">
 
           <div class="status-card">
 
@@ -2311,15 +2902,15 @@ select option{
       </section>
 
 
-      <!-- ==================================================
+      <!-- =================================================
            APPROVED
-      =================================================== -->
+      ================================================== -->
 
       <section
         id="approvedScreen"
         class="screen hidden">
 
-        <div class="status-layout">
+        <div class="status">
 
           <div class="status-card">
 
@@ -2340,7 +2931,6 @@ select option{
 
               <img
                 id="approvedPhoto"
-                src="https://via.placeholder.com/100/081332/ffffff?text=JDA"
                 alt="Profile">
 
               <div>
@@ -2471,14 +3061,95 @@ let selectedAccountType = null;
 let selectedPhotoData = "";
 let completePhotoData = "";
 let currentUser = null;
+let currentStep = 1;
 
 
 /* =========================================================
-   ELEMENT HELPER
+   HELPER
 ========================================================= */
 
 const $ = id =>
   document.getElementById(id);
+
+
+/* =========================================================
+   DEFAULT PHOTO
+   No external placeholder.
+========================================================= */
+
+function makeDefaultAvatar(text){
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg"
+         width="420"
+         height="420"
+         viewBox="0 0 420 420">
+
+      <defs>
+
+        <linearGradient
+          id="g"
+          x1="0"
+          y1="0"
+          x2="1"
+          y2="1">
+
+          <stop
+            offset="0%"
+            stop-color="#0757ff"/>
+
+          <stop
+            offset="100%"
+            stop-color="#5218df"/>
+
+        </linearGradient>
+
+      </defs>
+
+      <rect
+        width="420"
+        height="420"
+        rx="210"
+        fill="url(#g)"/>
+
+      <circle
+        cx="210"
+        cy="165"
+        r="70"
+        fill="rgba(255,255,255,.18)"/>
+
+      <path
+        d="M90 370
+           C110 275 310 275 330 370"
+        fill="rgba(255,255,255,.18)"/>
+
+      <text
+        x="210"
+        y="395"
+        text-anchor="middle"
+        font-family="Arial"
+        font-size="38"
+        font-weight="900"
+        fill="white">
+        ${text}
+      </text>
+
+    </svg>
+  `;
+
+  return "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(svg);
+}
+
+
+$("photoPreview").src =
+  makeDefaultAvatar("PHOTO");
+
+$("completePhotoPreview").src =
+  makeDefaultAvatar("PHOTO");
+
+$("approvedPhoto").src =
+  makeDefaultAvatar("JDA");
 
 
 /* =========================================================
@@ -2502,12 +3173,12 @@ const screens = [
 
 function showScreen(id){
 
-  screens.forEach(screen => {
+  screens.forEach(name => {
 
-    const element = $(screen);
+    const el = $(name);
 
-    if(element){
-      element.classList.add("hidden");
+    if(el){
+      el.classList.add("hidden");
     }
 
   });
@@ -2522,7 +3193,7 @@ function showScreen(id){
 
 
 /* =========================================================
-   MESSAGES
+   MESSAGE
 ========================================================= */
 
 function message(id,text,type){
@@ -2554,7 +3225,7 @@ function clearMessage(id){
 
 
 /* =========================================================
-   PHONE NUMBER
+   PHONE
 ========================================================= */
 
 function normalizeNumber(value){
@@ -2595,36 +3266,32 @@ function compressPhoto(file){
     if(!file){
 
       reject(
-        new Error("Please select a photo.")
+        new Error(
+          "Please select a photo."
+        )
       );
 
       return;
     }
-
 
     if(!file.type.startsWith("image/")){
 
       reject(
-        new Error("Please select an image.")
+        new Error(
+          "Please select an image."
+        )
       );
 
       return;
     }
 
-
-    /*
-      Keep the image small enough for Firestore.
-    */
-
     const reader =
       new FileReader();
-
 
     reader.onload = event => {
 
       const image =
         new Image();
-
 
       image.onload = () => {
 
@@ -2635,7 +3302,6 @@ function compressPhoto(file){
 
         let height =
           image.height;
-
 
         if(width > height){
 
@@ -2665,22 +3331,16 @@ function compressPhoto(file){
 
         }
 
-
         const canvas =
           document.createElement(
             "canvas"
           );
 
-        canvas.width =
-          width;
-
-        canvas.height =
-          height;
-
+        canvas.width = width;
+        canvas.height = height;
 
         const ctx =
           canvas.getContext("2d");
-
 
         ctx.drawImage(
           image,
@@ -2690,28 +3350,21 @@ function compressPhoto(file){
           height
         );
 
-
         let data =
           canvas.toDataURL(
             "image/jpeg",
-            0.55
+            .55
           );
-
-
-        /*
-          Additional compression if necessary.
-        */
 
         if(data.length > 500000){
 
           data =
             canvas.toDataURL(
               "image/jpeg",
-              0.38
+              .38
             );
 
         }
-
 
         if(data.length > 700000){
 
@@ -2725,11 +3378,9 @@ function compressPhoto(file){
 
         }
 
-
         resolve(data);
 
       };
-
 
       image.onerror = () => {
 
@@ -2741,12 +3392,10 @@ function compressPhoto(file){
 
       };
 
-
       image.src =
         event.target.result;
 
     };
-
 
     reader.onerror = () => {
 
@@ -2758,7 +3407,6 @@ function compressPhoto(file){
 
     };
 
-
     reader.readAsDataURL(file);
 
   });
@@ -2767,7 +3415,7 @@ function compressPhoto(file){
 
 
 /* =========================================================
-   ACCOUNT TYPE UI
+   ACCOUNT TYPE
 ========================================================= */
 
 function setAccountType(type){
@@ -2775,80 +3423,66 @@ function setAccountType(type){
   selectedAccountType =
     type;
 
-
-  if(type === "student"){
-
-    $("studentChoice")
-      ?.classList
-      .add("active");
-
-    $("staffChoice")
-      ?.classList
-      .remove("active");
+  const student =
+    type === "student";
 
 
-    $("registerStudentType")
-      ?.classList
-      .add("active");
+  $("studentChoice")
+    ?.classList
+    .toggle(
+      "active",
+      student
+    );
 
-    $("registerStaffType")
-      ?.classList
-      .remove("active");
-
-
-    $("studentFields")
-      ?.classList
-      .remove("hidden");
-
-    $("staffFields")
-      ?.classList
-      .add("hidden");
+  $("staffChoice")
+    ?.classList
+    .toggle(
+      "active",
+      !student
+    );
 
 
-    $("registerTypeTitle")
-      .textContent =
-      "Student Registration";
+  $("registerStudentType")
+    ?.classList
+    .toggle(
+      "active",
+      student
+    );
 
-  }else{
-
-    $("studentChoice")
-      ?.classList
-      .remove("active");
-
-    $("staffChoice")
-      ?.classList
-      .add("active");
-
-
-    $("registerStudentType")
-      ?.classList
-      .remove("active");
-
-    $("registerStaffType")
-      ?.classList
-      .add("active");
+  $("registerStaffType")
+    ?.classList
+    .toggle(
+      "active",
+      !student
+    );
 
 
-    $("studentFields")
-      ?.classList
-      .add("hidden");
+  $("studentFields")
+    ?.classList
+    .toggle(
+      "hidden",
+      !student
+    );
 
-    $("staffFields")
-      ?.classList
-      .remove("hidden");
+  $("staffFields")
+    ?.classList
+    .toggle(
+      "hidden",
+      student
+    );
 
 
-    $("registerTypeTitle")
-      .textContent =
-      "Staff Registration";
-
-  }
+  $("registerTypeTitle")
+    .textContent =
+    student
+      ? "Student Registration"
+      : "Staff Registration";
 
 }
 
 
 /* =========================================================
-   WELCOME ACCOUNT BUTTONS
+   WELCOME BUTTONS
 ========================================================= */
 
 $("studentChoice")
@@ -2880,7 +3514,7 @@ $("registerStaffType")
 
 
 /* =========================================================
-   CONTINUE REGISTRATION
+   START REGISTRATION
 ========================================================= */
 
 $("continueRegister")
@@ -2898,10 +3532,221 @@ $("continueRegister")
 
       }
 
+      currentStep = 1;
+
+      updateSteps();
 
       showScreen(
         "registerScreen"
       );
+
+    }
+  );
+
+
+/* =========================================================
+   STEP SYSTEM
+========================================================= */
+
+function updateSteps(){
+
+  $("stepBar1")
+    .classList
+    .toggle(
+      "active",
+      currentStep >= 1
+    );
+
+  $("stepBar2")
+    .classList
+    .toggle(
+      "active",
+      currentStep >= 2
+    );
+
+  $("stepBar3")
+    .classList
+    .toggle(
+      "active",
+      currentStep >= 3
+    );
+
+
+  $("formStep1")
+    .classList
+    .toggle(
+      "active",
+      currentStep === 1
+    );
+
+  $("formStep2")
+    .classList
+    .toggle(
+      "active",
+      currentStep === 2
+    );
+
+  $("formStep3")
+    .classList
+    .toggle(
+      "active",
+      currentStep === 3
+    );
+
+}
+
+
+/* =========================================================
+   STEP 1 VALIDATION
+========================================================= */
+
+function validateStep1(){
+
+  clearMessage(
+    "registerMessage"
+  );
+
+
+  const realName =
+    $("realName")
+      .value
+      .trim();
+
+
+  const number =
+    normalizeNumber(
+      $("jdaNumber")
+        .value
+    );
+
+
+  const email =
+    $("email")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  const password =
+    $("password")
+      .value;
+
+
+  const confirm =
+    $("confirmPassword")
+      .value;
+
+
+  if(!selectedAccountType){
+
+    message(
+      "registerMessage",
+      "Choose Student or Staff.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  if(realName.length < 3){
+
+    message(
+      "registerMessage",
+      "Enter your full real name.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  if(/\d/.test(realName)){
+
+    message(
+      "registerMessage",
+      "Use your real name, not a nickname or number.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  if(!validNumber(number)){
+
+    message(
+      "registerMessage",
+      "Enter a valid Uganda number, e.g. +256 771 234 567.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  if(!email.includes("@")){
+
+    message(
+      "registerMessage",
+      "Enter a valid email address.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  if(password.length < 6){
+
+    message(
+      "registerMessage",
+      "Password must have at least 6 characters.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  if(password !== confirm){
+
+    message(
+      "registerMessage",
+      "Passwords do not match.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   NEXT STEP 1
+========================================================= */
+
+$("nextStep1")
+  .addEventListener(
+    "click",
+    () => {
+
+      if(!validateStep1())return;
+
+      currentStep = 2;
+
+      updateSteps();
 
     }
   );
@@ -2921,30 +3766,25 @@ $("photoInput")
 
       if(!file)return;
 
-
       try{
 
         message(
           "registerMessage",
-          "Preparing your profile photo...",
+          "Preparing profile photo...",
           "info"
         );
-
 
         selectedPhotoData =
           await compressPhoto(file);
 
-
         $("photoPreview").src =
           selectedPhotoData;
-
 
         message(
           "registerMessage",
           "Profile photo ready.",
           "success"
         );
-
 
       }catch(error){
 
@@ -2963,55 +3803,184 @@ $("photoInput")
 
 
 /* =========================================================
-   COMPLETE PROFILE PHOTO
+   STEP 2 VALIDATION
 ========================================================= */
 
-$("completePhotoInput")
+function validateStep2(){
+
+  if(!selectedPhotoData){
+
+    message(
+      "registerMessage",
+      "Profile photo is required.",
+      "error"
+    );
+
+    return false;
+
+  }
+
+
+  if(selectedAccountType === "student"){
+
+    if(
+      !$("studentClass").value ||
+      !$("stream").value
+    ){
+
+      message(
+        "registerMessage",
+        "Select your Form and Stream.",
+        "error"
+      );
+
+      return false;
+
+    }
+
+  }else{
+
+    if(
+      !$("department")
+        .value
+        .trim()
+    ){
+
+      message(
+        "registerMessage",
+        "Enter your department.",
+        "error"
+      );
+
+      return false;
+
+    }
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   REVIEW
+========================================================= */
+
+$("nextStep2")
   .addEventListener(
-    "change",
-    async event => {
+    "click",
+    () => {
 
-      const file =
-        event.target.files[0];
+      clearMessage(
+        "registerMessage"
+      );
 
-      if(!file)return;
+      if(!validateStep2())return;
 
 
-      try{
+      $("confirmName")
+        .textContent =
+        $("realName")
+          .value
+          .trim();
 
-        message(
-          "completeMessage",
-          "Preparing your profile photo...",
-          "info"
+
+      $("confirmNumber")
+        .textContent =
+        normalizeNumber(
+          $("jdaNumber")
+            .value
         );
 
 
-        completePhotoData =
-          await compressPhoto(file);
+      $("confirmEmail")
+        .textContent =
+        $("email")
+          .value
+          .trim()
+          .toLowerCase();
 
 
-        $("completePhotoPreview").src =
-          completePhotoData;
+      $("confirmAccount")
+        .textContent =
+        selectedAccountType ===
+        "student"
+          ? "Student"
+          : "Staff";
 
 
-        message(
-          "completeMessage",
-          "Profile photo ready.",
-          "success"
-        );
+      if(
+        selectedAccountType ===
+        "student"
+      ){
 
+        $("confirmDetails")
+          .textContent =
+          $("studentClass")
+            .value +
+          " • " +
+          $("stream")
+            .value;
 
-      }catch(error){
+      }else{
 
-        completePhotoData = "";
-
-        message(
-          "completeMessage",
-          error.message,
-          "error"
-        );
+        $("confirmDetails")
+          .textContent =
+          $("department")
+            .value
+            .trim();
 
       }
+
+
+      currentStep = 3;
+
+      updateSteps();
+
+    }
+  );
+
+
+/* =========================================================
+   BACK BUTTONS
+========================================================= */
+
+$("backStep2")
+  .addEventListener(
+    "click",
+    () => {
+
+      currentStep = 1;
+
+      updateSteps();
+
+    }
+  );
+
+
+$("backStep3")
+  .addEventListener(
+    "click",
+    () => {
+
+      currentStep = 2;
+
+      updateSteps();
+
+    }
+  );
+
+
+$("backFromLogin")
+  .addEventListener(
+    "click",
+    () => {
+
+      showScreen(
+        "welcomeScreen"
+      );
 
     }
   );
@@ -3035,13 +4004,20 @@ async function register(){
   );
 
 
-  if(!selectedAccountType){
+  if(!validateStep1()){
 
-    message(
-      "registerMessage",
-      "Choose Student or Staff.",
-      "error"
-    );
+    currentStep = 1;
+    updateSteps();
+
+    return;
+
+  }
+
+
+  if(!validateStep2()){
+
+    currentStep = 2;
+    updateSteps();
 
     return;
 
@@ -3073,158 +4049,6 @@ async function register(){
       .value;
 
 
-  const confirmPassword =
-    $("confirmPassword")
-      .value;
-
-
-  /* -----------------------------------------------
-     VALIDATION
-  ------------------------------------------------ */
-
-  if(realName.length < 3){
-
-    message(
-      "registerMessage",
-      "Enter your full real name.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if(/\d/.test(realName)){
-
-    message(
-      "registerMessage",
-      "Use your real name, not a nickname or number.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if(!validNumber(jdaNumber)){
-
-    message(
-      "registerMessage",
-      "Enter a valid Uganda number, e.g. +256 771 234 567.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if(!email.includes("@")){
-
-    message(
-      "registerMessage",
-      "Enter a valid email address.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if(password.length < 6){
-
-    message(
-      "registerMessage",
-      "Password must have at least 6 characters.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if(password !== confirmPassword){
-
-    message(
-      "registerMessage",
-      "Passwords do not match.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  if(!selectedPhotoData){
-
-    message(
-      "registerMessage",
-      "Profile photo is required.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  let studentClass = "";
-  let stream = "";
-  let department = "";
-
-
-  if(selectedAccountType === "student"){
-
-    studentClass =
-      $("studentClass")
-        .value;
-
-
-    stream =
-      $("stream")
-        .value;
-
-
-    if(!studentClass || !stream){
-
-      message(
-        "registerMessage",
-        "Select your Form and Stream.",
-        "error"
-      );
-
-      return;
-
-    }
-
-  }else{
-
-    department =
-      $("department")
-        .value
-        .trim();
-
-
-    if(!department){
-
-      message(
-        "registerMessage",
-        "Enter your department.",
-        "error"
-      );
-
-      return;
-
-    }
-
-  }
-
-
   const button =
     $("submitRegistration");
 
@@ -3237,9 +4061,7 @@ async function register(){
 
   try{
 
-    /* -----------------------------------------------
-       FIREBASE AUTH
-    ------------------------------------------------ */
+    /* AUTH */
 
     const credential =
       await createUserWithEmailAndPassword(
@@ -3253,9 +4075,7 @@ async function register(){
       credential.user.uid;
 
 
-    /* -----------------------------------------------
-       FIRESTORE PROFILE
-    ------------------------------------------------ */
+    /* PROFILE */
 
     const userData = {
 
@@ -3294,18 +4114,23 @@ async function register(){
     ){
 
       userData.className =
-        studentClass;
+        $("studentClass")
+          .value;
 
       userData.studentClass =
-        studentClass;
+        $("studentClass")
+          .value;
 
       userData.stream =
-        stream;
+        $("stream")
+          .value;
 
     }else{
 
       userData.department =
-        department;
+        $("department")
+          .value
+          .trim();
 
     }
 
@@ -3319,11 +4144,6 @@ async function register(){
       userData
     );
 
-
-    /*
-      Registration completed.
-      User remains logged in and sees pending screen.
-    */
 
     showScreen(
       "pendingScreen"
@@ -3368,7 +4188,7 @@ async function register(){
     ){
 
       text =
-        "Password is too weak. Use at least 6 characters.";
+        "Password is too weak.";
 
     }
 
@@ -3378,7 +4198,7 @@ async function register(){
     ){
 
       text =
-        "Network connection failed. Check your internet.";
+        "Network connection failed.";
 
     }
 
@@ -3388,7 +4208,7 @@ async function register(){
     ){
 
       text =
-        "Firebase permission denied. Check your Firestore rules.";
+        "Firebase permission denied. Check Firestore rules.";
 
     }
 
@@ -3406,6 +4226,10 @@ async function register(){
       text,
       "error"
     );
+
+
+    currentStep = 3;
+    updateSteps();
 
 
   }finally{
@@ -3431,19 +4255,6 @@ $("loginButton")
 
       showScreen(
         "loginScreen"
-      );
-
-    }
-  );
-
-
-$("backFromLogin")
-  .addEventListener(
-    "click",
-    () => {
-
-      showScreen(
-        "welcomeScreen"
       );
 
     }
@@ -3507,11 +4318,10 @@ async function login(){
       password
     );
 
-
   }catch(error){
 
     console.error(
-      "Login error:",
+      "Login:",
       error
     );
 
@@ -3550,16 +4360,6 @@ async function login(){
 
     }
 
-    else if(
-      error.code ===
-      "auth/network-request-failed"
-    ){
-
-      text =
-        "Network connection failed.";
-
-    }
-
     else{
 
       text =
@@ -3574,7 +4374,6 @@ async function login(){
       text,
       "error"
     );
-
 
   }finally{
 
@@ -3636,7 +4435,7 @@ $("forgotPassword")
         message(
           "loginMessage",
           error.message ||
-          "Could not send password reset email.",
+          "Could not send reset email.",
           "error"
         );
 
@@ -3647,7 +4446,7 @@ $("forgotPassword")
 
 
 /* =========================================================
-   COMPLETE PROFILE ACCOUNT TYPE
+   COMPLETE PROFILE TYPES
 ========================================================= */
 
 $("completeStudentType")
@@ -3658,7 +4457,6 @@ $("completeStudentType")
       selectedAccountType =
         "student";
 
-
       $("completeStudentType")
         .classList
         .add("active");
@@ -3666,7 +4464,6 @@ $("completeStudentType")
       $("completeStaffType")
         .classList
         .remove("active");
-
 
       $("completeStudentFields")
         .classList
@@ -3688,7 +4485,6 @@ $("completeStaffType")
       selectedAccountType =
         "staff";
 
-
       $("completeStaffType")
         .classList
         .add("active");
@@ -3696,7 +4492,6 @@ $("completeStaffType")
       $("completeStudentType")
         .classList
         .remove("active");
-
 
       $("completeStaffFields")
         .classList
@@ -3711,6 +4506,61 @@ $("completeStaffType")
 
 
 /* =========================================================
+   COMPLETE PHOTO
+========================================================= */
+
+$("completePhotoInput")
+  .addEventListener(
+    "change",
+    async event => {
+
+      const file =
+        event.target.files[0];
+
+      if(!file)return;
+
+
+      try{
+
+        message(
+          "completeMessage",
+          "Preparing profile photo...",
+          "info"
+        );
+
+
+        completePhotoData =
+          await compressPhoto(file);
+
+
+        $("completePhotoPreview").src =
+          completePhotoData;
+
+
+        message(
+          "completeMessage",
+          "Profile photo ready.",
+          "success"
+        );
+
+
+      }catch(error){
+
+        completePhotoData = "";
+
+        message(
+          "completeMessage",
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
    COMPLETE PROFILE
 ========================================================= */
 
@@ -3719,15 +4569,8 @@ async function completeProfile(user){
   currentUser =
     user;
 
-
-  /*
-    If Firebase account exists but the JDA profile
-    does not, let the user choose Student or Staff.
-  */
-
   selectedAccountType =
     "student";
-
 
   $("completeStudentType")
     .classList
@@ -3737,7 +4580,6 @@ async function completeProfile(user){
     .classList
     .remove("active");
 
-
   $("completeStudentFields")
     .classList
     .remove("hidden");
@@ -3745,7 +4587,6 @@ async function completeProfile(user){
   $("completeStaffFields")
     .classList
     .add("hidden");
-
 
   showScreen(
     "completeProfileScreen"
@@ -3768,11 +4609,7 @@ $("submitCompleteProfile")
       );
 
 
-      if(!currentUser){
-
-        return;
-
-      }
+      if(!currentUser)return;
 
 
       const realName =
@@ -3882,7 +4719,6 @@ $("submitCompleteProfile")
         const studentClass =
           $("completeStudentClass")
             .value;
-
 
         const stream =
           $("completeStream")
@@ -3998,7 +4834,7 @@ $("submitCompleteProfile")
 
 
 /* =========================================================
-   DISPLAY APPROVED USER
+   APPROVED PROFILE
 ========================================================= */
 
 function displayApprovedProfile(profile){
@@ -4018,7 +4854,6 @@ function displayApprovedProfile(profile){
       profile.className ||
       profile.studentClass ||
       "Student";
-
 
     const stream =
       profile.stream ||
@@ -4096,10 +4931,6 @@ onAuthStateChanged(
         await getDoc(ref);
 
 
-      /*
-        Firebase Auth exists but JDA profile does not.
-      */
-
       if(!snap.exists()){
 
         await completeProfile(
@@ -4123,8 +4954,6 @@ onAuthStateChanged(
       }
 
 
-      /* APPROVED */
-
       if(
         profile.status ===
         "approved"
@@ -4134,7 +4963,6 @@ onAuthStateChanged(
           profile
         );
 
-
         showScreen(
           "approvedScreen"
         );
@@ -4143,8 +4971,6 @@ onAuthStateChanged(
 
       }
 
-
-      /* REJECTED */
 
       if(
         profile.status ===
@@ -4159,7 +4985,6 @@ onAuthStateChanged(
             "No reason provided."
           );
 
-
         showScreen(
           "rejectedScreen"
         );
@@ -4168,8 +4993,6 @@ onAuthStateChanged(
 
       }
 
-
-      /* DISABLED */
 
       if(
         profile.status ===
@@ -4185,8 +5008,6 @@ onAuthStateChanged(
       }
 
 
-      /* PENDING */
-
       showScreen(
         "pendingScreen"
       );
@@ -4197,18 +5018,6 @@ onAuthStateChanged(
       console.error(
         "Account check:",
         error
-      );
-
-
-      /*
-        Do not destroy the user's session.
-        Show login/welcome if Firestore is temporarily unavailable.
-      */
-
-      message(
-        "loginMessage",
-        "Could not check your JDA profile. Please try again.",
-        "error"
       );
 
 
@@ -4280,7 +5089,6 @@ $("pendingRefresh")
             profile
           );
 
-
           showScreen(
             "approvedScreen"
           );
@@ -4299,7 +5107,6 @@ $("pendingRefresh")
               profile.rejectionReason ||
               "No reason provided."
             );
-
 
           showScreen(
             "rejectedScreen"
@@ -4329,17 +5136,10 @@ $("pendingRefresh")
 
       }catch(error){
 
-        console.error(
-          "Approval check:",
-          error
-        );
-
-
         alert(
           error.message ||
           "Could not check approval."
         );
-
 
       }finally{
 
@@ -4380,24 +5180,15 @@ async function logout(){
 
     await signOut(auth);
 
-
-    selectedAccountType =
-      null;
-
-    selectedPhotoData =
-      "";
-
-    completePhotoData =
-      "";
-
-    currentUser =
-      null;
-
+    selectedAccountType = null;
+    selectedPhotoData = "";
+    completePhotoData = "";
+    currentUser = null;
+    currentStep = 1;
 
     showScreen(
       "welcomeScreen"
     );
-
 
   }catch(error){
 
@@ -4417,13 +5208,11 @@ $("pendingLogout")
     logout
   );
 
-
 $("rejectedLogout")
   .addEventListener(
     "click",
     logout
   );
-
 
 $("disabledLogout")
   .addEventListener(
@@ -4431,13 +5220,11 @@ $("disabledLogout")
     logout
   );
 
-
 $("approvedLogout")
   .addEventListener(
     "click",
     logout
   );
-
 
 $("completeLogout")
   .addEventListener(
@@ -4447,24 +5234,7 @@ $("completeLogout")
 
 
 /* =========================================================
-   BACK TO WELCOME
-========================================================= */
-
-$("backToWelcome")
-  .addEventListener(
-    "click",
-    () => {
-
-      showScreen(
-        "welcomeScreen"
-      );
-
-    } 
-  );
-
-
-/* =========================================================
-   INITIAL SCREEN
+   START
 ========================================================= */
 
 showScreen(

@@ -4,18 +4,13 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
 
-    // =====================================================
-    // BASIC FUNCTIONS
-    // =====================================================
-
     function signedIn() {
       return request.auth != null;
     }
 
     function superAdmin() {
       return signedIn()
-        && request.auth.token.email
-           == "jonathanmentor62@gmail.com";
+        && request.auth.token.email == "jonathanmentor62@gmail.com";
     }
 
     function admin() {
@@ -49,8 +44,6 @@ service cloud.firestore {
 
     match /users/{uid} {
 
-      // A newly registered user can create ONLY their own
-      // pending account.
       allow create:
         if signedIn()
         && request.auth.uid == uid
@@ -60,14 +53,9 @@ service cloud.firestore {
         && request.resource.data.realName is string
         && request.resource.data.realName.size() >= 3
         && request.resource.data.jdaNumber is string
-        && request.resource.data.accountType
-           in ["student", "staff"];
+        && request.resource.data.accountType in ["student", "staff"];
 
-
-      // Users can read their own account.
-      // Approved members can read approved member profiles.
-      // Admins can read users.
-      allow read:
+      allow get:
         if signedIn()
         && (
           request.auth.uid == uid
@@ -75,26 +63,22 @@ service cloud.firestore {
           || approved()
         );
 
+      allow list:
+        if admin() || approved();
 
-      // Admins can change user accounts.
-      //
-      // Approved users may update ONLY their own
-      // online-presence fields.
       allow update:
         if admin()
         || (
           signedIn()
           && request.auth.uid == uid
           && request.resource.data.diff(resource.data)
-             .affectedKeys()
-             .hasOnly([
-               "isOnline",
-               "lastSeen"
-             ])
+            .affectedKeys()
+            .hasOnly([
+              "isOnline",
+              "lastSeen"
+            ])
         );
 
-
-      // Only the super admin can delete users.
       allow delete:
         if superAdmin();
     }
@@ -124,28 +108,25 @@ service cloud.firestore {
 
     match /conversations/{conversationId} {
 
-      allow read:
-        if approved()
-        && resource.data.participantIds is list
-        && request.auth.uid
-           in resource.data.participantIds;
+      // Needed when opening/checking one conversation.
+      allow get:
+        if approved();
 
+      // Needed for the Chats tab query.
+      allow list:
+        if approved();
 
       allow create:
         if approved()
         && request.resource.data.participantIds is list
         && request.resource.data.participantIds.size() == 2
-        && request.auth.uid
-           in request.resource.data.participantIds;
-
+        && request.auth.uid in request.resource.data.participantIds;
 
       allow update:
         if approved()
-        && request.auth.uid
-           in resource.data.participantIds
+        && request.auth.uid in resource.data.participantIds
         && request.resource.data.participantIds
            == resource.data.participantIds;
-
 
       allow delete:
         if admin();
@@ -159,35 +140,26 @@ service cloud.firestore {
 
         allow read:
           if approved()
-          && request.auth.uid
-             in get(
-               /databases/$(database)/documents/conversations/$(conversationId)
-             ).data.participantIds;
-
+          && request.auth.uid in get(
+            /databases/$(database)/documents/conversations/$(conversationId)
+          ).data.participantIds;
 
         allow create:
           if approved()
-          && request.auth.uid
-             in get(
-               /databases/$(database)/documents/conversations/$(conversationId)
-             ).data.participantIds
-          && request.resource.data.senderId
-             == request.auth.uid
-          && request.resource.data.receiverId
-             in get(
-               /databases/$(database)/documents/conversations/$(conversationId)
-             ).data.participantIds
-          && request.resource.data.receiverId
-             != request.auth.uid
+          && request.auth.uid in get(
+            /databases/$(database)/documents/conversations/$(conversationId)
+          ).data.participantIds
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.receiverId in get(
+            /databases/$(database)/documents/conversations/$(conversationId)
+          ).data.participantIds
+          && request.resource.data.receiverId != request.auth.uid
           && request.resource.data.text is string
           && request.resource.data.text.size() > 0
           && request.resource.data.text.size() <= 5000;
 
-
-        // Messages cannot be edited for now.
         allow update:
           if false;
-
 
         allow delete:
           if admin();
@@ -204,28 +176,20 @@ service cloud.firestore {
       allow read:
         if approved()
         && (
-          resource.data.requesterId
-            == request.auth.uid
-          || resource.data.receiverId
-            == request.auth.uid
+          resource.data.requesterId == request.auth.uid
+          || resource.data.receiverId == request.auth.uid
         );
-
 
       allow create:
         if approved()
-        && request.resource.data.requesterId
-           == request.auth.uid
-        && request.resource.data.receiverId
-           != request.auth.uid;
-
+        && request.resource.data.requesterId == request.auth.uid
+        && request.resource.data.receiverId != request.auth.uid;
 
       allow delete:
         if approved()
         && (
-          resource.data.requesterId
-            == request.auth.uid
-          || resource.data.receiverId
-            == request.auth.uid
+          resource.data.requesterId == request.auth.uid
+          || resource.data.receiverId == request.auth.uid
         );
     }
 
@@ -238,24 +202,16 @@ service cloud.firestore {
 
       allow read:
         if signedIn()
-        && resource.data.userId
-           == request.auth.uid;
+        && resource.data.userId == request.auth.uid;
 
-
-      // Only admins can currently create notifications.
       allow create:
         if admin();
 
-
       allow update:
         if signedIn()
-        && resource.data.userId
-           == request.auth.uid
-        && request.resource.data.userId
-           == resource.data.userId
-        && request.resource.data.type
-           == resource.data.type;
-
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.type == resource.data.type;
 
       allow delete:
         if admin();
@@ -270,19 +226,14 @@ service cloud.firestore {
 
       allow create, update:
         if signedIn()
-        && request.resource.data.userId
-           == request.auth.uid
+        && request.resource.data.userId == request.auth.uid
         && request.resource.data.token is string
         && request.resource.data.token.size() > 0;
 
-
       allow delete:
         if signedIn()
-        && resource.data.userId
-           == request.auth.uid;
+        && resource.data.userId == request.auth.uid;
 
-
-      // Device tokens should never be readable by clients.
       allow read:
         if false;
     }

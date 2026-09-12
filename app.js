@@ -1,27 +1,27 @@
 // ============================================================
-// JDA NETWORKS — APP.JS
-// WHATSAPP-STYLE SCHOOL CHAT SYSTEM
-// ============================================================
-// Firebase Auth + Firestore only
-// No AI
-// No Firebase Storage
-// Spark-compatible
+// JDA NETWORKS — app.js
+// Complete WhatsApp-style school communication app
+// Firebase Auth + Firestore
+// NO AI
+// NO Firebase Storage
+// REAL WebRTC AUDIO / VIDEO CALLS
 // ============================================================
 
 import {
   collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  addDoc,
+  deleteDoc,
   query,
   where,
   orderBy,
   limit,
-  getDocs,
-  getDoc,
-  doc,
-  setDoc,
-  addDoc,
-  updateDoc,
+  onSnapshot,
   serverTimestamp,
-  onSnapshot
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 import {
@@ -29,14 +29,10 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
-import {
-  auth,
-  db
-} from "./firebase.js";
-
+import { auth, db } from "./firebase.js";
 
 // ============================================================
-// STATE
+// GLOBAL STATE
 // ============================================================
 
 let currentUser = null;
@@ -48,828 +44,526 @@ let conversations = [];
 let currentConversationId = null;
 let currentChatUser = null;
 
-let unsubscribeMessages = null;
-let unsubscribeConversations = null;
 let unsubscribeMembers = null;
+let unsubscribeConversations = null;
+let unsubscribeMessages = null;
 
 let initialized = false;
 
+// ============================================================
+// CALL STATE
+// ============================================================
+
+let activeCallId = null;
+let activeCallType = null;
+let activeCallDocUnsubscribe = null;
+let activeCandidateUnsubscribe = null;
+
+let peerConnection = null;
+let localStream = null;
+let remoteStream = null;
+
+let callMuted = false;
+let cameraOff = false;
+
+let incomingCallUnsubscribe = null;
+
+const RTC_CONFIG = {
+  iceServers: [
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302"
+      ]
+    }
+  ]
+};
 
 // ============================================================
-// BASIC HELPERS
+// HELPERS
 // ============================================================
 
-const $ = id => document.getElementById(id);
-
-
-function escapeHTML(value = "") {
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
+function initials(name) {
+  const text = String(name || "?").trim();
 
-function initials(name = "JDA") {
+  if (!text) return "?";
 
-  const clean =
-    String(name)
-      .trim();
-
-  if (!clean) return "JDA";
-
-  return clean
+  return text
     .split(/\s+/)
     .slice(0, 2)
-    .map(word => word[0] || "")
-    .join("")
-    .toUpperCase();
-
+    .map(x => x.charAt(0).toUpperCase())
+    .join("");
 }
-
 
 function showError(message) {
+  console.error(message);
 
-  console.error(
-    "JDA Networks:",
-    message
-  );
+  let box = document.getElementById("jda-error-box");
 
-  alert(message);
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "jda-error-box";
 
+    Object.assign(box.style, {
+      position: "fixed",
+      left: "15px",
+      right: "15px",
+      bottom: "85px",
+      zIndex: "999999",
+      padding: "14px 16px",
+      borderRadius: "16px",
+      background: "rgba(80,0,100,.94)",
+      border: "1px solid rgba(255,0,220,.55)",
+      color: "#fff",
+      fontSize: "14px",
+      boxShadow: "0 0 25px rgba(160,0,255,.45)"
+    });
+
+    document.body.appendChild(box);
+  }
+
+  box.textContent = message;
+
+  setTimeout(() => {
+    if (box) box.remove();
+  }, 5000);
 }
 
+function safeTimestamp(value) {
+  if (!value) return null;
 
-function timestampSeconds(timestamp) {
-
-  if (!timestamp) return 0;
-
-  if (
-    typeof timestamp.seconds ===
-    "number"
-  ) {
-
-    return timestamp.seconds;
-
+  if (typeof value.toDate === "function") {
+    return value.toDate();
   }
 
-  if (
-    typeof timestamp.toDate ===
-    "function"
-  ) {
-
-    return Math.floor(
-      timestamp.toDate().getTime() / 1000
-    );
-
+  if (value instanceof Date) {
+    return value;
   }
 
-  if (
-    timestamp instanceof Date
-  ) {
-
-    return Math.floor(
-      timestamp.getTime() / 1000
-    );
-
+  if (typeof value === "number") {
+    return new Date(value);
   }
 
-  if (
-    typeof timestamp === "number"
-  ) {
-
-    return Math.floor(
-      timestamp / 1000
-    );
-
-  }
-
-  return 0;
-
+  return null;
 }
 
-
-function timestampDate(timestamp) {
-
-  const seconds =
-    timestampSeconds(timestamp);
-
-  if (!seconds) return null;
-
-  return new Date(
-    seconds * 1000
-  );
-
-}
-
-
-// ============================================================
-// TIME FORMATTING
-// ============================================================
-
-function formatTime(timestamp) {
-
-  const date =
-    timestampDate(timestamp);
+function formatTime(value) {
+  const date = safeTimestamp(value);
 
   if (!date) return "";
 
-  const now =
-    new Date();
-
-  const sameDay =
-    date.toDateString() ===
-    now.toDateString();
-
-  if (sameDay) {
-
-    return date.toLocaleTimeString(
-      [],
-      {
-        hour: "2-digit",
-        minute: "2-digit"
-      }
-    );
-
-  }
-
-
-  const yesterday =
-    new Date();
-
-  yesterday.setDate(
-    yesterday.getDate() - 1
-  );
-
-
-  if (
-    date.toDateString() ===
-    yesterday.toDateString()
-  ) {
-
-    return "Yesterday";
-
-  }
-
-
-  return date.toLocaleDateString(
-    [],
-    {
-      day: "2-digit",
-      month: "short"
-    }
-  );
-
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
+function formatLastSeen(value) {
+  const date = safeTimestamp(value);
 
-function formatLastSeen(timestamp) {
+  if (!date) return "last seen recently";
 
-  const date =
-    timestampDate(timestamp);
-
-  if (!date) {
-
-    return "Offline";
-
-  }
-
-
-  const now =
-    new Date();
-
-  const diff =
-    now.getTime() -
-    date.getTime();
-
-
-  if (diff < 60000) {
-
-    return "Last seen just now";
-
-  }
-
-
-  if (diff < 3600000) {
-
-    const minutes =
-      Math.floor(
-        diff / 60000
-      );
-
-    return `Last seen ${minutes} min ago`;
-
-  }
-
-
-  if (
-    date.toDateString() ===
-    now.toDateString()
-  ) {
-
-    return `Last seen today at ${
-      date.toLocaleTimeString(
-        [],
-        {
-          hour: "2-digit",
-          minute: "2-digit"
-        }
-      )
-    }`;
-
-  }
-
-
-  return `Last seen ${
-    date.toLocaleDateString(
-      [],
-      {
-        day: "2-digit",
-        month: "short"
-      }
-    )
-  }`;
-
+  return `last seen ${date.toLocaleDateString([], {
+    day: "2-digit",
+    month: "short"
+  })} ${date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  })}`;
 }
-
-
-// ============================================================
-// MEMBER HELPERS
-// ============================================================
 
 function getMemberClass(member) {
-
   return (
-    member?.className ||
-    member?.class ||
-    member?.studentClass ||
+    member.className ||
+    member.studentClass ||
+    member.form ||
     ""
   );
-
 }
-
 
 function isMemberOnline(member) {
-
-  return member?.isOnline === true;
-
+  return member.isOnline === true;
 }
 
-
-function avatarHTML(
-  profile,
-  size = 52
-) {
-
-  const name =
-    profile?.realName ||
-    "JDA Member";
-
-
-  const photo =
-    profile?.photoURL ||
-    profile?.profilePhoto ||
-    profile?.photoUrl ||
-    "";
-
+function avatarHTML(member, size = 46) {
+  const photo = member?.photoURL;
 
   if (photo) {
-
     return `
       <img
         src="${escapeHTML(photo)}"
+        class="jda-avatar"
+        style="width:${size}px;height:${size}px"
         alt=""
-        class="jda-avatar-image"
-        style="
-          width:${size}px;
-          height:${size}px;
-          border-radius:50%;
-          object-fit:cover;
-          flex-shrink:0;
-          display:block;
-        "
       >
     `;
-
   }
-
 
   return `
     <div
-      class="jda-avatar-fallback"
-      style="
-        width:${size}px;
-        height:${size}px;
-        border-radius:50%;
-        background:
-          linear-gradient(
-            135deg,
-            #246bfd,
-            #8b35ff,
-            #d22cff
-          );
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        color:white;
-        font-weight:800;
-        font-size:${Math.max(
-          14,
-          size / 2.7
-        )}px;
-        flex-shrink:0;
-        box-shadow:
-          0 0 14px
-          rgba(119,72,255,.35);
-      "
+      class="jda-avatar jda-avatar-placeholder"
+      style="width:${size}px;height:${size}px"
     >
-      ${escapeHTML(initials(name))}
+      ${escapeHTML(initials(member?.realName))}
     </div>
   `;
-
 }
 
-
-function onlineIndicator(
-  online,
-  size = 12
-) {
-
-  return `
-    <span
-      class="jda-online-dot ${
-        online
-          ? "online"
-          : "offline"
-      }"
-      style="
-        width:${size}px;
-        height:${size}px;
-        border-radius:50%;
-        display:block;
-        background:${
-          online
-            ? "#39ef88"
-            : "#65717c"
-        };
-        border:2px solid #0b0d19;
-        box-sizing:border-box;
-        box-shadow:${
-          online
-            ? "0 0 8px rgba(57,239,136,.9)"
-            : "none"
-        };
-      "
-    ></span>
-  `;
-
+function onlineIndicator(member) {
+  return isMemberOnline(member)
+    ? `<span class="jda-online-dot"></span>`
+    : "";
 }
 
+function getConversationOtherUser(conversation) {
+  if (!conversation?.participantIds) return null;
+
+  const otherId = conversation.participantIds.find(
+    id => id !== currentUser?.uid
+  );
+
+  if (!otherId) return null;
+
+  return members.find(m => m.uid === otherId) || {
+    uid: otherId,
+    realName: "JDA Member",
+    photoURL: ""
+  };
+}
 
 // ============================================================
-// JDA NEON DESIGN
+// NEON DESIGN
 // ============================================================
 
 function injectJDAStyles() {
+  if (document.getElementById("jda-app-styles")) return;
 
-  if (
-    document.getElementById(
-      "jdaAppStyles"
-    )
-  ) {
+  const style = document.createElement("style");
 
-    return;
-
-  }
-
-
-  const style =
-    document.createElement(
-      "style"
-    );
-
-
-  style.id =
-    "jdaAppStyles";
-
+  style.id = "jda-app-styles";
 
   style.textContent = `
-
-    /* ======================================================
-       JDA NETWORKS — VISUAL SYSTEM
-       ====================================================== */
-
     :root {
-      --jda-bg: #080914;
-      --jda-panel: #101222;
-      --jda-panel-2: #15172a;
-      --jda-line: rgba(255,255,255,.07);
-      --jda-text: #f4f4fb;
-      --jda-muted: #9a9caf;
-      --jda-blue: #39a9ff;
-      --jda-purple: #9a4dff;
-      --jda-pink: #e03cff;
-      --jda-green: #39ef88;
+      --jda-blue: #168cff;
+      --jda-purple: #8b3dff;
+      --jda-pink: #ff2bd6;
+      --jda-cyan: #00eaff;
+      --jda-bg: #070812;
+      --jda-card: rgba(18, 18, 38, .82);
+      --jda-border: rgba(135, 80, 255, .28);
     }
 
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       background:
-        radial-gradient(
-          circle at 15% 10%,
-          rgba(53,117,255,.12),
-          transparent 28%
-        ),
-        radial-gradient(
-          circle at 90% 30%,
-          rgba(179,46,255,.12),
-          transparent 30%
-        ),
-        var(--jda-bg);
+        radial-gradient(circle at 10% 10%, rgba(0,150,255,.20), transparent 28%),
+        radial-gradient(circle at 90% 15%, rgba(190,0,255,.18), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(255,0,200,.12), transparent 35%),
+        #070812 !important;
+      color: #fff !important;
     }
 
+    .jda-avatar {
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-    .jda-chat-row {
-      position:relative;
-      overflow:hidden;
-      border-bottom:
-        1px solid
-        rgba(255,255,255,.055) !important;
+    .jda-avatar-placeholder {
       background:
-        linear-gradient(
-          90deg,
-          rgba(255,255,255,.015),
-          transparent
-        );
-    }
-
-
-    .jda-chat-row::after {
-      content:"";
-      position:absolute;
-      left:74px;
-      right:12px;
-      bottom:0;
-      height:1px;
-      background:
-        linear-gradient(
-          90deg,
-          transparent,
-          rgba(86,128,255,.16),
-          rgba(170,65,255,.13),
-          transparent
-        );
-      pointer-events:none;
-    }
-
-
-    .jda-chat-row:active {
-      background:
-        rgba(100,75,180,.13) !important;
-    }
-
-
-    .jda-neon-title {
-      color:#fff;
-      text-shadow:
-        0 0 10px rgba(78,150,255,.35),
-        0 0 18px rgba(173,63,255,.25);
-    }
-
-
-    .jda-online-text {
-      color:var(--jda-green) !important;
-      text-shadow:
-        0 0 7px rgba(57,239,136,.25);
-    }
-
-
-    .jda-offline-text {
-      color:#8c91a1 !important;
-    }
-
-
-    .jda-chat-background {
-      background:
-        radial-gradient(
-          circle at 20% 20%,
-          rgba(39,101,255,.09),
-          transparent 30%
-        ),
-        radial-gradient(
-          circle at 85% 60%,
-          rgba(169,43,255,.08),
-          transparent 32%
-        ),
-        #080914;
-    }
-
-
-    .jda-message-bubble {
-      position:relative;
+        linear-gradient(135deg,#126cff,#a72bff,#ff29ca);
       box-shadow:
-        0 4px 18px
-        rgba(0,0,0,.18);
+        0 0 12px rgba(60,120,255,.35),
+        0 0 20px rgba(180,30,255,.20);
+      font-weight: 800;
+      color: white;
     }
 
+    .jda-online-dot {
+      width: 10px;
+      height: 10px;
+      background: #00ff9d;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 10px #00ff9d;
+      border: 2px solid #0a0b16;
+      margin-left: -12px;
+      position: relative;
+      z-index: 2;
+    }
 
-    .jda-message-mine {
+    .chat-item {
+      background:
+        linear-gradient(
+          120deg,
+          rgba(20,120,255,.08),
+          rgba(150,40,255,.08),
+          rgba(255,20,210,.05)
+        ) !important;
+      border: 1px solid rgba(130,80,255,.13) !important;
+      border-radius: 17px !important;
+      margin: 7px 8px !important;
+      transition: .2s;
+    }
+
+    .chat-item:hover {
+      border-color: rgba(80,180,255,.45) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 0 20px rgba(70,80,255,.13);
+    }
+
+    .jda-neon-button {
       background:
         linear-gradient(
           135deg,
-          #7039ff,
-          #a329ff
+          #087cff,
+          #7d35ff,
+          #ed25cf
         ) !important;
+      border: none !important;
+      color: white !important;
       box-shadow:
-        0 0 18px
-        rgba(151,52,255,.28),
-        0 5px 18px
-        rgba(0,0,0,.22);
+        0 0 14px rgba(45,120,255,.35),
+        0 0 25px rgba(170,30,255,.18);
     }
 
-
-    .jda-message-other {
+    .jda-message-out {
       background:
         linear-gradient(
           135deg,
-          #17213a,
-          #20283e
+          #086fff,
+          #6f35ff,
+          #b52bdc
         ) !important;
-      border:
-        1px solid
-        rgba(69,154,255,.32);
-      box-shadow:
-        0 0 14px
-        rgba(35,119,255,.12);
+      color: white !important;
+      border-radius: 18px 18px 4px 18px !important;
+      box-shadow: 0 0 18px rgba(80,70,255,.16);
     }
 
-
-    .jda-send-button {
+    .jda-message-in {
       background:
         linear-gradient(
           135deg,
-          #7838ff,
-          #e33dff
+          rgba(38,40,75,.94),
+          rgba(58,30,75,.94)
         ) !important;
-      color:white !important;
-      box-shadow:
-        0 0 18px
-        rgba(181,48,255,.45);
+      color: white !important;
+      border-radius: 18px 18px 18px 4px !important;
+      border: 1px solid rgba(150,80,255,.15);
     }
 
-
-    .jda-message-input {
+    .jda-call-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99990;
       background:
-        rgba(24,27,47,.96) !important;
-      border:
-        1px solid
-        rgba(102,75,255,.24) !important;
-      box-shadow:
-        inset 0 0 12px
-        rgba(0,0,0,.18);
+        radial-gradient(circle at 50% 10%, rgba(20,130,255,.30), transparent 35%),
+        radial-gradient(circle at 50% 90%, rgba(210,20,255,.25), transparent 40%),
+        rgba(3,4,13,.97);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
 
-
-    .jda-chat-header {
-      background:
-        linear-gradient(
-          90deg,
-          #0d1020,
-          #14142a
-        ) !important;
-      border-bottom:
-        1px solid
-        rgba(117,80,255,.2);
-      box-shadow:
-        0 4px 20px
-        rgba(0,0,0,.25);
+    .jda-call-video {
+      width: 100%;
+      max-width: 700px;
+      max-height: 70vh;
+      background: #000;
+      border-radius: 22px;
+      object-fit: cover;
+      box-shadow: 0 0 35px rgba(80,80,255,.35);
     }
 
+    .jda-local-video {
+      position: absolute;
+      width: 110px;
+      height: 155px;
+      right: 20px;
+      top: 20px;
+      border-radius: 16px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,.5);
+      box-shadow: 0 0 20px rgba(80,80,255,.35);
+      background: #000;
+    }
+
+    .jda-call-controls {
+      display: flex;
+      gap: 14px;
+      margin-top: 22px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .jda-call-control {
+      width: 56px;
+      height: 56px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+      color: white;
+      font-size: 22px;
+      box-shadow: 0 0 18px rgba(100,80,255,.12);
+    }
+
+    .jda-call-end {
+      background: #ed214c;
+      box-shadow: 0 0 22px rgba(255,20,70,.35);
+    }
+
+    .jda-incoming-card {
+      width: min(380px, 92vw);
+      background: rgba(17,18,38,.96);
+      border: 1px solid rgba(130,70,255,.45);
+      border-radius: 28px;
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow:
+        0 0 35px rgba(70,70,255,.25),
+        0 0 60px rgba(190,20,255,.12);
+    }
+
+    .jda-call-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .jda-call-action {
+      border: none;
+      padding: 13px 25px;
+      border-radius: 30px;
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .jda-call-accept {
+      background: #00b86b;
+      box-shadow: 0 0 18px rgba(0,255,150,.25);
+    }
+
+    .jda-call-reject {
+      background: #e8274f;
+      box-shadow: 0 0 18px rgba(255,20,70,.25);
+    }
+
+    .jda-member-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      margin: 7px 0;
+      border-radius: 16px;
+      background: rgba(30,30,55,.62);
+      border: 1px solid rgba(120,70,255,.15);
+    }
+
+    .jda-member-card:active {
+      transform: scale(.985);
+    }
+
+    .jda-status-text {
+      font-size: 12px;
+      opacity: .72;
+    }
+
+    .jda-search-highlight {
+      border-color: rgba(0,220,255,.45) !important;
+    }
+
+    .jda-empty {
+      text-align: center;
+      opacity: .6;
+      padding: 40px 20px;
+      font-size: 14px;
+    }
 
     .jda-unread {
-      min-width:21px;
-      height:21px;
-      padding:0 6px;
-      border-radius:50%;
-      background:
-        linear-gradient(
-          135deg,
-          #7d39ff,
-          #d635ff
-        );
-      color:white;
-      font-size:11px;
-      font-weight:800;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:
-        0 0 10px
-        rgba(184,49,255,.4);
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 12px;
+      background: #0be98c;
+      color: #03150d;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
     }
-
-
-    .jda-status-line {
-      display:flex;
-      align-items:center;
-      gap:5px;
-    }
-
-
-    .jda-chat-name {
-      color:#fff;
-      font-weight:700;
-    }
-
-
-    .jda-time {
-      color:#9296a8;
-      font-size:11px;
-    }
-
-
-    .jda-last-message {
-      color:#a9aabd;
-    }
-
-
-    .jda-message-meta {
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:4px;
-      margin-top:3px;
-      font-size:10px;
-    }
-
-
-    .jda-checks {
-      letter-spacing:-2px;
-      font-weight:800;
-    }
-
-
-    .jda-checks.sent {
-      color:#a6acba;
-    }
-
-
-    .jda-checks.seen {
-      color:#62b8ff;
-      text-shadow:
-        0 0 5px
-        rgba(98,184,255,.45);
-    }
-
-
-    .jda-search-results {
-      max-height:60vh;
-      overflow-y:auto;
-    }
-
-
-    .jda-member-row:hover {
-      background:
-        rgba(119,74,255,.09);
-    }
-
-
-    .jda-member-row:active {
-      background:
-        rgba(119,74,255,.16);
-    }
-
   `;
 
-
-  document.head.appendChild(
-    style
-  );
-
+  document.head.appendChild(style);
 }
 
-
 // ============================================================
-// AUTHENTICATION
+// AUTH GATE
 // ============================================================
 
-onAuthStateChanged(
-  auth,
-  async user => {
-
-    if (!user) {
-
-      window.location.replace(
-        "./index.html"
-      );
-
-      return;
-
-    }
-
-
-    currentUser =
-      user;
-
-
-    try {
-
-      const profileRef =
-        doc(
-          db,
-          "users",
-          user.uid
-        );
-
-
-      const profileSnap =
-        await getDoc(
-          profileRef
-        );
-
-
-      if (
-        !profileSnap.exists()
-      ) {
-
-        await signOut(auth);
-
-        window.location.replace(
-          "./index.html"
-        );
-
-        return;
-
-      }
-
-
-      currentProfile = {
-        id:
-          profileSnap.id,
-        ...profileSnap.data()
-      };
-
-
-      const approved =
-        currentProfile.status ===
-          "approved" ||
-        currentProfile.approved ===
-          true;
-
-
-      if (!approved) {
-
-        window.location.replace(
-          "./index.html"
-        );
-
-        return;
-
-      }
-
-
-      if (!initialized) {
-
-        initialized = true;
-
-        await initializeApp();
-
-      }
-
-
-      await setOwnOnlineStatus(
-        true
-      );
-
-    }
-    catch(error) {
-
-      console.error(
-        "JDA authentication error:",
-        error
-      );
-
-      showError(
-        "JDA Networks could not load your account.\n\n" +
-        error.message
-      );
-
-    }
-
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    return;
   }
-);
 
+  currentUser = user;
+
+  try {
+    const profileRef = doc(db, "users", user.uid);
+    const profileSnap = await getDoc(profileRef);
+
+    if (!profileSnap.exists()) {
+      window.location.href = "./index.html";
+      return;
+    }
+
+    currentProfile = {
+      uid: user.uid,
+      ...profileSnap.data()
+    };
+
+    if (currentProfile.status !== "approved") {
+      window.location.href = "./index.html";
+      return;
+    }
+
+    if (!initialized) {
+      initialized = true;
+      await initializeJDA();
+    }
+
+    await setOwnOnlineStatus(true);
+
+  } catch (error) {
+    console.error(error);
+    showError("Unable to load your JDA Networks profile.");
+  }
+});
 
 // ============================================================
 // INITIALIZE
 // ============================================================
 
-async function initializeApp() {
-
+async function initializeJDA() {
   injectJDAStyles();
 
   renderProfile();
@@ -878,3563 +572,2690 @@ async function initializeApp() {
 
   createChatWindow();
 
-  setupNavigation();
+  createCallInterface();
 
-  setupNewChatButtons();
+  setupNavigation();
 
   setupSearch();
 
-  setupLogout();
+  setupNewChatButtons();
 
   setupDirectoryButtons();
 
-  setupOnlineStatusEvents();
+  setupLogout();
 
-  await loadMembers();
+  setupOnlineStatus();
 
-  listenForMembers();
+  listenMembers();
 
-  listenForConversations();
+  listenConversations();
 
+  listenIncomingCalls();
+
+  setupCallButtons();
+
+  window.JDA = {
+    startConversation,
+    openChat,
+    startAudioCall,
+    startVideoCall,
+    endCurrentCall
+  };
 }
 
-
 // ============================================================
-// ONLINE / OFFLINE
+// ONLINE STATUS
 // ============================================================
 
-async function setOwnOnlineStatus(
-  online
-) {
-
+async function setOwnOnlineStatus(isOnline) {
   if (!currentUser) return;
 
-
   try {
-
     await updateDoc(
-      doc(
-        db,
-        "users",
-        currentUser.uid
-      ),
+      doc(db, "users", currentUser.uid),
       {
-        isOnline:
-          online,
-
-        lastSeen:
-          serverTimestamp()
+        isOnline,
+        lastSeen: serverTimestamp()
       }
     );
-
+  } catch (error) {
+    console.warn("Online status update failed:", error);
   }
-  catch(error) {
-
-    console.warn(
-      "Could not update online status:",
-      error.message
-    );
-
-  }
-
 }
 
-
-function setupOnlineStatusEvents() {
-
-  document.addEventListener(
-    "visibilitychange",
-    async () => {
-
-      if (
-        document.visibilityState ===
-        "visible"
-      ) {
-
-        await setOwnOnlineStatus(
-          true
-        );
-
-      }
-      else {
-
-        await setOwnOnlineStatus(
-          false
-        );
-
-      }
-
+function setupOnlineStatus() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      setOwnOnlineStatus(true);
+    } else {
+      setOwnOnlineStatus(false);
     }
-  );
+  });
 
+  window.addEventListener("focus", () => {
+    setOwnOnlineStatus(true);
+  });
 
-  window.addEventListener(
-    "pagehide",
-    () => {
+  window.addEventListener("blur", () => {
+    setOwnOnlineStatus(false);
+  });
 
-      if (!currentUser) return;
+  window.addEventListener("pagehide", () => {
+    setOwnOnlineStatus(false);
+  });
 
-
-      updateDoc(
-        doc(
-          db,
-          "users",
-          currentUser.uid
-        ),
-        {
-          isOnline:false,
-          lastSeen:
-            serverTimestamp()
-        }
-      )
-      .catch(
-        () => {}
-      );
-
+  setInterval(() => {
+    if (document.visibilityState === "visible") {
+      setOwnOnlineStatus(true);
     }
-  );
-
-
-  window.addEventListener(
-    "focus",
-    () => {
-
-      setOwnOnlineStatus(
-        true
-      );
-
-    }
-  );
-
-
-  window.addEventListener(
-    "blur",
-    () => {
-
-      setOwnOnlineStatus(
-        false
-      );
-
-    }
-  );
-
+  }, 60000);
 }
 
-
 // ============================================================
-// LOAD MEMBERS
-// ============================================================
-
-async function loadMembers() {
-
-  if (!currentUser) return;
-
-
-  try {
-
-    const membersQuery =
-      query(
-        collection(
-          db,
-          "users"
-        ),
-        where(
-          "status",
-          "==",
-          "approved"
-        )
-      );
-
-
-    const snapshot =
-      await getDocs(
-        membersQuery
-      );
-
-
-    members = [];
-
-
-    snapshot.forEach(
-      item => {
-
-        if (
-          item.id ===
-          currentUser.uid
-        ) {
-
-          return;
-
-        }
-
-
-        members.push({
-          id:
-            item.id,
-          ...item.data()
-        });
-
-      }
-    );
-
-
-    sortMembers();
-
-    renderMemberResults();
-
-    renderDirectory();
-
-    renderChats();
-
-  }
-  catch(error) {
-
-    console.error(
-      "Member loading error:",
-      error
-    );
-
-    showError(
-      "Approved members could not be loaded.\n\n" +
-      error.message
-    );
-
-  }
-
-}
-
-
-// ============================================================
-// SORT MEMBERS
+// MEMBERS
 // ============================================================
 
-function sortMembers() {
-
-  members.sort(
-    (a, b) =>
-      (
-        a.realName ||
-        ""
-      ).localeCompare(
-        b.realName ||
-        ""
-      )
-  );
-
-}
-
-
-// ============================================================
-// REAL-TIME MEMBERS
-// ============================================================
-
-function listenForMembers() {
-
-  if (
-    unsubscribeMembers
-  ) {
-
+function listenMembers() {
+  if (unsubscribeMembers) {
     unsubscribeMembers();
-
   }
 
-
-  const membersQuery =
-    query(
-      collection(
-        db,
-        "users"
-      ),
-      where(
-        "status",
-        "==",
-        "approved"
-      )
-    );
-
-
-  unsubscribeMembers =
-    onSnapshot(
-      membersQuery,
-
-      snapshot => {
-
-        members = [];
-
-
-        snapshot.forEach(
-          item => {
-
-            if (
-              item.id ===
-              currentUser.uid
-            ) {
-
-              return;
-
-            }
-
-
-            members.push({
-              id:
-                item.id,
-              ...item.data()
-            });
-
-          }
-        );
-
-
-        sortMembers();
-
-        renderMemberResults();
-
-        renderDirectory();
-
-        renderChats();
-
-
-        // Update currently open chat status.
-
-        if (
-          currentChatUser
-        ) {
-
-          const updated =
-            members.find(
-              member =>
-                member.id ===
-                currentChatUser.id
-            );
-
-
-          if (updated) {
-
-            currentChatUser =
-              updated;
-
-            updateChatHeader(
-              updated
-            );
-
-          }
-
-        }
-
-      },
-
-      error => {
-
-        console.error(
-          "Member listener error:",
-          error
-        );
-
-      }
-    );
-
-}
-
-
-// ============================================================
-// REAL-TIME CONVERSATIONS
-// ============================================================
-
-function listenForConversations() {
-
-  if (
-    unsubscribeConversations
-  ) {
-
-    unsubscribeConversations();
-
-  }
-
-
-  const conversationsQuery =
-    query(
-      collection(
-        db,
-        "conversations"
-      ),
-      where(
-        "participantIds",
-        "array-contains",
-        currentUser.uid
-      )
-    );
-
-
-  unsubscribeConversations =
-    onSnapshot(
-      conversationsQuery,
-
-      snapshot => {
-
-        conversations =
-          snapshot.docs.map(
-            item => ({
-              id:
-                item.id,
-              ...item.data()
-            })
-          );
-
-
-        conversations.sort(
-          (a, b) =>
-            timestampSeconds(
-              b.updatedAt
-            ) -
-            timestampSeconds(
-              a.updatedAt
-            )
-        );
-
-
-        renderChats();
-
-      },
-
-      error => {
-
-        console.error(
-          "Conversation listener error:",
-          error
-        );
-
-        showError(
-          "Chats could not be loaded.\n\n" +
-          error.message
-        );
-
-      }
-    );
-
-}
-
-
-// ============================================================
-// GET OTHER PARTICIPANT
-// ============================================================
-
-async function getOtherParticipant(
-  conversation
-) {
-
-  const ids =
-    conversation.participantIds ||
-    [];
-
-
-  const otherId =
-    ids.find(
-      id =>
-        id !==
-        currentUser.uid
-    );
-
-
-  if (!otherId) {
-
-    return null;
-
-  }
-
-
-  const cached =
-    members.find(
-      member =>
-        member.id ===
-        otherId
-    );
-
-
-  if (cached) {
-
-    return cached;
-
-  }
-
-
-  try {
-
-    const snap =
-      await getDoc(
-        doc(
-          db,
-          "users",
-          otherId
-        )
-      );
-
-
-    if (!snap.exists()) {
-
-      return null;
-
+  const q = query(
+    collection(db, "users"),
+    where("status", "==", "approved")
+  );
+
+  unsubscribeMembers = onSnapshot(
+    q,
+    snapshot => {
+      members = snapshot.docs
+        .map(d => ({
+          uid: d.id,
+          ...d.data()
+        }))
+        .filter(m => m.uid !== currentUser.uid);
+
+      renderChats();
+      renderDirectory();
+      renderClasses();
+      renderStaff();
+    },
+    error => {
+      console.error(error);
+      showError("Unable to load JDA members.");
     }
-
-
-    return {
-      id:
-        snap.id,
-      ...snap.data()
-    };
-
-  }
-  catch(error) {
-
-    console.error(
-      "Other participant error:",
-      error
-    );
-
-    return null;
-
-  }
-
+  );
 }
 
+// ============================================================
+// CONVERSATIONS
+// ============================================================
+
+function listenConversations() {
+  if (unsubscribeConversations) {
+    unsubscribeConversations();
+  }
+
+  const q = query(
+    collection(db, "conversations"),
+    where(
+      "participantIds",
+      "array-contains",
+      currentUser.uid
+    )
+  );
+
+  unsubscribeConversations = onSnapshot(
+    q,
+    snapshot => {
+      conversations = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+
+      conversations.sort((a, b) => {
+        const ta = safeTimestamp(a.updatedAt)?.getTime() || 0;
+        const tb = safeTimestamp(b.updatedAt)?.getTime() || 0;
+        return tb - ta;
+      });
+
+      renderChats();
+    },
+    error => {
+      console.error(error);
+      showError(
+        "Unable to load your chats. Check your Firestore rules."
+      );
+    }
+  );
+}
 
 // ============================================================
 // CHAT LIST
 // ============================================================
 
 async function renderChats() {
-
-  const list =
-    $("chatList");
-
-
-  if (!list) return;
-
-
-  list.innerHTML = "";
-
-
-  if (
-    conversations.length ===
-    0
-  ) {
-
-    list.innerHTML = `
-
-      <div
-        class="empty"
-        style="
-          text-align:center;
-          padding:55px 20px;
-          color:#9a9caf;
-        "
-      >
-
-        <div
-          style="
-            width:70px;
-            height:70px;
-            margin:0 auto 18px;
-            border-radius:50%;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:31px;
-            background:
-              linear-gradient(
-                135deg,
-                #315cff,
-                #a72cff
-              );
-            box-shadow:
-              0 0 28px
-              rgba(126,62,255,.32);
-          "
-        >
-          💬
-        </div>
-
-        <div
-          style="
-            color:#fff;
-            font-size:19px;
-            font-weight:700;
-            margin-bottom:7px;
-          "
-        >
-          No chats yet
-        </div>
-
-        <div
-          style="
-            margin-bottom:20px;
-          "
-        >
-          Start a private conversation
-          with a JDA member.
-        </div>
-
-        <button
-          id="emptyStartChat"
-          style="
-            border:0;
-            border-radius:24px;
-            padding:12px 23px;
-            background:
-              linear-gradient(
-                135deg,
-                #7438ff,
-                #d737ff
-              );
-            color:white;
-            font-weight:800;
-            box-shadow:
-              0 0 18px
-              rgba(180,55,255,.35);
-          "
-        >
-          ✎ Start chatting
-        </button>
-
-      </div>
-
-    `;
-
-
-    $("emptyStartChat")
-      ?.addEventListener(
-        "click",
-        openMemberModal
-      );
-
-
-    return;
-
-  }
-
-
-  const rows =
-    await Promise.all(
-      conversations.map(
-        async conversation => {
-
-          const person =
-            await getOtherParticipant(
-              conversation
-            );
-
-
-          if (!person) {
-
-            return null;
-
-          }
-
-
-          return {
-            conversation,
-            person
-          };
-
-        }
-      )
-    );
-
-
-  rows
-    .filter(Boolean)
-    .forEach(
-      ({
-        conversation,
-        person
-      }) => {
-
-        const row =
-          createChatRow(
-            person,
-            conversation
-          );
-
-
-        list.appendChild(
-          row
-        );
-
-      }
-    );
-
-}
-
-
-// ============================================================
-// CREATE CHAT ROW
-// ============================================================
-
-function createChatRow(
-  person,
-  conversation
-) {
-
-  const row =
-    document.createElement(
-      "div"
-    );
-
-
-  row.className =
-    "jda-chat-row";
-
-
-  row.dataset.name =
-    (
-      person.realName ||
-      ""
-    ).toLowerCase();
-
-
-  row.dataset.search =
-    `
-      ${person.realName || ""}
-      ${conversation.lastMessage || ""}
-      ${person.jdaNumber || ""}
-    `.toLowerCase();
-
-
-  const online =
-    isMemberOnline(
-      person
-    );
-
-
-  const lastMessage =
-    conversation.lastMessage ||
-    "Start chatting";
-
-
-  const lastTime =
-    formatTime(
-      conversation.updatedAt
-    );
-
-
-  const unread =
-    Number(
-      conversation.unreadCounts?.[
-        currentUser.uid
-      ] ||
-      conversation.unreadCount ||
-      0
-    );
-
-
-  row.innerHTML = `
-
-    <div
-      style="
-        position:relative;
-        width:56px;
-        height:56px;
-        flex-shrink:0;
-      "
-    >
-
-      ${avatarHTML(
-        person,
-        56
-      )}
-
-      <div
-        style="
-          position:absolute;
-          right:-1px;
-          bottom:-1px;
-        "
-      >
-        ${onlineIndicator(
-          online,
-          14
-        )}
-      </div>
-
-    </div>
-
-
-    <div
-      style="
-        flex:1;
-        min-width:0;
-      "
-    >
-
-      <div
-        style="
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap:8px;
-        "
-      >
-
-        <div
-          class="jda-chat-name"
-          style="
-            font-size:16px;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
-          "
-        >
-          ${escapeHTML(
-            person.realName ||
-            "JDA Member"
-          )}
-        </div>
-
-
-        <div
-          class="jda-time"
-        >
-          ${escapeHTML(
-            lastTime
-          )}
-        </div>
-
-      </div>
-
-
-      <div
-        class="jda-status-line"
-        style="
-          margin-top:4px;
-          margin-bottom:3px;
-          font-size:11px;
-        "
-      >
-
-        <span
-          class="${
-            online
-              ? "jda-online-text"
-              : "jda-offline-text"
-          }"
-        >
-          ${
-            online
-              ? "Online"
-              : "Offline"
-          }
-        </span>
-
-        ${
-          online
-            ? `
-              <span
-                style="
-                  width:5px;
-                  height:5px;
-                  border-radius:50%;
-                  background:#39ef88;
-                  box-shadow:
-                    0 0 6px
-                    #39ef88;
-                "
-              ></span>
-            `
-            : ""
-        }
-
-      </div>
-
-
-      <div
-        style="
-          display:flex;
-          align-items:center;
-          gap:7px;
-        "
-      >
-
-        <span
-          class="jda-last-message"
-          style="
-            flex:1;
-            min-width:0;
-            font-size:13px;
-            white-space:nowrap;
-            overflow:hidden;
-            text-overflow:ellipsis;
-          "
-        >
-          ${escapeHTML(
-            lastMessage
-          )}
-        </span>
-
-        ${
-          unread > 0
-            ? `
-              <span
-                class="jda-unread"
-              >
-                ${
-                  unread > 99
-                    ? "99+"
-                    : unread
-                }
-              </span>
-            `
-            : ""
-        }
-
-      </div>
-
-    </div>
-
-  `;
-
-
-  row.addEventListener(
-    "click",
-    () => {
-
-      openChat(
-        person,
-        conversation.id
-      );
-
-    }
-  );
-
-
-  return row;
-
-}
-
-
-// ============================================================
-// MEMBER MODAL
-// ============================================================
-
-function createMemberModal() {
-
-  if (
-    $("jdaMemberModal")
-  ) {
-
-    return;
-
-  }
-
-
-  const modal =
-    document.createElement(
-      "div"
-    );
-
-
-  modal.id =
-    "jdaMemberModal";
-
-
-  modal.style.cssText = `
-    position:fixed;
-    inset:0;
-    z-index:99999;
-    background:
-      rgba(3,4,12,.82);
-    display:none;
-    align-items:flex-end;
-    justify-content:center;
-    backdrop-filter:blur(8px);
-  `;
-
-
-  modal.innerHTML = `
-
-    <div
-      style="
-        width:100%;
-        max-width:700px;
-        max-height:92vh;
-        background:
-          linear-gradient(
-            180deg,
-            #111325,
-            #090a14
-          );
-        border:
-          1px solid
-          rgba(136,69,255,.22);
-        border-radius:22px 22px 0 0;
-        overflow:hidden;
-        display:flex;
-        flex-direction:column;
-        box-shadow:
-          0 -10px 50px
-          rgba(0,0,0,.5);
-      "
-    >
-
-      <div
-        style="
-          padding:16px;
-          border-bottom:
-            1px solid
-            rgba(255,255,255,.07);
-          display:flex;
-          align-items:center;
-          gap:12px;
-        "
-      >
-
-        <button
-          id="closeMemberModal"
-          style="
-            border:0;
-            background:none;
-            color:#fff;
-            font-size:30px;
-            width:40px;
-            height:40px;
-          "
-        >
-          ×
-        </button>
-
-
-        <strong
-          style="
-            font-size:19px;
-            color:#fff;
-          "
-        >
-          New chat
-        </strong>
-
-      </div>
-
-
-      <div
-        style="
-          padding:13px 16px 8px;
-        "
-      >
-
-        <input
-          id="memberSearchInput"
-          type="search"
-          placeholder="Search JDA members"
-          autocomplete="off"
-          style="
-            width:100%;
-            box-sizing:border-box;
-            background:#191b2d;
-            border:
-              1px solid
-              rgba(108,76,255,.2);
-            outline:none;
-            border-radius:14px;
-            padding:13px 15px;
-            color:#fff;
-            font-size:15px;
-          "
-        >
-
-      </div>
-
-
-      <div
-        style="
-          padding:5px 16px 12px;
-          color:#898da1;
-          font-size:12px;
-        "
-      >
-        Approved JDA members
-      </div>
-
-
-      <div
-        id="memberResults"
-        class="jda-search-results"
-        style="
-          padding-bottom:25px;
-        "
-      ></div>
-
-    </div>
-
-  `;
-
-
-  document.body.appendChild(
-    modal
-  );
-
-
-  $("closeMemberModal")
-    .addEventListener(
-      "click",
-      closeMemberModal
-    );
-
-
-  $("memberSearchInput")
-    .addEventListener(
-      "input",
-      renderMemberResults
-    );
-
-
-  modal.addEventListener(
-    "click",
-    event => {
-
-      if (
-        event.target ===
-        modal
-      ) {
-
-        closeMemberModal();
-
-      }
-
-    }
-  );
-
-}
-
-
-// ============================================================
-// OPEN MEMBER MODAL
-// ============================================================
-
-function openMemberModal() {
-
-  createMemberModal();
-
-
-  const modal =
-    $("jdaMemberModal");
-
-
-  if (!modal) return;
-
-
-  modal.style.display =
-    "flex";
-
-
-  $("memberSearchInput").value =
-    "";
-
-
-  renderMemberResults();
-
-
-  setTimeout(
-    () => {
-
-      $("memberSearchInput")
-        ?.focus();
-
-    },
-    150
-  );
-
-}
-
-
-// ============================================================
-// CLOSE MEMBER MODAL
-// ============================================================
-
-function closeMemberModal() {
-
-  const modal =
-    $("jdaMemberModal");
-
-
-  if (modal) {
-
-    modal.style.display =
-      "none";
-
-  }
-
-}
-
-
-// ============================================================
-// MEMBER RESULTS
-// ============================================================
-
-function renderMemberResults() {
-
   const container =
-    $("memberResults");
-
+    document.getElementById("chatList") ||
+    document.querySelector(".chat-list") ||
+    document.querySelector("[data-chat-list]");
 
   if (!container) return;
 
-
-  const text =
-    (
-      $("memberSearchInput")
-        ?.value ||
-      ""
-    )
-      .trim()
-      .toLowerCase();
-
-
-  const filtered =
-    members.filter(
-      member => {
-
-        if (!text) return true;
-
-
-        const searchable =
-          `
-            ${member.realName || ""}
-            ${member.jdaNumber || ""}
-            ${member.accountType || ""}
-            ${getMemberClass(member)}
-            ${member.stream || ""}
-            ${member.department || ""}
-          `.toLowerCase();
-
-
-        return searchable.includes(
-          text
-        );
-
-      }
-    );
-
-
-  container.innerHTML =
-    "";
-
-
-  if (
-    filtered.length === 0
-  ) {
-
+  if (!conversations.length) {
     container.innerHTML = `
-
-      <div
-        style="
-          padding:35px 20px;
-          text-align:center;
-          color:#85899c;
-        "
-      >
-        No approved member found.
+      <div class="jda-empty">
+        No chats yet.<br>
+        Start a conversation with a JDA member.
       </div>
-
     `;
-
     return;
-
   }
 
+  const html = conversations.map(conversation => {
+    const member = getConversationOtherUser(conversation);
 
-  filtered.forEach(
-    member => {
+    if (!member) return "";
 
-      const row =
-        document.createElement(
-          "div"
-        );
+    const unread =
+      conversation.unreadCounts?.[currentUser.uid] ||
+      conversation.unreadCount?.[currentUser.uid] ||
+      0;
 
+    return `
+      <div
+        class="chat-item"
+        data-user-id="${escapeHTML(member.uid)}"
+        data-name="${escapeHTML(member.realName)}"
+        style="
+          display:flex;
+          align-items:center;
+          gap:12px;
+          padding:12px;
+          cursor:pointer;
+        "
+      >
 
-      row.className =
-        "jda-member-row";
+        ${avatarHTML(member, 48)}
 
+        <div style="flex:1;min-width:0">
 
-      row.style.cssText = `
-        display:flex;
-        align-items:center;
-        gap:13px;
-        padding:13px 18px;
-        cursor:pointer;
-        transition:.15s ease;
-      `;
+          <div style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:8px;
+          ">
 
+            <strong style="
+              white-space:nowrap;
+              overflow:hidden;
+              text-overflow:ellipsis;
+            ">
+              ${escapeHTML(member.realName)}
+            </strong>
 
-      let info = "";
+            <span style="
+              font-size:11px;
+              opacity:.55;
+              white-space:nowrap;
+            ">
+              ${formatTime(conversation.updatedAt)}
+            </span>
 
-
-      if (
-        member.accountType ===
-        "student"
-      ) {
-
-        const parts = [];
-
-
-        const className =
-          getMemberClass(
-            member
-          );
-
-
-        if (className) {
-
-          parts.push(
-            className
-          );
-
-        }
-
-
-        if (member.stream) {
-
-          parts.push(
-            member.stream
-          );
-
-        }
-
-
-        info =
-          parts.join(
-            " • "
-          );
-
-      }
-      else {
-
-        info =
-          member.department ||
-          "Staff";
-
-      }
-
-
-      if (!info) {
-
-        info =
-          member.jdaNumber ||
-          "JDA Member";
-
-      }
-
-
-      const online =
-        isMemberOnline(
-          member
-        );
-
-
-      row.innerHTML = `
-
-        <div
-          style="
-            position:relative;
-            width:52px;
-            height:52px;
-          "
-        >
-
-          ${avatarHTML(
-            member,
-            52
-          )}
-
-          <div
-            style="
-              position:absolute;
-              right:-1px;
-              bottom:-1px;
-            "
-          >
-            ${onlineIndicator(
-              online,
-              12
-            )}
           </div>
 
-        </div>
+          <div style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:8px;
+            margin-top:4px;
+          ">
 
-
-        <div
-          style="
-            flex:1;
-            min-width:0;
-          "
-        >
-
-          <div
-            style="
-              color:#fff;
-              font-size:16px;
-              font-weight:700;
-            "
-          >
-            ${escapeHTML(
-              member.realName ||
-              "JDA Member"
-            )}
-          </div>
-
-
-          <div
-            style="
-              color:#9699ac;
+            <span style="
               font-size:12px;
-              margin-top:4px;
-            "
-          >
-            ${escapeHTML(
-              info
-            )}
+              opacity:.68;
+              white-space:nowrap;
+              overflow:hidden;
+              text-overflow:ellipsis;
+            ">
+              ${escapeHTML(
+                conversation.lastMessage || "No messages yet"
+              )}
+            </span>
+
+            ${
+              unread
+                ? `<span class="jda-unread">${unread}</span>`
+                : ""
+            }
+
           </div>
 
         </div>
 
+      </div>
+    `;
+  }).join("");
 
-        <div
-          style="
-            font-size:11px;
-            color:${
-              online
-                ? "#39ef88"
-                : "#747989"
-            };
-          "
-        >
-          ${
-            online
-              ? "Online"
-              : "Offline"
-          }
-        </div>
+  container.innerHTML = html;
 
-      `;
-
-
-      row.addEventListener(
-        "click",
-        async () => {
-
-          closeMemberModal();
-
-          await startConversation(
-            member
-          );
-
-        }
+  container.querySelectorAll(".chat-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const member = members.find(
+        m => m.uid === item.dataset.userId
       );
 
-
-      container.appendChild(
-        row
-      );
-
-    }
-  );
-
+      if (member) {
+        startConversation(member);
+      }
+    });
+  });
 }
-
 
 // ============================================================
 // START CONVERSATION
 // ============================================================
 
-async function startConversation(
-  member
-) {
+async function startConversation(member) {
+  if (!member || !currentUser) return;
 
-  if (
-    !currentUser ||
-    !member ||
-    !member.id
-  ) {
+  const ids = [
+    currentUser.uid,
+    member.uid
+  ].sort();
 
-    showError(
-      "You must be logged in before starting a chat."
-    );
+  const conversationId = ids.join("_");
 
-    return;
-
-  }
-
-
-  if (
-    member.id ===
-    currentUser.uid
-  ) {
-
-    return;
-
-  }
-
+  const conversationRef =
+    doc(db, "conversations", conversationId);
 
   try {
+    const snap = await getDoc(conversationRef);
 
-    const ids = [
-      currentUser.uid,
-      member.id
-    ].sort();
-
-
-    const conversationId =
-      `${ids[0]}_${ids[1]}`;
-
-
-    const conversationRef =
-      doc(
-        db,
-        "conversations",
-        conversationId
-      );
-
-
-    const existing =
-      await getDoc(
-        conversationRef
-      );
-
-
-    if (
-      !existing.exists()
-    ) {
-
-      await setDoc(
-        conversationRef,
-        {
-          participantIds:
-            ids,
-
-          createdAt:
-            serverTimestamp(),
-
-          updatedAt:
-            serverTimestamp(),
-
-          lastMessage:
-            ""
+    if (!snap.exists()) {
+      await setDoc(conversationRef, {
+        participantIds: ids,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        lastMessage: "",
+        unreadCounts: {
+          [currentUser.uid]: 0,
+          [member.uid]: 0
         }
-      );
-
+      });
     }
 
+    currentConversationId = conversationId;
+    currentChatUser = member;
 
-    await openChat(
-      member,
-      conversationId
-    );
+    openChat(member);
 
-  }
-  catch(error) {
-
-    console.error(
-      "Conversation creation error:",
-      error
-    );
-
-
+  } catch (error) {
+    console.error(error);
     showError(
-      "Could not start the conversation.\n\n" +
-      error.message
+      "Could not open this conversation. Check Firestore permissions."
     );
-
   }
-
 }
-
 
 // ============================================================
 // CHAT WINDOW
 // ============================================================
 
 function createChatWindow() {
+  if (document.getElementById("jda-chat-window")) return;
 
-  if (
-    $("jdaChatWindow")
-  ) {
+  const wrapper = document.createElement("div");
 
-    return;
+  wrapper.id = "jda-chat-window";
 
-  }
+  wrapper.style.display = "none";
 
-
-  const windowEl =
-    document.createElement(
-      "div"
-    );
-
-
-  windowEl.id =
-    "jdaChatWindow";
-
-
-  windowEl.style.cssText = `
-    position:fixed;
-    inset:0;
-    z-index:100000;
-    background:#080914;
-    display:none;
-    flex-direction:column;
-  `;
-
-
-  windowEl.innerHTML = `
-
+  wrapper.innerHTML = `
     <div
-      class="jda-chat-header"
+      id="jda-chat-header"
       style="
-        min-height:68px;
+        position:fixed;
+        inset:0 0 auto 0;
+        z-index:5000;
+        height:64px;
         display:flex;
         align-items:center;
-        gap:9px;
-        padding:0 9px;
-        flex-shrink:0;
+        gap:10px;
+        padding:8px 12px;
+        background:
+          linear-gradient(
+            120deg,
+            rgba(5,20,50,.98),
+            rgba(35,10,55,.98)
+          );
+        border-bottom:1px solid rgba(130,80,255,.28);
+        box-shadow:0 0 25px rgba(80,60,255,.16);
       "
     >
 
       <button
-        id="closeChat"
+        id="jda-chat-back"
         style="
           border:0;
           background:none;
-          color:#fff;
-          font-size:36px;
-          width:40px;
-          height:50px;
-          line-height:40px;
+          color:white;
+          font-size:28px;
+          padding:3px 8px;
         "
       >
         ‹
       </button>
 
+      <div id="jda-chat-avatar"></div>
 
-      <div
-        id="chatAvatar"
-        style="
-          position:relative;
-          width:44px;
-          height:44px;
-          flex-shrink:0;
-        "
-      ></div>
-
-
-      <div
-        style="
-          flex:1;
-          min-width:0;
-        "
-      >
+      <div style="flex:1;min-width:0">
 
         <div
-          id="chatName"
-          class="jda-neon-title"
+          id="jda-chat-name"
           style="
-            font-size:16px;
-            font-weight:700;
+            font-weight:800;
             white-space:nowrap;
             overflow:hidden;
             text-overflow:ellipsis;
           "
         >
-          Member
+          Chat
         </div>
 
-
         <div
-          id="chatStatus"
-          style="
-            font-size:11px;
-            margin-top:3px;
-          "
+          id="jda-chat-status"
+          class="jda-status-text"
         >
-          Offline
+          offline
         </div>
 
       </div>
 
+      <button
+        id="jda-chat-audio"
+        title="Audio call"
+        style="
+          border:0;
+          background:none;
+          color:white;
+          font-size:20px;
+          padding:8px;
+        "
+      >
+        📞
+      </button>
+
+      <button
+        id="jda-chat-video"
+        title="Video call"
+        style="
+          border:0;
+          background:none;
+          color:white;
+          font-size:20px;
+          padding:8px;
+        "
+      >
+        🎥
+      </button>
+
     </div>
 
-
     <div
-      id="messageList"
-      class="jda-chat-background"
+      id="jda-chat-messages"
       style="
-        flex:1;
+        position:fixed;
+        inset:64px 0 66px 0;
         overflow-y:auto;
-        padding:20px 12px;
-        display:flex;
-        flex-direction:column;
-        gap:6px;
+        padding:15px 10px;
+        background:
+          radial-gradient(
+            circle at 20% 10%,
+            rgba(0,110,255,.10),
+            transparent 30%
+          ),
+          radial-gradient(
+            circle at 90% 70%,
+            rgba(220,0,220,.08),
+            transparent 35%
+          ),
+          #070812;
       "
     ></div>
 
-
     <div
+      id="jda-chat-composer"
       style="
+        position:fixed;
+        inset:auto 0 0 0;
+        z-index:5001;
+        min-height:66px;
+        padding:9px;
+        display:flex;
+        align-items:center;
+        gap:7px;
         background:
           linear-gradient(
-            180deg,
-            #0e1020,
-            #0a0b15
+            120deg,
+            rgba(7,12,30,.98),
+            rgba(25,8,35,.98)
           );
-        padding:8px;
-        display:flex;
-        align-items:flex-end;
-        gap:8px;
-        flex-shrink:0;
-        border-top:
-          1px solid
-          rgba(117,80,255,.18);
+        border-top:1px solid rgba(130,70,255,.25);
       "
     >
 
       <button
-        id="chatAttachButton"
-        type="button"
+        id="jda-attach"
         style="
-          width:43px;
-          height:43px;
+          width:40px;
+          height:40px;
+          border-radius:50%;
           border:0;
-          background:none;
-          color:#68bfff;
-          font-size:27px;
+          background:rgba(130,80,255,.15);
+          color:white;
+          font-size:19px;
         "
       >
-        +
+        ＋
       </button>
 
-
       <textarea
-        id="messageInput"
+        id="jda-message-input"
         rows="1"
-        placeholder="Message..."
-        class="jda-message-input"
+        placeholder="Message"
         style="
           flex:1;
           resize:none;
-          outline:none;
+          min-height:42px;
+          max-height:110px;
           border-radius:22px;
-          color:#fff;
+          border:1px solid rgba(120,70,255,.25);
+          background:rgba(30,31,55,.8);
+          color:white;
           padding:11px 15px;
-          font-size:15px;
-          max-height:120px;
-          box-sizing:border-box;
+          outline:none;
         "
       ></textarea>
 
-
       <button
-        id="sendMessage"
-        class="jda-send-button"
+        id="jda-send-message"
+        class="jda-neon-button"
         style="
-          width:45px;
-          height:45px;
-          border:0;
+          width:43px;
+          height:43px;
           border-radius:50%;
-          font-size:21px;
-          font-weight:900;
+          font-size:18px;
         "
       >
         ➤
       </button>
 
     </div>
-
   `;
 
+  document.body.appendChild(wrapper);
 
-  document.body.appendChild(
-    windowEl
-  );
+  document
+    .getElementById("jda-chat-back")
+    .addEventListener("click", closeChat);
 
+  document
+    .getElementById("jda-send-message")
+    .addEventListener("click", sendMessage);
 
-  $("closeChat")
-    .addEventListener(
-      "click",
-      closeChat
-    );
+  document
+    .getElementById("jda-attach")
+    .addEventListener("click", handleAttachment);
 
+  const input =
+    document.getElementById("jda-message-input");
 
-  $("sendMessage")
-    .addEventListener(
-      "click",
-      sendMessage
-    );
-
-
-  $("chatAttachButton")
-    .addEventListener(
-      "click",
-      () => {
-
-        alert(
-          "Attachments will be added in a later JDA Networks update."
-        );
-
-      }
-    );
-
-
-  $("messageInput")
-    .addEventListener(
-      "keydown",
-      event => {
-
-        if (
-          event.key === "Enter" &&
-          !event.shiftKey
-        ) {
-
-          event.preventDefault();
-
-          sendMessage();
-
-        }
-
-      }
-    );
-
-
-  $("messageInput")
-    .addEventListener(
-      "input",
-      () => {
-
-        const input =
-          $("messageInput");
-
-
-        if (!input) return;
-
-
-        input.style.height =
-          "auto";
-
-
-        input.style.height =
-          Math.min(
-            input.scrollHeight,
-            120
-          ) + "px";
-
-      }
-    );
-
-}
-
-
-// ============================================================
-// UPDATE CHAT HEADER
-// ============================================================
-
-function updateChatHeader(
-  member
-) {
-
-  if (!member) return;
-
-
-  const avatar =
-    $("chatAvatar");
-
-
-  const name =
-    $("chatName");
-
-
-  const status =
-    $("chatStatus");
-
-
-  if (avatar) {
-
-    const online =
-      isMemberOnline(
-        member
-      );
-
-
-    avatar.innerHTML = `
-
-      <div
-        style="
-          position:relative;
-          width:44px;
-          height:44px;
-        "
-      >
-
-        ${avatarHTML(
-          member,
-          44
-        )}
-
-        <div
-          style="
-            position:absolute;
-            right:-1px;
-            bottom:-1px;
-          "
-        >
-          ${onlineIndicator(
-            online,
-            12
-          )}
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-
-  if (name) {
-
-    name.textContent =
-      member.realName ||
-      "JDA Member";
-
-  }
-
-
-  if (status) {
-
-    const online =
-      isMemberOnline(
-        member
-      );
-
-
-    if (online) {
-
-      status.textContent =
-        "Online • Active now";
-
-      status.className =
-        "jda-online-text";
-
-
+  input.addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
     }
-    else {
+  });
 
-      status.textContent =
-        formatLastSeen(
-          member.lastSeen
-        );
+  document
+    .getElementById("jda-chat-audio")
+    .addEventListener("click", () => {
+      if (currentChatUser) {
+        startAudioCall(currentChatUser);
+      }
+    });
 
-      status.className =
-        "jda-offline-text";
-
-    }
-
-  }
-
+  document
+    .getElementById("jda-chat-video")
+    .addEventListener("click", () => {
+      if (currentChatUser) {
+        startVideoCall(currentChatUser);
+      }
+    });
 }
-
 
 // ============================================================
 // OPEN CHAT
 // ============================================================
 
-async function openChat(
-  member,
-  conversationId
-) {
+function openChat(member) {
+  if (!member) return;
 
-  createChatWindow();
+  currentChatUser = member;
 
+  const wrapper =
+    document.getElementById("jda-chat-window");
 
-  currentChatUser =
-    member;
+  if (!wrapper) return;
 
+  wrapper.style.display = "block";
 
-  currentConversationId =
-    conversationId;
+  const avatar =
+    document.getElementById("jda-chat-avatar");
 
+  avatar.innerHTML = avatarHTML(member, 42);
 
-  const chatWindow =
-    $("jdaChatWindow");
+  const name =
+    document.getElementById("jda-chat-name");
 
+  name.textContent = member.realName || "JDA Member";
 
-  if (chatWindow) {
+  const status =
+    document.getElementById("jda-chat-status");
 
-    chatWindow.style.display =
-      "flex";
+  status.textContent =
+    isMemberOnline(member)
+      ? "online"
+      : formatLastSeen(member.lastSeen);
 
+  if (unsubscribeMessages) {
+    unsubscribeMessages();
+    unsubscribeMessages = null;
   }
 
+  if (!currentConversationId) {
+    const ids = [
+      currentUser.uid,
+      member.uid
+    ].sort();
 
-  updateChatHeader(
-    member
+    currentConversationId = ids.join("_");
+  }
+
+  const messagesRef = collection(
+    db,
+    "conversations",
+    currentConversationId,
+    "messages"
   );
 
+  const q = query(
+    messagesRef,
+    orderBy("createdAt", "asc"),
+    limit(500)
+  );
 
-  if (
-    unsubscribeMessages
-  ) {
+  unsubscribeMessages = onSnapshot(
+    q,
+    snapshot => {
+      const messages = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
 
-    unsubscribeMessages();
-
-    unsubscribeMessages =
-      null;
-
-  }
-
-
-  const messagesRef =
-    collection(
-      db,
-      "conversations",
-      conversationId,
-      "messages"
-    );
-
-
-  const messagesQuery =
-    query(
-      messagesRef,
-      orderBy(
-        "createdAt",
-        "asc"
-      ),
-      limit(500)
-    );
-
-
-  unsubscribeMessages =
-    onSnapshot(
-      messagesQuery,
-
-      snapshot => {
-
-        const messages =
-          snapshot.docs.map(
-            item => ({
-              id:
-                item.id,
-              ...item.data()
-            })
-          );
-
-
-        renderMessages(
-          messages
-        );
-
-      },
-
-      error => {
-
-        console.error(
-          "Message listener error:",
-          error
-        );
-
-
-        showError(
-          "Messages could not be loaded.\n\n" +
-          error.message
-        );
-
-      }
-    );
-
-
-  setTimeout(
-    () => {
-
-      $("messageInput")
-        ?.focus();
-
+      renderMessages(messages);
     },
-    150
+    error => {
+      console.error(error);
+      showError(
+        "Unable to load messages."
+      );
+    }
   );
-
 }
-
-
-// ============================================================
-// CLOSE CHAT
-// ============================================================
-
-function closeChat() {
-
-  if (
-    unsubscribeMessages
-  ) {
-
-    unsubscribeMessages();
-
-    unsubscribeMessages =
-      null;
-
-  }
-
-
-  const chat =
-    $("jdaChatWindow");
-
-
-  if (chat) {
-
-    chat.style.display =
-      "none";
-
-  }
-
-
-  currentConversationId =
-    null;
-
-  currentChatUser =
-    null;
-
-}
-
 
 // ============================================================
 // RENDER MESSAGES
 // ============================================================
 
-function renderMessages(
-  messages
-) {
-
+function renderMessages(messages) {
   const container =
-    $("messageList");
-
+    document.getElementById("jda-chat-messages");
 
   if (!container) return;
 
-
-  container.innerHTML =
-    "";
-
-
-  if (
-    messages.length === 0
-  ) {
-
+  if (!messages.length) {
     container.innerHTML = `
+      <div class="jda-empty">
+        Start your conversation with
+        ${escapeHTML(currentChatUser?.realName || "this member")}.
+      </div>
+    `;
 
+    return;
+  }
+
+  container.innerHTML = messages.map(message => {
+    const outgoing =
+      message.senderId === currentUser.uid;
+
+    const time = formatTime(message.createdAt);
+
+    let ticks = "";
+
+    if (outgoing) {
+      ticks = message.read || message.seen
+        ? `<span style="color:#50eaff">✓✓</span>`
+        : `<span style="opacity:.55">✓</span>`;
+    }
+
+    return `
       <div
         style="
-          margin:auto;
-          text-align:center;
-          color:#85899d;
-          padding:30px;
-          font-size:13px;
+          display:flex;
+          justify-content:${outgoing ? "flex-end" : "flex-start"};
+          margin:5px 0;
         "
       >
 
         <div
+          class="${outgoing
+            ? "jda-message-out"
+            : "jda-message-in"}"
           style="
-            font-size:30px;
-            margin-bottom:10px;
+            max-width:82%;
+            padding:9px 12px 6px;
+            word-break:break-word;
           "
         >
-          🔒
+
+          <div style="
+            white-space:pre-wrap;
+            font-size:14px;
+            line-height:1.4;
+          ">
+            ${escapeHTML(message.text)}
+          </div>
+
+          <div style="
+            text-align:right;
+            font-size:10px;
+            margin-top:3px;
+            opacity:.68;
+          ">
+            ${escapeHTML(time)}
+            ${ticks}
+          </div>
+
         </div>
-
-        Your conversation is private.
-
-        <br><br>
-
-        Start the conversation.
 
       </div>
-
     `;
+  }).join("");
 
-    return;
-
-  }
-
-
-  messages.forEach(
-    message => {
-
-      const mine =
-        message.senderId ===
-        currentUser.uid;
-
-
-      const bubble =
-        document.createElement(
-          "div"
-        );
-
-
-      bubble.className =
-        `
-          jda-message-bubble
-          ${
-            mine
-              ? "jda-message-mine"
-              : "jda-message-other"
-          }
-        `;
-
-
-      bubble.style.cssText += `
-        align-self:${
-          mine
-            ? "flex-end"
-            : "flex-start"
-        };
-        max-width:78%;
-        color:#fff;
-        padding:9px 11px 6px;
-        border-radius:${
-          mine
-            ? "14px 4px 14px 14px"
-            : "4px 14px 14px 14px"
-        };
-        word-wrap:break-word;
-        margin-bottom:2px;
-      `;
-
-
-      const seen =
-        message.read === true ||
-        message.seen === true;
-
-
-      const checks =
-        mine
-          ? `
-            <span
-              class="
-                jda-checks
-                ${
-                  seen
-                    ? "seen"
-                    : "sent"
-                }
-              "
-            >
-              ✓✓
-            </span>
-          `
-          : "";
-
-
-      bubble.innerHTML = `
-
-        <div
-          style="
-            font-size:15px;
-            line-height:1.42;
-            white-space:pre-wrap;
-          "
-        >
-          ${escapeHTML(
-            message.text ||
-            ""
-          )}
-        </div>
-
-
-        <div
-          class="jda-message-meta"
-        >
-
-          <span>
-            ${formatTime(
-              message.createdAt
-            )}
-          </span>
-
-          ${checks}
-
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        bubble
-      );
-
-    }
-  );
-
-
-  requestAnimationFrame(
-    () => {
-
-      container.scrollTop =
-        container.scrollHeight;
-
-    }
-  );
-
+  container.scrollTop = container.scrollHeight;
 }
-
 
 // ============================================================
 // SEND MESSAGE
 // ============================================================
 
 async function sendMessage() {
-
-  if (
-    !currentUser ||
-    !currentConversationId ||
-    !currentChatUser
-  ) {
-
-    return;
-
-  }
-
+  if (!currentUser || !currentChatUser) return;
 
   const input =
-    $("messageInput");
-
+    document.getElementById("jda-message-input");
 
   if (!input) return;
 
-
-  const text =
-    input.value.trim();
-
+  const text = input.value.trim();
 
   if (!text) return;
 
-
-  if (
-    text.length > 5000
-  ) {
-
-    showError(
-      "Message cannot exceed 5000 characters."
-    );
-
+  if (text.length > 5000) {
+    showError("Message is too long.");
     return;
-
   }
 
-
-  const sendButton =
-    $("sendMessage");
-
-
-  input.disabled =
-    true;
-
-
-  if (sendButton) {
-
-    sendButton.disabled =
-      true;
-
+  if (!currentConversationId) {
+    await startConversation(currentChatUser);
+    return;
   }
 
+  input.value = "";
 
   try {
+    const messagesRef = collection(
+      db,
+      "conversations",
+      currentConversationId,
+      "messages"
+    );
 
-    const conversationRef =
+    await addDoc(messagesRef, {
+      senderId: currentUser.uid,
+      receiverId: currentChatUser.uid,
+      text,
+      createdAt: serverTimestamp(),
+      read: false
+    });
+
+    await updateDoc(
       doc(
         db,
         "conversations",
         currentConversationId
-      );
-
-
-    const messagesRef =
-      collection(
-        db,
-        "conversations",
-        currentConversationId,
-        "messages"
-      );
-
-
-    await addDoc(
-      messagesRef,
+      ),
       {
-        senderId:
-          currentUser.uid,
-
-        receiverId:
-          currentChatUser.id,
-
-        text,
-
-        createdAt:
-          serverTimestamp(),
-
-        read:
-          false
+        lastMessage: text,
+        updatedAt: serverTimestamp(),
+        [`unreadCounts.${currentChatUser.uid}`]:
+          1
       }
     );
 
+  } catch (error) {
+    console.error(error);
 
-    await updateDoc(
-      conversationRef,
-      {
-        lastMessage:
-          text,
-
-        updatedAt:
-          serverTimestamp()
-      }
-    );
-
-
-    input.value =
-      "";
-
-    input.style.height =
-      "auto";
-
-
-    renderChats();
-
-  }
-  catch(error) {
-
-    console.error(
-      "Send message error:",
-      error
-    );
-
+    input.value = text;
 
     showError(
-      "Message could not be sent.\n\n" +
-      error.message
+      "Message could not be sent. Check Firestore rules."
     );
-
   }
-  finally {
-
-    input.disabled =
-      false;
-
-
-    if (sendButton) {
-
-      sendButton.disabled =
-        false;
-
-    }
-
-
-    input.focus();
-
-  }
-
 }
 
+// ============================================================
+// CLOSE CHAT
+// ============================================================
+
+function closeChat() {
+  const wrapper =
+    document.getElementById("jda-chat-window");
+
+  if (wrapper) {
+    wrapper.style.display = "none";
+  }
+
+  if (unsubscribeMessages) {
+    unsubscribeMessages();
+    unsubscribeMessages = null;
+  }
+
+  currentConversationId = null;
+  currentChatUser = null;
+}
 
 // ============================================================
-// NEW CHAT BUTTONS
+// ATTACHMENT
 // ============================================================
 
-function setupNewChatButtons() {
-
-  const buttons =
-    document.querySelectorAll(
-      "#newChatBtn, #fab"
-    );
-
-
-  buttons.forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        event => {
-
-          event.preventDefault();
-
-          event.stopPropagation();
-
-          openMemberModal();
-
-        }
-      );
-
-    }
+function handleAttachment() {
+  showError(
+    "Attachments are not enabled because this JDA build uses Firebase Spark without Storage."
   );
-
 }
 
-
 // ============================================================
-// SEARCH CHATS
+// MEMBER MODAL
 // ============================================================
 
-function setupSearch() {
+function createMemberModal() {
+  if (document.getElementById("jda-member-modal")) return;
+
+  const modal = document.createElement("div");
+
+  modal.id = "jda-member-modal";
+
+  modal.style.display = "none";
+
+  modal.innerHTML = `
+    <div
+      style="
+        position:fixed;
+        inset:0;
+        z-index:9000;
+        background:rgba(0,0,0,.72);
+        display:flex;
+        align-items:flex-end;
+        justify-content:center;
+      "
+    >
+
+      <div
+        style="
+          width:min(600px,100%);
+          max-height:88vh;
+          overflow:hidden;
+          border-radius:25px 25px 0 0;
+          background:
+            radial-gradient(
+              circle at 20% 0%,
+              rgba(20,120,255,.18),
+              transparent 35%
+            ),
+            radial-gradient(
+              circle at 90% 0%,
+              rgba(220,20,255,.18),
+              transparent 35%
+            ),
+            #090a18;
+          border:1px solid rgba(130,80,255,.25);
+        "
+      >
+
+        <div style="
+          display:flex;
+          align-items:center;
+          padding:15px;
+          gap:10px;
+        ">
+
+          <strong style="font-size:18px;flex:1">
+            New conversation
+          </strong>
+
+          <button
+            id="jda-member-close"
+            style="
+              border:0;
+              background:none;
+              color:white;
+              font-size:25px;
+            "
+          >
+            ×
+          </button>
+
+        </div>
+
+        <div style="padding:0 15px 10px">
+
+          <input
+            id="jda-member-search"
+            placeholder="Search JDA member"
+            style="
+              width:100%;
+              height:45px;
+              border-radius:23px;
+              border:1px solid rgba(120,80,255,.25);
+              background:rgba(30,30,55,.8);
+              color:white;
+              padding:0 16px;
+              outline:none;
+            "
+          >
+
+        </div>
+
+        <div
+          id="jda-member-results"
+          style="
+            max-height:65vh;
+            overflow-y:auto;
+            padding:0 15px 20px;
+          "
+        ></div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  document
+    .getElementById("jda-member-close")
+    .addEventListener("click", closeMemberModal);
+
+  document
+    .getElementById("jda-member-search")
+    .addEventListener("input", e => {
+      renderMemberModal(e.target.value);
+    });
+}
+
+function openMemberModal() {
+  const modal =
+    document.getElementById("jda-member-modal");
+
+  if (!modal) return;
+
+  modal.style.display = "block";
 
   const search =
-    $("chatSearch");
+    document.getElementById("jda-member-search");
 
+  if (search) {
+    search.value = "";
+    search.focus();
+  }
 
-  if (!search) return;
-
-
-  search.addEventListener(
-    "input",
-    () => {
-
-      const text =
-        search.value
-          .trim()
-          .toLowerCase();
-
-
-      const rows =
-        document.querySelectorAll(
-          ".jda-chat-row"
-        );
-
-
-      rows.forEach(
-        row => {
-
-          const searchable =
-            `
-              ${row.dataset.name || ""}
-              ${row.dataset.search || ""}
-              ${row.innerText || ""}
-            `.toLowerCase();
-
-
-          row.style.display =
-            !text ||
-            searchable.includes(
-              text
-            )
-              ? "flex"
-              : "none";
-
-        }
-      );
-
-    }
-  );
-
+  renderMemberModal("");
 }
 
+function closeMemberModal() {
+  const modal =
+    document.getElementById("jda-member-modal");
+
+  if (modal) {
+    modal.style.display = "none";
+  }
+}
+
+function renderMemberModal(searchText = "") {
+  const container =
+    document.getElementById("jda-member-results");
+
+  if (!container) return;
+
+  const term = searchText.toLowerCase().trim();
+
+  const filtered = members.filter(member =>
+    !term ||
+    String(member.realName || "")
+      .toLowerCase()
+      .includes(term) ||
+    String(member.jdaNumber || "")
+      .toLowerCase()
+      .includes(term)
+  );
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="jda-empty">
+        No JDA members found.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(member => `
+    <div
+      class="jda-member-card"
+      data-member-id="${escapeHTML(member.uid)}"
+      style="cursor:pointer"
+    >
+
+      ${avatarHTML(member, 48)}
+
+      <div style="flex:1">
+
+        <div style="font-weight:800">
+          ${escapeHTML(member.realName)}
+          ${onlineIndicator(member)}
+        </div>
+
+        <div class="jda-status-text">
+          ${
+            member.accountType === "student"
+              ? `${escapeHTML(getMemberClass(member))} ${
+                  escapeHTML(member.stream || "")
+                }`
+              : escapeHTML(member.department || "Staff")
+          }
+        </div>
+
+      </div>
+
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".jda-member-card")
+    .forEach(card => {
+      card.addEventListener("click", () => {
+        const member = members.find(
+          m => m.uid === card.dataset.memberId
+        );
+
+        if (member) {
+          closeMemberModal();
+          startConversation(member);
+        }
+      });
+    });
+}
 
 // ============================================================
 // NAVIGATION
 // ============================================================
 
 function setupNavigation() {
-
-  const buttons =
-    document.querySelectorAll(
-      ".bottom-nav [data-page]"
-    );
-
-
-  buttons.forEach(
-    button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          switchPage(
-            button.dataset.page
-          );
-
-        }
-      );
-
-    }
+  const navItems = document.querySelectorAll(
+    "[data-tab], .bottom-nav button, .nav-item"
   );
 
+  navItems.forEach(item => {
+    item.addEventListener("click", () => {
+      const tab =
+        item.dataset.tab ||
+        item.dataset.screen ||
+        item.getAttribute("data-screen");
+
+      if (tab) {
+        activateTab(tab);
+      }
+    });
+  });
 }
 
+function activateTab(tab) {
+  const aliases = {
+    groups: "staff",
+    students: "classes",
+    favorites: "classes"
+  };
 
-function switchPage(
-  page
-) {
+  tab = aliases[tab] || tab;
 
-  // Compatibility:
-  // Classes may be called "students"
-  // in the current home.html.
+  const screens = document.querySelectorAll(
+    "[data-screen]"
+  );
 
-  const actualPage =
-    page === "classes"
-      ? (
-          document.querySelector(
-            '[data-screen="classes"]'
-          )
-            ? "classes"
-            : "students"
-        )
-      : page;
-
+  screens.forEach(screen => {
+    if (
+      screen.dataset.screen === tab
+    ) {
+      screen.style.display = "";
+    } else if (
+      screen.dataset.screen
+    ) {
+      screen.style.display = "none";
+    }
+  });
 
   document
     .querySelectorAll(
-      "[data-screen]"
+      "[data-tab], .bottom-nav button, .nav-item"
     )
-    .forEach(
-      screen => {
+    .forEach(item => {
+      const itemTab =
+        item.dataset.tab ||
+        item.dataset.screen;
 
-        screen.classList.toggle(
-          "active",
-          screen.dataset.screen ===
-          actualPage
-        );
-
-      }
-    );
-
-
-  document
-    .querySelectorAll(
-      ".bottom-nav [data-page]"
-    )
-    .forEach(
-      button => {
-
-        const buttonPage =
-          button.dataset.page;
-
-
-        const matches =
-          buttonPage === page ||
-          (
-            page === "classes" &&
-            buttonPage === "students"
-          );
-
-
-        button.classList.toggle(
-          "active",
-          matches
-        );
-
-      }
-    );
-
-
-  if (
-    page === "chats"
-  ) {
-
-    renderChats();
-
-  }
-
-
-  if (
-    page === "classes" ||
-    page === "students"
-  ) {
-
-    renderDirectory();
-
-  }
-
-
-  if (
-    page === "staff"
-  ) {
-
-    renderStaff();
-
-  }
-
+      item.classList.toggle(
+        "active",
+        itemTab === tab
+      );
+    });
 }
-
 
 // ============================================================
-// DIRECTORY BUTTONS
+// SEARCH
+// ============================================================
+
+function setupSearch() {
+  const search =
+    document.querySelector(
+      "#searchInput, [data-search], input[placeholder*='Search']"
+    );
+
+  if (!search) return;
+
+  search.addEventListener("input", () => {
+    const term =
+      search.value.toLowerCase().trim();
+
+    document
+      .querySelectorAll(".chat-item")
+      .forEach(item => {
+        const name =
+          item.dataset.name || "";
+
+        item.style.display =
+          !term ||
+          name.toLowerCase().includes(term)
+            ? ""
+            : "none";
+      });
+  });
+}
+
+// ============================================================
+// NEW CHAT BUTTONS
+// ============================================================
+
+function setupNewChatButtons() {
+  document
+    .querySelectorAll(
+      "#newChatBtn, [data-new-chat], .new-chat-btn"
+    )
+    .forEach(button => {
+      button.addEventListener(
+        "click",
+        openMemberModal
+      );
+    });
+}
+
+// ============================================================
+// DIRECTORY
 // ============================================================
 
 function setupDirectoryButtons() {
+  document
+    .querySelectorAll("[data-directory='classes']")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        activateTab("classes");
+      });
+    });
+
+  document
+    .querySelectorAll("[data-directory='staff']")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        activateTab("staff");
+      });
+    });
 
   document
     .querySelectorAll(
-      ".filter-button"
+      "[data-filter='students'], [data-filter='classes']"
     )
-    .forEach(
-      button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const filter =
-              button.dataset.filter;
-
-
-            document
-              .querySelectorAll(
-                ".filter-button"
-              )
-              .forEach(
-                item => {
-
-                  item.classList.remove(
-                    "active"
-                  );
-
-                }
-              );
-
-
-            button.classList.add(
-              "active"
-            );
-
-
-            if (
-              filter ===
-              "students"
-            ) {
-
-              switchPage(
-                "classes"
-              );
-
-              return;
-
-            }
-
-
-            if (
-              filter ===
-              "staff"
-            ) {
-
-              switchPage(
-                "staff"
-              );
-
-              return;
-
-            }
-
-
-            switchPage(
-              "chats"
-            );
-
-          }
-        );
-
-      }
-    );
-
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        activateTab("classes");
+      });
+    });
 
   document
-    .querySelectorAll(
-      ".class-button"
-    )
-    .forEach(
-      button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const className =
-              button.dataset.class;
-
-
-            if (!className) return;
-
-
-            const number =
-              className
-                .replace(
-                  "Form ",
-                  ""
-                )
-                .trim();
-
-
-            const membersBox =
-              document.getElementById(
-                "form" +
-                number +
-                "Members"
-              );
-
-
-            if (
-              !membersBox
-            ) return;
-
-
-            document
-              .querySelectorAll(
-                ".class-members"
-              )
-              .forEach(
-                item => {
-
-                  if (
-                    item !==
-                    membersBox
-                  ) {
-
-                    item.classList.remove(
-                      "open"
-                    );
-
-                  }
-
-                }
-              );
-
-
-            renderClassMembers(
-              className,
-              membersBox
-            );
-
-
-            membersBox.classList.toggle(
-              "open"
-            );
-
-          }
-        );
-
-      }
-    );
-
+    .querySelectorAll("[data-filter='staff']")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        activateTab("staff");
+      });
+    });
 }
 
-
 // ============================================================
-// RENDER DIRECTORY
-// ============================================================
-
-function renderDirectory() {
-
-  for (
-    let number = 1;
-    number <= 6;
-    number++
-  ) {
-
-    const box =
-      document.getElementById(
-        "form" +
-        number +
-        "Members"
-      );
-
-
-    if (!box) continue;
-
-
-    renderClassMembers(
-      "Form " + number,
-      box
-    );
-
-  }
-
-
-  renderStaff();
-
-}
-
-
-// ============================================================
-// CLASS MEMBERS
+// CLASSES
 // ============================================================
 
-function renderClassMembers(
-  className,
-  container
-) {
+function renderClasses() {
+  const container =
+    document.getElementById("classesList") ||
+    document.querySelector("[data-classes-list]");
 
-  const students =
-    members.filter(
-      member => {
+  if (!container) return;
 
-        if (
-          member.accountType !==
-          "student"
-        ) {
-
-          return false;
-
-        }
-
-
-        return (
-          getMemberClass(
-            member
-          ).toLowerCase() ===
-          className.toLowerCase()
-        );
-
-      }
-    );
-
-
-  container.innerHTML =
-    "";
-
-
-  if (
-    students.length === 0
-  ) {
-
-    container.innerHTML = `
-
-      <div
-        class="class-members-empty"
-        style="
-          color:#888ca0;
-          padding:12px 4px;
-          font-size:13px;
-        "
-      >
-        No approved students in
-        ${escapeHTML(className)}
-        yet.
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-  students.forEach(
-    member => {
-
-      const row =
-        document.createElement(
-          "div"
-        );
-
-
-      row.style.cssText = `
-        display:flex;
-        align-items:center;
-        gap:10px;
-        padding:10px 4px;
-        cursor:pointer;
-        border-bottom:
-          1px solid
-          rgba(255,255,255,.05);
-      `;
-
-
-      const online =
-        isMemberOnline(
-          member
-        );
-
-
-      row.innerHTML = `
-
-        <div
-          style="
-            position:relative;
-            width:42px;
-            height:42px;
-          "
-        >
-
-          ${avatarHTML(
-            member,
-            42
-          )}
-
-          <div
-            style="
-              position:absolute;
-              right:-1px;
-              bottom:-1px;
-            "
-          >
-            ${onlineIndicator(
-              online,
-              11
-            )}
-          </div>
-
-        </div>
-
-
-        <div
-          style="
-            flex:1;
-            min-width:0;
-          "
-        >
-
-          <div
-            style="
-              font-weight:700;
-              color:#fff;
-              font-size:14px;
-            "
-          >
-            ${escapeHTML(
-              member.realName ||
-              "Student"
-            )}
-          </div>
-
-
-          <div
-            style="
-              color:#8f93a5;
-              font-size:12px;
-              margin-top:3px;
-            "
-          >
-            ${escapeHTML(
-              member.stream ||
-              "Student"
-            )}
-          </div>
-
-        </div>
-
-
-        <div
-          style="
-            color:${
-              online
-                ? "#39ef88"
-                : "#747989"
-            };
-            font-size:10px;
-          "
-        >
-          ${
-            online
-              ? "Online"
-              : "Offline"
-          }
-        </div>
-
-      `;
-
-
-      row.addEventListener(
-        "click",
-        () => {
-
-          startConversation(
-            member
-          );
-
-        }
-      );
-
-
-      container.appendChild(
-        row
-      );
-
-    }
+  const students = members.filter(
+    member => member.accountType === "student"
   );
 
-}
+  if (!students.length) {
+    container.innerHTML = `
+      <div class="jda-empty">
+        No students available yet.
+      </div>
+    `;
+    return;
+  }
 
+  const forms = [
+    "Form 1",
+    "Form 2",
+    "Form 3",
+    "Form 4",
+    "Form 5",
+    "Form 6"
+  ];
+
+  container.innerHTML = forms.map(form => {
+    const formStudents = students.filter(
+      student =>
+        String(getMemberClass(student))
+          .toLowerCase()
+          .replace("form", "")
+          .trim() ===
+        form.replace("Form", "")
+      );
+
+    return `
+      <div
+        class="jda-class-block"
+        data-form="${escapeHTML(form)}"
+        style="margin-bottom:10px"
+      >
+
+        <button
+          class="jda-class-toggle jda-neon-button"
+          style="
+            width:100%;
+            padding:13px;
+            border-radius:15px;
+            font-weight:800;
+          "
+        >
+          ${form}
+          <span style="float:right">
+            ${formStudents.length}
+          </span>
+        </button>
+
+        <div
+          class="jda-class-members"
+          style="
+            display:none;
+            padding:5px 0;
+          "
+        >
+
+          ${
+            formStudents.length
+              ? formStudents.map(student =>
+                  directoryMemberHTML(student)
+                ).join("")
+              : `
+                <div class="jda-empty">
+                  No students in ${form}.
+                </div>
+              `
+          }
+
+        </div>
+
+      </div>
+    `;
+  }).join("");
+
+  container
+    .querySelectorAll(".jda-class-toggle")
+    .forEach(button => {
+      button.addEventListener("click", () => {
+        const block =
+          button.parentElement;
+
+        const membersBox =
+          block.querySelector(
+            ".jda-class-members"
+          );
+
+        membersBox.style.display =
+          membersBox.style.display === "none"
+            ? "block"
+            : "none";
+      });
+    });
+
+  attachDirectoryMemberEvents(container);
+}
 
 // ============================================================
 // STAFF
 // ============================================================
 
 function renderStaff() {
-
   const container =
-    document.querySelector(
-      ".staff-list"
-    );
-
+    document.getElementById("staffList") ||
+    document.querySelector("[data-staff-list]");
 
   if (!container) return;
 
+  const staff = members.filter(
+    member => member.accountType === "staff"
+  );
 
-  const staff =
-    members.filter(
-      member =>
-        member.accountType ===
-        "staff"
-    );
-
+  if (!staff.length) {
+    container.innerHTML = `
+      <div class="jda-empty">
+        No approved staff members yet.
+      </div>
+    `;
+    return;
+  }
 
   container.innerHTML =
-    "";
+    staff
+      .map(member =>
+        directoryMemberHTML(member)
+      )
+      .join("");
 
+  attachDirectoryMemberEvents(container);
+}
 
-  if (
-    staff.length === 0
-  ) {
+// ============================================================
+// DIRECTORY MEMBER CARD
+// ============================================================
 
-    container.innerHTML = `
+function directoryMemberHTML(member) {
+  const detail =
+    member.accountType === "staff"
+      ? member.department || "Staff"
+      : `${getMemberClass(member)} ${
+          member.stream || ""
+        }`;
 
-      <div
-        class="staff-card"
-      >
+  return `
+    <div
+      class="jda-member-card"
+      data-member-id="${escapeHTML(member.uid)}"
+      style="cursor:pointer"
+    >
 
-        <div
-          class="staff-title"
-        >
-          No approved staff yet
+      ${avatarHTML(member, 48)}
+
+      <div style="flex:1">
+
+        <div style="font-weight:800">
+          ${escapeHTML(member.realName)}
+          ${onlineIndicator(member)}
         </div>
 
-        <div
-          class="staff-description"
-        >
-          Approved staff members
-          will appear here.
+        <div class="jda-status-text">
+          ${escapeHTML(detail)}
         </div>
 
       </div>
 
-    `;
+      <div style="
+        font-size:18px;
+        opacity:.65;
+      ">
+        ›
+      </div>
 
-    return;
+    </div>
+  `;
+}
 
-  }
-
-
-  staff.forEach(
-    member => {
-
-      const card =
-        document.createElement(
-          "div"
+function attachDirectoryMemberEvents(container) {
+  container
+    .querySelectorAll("[data-member-id]")
+    .forEach(card => {
+      card.addEventListener("click", () => {
+        const member = members.find(
+          m => m.uid === card.dataset.memberId
         );
 
-
-      card.className =
-        "staff-card";
-
-
-      card.style.cssText += `
-        display:flex;
-        align-items:center;
-        gap:12px;
-        cursor:pointer;
-        position:relative;
-      `;
-
-
-      const online =
-        isMemberOnline(
-          member
-        );
-
-
-      card.innerHTML = `
-
-        <div
-          style="
-            position:relative;
-            width:48px;
-            height:48px;
-          "
-        >
-
-          ${avatarHTML(
-            member,
-            48
-          )}
-
-          <div
-            style="
-              position:absolute;
-              right:-1px;
-              bottom:-1px;
-            "
-          >
-            ${onlineIndicator(
-              online,
-              12
-            )}
-          </div>
-
-        </div>
-
-
-        <div
-          style="
-            flex:1;
-            min-width:0;
-          "
-        >
-
-          <div
-            class="staff-title"
-          >
-            ${escapeHTML(
-              member.realName ||
-              "Staff"
-            )}
-          </div>
-
-
-          <div
-            class="staff-description"
-          >
-            ${escapeHTML(
-              member.department ||
-              "Staff"
-            )}
-          </div>
-
-        </div>
-
-
-        <div
-          style="
-            color:${
-              online
-                ? "#39ef88"
-                : "#747989"
-            };
-            font-size:10px;
-          "
-        >
-          ${
-            online
-              ? "Online"
-              : "Offline"
-          }
-        </div>
-
-      `;
-
-
-      card.addEventListener(
-        "click",
-        () => {
-
-          startConversation(
-            member
-          );
-
+        if (member) {
+          startConversation(member);
         }
-      );
-
-
-      container.appendChild(
-        card
-      );
-
-    }
-  );
-
+      });
+    });
 }
-
-
-// ============================================================
-// LOGOUT
-// ============================================================
-
-function setupLogout() {
-
-  const button =
-    $("logoutBtn");
-
-
-  if (!button) return;
-
-
-  button.addEventListener(
-    "click",
-    async () => {
-
-      if (
-        !confirm(
-          "Log out of JDA Networks?"
-        )
-      ) {
-
-        return;
-
-      }
-
-
-      await setOwnOnlineStatus(
-        false
-      );
-
-
-      try {
-
-        await signOut(
-          auth
-        );
-
-
-        window.location.replace(
-          "./index.html"
-        );
-
-      }
-      catch(error) {
-
-        showError(
-          "Could not log out.\n\n" +
-          error.message
-        );
-
-      }
-
-    }
-  );
-
-}
-
 
 // ============================================================
 // PROFILE
 // ============================================================
 
 function renderProfile() {
+  const nameElements =
+    document.querySelectorAll(
+      "[data-profile-name], #profileName"
+    );
 
-  if (
-    !currentProfile
-  ) {
+  nameElements.forEach(el => {
+    el.textContent =
+      currentProfile?.realName || "";
+  });
 
-    return;
+  const photoElements =
+    document.querySelectorAll(
+      "[data-profile-photo], #profilePhoto"
+    );
 
-  }
-
-
-  const name =
-    currentProfile.realName ||
-    "JDA Member";
-
-
-  const number =
-    currentProfile.jdaNumber ||
-    "—";
-
-
-  const photo =
-    currentProfile.photoURL ||
-    currentProfile.profilePhoto ||
-    "";
-
-
-  const photoElement =
-    $("profilePhoto");
-
-
-  if (photoElement) {
-
-    if (photo) {
-
-      photoElement.innerHTML = `
-
-        <img
-          src="${escapeHTML(
-            photo
-          )}"
-          alt=""
-          style="
-            width:100%;
-            height:100%;
-            object-fit:cover;
-            border-radius:50%;
-          "
-        >
-
-      `;
-
-    }
-    else {
-
-      photoElement.textContent =
-        initials(name);
-
-    }
-
-  }
-
-
-  if (
-    $("profileName")
-  ) {
-
-    $("profileName").textContent =
-      name;
-
-  }
-
-
-  if (
-    $("profileJdaNumber")
-  ) {
-
-    $("profileJdaNumber")
-      .textContent =
-        number;
-
-  }
-
-
-  if (
-    $("profileEmail")
-  ) {
-
-    $("profileEmail")
-      .textContent =
-        currentProfile.email ||
-        currentUser.email ||
-        "—";
-
-  }
-
-
-  if (
-    $("profileAccountType")
-  ) {
-
-    $("profileAccountType")
-      .textContent =
-        currentProfile.accountType ===
-        "student"
-          ? "Student"
-          : "Staff";
-
-  }
-
-
-  if (
-    $("profileClass")
-  ) {
-
-    if (
-      currentProfile.accountType ===
-      "student"
-    ) {
-
-      const parts = [];
-
-
-      const className =
-        getMemberClass(
-          currentProfile
-        );
-
-
-      if (className) {
-
-        parts.push(
-          className
-        );
-
+  photoElements.forEach(el => {
+    if (currentProfile?.photoURL) {
+      if (el.tagName === "IMG") {
+        el.src = currentProfile.photoURL;
+      } else {
+        el.innerHTML =
+          `<img src="${escapeHTML(
+            currentProfile.photoURL
+          )}" class="jda-avatar" style="width:100%;height:100%">`;
       }
-
-
-      if (
-        currentProfile.stream
-      ) {
-
-        parts.push(
-          currentProfile.stream
-        );
-
-      }
-
-
-      $("profileClass")
-        .textContent =
-          parts.join(
-            " • "
-          ) ||
-          "Student";
-
     }
-    else {
+  });
 
-      $("profileClass")
-        .textContent =
-          currentProfile.department ||
-          "Staff";
+  const numberElements =
+    document.querySelectorAll(
+      "[data-profile-number], #profileNumber"
+    );
 
-    }
-
-  }
-
+  numberElements.forEach(el => {
+    el.textContent =
+      currentProfile?.jdaNumber || "";
+  });
 }
 
+// ============================================================
+// LOGOUT
+// ============================================================
+
+function setupLogout() {
+  document
+    .querySelectorAll(
+      "#logoutBtn, [data-logout]"
+    )
+    .forEach(button => {
+      button.addEventListener("click", async () => {
+        try {
+          await setOwnOnlineStatus(false);
+          await signOut(auth);
+          window.location.href = "./index.html";
+        } catch (error) {
+          console.error(error);
+          showError("Could not log out.");
+        }
+      });
+    });
+}
 
 // ============================================================
-// PUBLIC JDA API
+// ADMIN PANEL
 // ============================================================
 
-window.JDA = {
+function setupAdminButton() {
+  const button =
+    document.querySelector(
+      "#adminPanelBtn, [data-admin-panel]"
+    );
 
-  openNewChat:
-    openMemberModal,
+  if (!button) return;
 
-  startConversation,
+  button.style.display = "";
 
-  openChat,
+  button.addEventListener("click", async () => {
+    try {
+      const adminRef =
+        doc(db, "admins", currentUser.uid);
 
-  closeChat,
+      const adminSnap =
+        await getDoc(adminRef);
 
-  refreshMembers:
-    loadMembers,
+      const isSuperAdmin =
+        currentUser.email ===
+        "jonathanmentor62@gmail.com";
 
-  refreshChats:
-    async () => {
-
-      if (
-        unsubscribeConversations
-      ) {
-
-        unsubscribeConversations();
-
+      if (!isSuperAdmin && !adminSnap.exists()) {
+        showError(
+          "You do not have administrator permission."
+        );
+        return;
       }
 
+      window.location.href =
+        "./admin.html";
 
-      listenForConversations();
+    } catch (error) {
+      console.error(error);
+      showError(
+        "Unable to open Admin Panel."
+      );
+    }
+  });
+}
 
-    },
+setTimeout(setupAdminButton, 800);
 
-  switchPage,
+// ============================================================
+// REAL WEBRTC CALL SYSTEM
+// ============================================================
 
-  logout:
-    async () => {
+// ------------------------------------------------------------
+// CREATE CALL INTERFACE
+// ------------------------------------------------------------
 
-      await setOwnOnlineStatus(
+function createCallInterface() {
+  if (document.getElementById("jda-call-ui")) return;
+
+  const ui = document.createElement("div");
+
+  ui.id = "jda-call-ui";
+
+  ui.style.display = "none";
+
+  ui.innerHTML = `
+    <div
+      id="jda-call-overlay"
+      class="jda-call-overlay"
+    >
+
+      <div
+        id="jda-call-title"
+        style="
+          font-size:20px;
+          font-weight:800;
+          margin-bottom:18px;
+        "
+      >
+        Calling...
+      </div>
+
+      <div
+        id="jda-call-avatar-area"
+        style="
+          margin-bottom:18px;
+          display:flex;
+          justify-content:center;
+        "
+      ></div>
+
+      <div
+        id="jda-call-video-area"
+        style="
+          width:100%;
+          max-width:700px;
+          position:relative;
+          display:none;
+        "
+      >
+
+        <video
+          id="jda-remote-video"
+          class="jda-call-video"
+          autoplay
+          playsinline
+        ></video>
+
+        <video
+          id="jda-local-video"
+          class="jda-local-video"
+          autoplay
+          muted
+          playsinline
+        ></video>
+
+      </div>
+
+      <audio
+        id="jda-remote-audio"
+        autoplay
+      ></audio>
+
+      <div
+        id="jda-call-status"
+        style="
+          margin-top:10px;
+          opacity:.7;
+          text-align:center;
+        "
+      >
+        Connecting...
+      </div>
+
+      <div class="jda-call-controls">
+
+        <button
+          id="jda-mute-button"
+          class="jda-call-control"
+          title="Mute"
+        >
+          🎙️
+        </button>
+
+        <button
+          id="jda-camera-button"
+          class="jda-call-control"
+          title="Camera"
+        >
+          📷
+        </button>
+
+        <button
+          id="jda-end-call-button"
+          class="jda-call-control jda-call-end"
+          title="End call"
+        >
+          ☎
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(ui);
+}
+
+// ------------------------------------------------------------
+// SHOW CALL UI
+// ------------------------------------------------------------
+
+function showCallUI(type, member, status = "Connecting...") {
+  const ui =
+    document.getElementById("jda-call-ui");
+
+  if (!ui) return;
+
+  ui.style.display = "block";
+
+  const title =
+    document.getElementById("jda-call-title");
+
+  title.textContent =
+    type === "video"
+      ? `Video call with ${member.realName}`
+      : `Audio call with ${member.realName}`;
+
+  const avatarArea =
+    document.getElementById(
+      "jda-call-avatar-area"
+    );
+
+  avatarArea.innerHTML =
+    avatarHTML(member, 90);
+
+  const statusElement =
+    document.getElementById(
+      "jda-call-status"
+    );
+
+  statusElement.textContent = status;
+
+  const videoArea =
+    document.getElementById(
+      "jda-call-video-area"
+    );
+
+  videoArea.style.display =
+    type === "video"
+      ? "block"
+      : "none";
+
+  const cameraButton =
+    document.getElementById(
+      "jda-camera-button"
+    );
+
+  cameraButton.style.display =
+    type === "video"
+      ? ""
+      : "none";
+}
+
+function hideCallUI() {
+  const ui =
+    document.getElementById("jda-call-ui");
+
+  if (ui) {
+    ui.style.display = "none";
+  }
+
+  const remoteVideo =
+    document.getElementById(
+      "jda-remote-video"
+    );
+
+  const localVideo =
+    document.getElementById(
+      "jda-local-video"
+    );
+
+  if (remoteVideo) {
+    remoteVideo.srcObject = null;
+  }
+
+  if (localVideo) {
+    localVideo.srcObject = null;
+  }
+
+  const audio =
+    document.getElementById(
+      "jda-remote-audio"
+    );
+
+  if (audio) {
+    audio.srcObject = null;
+  }
+}
+
+// ------------------------------------------------------------
+// CREATE PEER CONNECTION
+// ------------------------------------------------------------
+
+function createPeerConnection(callId, type, isCaller) {
+  const pc =
+    new RTCPeerConnection(RTC_CONFIG);
+
+  peerConnection = pc;
+
+  pc.onicecandidate = async event => {
+    if (!event.candidate) return;
+
+    try {
+      await addDoc(
+        collection(
+          db,
+          "calls",
+          callId,
+          "candidates"
+        ),
+        {
+          senderId: currentUser.uid,
+          candidate:
+            event.candidate.toJSON(),
+          createdAt: serverTimestamp()
+        }
+      );
+    } catch (error) {
+      console.error(
+        "ICE candidate error:",
+        error
+      );
+    }
+  };
+
+  pc.ontrack = event => {
+    if (!remoteStream) {
+      remoteStream =
+        new MediaStream();
+    }
+
+    event.streams[0]
+      ?.getTracks()
+      .forEach(track => {
+        if (
+          !remoteStream
+            .getTracks()
+            .some(t => t.id === track.id)
+        ) {
+          remoteStream.addTrack(track);
+        }
+      });
+
+    if (type === "video") {
+      const remoteVideo =
+        document.getElementById(
+          "jda-remote-video"
+        );
+
+      if (remoteVideo) {
+        remoteVideo.srcObject =
+          remoteStream;
+      }
+    } else {
+      const remoteAudio =
+        document.getElementById(
+          "jda-remote-audio"
+        );
+
+      if (remoteAudio) {
+        remoteAudio.srcObject =
+          remoteStream;
+      }
+    }
+  };
+
+  pc.onconnectionstatechange = () => {
+    console.log(
+      "WebRTC state:",
+      pc.connectionState
+    );
+
+    if (
+      pc.connectionState ===
+        "connected"
+    ) {
+      updateCallStatus(
+        "Connected"
+      );
+    }
+
+    if (
+      pc.connectionState ===
+        "disconnected"
+    ) {
+      updateCallStatus(
+        "Connection interrupted..."
+      );
+    }
+
+    if (
+      pc.connectionState ===
+        "failed"
+    ) {
+      updateCallStatus(
+        "Connection failed."
+      );
+    }
+
+    if (
+      pc.connectionState ===
+        "closed"
+    ) {
+      updateCallStatus(
+        "Call ended"
+      );
+    }
+  };
+
+  return pc;
+}
+
+// ------------------------------------------------------------
+// GET MEDIA
+// ------------------------------------------------------------
+
+async function getLocalMedia(type) {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    throw new Error(
+      "This device/browser does not support microphone or camera access."
+    );
+  }
+
+  const constraints =
+    type === "video"
+      ? {
+          audio: true,
+          video: {
+            facingMode: "user"
+          }
+        }
+      : {
+          audio: true,
+          video: false
+        };
+
+  localStream =
+    await navigator.mediaDevices.getUserMedia(
+      constraints
+    );
+
+  if (type === "video") {
+    const localVideo =
+      document.getElementById(
+        "jda-local-video"
+      );
+
+    if (localVideo) {
+      localVideo.srcObject =
+        localStream;
+    }
+  }
+
+  return localStream;
+}
+
+// ------------------------------------------------------------
+// START AUDIO CALL
+// ------------------------------------------------------------
+
+async function startAudioCall(member) {
+  return startCall(member, "audio");
+}
+
+// ------------------------------------------------------------
+// START VIDEO CALL
+// ------------------------------------------------------------
+
+async function startVideoCall(member) {
+  return startCall(member, "video");
+}
+
+// ------------------------------------------------------------
+// START CALL
+// ------------------------------------------------------------
+
+async function startCall(member, type) {
+  if (!member || !currentUser) return;
+
+  if (activeCallId) {
+    showError("You are already on a call.");
+    return;
+  }
+
+  try {
+    await getLocalMedia(type);
+
+    const callRef =
+      await addDoc(
+        collection(db, "calls"),
+        {
+          callerId: currentUser.uid,
+          calleeId: member.uid,
+          type,
+          status: "ringing",
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }
+      );
+
+    activeCallId = callRef.id;
+    activeCallType = type;
+
+    showCallUI(
+      type,
+      member,
+      "Calling..."
+    );
+
+    const pc =
+      createPeerConnection(
+        activeCallId,
+        type,
+        true
+      );
+
+    localStream
+      .getTracks()
+      .forEach(track => {
+        pc.addTrack(
+          track,
+          localStream
+        );
+      });
+
+    const offer =
+      await pc.createOffer();
+
+    await pc.setLocalDescription(
+      offer
+    );
+
+    await updateDoc(
+      callRef,
+      {
+        offer: {
+          type: offer.type,
+          sdp: offer.sdp
+        },
+        updatedAt:
+          serverTimestamp()
+      }
+    );
+
+    listenActiveCall(
+      activeCallId,
+      member,
+      false
+    );
+
+    listenCandidates(
+      activeCallId,
+      false
+    );
+
+  } catch (error) {
+    console.error(
+      "Start call failed:",
+      error
+    );
+
+    cleanupCall();
+
+    showError(
+      "Could not start the call. Make sure microphone/camera permission is allowed."
+    );
+  }
+}
+
+// ------------------------------------------------------------
+// LISTEN ACTIVE CALL
+// ------------------------------------------------------------
+
+function listenActiveCall(
+  callId,
+  member,
+  incoming
+) {
+  if (activeCallDocUnsubscribe) {
+    activeCallDocUnsubscribe();
+  }
+
+  activeCallDocUnsubscribe =
+    onSnapshot(
+      doc(db, "calls", callId),
+      async snapshot => {
+        if (!snapshot.exists()) {
+          cleanupCall();
+          return;
+        }
+
+        const call =
+          snapshot.data();
+
+        if (
+          call.status === "ended" ||
+          call.status === "rejected"
+        ) {
+          cleanupCall();
+          return;
+        }
+
+        if (
+          !incoming &&
+          call.answer &&
+          peerConnection &&
+          !peerConnection.currentRemoteDescription
+        ) {
+          try {
+            await peerConnection.setRemoteDescription(
+              new RTCSessionDescription(
+                call.answer
+              )
+            );
+
+            updateCallStatus(
+              "Connected"
+            );
+          } catch (error) {
+            console.error(
+              "Answer error:",
+              error
+            );
+          }
+        }
+
+        if (
+          incoming &&
+          call.status === "accepted" &&
+          call.answer &&
+          peerConnection &&
+          !peerConnection.currentRemoteDescription
+        ) {
+          try {
+            await peerConnection.setRemoteDescription(
+              new RTCSessionDescription(
+                call.answer
+              )
+            );
+
+            updateCallStatus(
+              "Connected"
+            );
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      },
+      error => {
+        console.error(
+          "Call listener error:",
+          error
+        );
+      }
+    );
+}
+
+// ------------------------------------------------------------
+// LISTEN ICE CANDIDATES
+// ------------------------------------------------------------
+
+function listenCandidates(
+  callId,
+  incoming
+) {
+  if (activeCandidateUnsubscribe) {
+    activeCandidateUnsubscribe();
+  }
+
+  const candidatesRef =
+    collection(
+      db,
+      "calls",
+      callId,
+      "candidates"
+    );
+
+  const q = query(
+    candidatesRef,
+    orderBy("createdAt", "asc")
+  );
+
+  activeCandidateUnsubscribe =
+    onSnapshot(
+      q,
+      async snapshot => {
+        if (!peerConnection) return;
+
+        for (
+          const change of snapshot.docChanges()
+        ) {
+          if (change.type !== "added") {
+            continue;
+          }
+
+          const data =
+            change.doc.data();
+
+          if (
+            data.senderId ===
+            currentUser.uid
+          ) {
+            continue;
+          }
+
+          try {
+            await peerConnection.addIceCandidate(
+              new RTCIceCandidate(
+                data.candidate
+              )
+            );
+          } catch (error) {
+            console.warn(
+              "Could not add ICE candidate:",
+              error
+            );
+          }
+        }
+      },
+      error => {
+        console.error(
+          "Candidate listener error:",
+          error
+        );
+      }
+    );
+}
+
+// ------------------------------------------------------------
+// INCOMING CALLS
+// ------------------------------------------------------------
+
+function listenIncomingCalls() {
+  if (incomingCallUnsubscribe) {
+    incomingCallUnsubscribe();
+  }
+
+  const q = query(
+    collection(db, "calls"),
+    where(
+      "calleeId",
+      "==",
+      currentUser.uid
+    ),
+    where(
+      "status",
+      "==",
+      "ringing"
+    ),
+    limit(10)
+  );
+
+  incomingCallUnsubscribe =
+    onSnapshot(
+      q,
+      snapshot => {
+        snapshot.docChanges()
+          .forEach(change => {
+            if (
+              change.type !== "added"
+            ) {
+              return;
+            }
+
+            const call =
+              change.doc.data();
+
+            if (activeCallId) {
+              return;
+            }
+
+            const caller =
+              members.find(
+                m =>
+                  m.uid ===
+                  call.callerId
+              );
+
+            if (caller) {
+              showIncomingCall(
+                change.doc.id,
+                call,
+                caller
+              );
+            }
+          });
+      },
+      error => {
+        console.error(
+          "Incoming call listener:",
+          error
+        );
+      }
+    );
+}
+
+// ------------------------------------------------------------
+// INCOMING CALL UI
+// ------------------------------------------------------------
+
+function showIncomingCall(
+  callId,
+  call,
+  caller
+) {
+  if (
+    document.getElementById(
+      "jda-incoming-call"
+    )
+  ) {
+    return;
+  }
+
+  const overlay =
+    document.createElement("div");
+
+  overlay.id =
+    "jda-incoming-call";
+
+  overlay.className =
+    "jda-call-overlay";
+
+  overlay.innerHTML = `
+    <div class="jda-incoming-card">
+
+      ${avatarHTML(caller, 95)}
+
+      <div style="
+        font-size:22px;
+        font-weight:900;
+        margin-top:18px;
+      ">
+        ${escapeHTML(caller.realName)}
+      </div>
+
+      <div style="
+        margin-top:7px;
+        opacity:.7;
+      ">
+        Incoming ${
+          call.type === "video"
+            ? "video"
+            : "audio"
+        } call
+      </div>
+
+      <div class="jda-call-actions">
+
+        <button
+          id="jda-reject-incoming"
+          class="jda-call-action jda-call-reject"
+        >
+          Decline
+        </button>
+
+        <button
+          id="jda-accept-incoming"
+          class="jda-call-action jda-call-accept"
+        >
+          Accept
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document
+    .getElementById(
+      "jda-reject-incoming"
+    )
+    .addEventListener(
+      "click",
+      () => {
+        rejectIncomingCall(
+          callId
+        );
+      }
+    );
+
+  document
+    .getElementById(
+      "jda-accept-incoming"
+    )
+    .addEventListener(
+      "click",
+      () => {
+        acceptIncomingCall(
+          callId,
+          call,
+          caller
+        );
+      }
+    );
+}
+
+// ------------------------------------------------------------
+// ACCEPT CALL
+// ------------------------------------------------------------
+
+async function acceptIncomingCall(
+  callId,
+  call,
+  caller
+) {
+  try {
+    const incomingUI =
+      document.getElementById(
+        "jda-incoming-call"
+      );
+
+    if (incomingUI) {
+      incomingUI.remove();
+    }
+
+    activeCallId = callId;
+    activeCallType = call.type;
+
+    await getLocalMedia(
+      call.type
+    );
+
+    showCallUI(
+      call.type,
+      caller,
+      "Connecting..."
+    );
+
+    const pc =
+      createPeerConnection(
+        callId,
+        call.type,
         false
       );
 
+    localStream
+      .getTracks()
+      .forEach(track => {
+        pc.addTrack(
+          track,
+          localStream
+        );
+      });
 
-      await signOut(
-        auth
+    if (call.offer) {
+      await pc.setRemoteDescription(
+        new RTCSessionDescription(
+          call.offer
+        )
       );
-
-
-      window.location.replace(
-        "./index.html"
-      );
-
     }
 
+    const answer =
+      await pc.createAnswer();
+
+    await pc.setLocalDescription(
+      answer
+    );
+
+    await updateDoc(
+      doc(db, "calls", callId),
+      {
+        status: "accepted",
+        answer: {
+          type: answer.type,
+          sdp: answer.sdp
+        },
+        updatedAt:
+          serverTimestamp()
+      }
+    );
+
+    listenActiveCall(
+      callId,
+      caller,
+      true
+    );
+
+    listenCandidates(
+      callId,
+      true
+    );
+
+  } catch (error) {
+    console.error(
+      "Accept call failed:",
+      error
+    );
+
+    cleanupCall();
+
+    showError(
+      "Could not answer the call."
+    );
+  }
+}
+
+// ------------------------------------------------------------
+// REJECT CALL
+// ------------------------------------------------------------
+
+async function rejectIncomingCall(
+  callId
+) {
+  const incomingUI =
+    document.getElementById(
+      "jda-incoming-call"
+    );
+
+  if (incomingUI) {
+    incomingUI.remove();
+  }
+
+  try {
+    await updateDoc(
+      doc(db, "calls", callId),
+      {
+        status: "rejected",
+        updatedAt:
+          serverTimestamp()
+      }
+    );
+  } catch (error) {
+    console.error(
+      "Reject call failed:",
+      error
+    );
+  }
+}
+
+// ------------------------------------------------------------
+// UPDATE CALL STATUS
+// ------------------------------------------------------------
+
+function updateCallStatus(text) {
+  const element =
+    document.getElementById(
+      "jda-call-status"
+    );
+
+  if (element) {
+    element.textContent = text;
+  }
+}
+
+// ------------------------------------------------------------
+// CALL BUTTONS
+// ------------------------------------------------------------
+
+function setupCallButtons() {
+  const endButton =
+    document.getElementById(
+      "jda-end-call-button"
+    );
+
+  if (endButton) {
+    endButton.addEventListener(
+      "click",
+      () => {
+        endCurrentCall();
+      }
+    );
+  }
+
+  const muteButton =
+    document.getElementById(
+      "jda-mute-button"
+    );
+
+  if (muteButton) {
+    muteButton.addEventListener(
+      "click",
+      toggleMute
+    );
+  }
+
+  const cameraButton =
+    document.getElementById(
+      "jda-camera-button"
+    );
+
+  if (cameraButton) {
+    cameraButton.addEventListener(
+      "click",
+      toggleCamera
+    );
+  }
+}
+
+// ------------------------------------------------------------
+// MUTE
+// ------------------------------------------------------------
+
+function toggleMute() {
+  if (!localStream) return;
+
+  const audioTracks =
+    localStream.getAudioTracks();
+
+  callMuted = !callMuted;
+
+  audioTracks.forEach(track => {
+    track.enabled = !callMuted;
+  });
+
+  const button =
+    document.getElementById(
+      "jda-mute-button"
+    );
+
+  if (button) {
+    button.textContent =
+      callMuted
+        ? "🔇"
+        : "🎙️";
+  }
+}
+
+// ------------------------------------------------------------
+// CAMERA
+// ------------------------------------------------------------
+
+function toggleCamera() {
+  if (!localStream) return;
+
+  const videoTracks =
+    localStream.getVideoTracks();
+
+  if (!videoTracks.length) {
+    return;
+  }
+
+  cameraOff = !cameraOff;
+
+  videoTracks.forEach(track => {
+    track.enabled = !cameraOff;
+  });
+
+  const button =
+    document.getElementById(
+      "jda-camera-button"
+    );
+
+  if (button) {
+    button.textContent =
+      cameraOff
+        ? "🚫"
+        : "📷";
+  }
+}
+
+// ------------------------------------------------------------
+// END CALL
+// ------------------------------------------------------------
+
+async function endCurrentCall() {
+  if (activeCallId) {
+    try {
+      await updateDoc(
+        doc(
+          db,
+          "calls",
+          activeCallId
+        ),
+        {
+          status: "ended",
+          updatedAt:
+            serverTimestamp()
+        }
+      );
+    } catch (error) {
+      console.warn(
+        "Could not update call status:",
+        error
+      );
+    }
+  }
+
+  cleanupCall();
+}
+
+// ------------------------------------------------------------
+// CLEANUP CALL
+// ------------------------------------------------------------
+
+function cleanupCall() {
+  if (activeCallDocUnsubscribe) {
+    activeCallDocUnsubscribe();
+    activeCallDocUnsubscribe = null;
+  }
+
+  if (activeCandidateUnsubscribe) {
+    activeCandidateUnsubscribe();
+    activeCandidateUnsubscribe = null;
+  }
+
+  if (peerConnection) {
+    try {
+      peerConnection.close();
+    } catch {}
+  }
+
+  peerConnection = null;
+
+  if (localStream) {
+    localStream
+      .getTracks()
+      .forEach(track => {
+        try {
+          track.stop();
+        } catch {}
+      });
+  }
+
+  localStream = null;
+  remoteStream = null;
+
+  activeCallId = null;
+  activeCallType = null;
+
+  callMuted = false;
+  cameraOff = false;
+
+  hideCallUI();
+}
+
+// ============================================================
+// GLOBAL SHORTCUTS
+// ============================================================
+
+window.JDA = {
+  startConversation,
+  openChat,
+  startAudioCall,
+  startVideoCall,
+  endCurrentCall,
+  activateTab
 };
 
-
-// ============================================================
-// FINISHED
-// ============================================================
-
 console.log(
-  "JDA Networks — WhatsApp-style neon chat system loaded."
+  "JDA Networks app.js loaded successfully."
 );

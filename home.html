@@ -6,25 +6,34 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<meta name="theme-color" content="#111b21">
+<meta name="theme-color" content="#080b18">
 
 <title>JDA Networks</title>
 
 <style>
+
+/* =========================================================
+   JDA NETWORKS — FINAL HOME UI
+========================================================= */
 
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
 }
 
-html,body{
+html,
+body{
   margin:0;
   padding:0;
   width:100%;
   min-height:100%;
-  background:#0b141a;
-  color:#e9edef;
-  font-family:Arial,Helvetica,sans-serif;
+  background:#070914;
+  color:#f4f7ff;
+  font-family:
+    Inter,
+    Arial,
+    Helvetica,
+    sans-serif;
 }
 
 body{
@@ -41,65 +50,164 @@ button{
   cursor:pointer;
 }
 
+button:focus,
+input:focus,
+textarea:focus{
+  outline:none;
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
 #app{
   width:100%;
   max-width:700px;
   min-height:100vh;
   margin:0 auto;
-  background:#0b141a;
   position:relative;
   overflow:hidden;
+  background:
+    radial-gradient(
+      circle at 20% 0%,
+      rgba(75,65,255,.16),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 100% 20%,
+      rgba(0,210,255,.12),
+      transparent 30%
+    ),
+    #070914;
 }
 
 
-/* =====================================================
-   HEADER
-===================================================== */
+/* =========================================================
+   BACKGROUND GLOW
+========================================================= */
+
+#app::before{
+  content:"";
+  position:fixed;
+  width:260px;
+  height:260px;
+  top:-120px;
+  right:-100px;
+  border-radius:50%;
+  background:rgba(91,76,255,.14);
+  filter:blur(60px);
+  pointer-events:none;
+}
+
+#app::after{
+  content:"";
+  position:fixed;
+  width:230px;
+  height:230px;
+  bottom:-100px;
+  left:-100px;
+  border-radius:50%;
+  background:rgba(0,183,255,.10);
+  filter:blur(60px);
+  pointer-events:none;
+}
+
+
+/* =========================================================
+   TOP HEADER
+========================================================= */
 
 .top-header{
-  background:#111b21;
-  padding:10px 14px 8px;
   position:sticky;
   top:0;
-  z-index:50;
+  z-index:100;
+  padding:10px 13px 9px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10,13,30,.97),
+      rgba(10,13,27,.94)
+    );
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  border-bottom:
+    1px solid rgba(130,120,255,.10);
 }
 
 .header-row{
   display:flex;
   align-items:center;
-  gap:4px;
+  gap:5px;
 }
 
 .brand{
   flex:1;
   min-width:0;
+
   font-size:21px;
-  font-weight:700;
-  color:#e9edef;
-  letter-spacing:-.4px;
+  font-weight:800;
+  letter-spacing:-.5px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #ffffff,
+      #a8a2ff,
+      #55ddff
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
 }
 
 
-/* =====================================================
-   ADMIN BUTTON
-===================================================== */
+/* =========================================================
+   HEADER BUTTONS
+========================================================= */
 
+.icon-button,
 .admin-panel-button{
   width:42px;
   height:42px;
+
   border:0;
   border-radius:50%;
-  background:transparent;
-  color:#e9edef;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
+  background:transparent;
+  color:#eef2ff;
+
   flex-shrink:0;
+
+  transition:
+    transform .15s ease,
+    background .15s ease;
 }
 
+.icon-button:active,
 .admin-panel-button:active{
-  background:#26343b;
+  transform:scale(.92);
+  background:rgba(105,94,255,.18);
 }
+
+.header-actions{
+  display:flex;
+  align-items:center;
+  gap:1px;
+}
+
+
+/* =========================================================
+   ADMIN ICON
+========================================================= */
 
 .admin-icon{
   width:23px;
@@ -107,40 +215,14 @@ button{
 }
 
 
-/* =====================================================
-   HEADER ACTIONS
-===================================================== */
-
-.header-actions{
-  display:flex;
-  align-items:center;
-  gap:2px;
-}
-
-.icon-button{
-  width:42px;
-  height:42px;
-  border:0;
-  border-radius:50%;
-  background:transparent;
-  color:#e9edef;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.icon-button:active{
-  background:#26343b;
-}
-
-
-/* =====================================================
-   WHATSAPP THREE DOTS
-===================================================== */
+/* =========================================================
+   THREE DOT MENU
+========================================================= */
 
 .whatsapp-menu-icon{
   width:6px;
-  height:23px;
+  height:22px;
+
   display:flex;
   flex-direction:column;
   justify-content:space-between;
@@ -151,54 +233,75 @@ button{
   width:5px;
   height:5px;
   border-radius:50%;
-  background:#e9edef;
+  background:#eef2ff;
 }
 
 
-/* =====================================================
+/* =========================================================
    SEARCH
-===================================================== */
+========================================================= */
 
 .search-box{
+  height:45px;
   margin-top:9px;
-  height:44px;
-  background:#202c33;
-  border-radius:12px;
+
   display:flex;
   align-items:center;
   gap:10px;
-  padding:0 13px;
+
+  padding:0 14px;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(32,38,68,.96),
+      rgba(20,25,48,.96)
+    );
+
+  border:
+    1px solid rgba(126,116,255,.12);
+
+  box-shadow:
+    inset 0 0 18px rgba(85,75,255,.05);
 }
 
 .search-icon{
-  color:#8696a0;
+  color:#8993b2;
   font-size:17px;
 }
 
 #chatSearch{
   flex:1;
   min-width:0;
+
   border:0;
   outline:0;
+
   background:transparent;
-  color:#e9edef;
+  color:#f5f7ff;
+
   font-size:15px;
 }
 
 #chatSearch::placeholder{
-  color:#8696a0;
+  color:#7e87a4;
 }
 
 
-/* =====================================================
+/* =========================================================
    FILTERS
-===================================================== */
+========================================================= */
 
 .filters{
   display:flex;
   gap:8px;
+
   overflow-x:auto;
+
   padding:10px 0 2px;
+
   scrollbar-width:none;
 }
 
@@ -207,70 +310,135 @@ button{
 }
 
 .filter-button{
-  border:0;
+  border:1px solid rgba(126,116,255,.10);
+
   border-radius:18px;
-  background:#202c33;
-  color:#8696a0;
+
+  background:
+    rgba(30,35,61,.9);
+
+  color:#8993b2;
+
   padding:8px 15px;
+
   white-space:nowrap;
+
   font-size:13px;
+
+  transition:.2s ease;
 }
 
 .filter-button.active{
-  background:#0b5c4c;
-  color:#d9fff5;
+  color:white;
+
+  border-color:
+    rgba(93,223,255,.25);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(80,67,255,.65),
+      rgba(0,180,255,.34)
+    );
+
+  box-shadow:
+    0 0 16px rgba(77,91,255,.18);
 }
 
 
-/* =====================================================
+/* =========================================================
    CONTENT
-===================================================== */
+========================================================= */
 
 .content{
-  min-height:calc(100vh - 150px);
-  padding-bottom:90px;
+  min-height:calc(100vh - 155px);
+  padding-bottom:100px;
 }
 
 .screen{
   display:none;
+  animation:
+    screenIn .22s ease;
 }
 
 .screen.active{
   display:block;
 }
 
+@keyframes screenIn{
+  from{
+    opacity:0;
+    transform:translateY(5px);
+  }
 
-/* =====================================================
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+
+/* =========================================================
    EMPTY
-===================================================== */
+========================================================= */
 
 .empty{
-  min-height:50vh;
+  min-height:48vh;
+
   display:flex;
   flex-direction:column;
+
   justify-content:center;
   align-items:center;
+
   text-align:center;
-  color:#8696a0;
+
+  color:#7e87a4;
+
   padding:30px;
 }
 
 .empty-icon{
-  font-size:48px;
-  margin-bottom:14px;
+  width:72px;
+  height:72px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:24px;
+
+  margin-bottom:16px;
+
+  font-size:32px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(80,65,255,.25),
+      rgba(0,205,255,.13)
+    );
+
+  border:
+    1px solid rgba(113,104,255,.18);
+
+  box-shadow:
+    0 0 35px rgba(79,76,255,.12);
 }
 
 .empty-title{
-  color:#e9edef;
+  color:#f3f5ff;
+
   font-size:18px;
-  font-weight:600;
+  font-weight:700;
+
   margin-bottom:7px;
 }
 
 
-/* =====================================================
+/* =========================================================
    CHAT LIST
-===================================================== */
+========================================================= */
 
 #chatList{
   width:100%;
@@ -278,34 +446,69 @@ button{
 
 .chat-item{
   width:100%;
-  min-height:74px;
+  min-height:76px;
+
   padding:10px 15px;
+
   display:flex;
   align-items:center;
   gap:12px;
-  background:#0b141a;
+
   border:0;
-  border-bottom:1px solid rgba(255,255,255,.045);
-  color:#e9edef;
+  border-bottom:
+    1px solid rgba(255,255,255,.045);
+
+  background:transparent;
+
+  color:#f1f4ff;
+
   text-align:left;
+
+  transition:
+    background .15s ease;
 }
 
 .chat-item:active{
-  background:#202c33;
+  background:
+    rgba(88,76,255,.12);
 }
 
+
+/* =========================================================
+   CHAT AVATAR
+========================================================= */
+
 .chat-avatar{
-  width:54px;
-  height:54px;
+  width:55px;
+  height:55px;
+
   border-radius:50%;
-  background:#26343b;
+
   flex-shrink:0;
+
   overflow:hidden;
+
   display:flex;
   align-items:center;
   justify-content:center;
-  font-weight:700;
-  font-size:19px;
+
+  font-size:18px;
+  font-weight:800;
+
+  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #353069,
+      #16475e
+    );
+
+  border:
+    1px solid rgba(117,105,255,.25);
+
+  box-shadow:
+    0 0 18px rgba(83,72,255,.10);
 }
 
 .chat-avatar img{
@@ -313,6 +516,11 @@ button{
   height:100%;
   object-fit:cover;
 }
+
+
+/* =========================================================
+   CHAT INFO
+========================================================= */
 
 .chat-info{
   flex:1;
@@ -328,15 +536,17 @@ button{
 .chat-name{
   flex:1;
   min-width:0;
+
   font-size:16px;
-  font-weight:600;
+  font-weight:650;
+
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
 .chat-time{
-  color:#8696a0;
+  color:#79829e;
   font-size:11px;
   flex-shrink:0;
 }
@@ -345,14 +555,18 @@ button{
   display:flex;
   align-items:center;
   gap:7px;
+
   margin-top:5px;
 }
 
 .chat-preview{
   flex:1;
   min-width:0;
-  color:#8696a0;
+
+  color:#8089a5;
+
   font-size:13px;
+
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -361,60 +575,95 @@ button{
 .unread-badge{
   min-width:20px;
   height:20px;
+
   border-radius:10px;
-  background:#25d366;
-  color:#062b1d;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   padding:0 6px;
+
+  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6758ff,
+      #12cfff
+    );
+
   font-size:11px;
-  font-weight:700;
+  font-weight:800;
+
+  box-shadow:
+    0 0 12px rgba(79,180,255,.20);
 }
 
 
-/* =====================================================
-   PAGES
-===================================================== */
+/* =========================================================
+   GENERAL PAGES
+========================================================= */
 
 .page-container{
-  padding:24px 18px;
+  padding:24px 18px 15px;
 }
 
 .page-title{
-  font-size:24px;
-  font-weight:700;
-  margin-bottom:8px;
+  font-size:25px;
+  font-weight:800;
+
+  letter-spacing:-.5px;
 }
 
 .page-subtitle{
-  color:#8696a0;
+  color:#7e87a4;
+
   line-height:1.5;
+
   font-size:14px;
+
+  margin-top:5px;
 }
 
 .feature-card{
-  background:#202c33;
-  border-radius:15px;
-  padding:18px;
   margin-top:18px;
+
+  padding:18px;
+
+  border-radius:17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(31,37,67,.96),
+      rgba(17,22,45,.96)
+    );
+
+  border:
+    1px solid rgba(113,104,255,.13);
+
+  box-shadow:
+    0 12px 35px rgba(0,0,0,.16);
 }
 
 .feature-card-title{
-  font-weight:600;
+  font-size:16px;
+  font-weight:700;
   margin-bottom:7px;
 }
 
 .feature-card-text{
-  color:#8696a0;
+  color:#818aa7;
+
   font-size:14px;
-  line-height:1.5;
+  line-height:1.55;
 }
 
 
-/* =====================================================
+/* =========================================================
    CLASSES
-===================================================== */
+========================================================= */
 
 .class-list{
   padding:8px 18px 25px;
@@ -422,35 +671,68 @@ button{
 
 .class-button{
   width:100%;
-  border:0;
-  background:#202c33;
-  color:#e9edef;
-  border-radius:14px;
+
+  border:1px solid rgba(115,105,255,.10);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(30,36,65,.96),
+      rgba(18,23,47,.96)
+    );
+
+  color:#f3f5ff;
+
+  border-radius:15px;
+
   padding:17px;
+
   margin-bottom:10px;
+
   text-align:left;
+
   font-size:16px;
-  font-weight:600;
+  font-weight:700;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
+
+  transition:.18s ease;
 }
 
 .class-button:active{
-  background:#26343b;
+  transform:scale(.985);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(70,59,170,.50),
+      rgba(16,77,105,.45)
+    );
 }
 
 .class-arrow{
-  color:#8696a0;
-  font-size:21px;
+  color:#8791af;
+  font-size:22px;
 }
 
 .class-members{
   display:none;
+
   margin-top:-10px;
   margin-bottom:10px;
-  background:#111b21;
-  border-radius:0 0 14px 14px;
+
+  background:
+    rgba(13,18,37,.98);
+
+  border:
+    1px solid rgba(105,96,255,.08);
+
+  border-top:0;
+
+  border-radius:0 0 15px 15px;
+
   padding:8px;
 }
 
@@ -458,17 +740,30 @@ button{
   display:block;
 }
 
+.class-members-empty{
+  padding:15px;
 
-/* =====================================================
+  text-align:center;
+
+  color:#7c85a1;
+
+  font-size:13px;
+}
+
+
+/* =========================================================
    MEMBER CARD
-===================================================== */
+========================================================= */
 
 .member-card{
   display:flex;
   align-items:center;
   gap:11px;
+
   padding:11px 8px;
-  border-bottom:1px solid rgba(255,255,255,.05);
+
+  border-bottom:
+    1px solid rgba(255,255,255,.045);
 }
 
 .member-card:last-child{
@@ -478,14 +773,28 @@ button{
 .member-avatar{
   width:43px;
   height:43px;
+
   border-radius:50%;
-  background:#26343b;
+
+  background:
+    linear-gradient(
+      135deg,
+      #302c62,
+      #17475a
+    );
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   overflow:hidden;
+
   flex-shrink:0;
-  font-weight:700;
+
+  font-weight:800;
+
+  border:
+    1px solid rgba(109,98,255,.16);
 }
 
 .member-avatar img{
@@ -501,66 +810,111 @@ button{
 
 .member-name{
   font-size:14px;
-  font-weight:600;
+  font-weight:700;
 }
 
 .member-detail{
-  color:#8696a0;
+  color:#7e87a4;
+
   font-size:12px;
+
   margin-top:3px;
 }
 
 
-/* =====================================================
+/* =========================================================
    STAFF
-===================================================== */
+========================================================= */
 
 .staff-list{
   padding:8px 18px 25px;
 }
 
 .staff-card{
-  background:#202c33;
-  border-radius:14px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(31,37,67,.96),
+      rgba(18,23,47,.96)
+    );
+
+  border:
+    1px solid rgba(112,102,255,.11);
+
+  border-radius:15px;
+
   padding:16px;
+
   margin-bottom:10px;
 }
 
 .staff-title{
   font-size:16px;
-  font-weight:600;
+  font-weight:700;
 }
 
 .staff-description{
-  color:#8696a0;
+  color:#7e87a4;
+
   font-size:13px;
+
   margin-top:5px;
+
+  line-height:1.45;
 }
 
 
-/* =====================================================
+/* =========================================================
    PROFILE
-===================================================== */
+========================================================= */
 
 .profile-header{
-  background:#111b21;
-  padding:28px 18px;
+  padding:30px 18px;
+
   text-align:center;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(88,75,255,.20),
+      transparent 55%
+    );
+
+  border-bottom:
+    1px solid rgba(116,106,255,.08);
 }
 
 #profilePhoto{
-  width:105px;
-  height:105px;
+  width:108px;
+  height:108px;
+
   margin:0 auto 15px;
+
   border-radius:50%;
-  background:#26343b;
+
+  background:
+    linear-gradient(
+      135deg,
+      #37306e,
+      #16546a
+    );
+
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#e9edef;
+
+  color:white;
+
   font-size:35px;
-  font-weight:700;
+  font-weight:800;
+
   overflow:hidden;
+
+  border:
+    2px solid rgba(108,221,255,.20);
+
+  box-shadow:
+    0 0 30px rgba(83,75,255,.20);
 }
 
 #profilePhoto img{
@@ -570,12 +924,12 @@ button{
 }
 
 #profileName{
-  font-size:21px;
-  font-weight:700;
+  font-size:22px;
+  font-weight:800;
 }
 
 .profile-number{
-  color:#8696a0;
+  color:#7e87a4;
   margin-top:6px;
   font-size:14px;
 }
@@ -586,25 +940,31 @@ button{
 
 .profile-item{
   padding:17px 2px;
-  border-bottom:1px solid rgba(255,255,255,.06);
+
+  border-bottom:
+    1px solid rgba(255,255,255,.055);
 }
 
 .profile-label{
-  color:#8696a0;
+  color:#7e87a4;
+
   font-size:12px;
+
   margin-bottom:6px;
 }
 
 .profile-value{
-  color:#e9edef;
+  color:#f0f3ff;
+
   font-size:15px;
+
   word-break:break-word;
 }
 
 
-/* =====================================================
+/* =========================================================
    SETTINGS
-===================================================== */
+========================================================= */
 
 .settings-list{
   padding:8px 0;
@@ -614,13 +974,18 @@ button{
   display:flex;
   align-items:center;
   gap:15px;
+
   padding:17px 18px;
-  border-bottom:1px solid rgba(255,255,255,.05);
+
+  border-bottom:
+    1px solid rgba(255,255,255,.045);
 }
 
 .settings-row-icon{
   width:35px;
+
   text-align:center;
+
   font-size:21px;
 }
 
@@ -630,150 +995,440 @@ button{
 
 .settings-row-title{
   font-size:15px;
-  color:#e9edef;
+  color:#eef1ff;
 }
 
 .settings-row-description{
-  color:#8696a0;
+  color:#7e87a4;
+
   font-size:12px;
+
   margin-top:4px;
 }
 
 .logout-button{
   margin:25px 18px;
+
   width:calc(100% - 36px);
-  border:0;
-  border-radius:12px;
+
+  border:1px solid rgba(255,100,120,.14);
+
+  border-radius:13px;
+
   padding:14px;
-  background:#8b1e2d;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(130,27,52,.80),
+      rgba(91,22,55,.80)
+    );
+
   color:white;
-  font-weight:600;
+
+  font-weight:700;
 }
 
 
-/* =====================================================
+/* =========================================================
    ADMIN MESSAGE
-===================================================== */
+========================================================= */
 
 .admin-message{
   position:fixed;
+
   left:50%;
   top:50%;
+
   transform:translate(-50%,-50%);
+
   width:calc(100% - 40px);
   max-width:400px;
-  background:#202c33;
-  border-radius:16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #1d2342,
+      #11162d
+    );
+
+  border:
+    1px solid rgba(112,101,255,.18);
+
+  border-radius:18px;
+
   padding:22px;
+
   text-align:center;
+
   z-index:100000;
-  box-shadow:0 10px 40px rgba(0,0,0,.6);
+
+  box-shadow:
+    0 20px 70px rgba(0,0,0,.65),
+    0 0 30px rgba(75,65,255,.12);
+
   display:none;
 }
 
 .admin-message-title{
   font-size:18px;
-  font-weight:700;
+  font-weight:800;
+
   margin-bottom:8px;
 }
 
 .admin-message-text{
-  color:#8696a0;
+  color:#8992ae;
+
   font-size:14px;
+
   line-height:1.5;
+
   margin-bottom:18px;
 }
 
 .admin-message-close{
   width:100%;
+
   border:0;
-  border-radius:10px;
+
+  border-radius:11px;
+
   padding:12px;
-  background:#25d366;
-  color:#062b1d;
-  font-weight:700;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6658ff,
+      #1bcfff
+    );
+
+  color:white;
+
+  font-weight:800;
+
+  box-shadow:
+    0 0 18px rgba(81,128,255,.18);
 }
 
 
-/* =====================================================
+/* =========================================================
    FAB
-===================================================== */
+========================================================= */
 
 #fab{
   position:fixed;
-  right:max(20px,calc((100vw - 700px)/2 + 20px));
-  bottom:82px;
-  width:56px;
-  height:56px;
-  border:0;
-  border-radius:50%;
-  background:#25d366;
-  color:#062b1d;
-  font-size:28px;
-  box-shadow:0 5px 18px rgba(0,0,0,.35);
-  z-index:40;
+
+  right:max(
+    18px,
+    calc((100vw - 700px)/2 + 18px)
+  );
+
+  bottom:86px;
+
+  width:57px;
+  height:57px;
+
+  border:1px solid rgba(150,238,255,.20);
+
+  border-radius:19px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6859ff,
+      #14cfff
+    );
+
+  color:white;
+
+  font-size:27px;
+
+  box-shadow:
+    0 8px 25px rgba(0,0,0,.30),
+    0 0 25px rgba(79,119,255,.20);
+
+  z-index:80;
+
+  transition:
+    transform .15s ease;
 }
 
 #fab:active{
-  transform:scale(.95);
+  transform:scale(.92);
 }
 
 
-/* =====================================================
+/* =========================================================
    BOTTOM NAVIGATION
-   5 ITEMS
-===================================================== */
+========================================================= */
 
 .bottom-nav{
   position:fixed;
+
   bottom:0;
   left:50%;
+
   transform:translateX(-50%);
+
   width:100%;
   max-width:700px;
-  height:70px;
-  background:#111b21;
-  border-top:1px solid rgba(255,255,255,.06);
+
+  min-height:72px;
+
+  padding-bottom:
+    env(safe-area-inset-bottom);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(12,16,35,.96),
+      rgba(7,10,24,.99)
+    );
+
+  border-top:
+    1px solid rgba(115,105,255,.12);
+
   display:grid;
-  grid-template-columns:repeat(5,1fr);
-  z-index:45;
-  padding-bottom:env(safe-area-inset-bottom);
+
+  grid-template-columns:
+    repeat(5,1fr);
+
+  z-index:90;
+
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
 }
 
 .nav-button{
+  position:relative;
+
   border:0;
+
   background:transparent;
-  color:#8696a0;
+
+  color:#747e9b;
+
   display:flex;
+
   flex-direction:column;
+
   align-items:center;
+
   justify-content:center;
-  gap:4px;
+
+  gap:5px;
+
   font-size:10px;
+
+  transition:.18s ease;
 }
 
 .nav-icon{
   font-size:21px;
   line-height:1;
+
+  filter:
+    drop-shadow(
+      0 0 5px rgba(100,90,255,.08)
+    );
 }
 
 .nav-button.active{
-  color:#25d366;
+  color:#eef2ff;
+}
+
+.nav-button.active::before{
+  content:"";
+
+  position:absolute;
+
+  top:0;
+
+  width:32px;
+  height:2px;
+
+  border-radius:2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #6759ff,
+      #1bd6ff
+    );
+
+  box-shadow:
+    0 0 10px rgba(92,119,255,.55);
 }
 
 
-/* =====================================================
-   LOADING
-===================================================== */
+/* =========================================================
+   CALL AREA
+   SUPPORTS APP.JS CALL OVERLAY
+========================================================= */
 
-#loadingScreen{
+#callOverlay{
   position:fixed;
+
   inset:0;
-  background:#0b141a;
-  z-index:99999;
+
+  z-index:100000;
+
+  display:none;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(86,72,255,.30),
+      transparent 35%
+    ),
+    #080b18;
+}
+
+#callOverlay.active{
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+}
+
+.call-container{
+  width:100%;
+  height:100%;
+
+  max-width:700px;
+
+  display:flex;
+
+  flex-direction:column;
+
+  position:relative;
+}
+
+.call-header{
+  padding:20px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.call-name{
+  font-size:18px;
+  font-weight:800;
+}
+
+.call-status{
+  color:#8993b2;
+  font-size:13px;
+}
+
+.call-video-area{
+  flex:1;
+
+  position:relative;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
+  overflow:hidden;
+}
+
+#remoteVideo{
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  background:#050711;
+}
+
+#localVideo{
+  position:absolute;
+
+  right:18px;
+  top:18px;
+
+  width:125px;
+  height:175px;
+
+  object-fit:cover;
+
+  border-radius:15px;
+
+  background:#101426;
+
+  border:
+    1px solid rgba(121,109,255,.25);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.40);
+}
+
+.call-controls{
+  min-height:105px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  gap:18px;
+
+  padding:
+    15px
+    20px
+    calc(20px + env(safe-area-inset-bottom));
+}
+
+.call-control{
+  width:54px;
+  height:54px;
+
+  border:0;
+
+  border-radius:50%;
+
+  background:#202640;
+
+  color:white;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:20px;
+}
+
+.call-control.end{
+  background:#d83254;
+}
+
+
+/* =========================================================
+   LOADING SCREEN
+========================================================= */
+
+#loadingScreen{
+  position:fixed;
+
+  inset:0;
+
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(86,72,255,.20),
+      transparent 32%
+    ),
+    #070914;
+
+  z-index:999999;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
   text-align:center;
 }
 
@@ -782,34 +1437,122 @@ button{
 }
 
 .loading-logo{
-  width:75px;
-  height:75px;
-  border-radius:50%;
-  background:#202c33;
+  width:82px;
+  height:82px;
+
+  border-radius:26px;
+
   display:flex;
   align-items:center;
   justify-content:center;
-  margin:0 auto 18px;
-  font-size:30px;
-  font-weight:700;
-  color:#25d366;
+
+  margin:0 auto 19px;
+
+  font-size:32px;
+  font-weight:900;
+
+  color:white;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6758ff,
+      #13cfff
+    );
+
+  box-shadow:
+    0 0 40px rgba(91,79,255,.28);
+
+  animation:
+    logoPulse 1.6s infinite ease-in-out;
+}
+
+@keyframes logoPulse{
+  0%,
+  100%{
+    transform:scale(1);
+  }
+
+  50%{
+    transform:scale(1.06);
+  }
 }
 
 .loading-title{
-  font-size:22px;
-  font-weight:700;
+  font-size:23px;
+  font-weight:800;
+
+  background:
+    linear-gradient(
+      90deg,
+      white,
+      #9e99ff,
+      #55ddff
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+
+  color:transparent;
 }
 
 .loading-text{
   margin-top:8px;
-  color:#8696a0;
+
+  color:#7e87a4;
+
   font-size:13px;
 }
 
 
-/* =====================================================
+/* =========================================================
+   ONLINE DOT
+========================================================= */
+
+.online-dot{
+  width:9px;
+  height:9px;
+
+  border-radius:50%;
+
+  background:#32e69b;
+
+  box-shadow:
+    0 0 9px rgba(50,230,155,.55);
+}
+
+
+/* =========================================================
+   SCROLLBARS
+========================================================= */
+
+*{
+  scrollbar-width:thin;
+  scrollbar-color:
+    rgba(105,94,255,.35)
+    transparent;
+}
+
+::-webkit-scrollbar{
+  width:4px;
+  height:4px;
+}
+
+::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+::-webkit-scrollbar-thumb{
+  background:
+    rgba(105,94,255,.35);
+
+  border-radius:10px;
+}
+
+
+/* =========================================================
    MOBILE
-===================================================== */
+========================================================= */
 
 @media(max-width:480px){
 
@@ -826,6 +1569,11 @@ button{
     right:18px;
   }
 
+  #localVideo{
+    width:105px;
+    height:150px;
+  }
+
 }
 
 </style>
@@ -835,9 +1583,9 @@ button{
 <body>
 
 
-<!-- =====================================================
-     LOADING SCREEN
-===================================================== -->
+<!-- =======================================================
+     LOADING
+======================================================= -->
 
 <div id="loadingScreen">
 
@@ -860,9 +1608,9 @@ button{
 </div>
 
 
-<!-- =====================================================
+<!-- =======================================================
      ADMIN ACCESS MESSAGE
-===================================================== -->
+======================================================= -->
 
 <div
   class="admin-message"
@@ -890,24 +1638,23 @@ button{
 </div>
 
 
-<!-- =====================================================
+<!-- =======================================================
      APP
-===================================================== -->
+======================================================= -->
 
 <main id="app">
 
 
-<!-- =====================================================
+<!-- =======================================================
      HEADER
-===================================================== -->
+======================================================= -->
 
 <header class="top-header">
 
   <div class="header-row">
 
 
-    <!-- ADMIN PANEL
-         ALWAYS VISIBLE -->
+    <!-- ADMIN -->
 
     <button
       class="admin-panel-button"
@@ -949,10 +1696,14 @@ button{
     </button>
 
 
+    <!-- BRAND -->
+
     <div class="brand">
       JDA Networks
     </div>
 
+
+    <!-- ACTIONS -->
 
     <div class="header-actions">
 
@@ -1004,7 +1755,7 @@ button{
   </div>
 
 
-  <!-- UPPER FILTERS -->
+  <!-- FILTERS -->
 
   <div class="filters">
 
@@ -1041,16 +1792,16 @@ button{
 </header>
 
 
-<!-- =====================================================
+<!-- =======================================================
      CONTENT
-===================================================== -->
+======================================================= -->
 
 <section class="content">
 
 
-<!-- =====================================================
+<!-- =======================================================
      CHATS
-===================================================== -->
+======================================================= -->
 
 <section
   class="screen active"
@@ -1080,9 +1831,9 @@ button{
 </section>
 
 
-<!-- =====================================================
+<!-- =======================================================
      UPDATES
-===================================================== -->
+======================================================= -->
 
 <section
   class="screen"
@@ -1117,9 +1868,9 @@ button{
 </section>
 
 
-<!-- =====================================================
+<!-- =======================================================
      CLASSES
-===================================================== -->
+======================================================= -->
 
 <section
   class="screen"
@@ -1320,9 +2071,9 @@ button{
 </section>
 
 
-<!-- =====================================================
+<!-- =======================================================
      STAFF
-===================================================== -->
+======================================================= -->
 
 <section
   class="screen"
@@ -1364,9 +2115,9 @@ button{
 </section>
 
 
-<!-- =====================================================
+<!-- =======================================================
      CALLS
-===================================================== -->
+======================================================= -->
 
 <section
   class="screen"
@@ -1384,14 +2135,17 @@ button{
     </div>
 
 
-    <div class="feature-card">
+    <div
+      class="feature-card"
+      id="callHistory"
+    >
 
       <div class="feature-card-title">
-        No calls yet
+        Calls
       </div>
 
       <div class="feature-card-text">
-        Voice and video calling will be connected here.
+        Your voice and video call history will appear here.
       </div>
 
     </div>
@@ -1401,9 +2155,9 @@ button{
 </section>
 
 
-<!-- =====================================================
+<!-- =======================================================
      PROFILE
-===================================================== -->
+======================================================= -->
 
 <section
   class="screen"
@@ -1486,9 +2240,9 @@ button{
 </section>
 
 
-<!-- =====================================================
+<!-- =======================================================
      SETTINGS
-===================================================== -->
+======================================================= -->
 
 <section
   class="screen"
@@ -1589,23 +2343,27 @@ button{
 </section>
 
 
-<!-- =====================================================
+<!-- =======================================================
      NEW CHAT FAB
-===================================================== -->
+======================================================= -->
 
 <button
   id="fab"
   aria-label="New chat"
+  title="New chat"
 >
   ✎
 </button>
 
 
-<!-- =====================================================
+<!-- =======================================================
      BOTTOM NAVIGATION
-===================================================== -->
+======================================================= -->
 
-<nav class="bottom-nav">
+<nav
+  class="bottom-nav"
+  aria-label="Main navigation"
+>
 
 
   <!-- CHATS -->
@@ -1703,697 +2461,97 @@ button{
 </main>
 
 
-<!-- =====================================================
+<!-- =======================================================
+     CALL OVERLAY
+     APP.JS CAN USE THESE ELEMENTS
+======================================================= -->
+
+<div id="callOverlay">
+
+  <div class="call-container">
+
+    <div class="call-header">
+
+      <div>
+
+        <div
+          class="call-name"
+          id="callName"
+        >
+          JDA Network Call
+        </div>
+
+        <div
+          class="call-status"
+          id="callStatus"
+        >
+          Connecting...
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="call-video-area">
+
+      <video
+        id="remoteVideo"
+        autoplay
+        playsinline
+      ></video>
+
+      <video
+        id="localVideo"
+        autoplay
+        muted
+        playsinline
+      ></video>
+
+    </div>
+
+
+    <div class="call-controls">
+
+      <button
+        class="call-control"
+        id="muteCallBtn"
+        aria-label="Mute"
+      >
+        🎙️
+      </button>
+
+      <button
+        class="call-control"
+        id="cameraCallBtn"
+        aria-label="Camera"
+      >
+        📹
+      </button>
+
+      <button
+        class="call-control end"
+        id="endCallBtn"
+        aria-label="End call"
+      >
+        ☎
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =======================================================
      APP.JS
-===================================================== -->
+======================================================= -->
 
 <script
   type="module"
   src="./app.js"
 ></script>
-
-
-<!-- =====================================================
-     UI CONTROLLER
-===================================================== -->
-
-<script>
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-
-    /* =================================================
-       LOADING
-    ================================================= */
-
-    setTimeout(
-      () => {
-
-        const loading =
-          document.getElementById(
-            "loadingScreen"
-          );
-
-        if(loading){
-
-          loading.style.display =
-            "none";
-
-        }
-
-      },
-      1200
-    );
-
-
-    /* =================================================
-       ADMIN PANEL
-    ================================================= */
-
-    const adminButton =
-      document.getElementById(
-        "adminPanelBtn"
-      );
-
-    const adminMessage =
-      document.getElementById(
-        "adminMessage"
-      );
-
-    const adminMessageText =
-      document.getElementById(
-        "adminMessageText"
-      );
-
-    const adminMessageClose =
-      document.getElementById(
-        "adminMessageClose"
-      );
-
-
-    if(adminMessageClose){
-
-      adminMessageClose.addEventListener(
-        "click",
-        () => {
-
-          if(adminMessage){
-
-            adminMessage.style.display =
-              "none";
-
-          }
-
-        }
-      );
-
-    }
-
-
-    if(adminButton){
-
-      adminButton.addEventListener(
-        "click",
-        async () => {
-
-          if(adminMessage){
-
-            adminMessage.style.display =
-              "block";
-
-          }
-
-          if(adminMessageText){
-
-            adminMessageText.textContent =
-              "Checking administrator access...";
-
-          }
-
-
-          try{
-
-            const firebase =
-              await import(
-                "./firebase.js"
-              );
-
-            const auth =
-              firebase.auth;
-
-            const db =
-              firebase.db;
-
-
-            const {
-              doc,
-              getDoc
-            } = await import(
-              "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js"
-            );
-
-
-            const user =
-              auth.currentUser;
-
-
-            if(!user){
-
-              adminMessageText.textContent =
-                "Please log in to JDA Networks first.";
-
-              return;
-
-            }
-
-
-            /* SUPER ADMIN */
-
-            if(
-              user.email &&
-              user.email.toLowerCase() ===
-              "jonathanmentor62@gmail.com"
-            ){
-
-              window.location.href =
-                "./admin.html";
-
-              return;
-
-            }
-
-
-            /* OTHER ADMINS */
-
-            const adminRef =
-              doc(
-                db,
-                "admins",
-                user.uid
-              );
-
-
-            const adminSnap =
-              await getDoc(
-                adminRef
-              );
-
-
-            if(adminSnap.exists()){
-
-              window.location.href =
-                "./admin.html";
-
-              return;
-
-            }
-
-
-            adminMessageText.textContent =
-              "This area is restricted to JDA Networks administrators.";
-
-          }
-          catch(error){
-
-            console.error(
-              "Admin access error:",
-              error
-            );
-
-            adminMessageText.textContent =
-              "Administrator access could not be checked. Please try again.";
-
-          }
-
-        }
-      );
-
-    }
-
-
-    /* =================================================
-       BOTTOM NAVIGATION
-    ================================================= */
-
-    document
-      .querySelectorAll(
-        ".bottom-nav [data-page]"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const page =
-              button.dataset.page;
-
-
-            showScreen(page);
-
-
-            document
-              .querySelectorAll(
-                ".bottom-nav [data-page]"
-              )
-              .forEach(nav => {
-
-                nav.classList.toggle(
-                  "active",
-                  nav.dataset.page ===
-                  page
-                );
-
-              });
-
-
-            /* Reset upper filters */
-
-            document
-              .querySelectorAll(
-                ".filter-button"
-              )
-              .forEach(filter => {
-
-                filter.classList.remove(
-                  "active"
-                );
-
-              });
-
-          }
-        );
-
-      });
-
-
-    /* =================================================
-       UPPER FILTERS
-    ================================================= */
-
-    document
-      .querySelectorAll(
-        ".filter-button"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const filter =
-              button.dataset.filter;
-
-
-            document
-              .querySelectorAll(
-                ".filter-button"
-              )
-              .forEach(item => {
-
-                item.classList.remove(
-                  "active"
-                );
-
-              });
-
-
-            button.classList.add(
-              "active"
-            );
-
-
-            if(filter === "students"){
-
-              showScreen(
-                "classes"
-              );
-
-              setBottomActive(
-                "classes"
-              );
-
-            }
-            else if(filter === "staff"){
-
-              showScreen(
-                "staff"
-              );
-
-              setBottomActive(
-                "staff"
-              );
-
-            }
-            else{
-
-              showScreen(
-                "chats"
-              );
-
-              setBottomActive(
-                "chats"
-              );
-
-            }
-
-          }
-        );
-
-      });
-
-
-    /* =================================================
-       CLASS BUTTONS
-    ================================================= */
-
-    document
-      .querySelectorAll(
-        ".class-button"
-      )
-      .forEach(button => {
-
-        button.addEventListener(
-          "click",
-          () => {
-
-            const className =
-              button.dataset.class;
-
-
-            const number =
-              className.replace(
-                "Form ",
-                ""
-              );
-
-
-            const members =
-              document.getElementById(
-                "form" +
-                number +
-                "Members"
-              );
-
-
-            if(!members){
-              return;
-            }
-
-
-            document
-              .querySelectorAll(
-                ".class-members"
-              )
-              .forEach(item => {
-
-                if(item !== members){
-
-                  item.classList.remove(
-                    "open"
-                  );
-
-                }
-
-              });
-
-
-            members.classList.toggle(
-              "open"
-            );
-
-          }
-        );
-
-      });
-
-
-    /* =================================================
-       THREE DOT MENU
-    ================================================= */
-
-    const menuButton =
-      document.getElementById(
-        "menuBtn"
-      );
-
-
-    if(menuButton){
-
-      menuButton.addEventListener(
-        "click",
-        () => {
-
-          const choice =
-            prompt(
-              "JDA Networks\n\n" +
-              "1 - Profile\n" +
-              "2 - Settings"
-            );
-
-
-          if(choice === "1"){
-
-            openPage(
-              "profile"
-            );
-
-          }
-
-
-          if(choice === "2"){
-
-            openPage(
-              "settings"
-            );
-
-          }
-
-        }
-      );
-
-    }
-
-
-    /* =================================================
-       NEW CHAT BUTTON
-    ================================================= */
-
-    const newChatButton =
-      document.getElementById(
-        "newChatBtn"
-      );
-
-    const fab =
-      document.getElementById(
-        "fab"
-      );
-
-
-    const newChatAction =
-      () => {
-
-        const search =
-          document.getElementById(
-            "chatSearch"
-          );
-
-
-        showScreen(
-          "chats"
-        );
-
-
-        setBottomActive(
-          "chats"
-        );
-
-
-        if(search){
-
-          search.focus();
-
-        }
-
-      };
-
-
-    if(newChatButton){
-
-      newChatButton.addEventListener(
-        "click",
-        newChatAction
-      );
-
-    }
-
-
-    if(fab){
-
-      fab.addEventListener(
-        "click",
-        newChatAction
-      );
-
-    }
-
-
-    /* =================================================
-       SEARCH
-    ================================================= */
-
-    const searchInput =
-      document.getElementById(
-        "chatSearch"
-      );
-
-
-    if(searchInput){
-
-      searchInput.addEventListener(
-        "input",
-        () => {
-
-          const query =
-            searchInput.value
-              .trim()
-              .toLowerCase();
-
-
-          document
-            .querySelectorAll(
-              ".chat-item"
-            )
-            .forEach(item => {
-
-              const name =
-                (
-                  item.dataset.name ||
-                  ""
-                ).toLowerCase();
-
-
-              const detail =
-                (
-                  item.dataset.detail ||
-                  ""
-                ).toLowerCase();
-
-
-              const match =
-                !query ||
-                name.includes(query) ||
-                detail.includes(query);
-
-
-              item.style.display =
-                match ?
-                "flex" :
-                "none";
-
-            });
-
-        }
-      );
-
-    }
-
-
-    /* =================================================
-       LOGOUT
-    ================================================= */
-
-    const logoutButton =
-      document.getElementById(
-        "logoutBtn"
-      );
-
-
-    if(logoutButton){
-
-      logoutButton.addEventListener(
-        "click",
-        async () => {
-
-          try{
-
-            const {
-              auth
-            } = await import(
-              "./firebase.js"
-            );
-
-
-            await auth.signOut();
-
-
-            window.location.href =
-              "./index.html";
-
-          }
-          catch(error){
-
-            console.error(
-              "Logout error:",
-              error
-            );
-
-            alert(
-              "Could not log out. Please try again."
-            );
-
-          }
-
-        }
-      );
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   SHOW SCREEN
-===================================================== */
-
-function showScreen(page){
-
-  document
-    .querySelectorAll(
-      "[data-screen]"
-    )
-    .forEach(screen => {
-
-      screen.classList.toggle(
-        "active",
-        screen.dataset.screen ===
-        page
-      );
-
-    });
-
-}
-
-
-/* =====================================================
-   BOTTOM ACTIVE
-===================================================== */
-
-function setBottomActive(page){
-
-  document
-    .querySelectorAll(
-      ".bottom-nav [data-page]"
-    )
-    .forEach(button => {
-
-      button.classList.toggle(
-        "active",
-        button.dataset.page ===
-        page
-      );
-
-    });
-
-}
-
-
-/* =====================================================
-   OPEN PAGE
-===================================================== */
-
-function openPage(page){
-
-  showScreen(page);
-
-  setBottomActive("");
-
-}
-
-</script>
 
 
 </body>

@@ -1,2903 +1,2110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>JDA Networks</title>
+<title>JDA Networks</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, Helvetica, sans-serif;
-    }
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,Helvetica,sans-serif;
+}
 
-    body {
-      background: #07120d;
-      color: #ffffff;
-      min-height: 100vh;
-    }
+body{
+background:#07120d;
+color:#fff;
+min-height:100vh;
+}
 
-    button,
-    input,
-    select {
-      font: inherit;
-    }
+button,input,select{
+font:inherit;
+}
 
-    .app {
-      width: 100%;
-      max-width: 520px;
-      min-height: 100vh;
-      margin: auto;
-      background: #0b1510;
-    }
+.app{
+width:100%;
+max-width:520px;
+min-height:100vh;
+margin:auto;
+background:#0b1510;
+}
 
-    .top {
-      padding: 28px 22px 18px;
-      text-align: center;
-    }
+.top{
+padding:28px 22px 18px;
+text-align:center;
+}
 
-    .logo {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      margin: 0 auto 14px;
-      background: #1f9d55;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
-      font-weight: 800;
-      box-shadow: 0 0 30px rgba(31,157,85,.25);
-    }
+.logo{
+width:76px;
+height:76px;
+border-radius:50%;
+margin:0 auto 14px;
+background:#1f9d55;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+font-weight:800;
+box-shadow:0 0 30px rgba(31,157,85,.25);
+}
 
-    h1 {
-      font-size: 28px;
-      margin-bottom: 6px;
-    }
+h1{
+font-size:28px;
+margin-bottom:6px;
+}
 
-    .subtitle {
-      color: #9aa89f;
-      font-size: 14px;
-    }
+.subtitle{
+color:#9aa89f;
+font-size:14px;
+}
 
-    .screen {
-      display: none;
-      padding: 10px 20px 30px;
-    }
+.screen{
+display:none;
+padding:10px 20px 30px;
+}
 
-    .screen.active {
-      display: block;
-    }
+.screen.active{
+display:block;
+}
 
-    .welcome {
-      padding-top: 35px;
-    }
+.welcome{
+padding-top:35px;
+}
 
-    .welcome h2 {
-      font-size: 25px;
-      margin-bottom: 10px;
-    }
+.welcome h2{
+font-size:25px;
+margin-bottom:10px;
+}
 
-    .welcome p {
-      color: #a5b0a9;
-      line-height: 1.5;
-      margin-bottom: 28px;
-    }
+.welcome p{
+color:#a5b0a9;
+line-height:1.5;
+margin-bottom:28px;
+}
 
-    .choice {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
+.choice{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+}
 
-    .choice button {
-      min-height: 130px;
-      border: 1px solid #24392c;
-      border-radius: 18px;
-      background: #101c15;
-      color: white;
-      cursor: pointer;
-      transition: .2s;
-    }
+.choice button{
+min-height:130px;
+border:1px solid #24392c;
+border-radius:18px;
+background:#101c15;
+color:white;
+cursor:pointer;
+}
 
-    .choice button:active {
-      transform: scale(.97);
-    }
+.choice button:active{
+transform:scale(.97);
+}
 
-    .choice-icon {
-      display: block;
-      font-size: 35px;
-      margin-bottom: 12px;
-    }
+.choice-icon{
+display:block;
+font-size:35px;
+margin-bottom:12px;
+}
 
-    .choice-title {
-      font-size: 17px;
-      font-weight: 700;
-    }
+.choice-title{
+font-size:17px;
+font-weight:700;
+}
 
-    .choice-sub {
-      display: block;
-      color: #89968e;
-      font-size: 12px;
-      margin-top: 6px;
-    }
+.choice-sub{
+display:block;
+color:#89968e;
+font-size:12px;
+margin-top:6px;
+}
 
-    .switch {
-      text-align: center;
-      margin-top: 25px;
-      color: #89968e;
-      font-size: 14px;
-    }
+.switch{
+text-align:center;
+margin-top:25px;
+color:#89968e;
+font-size:14px;
+}
 
-    .link {
-      color: #36c978;
-      font-weight: 700;
-      cursor: pointer;
-    }
+.link{
+color:#36c978;
+font-weight:700;
+cursor:pointer;
+}
 
-    .form-title {
-      font-size: 23px;
-      margin: 8px 0 5px;
-    }
+.form-title{
+font-size:23px;
+margin:8px 0 5px;
+}
 
-    .form-subtitle {
-      color: #8e9b93;
-      font-size: 13px;
-      margin-bottom: 20px;
-    }
+.form-subtitle{
+color:#8e9b93;
+font-size:13px;
+margin-bottom:20px;
+}
 
-    .photo-box {
-      text-align: center;
-      margin: 10px 0 20px;
-    }
+.photo-box{
+text-align:center;
+margin:10px 0 20px;
+}
 
-    .photo-preview {
-      width: 92px;
-      height: 92px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #15241b;
-      border: 2px solid #294634;
-      display: block;
-      margin: auto;
-    }
+.photo-preview{
+width:92px;
+height:92px;
+border-radius:50%;
+object-fit:cover;
+background:#15241b;
+border:2px solid #294634;
+display:block;
+margin:auto;
+}
 
-    .photo-button {
-      margin-top: 10px;
-      color: #36c978;
-      font-size: 14px;
-      cursor: pointer;
-    }
+.photo-button{
+margin-top:10px;
+color:#36c978;
+font-size:14px;
+cursor:pointer;
+}
 
-    #photoInput {
-      display: none;
-    }
+#photoInput{
+display:none;
+}
 
-    .field {
-      margin-bottom: 15px;
-    }
+.field{
+margin-bottom:15px;
+}
 
-    label {
-      display: block;
-      font-size: 13px;
-      color: #aab5ae;
-      margin-bottom: 7px;
-    }
+label{
+display:block;
+font-size:13px;
+color:#aab5ae;
+margin-bottom:7px;
+}
 
-    input,
-    select {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid #273a2e;
-      background: #111d16;
-      color: white;
-      outline: none;
-    }
+input,select{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:1px solid #273a2e;
+background:#111d16;
+color:white;
+outline:none;
+}
 
-    input:focus,
-    select:focus {
-      border-color: #2dc56c;
-    }
+input:focus,select:focus{
+border-color:#2dc56c;
+}
 
-    select option {
-      background: #111d16;
-    }
+select option{
+background:#111d16;
+}
 
-    .primary {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 13px;
-      background: #20a95a;
-      color: white;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-    }
+.primary{
+width:100%;
+padding:15px;
+border:none;
+border-radius:13px;
+background:#20a95a;
+color:white;
+font-size:16px;
+font-weight:700;
+cursor:pointer;
+margin-top:8px;
+}
 
-    .primary:disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
+.primary:disabled{
+opacity:.55;
+cursor:not-allowed;
+}
 
-    .secondary {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #294034;
-      border-radius: 13px;
-      background: transparent;
-      color: white;
-      cursor: pointer;
-      margin-top: 10px;
-    }
+.secondary{
+width:100%;
+padding:13px;
+border:1px solid #294034;
+border-radius:13px;
+background:transparent;
+color:white;
+cursor:pointer;
+margin-top:10px;
+}
 
-    .message {
-      display: none;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      font-size: 13px;
-      line-height: 1.4;
-    }
+.message{
+display:none;
+padding:12px;
+border-radius:10px;
+margin-bottom:15px;
+font-size:13px;
+line-height:1.5;
+}
 
-    .message.show {
-      display: block;
-    }
+.message.show{
+display:block;
+}
 
-    .message.error {
-      background: #3b1719;
-      color: #ffb4b8;
-      border: 1px solid #69272b;
-    }
+.message.error{
+background:#3b1719;
+color:#ffb4b8;
+border:1px solid #69272b;
+}
 
-    .message.success {
-      background: #10351f;
-      color: #9ff0bd;
-      border: 1px solid #205d37;
-    }
+.message.success{
+background:#10351f;
+color:#9ff0bd;
+border:1px solid #205d37;
+}
 
-    .pending {
-      text-align: center;
-      padding-top: 70px;
-    }
+.pending{
+text-align:center;
+padding-top:70px;
+}
 
-    .pending-icon {
-      width: 90px;
-      height: 90px;
-      margin: auto;
-      border-radius: 50%;
-      background: #17281e;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 42px;
-      margin-bottom: 25px;
-    }
+.pending-icon{
+width:90px;
+height:90px;
+margin:auto;
+border-radius:50%;
+background:#17281e;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:42px;
+margin-bottom:25px;
+}
 
-    .pending h2 {
-      margin-bottom: 12px;
-    }
+.pending h2{
+margin-bottom:12px;
+}
 
-    .pending p {
-      color: #9da9a1;
-      line-height: 1.6;
-      font-size: 14px;
-      margin-bottom: 25px;
-    }
+.pending p{
+color:#9da9a1;
+line-height:1.6;
+font-size:14px;
+margin-bottom:25px;
+}
 
-    .info-card {
-      text-align: left;
-      background: #101c15;
-      border: 1px solid #25392c;
-      padding: 16px;
-      border-radius: 14px;
-      margin-bottom: 20px;
-    }
+.info-card{
+text-align:left;
+background:#101c15;
+border:1px solid #25392c;
+padding:16px;
+border-radius:14px;
+margin-bottom:20px;
+}
 
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 9px 0;
-      border-bottom: 1px solid #1d2c22;
-      font-size: 13px;
-    }
+.info-row{
+display:flex;
+justify-content:space-between;
+gap:15px;
+padding:9px 0;
+border-bottom:1px solid #1d2c22;
+font-size:13px;
+}
 
-    .info-row:last-child {
-      border-bottom: none;
-    }
+.info-row:last-child{
+border-bottom:none;
+}
 
-    .info-label {
-      color: #89968e;
-    }
+.info-label{
+color:#89968e;
+}
 
-    .info-value {
-      text-align: right;
-      word-break: break-word;
-    }
+.info-value{
+text-align:right;
+word-break:break-word;
+}
 
-    .loading {
-      text-align: center;
-      padding-top: 100px;
-      color: #9ba69f;
-    }
+.loading{
+text-align:center;
+padding-top:100px;
+color:#9ba69f;
+}
 
-    .spinner {
-      width: 38px;
-      height: 38px;
-      border: 3px solid #294033;
-      border-top-color: #29c56c;
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin: 0 auto 15px;
-    }
+.spinner{
+width:38px;
+height:38px;
+border:3px solid #294033;
+border-top-color:#29c56c;
+border-radius:50%;
+animation:spin .8s linear infinite;
+margin:0 auto 15px;
+}
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+@keyframes spin{
+to{transform:rotate(360deg);}
+}
 
-    .password-wrap {
-      position: relative;
-    }
+.password-wrap{
+position:relative;
+}
 
-    .password-wrap input {
-      padding-right: 55px;
-    }
+.password-wrap input{
+padding-right:55px;
+}
 
-    .show-password {
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #8f9c94;
-      cursor: pointer;
-      font-size: 13px;
-    }
+.show-password{
+position:absolute;
+right:14px;
+top:50%;
+transform:translateY(-50%);
+color:#8f9c94;
+cursor:pointer;
+font-size:13px;
+}
 
-    .back {
-      border: none;
-      background: transparent;
-      color: #9da9a1;
-      padding: 5px 0 15px;
-      cursor: pointer;
-    }
+.back{
+border:none;
+background:transparent;
+color:#9da9a1;
+padding:5px 0 15px;
+cursor:pointer;
+}
 
-    .small-note {
-      font-size: 11px;
-      color: #78857d;
-      line-height: 1.5;
-      margin-top: 12px;
-    }
+.small-note{
+font-size:11px;
+color:#78857d;
+line-height:1.5;
+margin-top:12px;
+}
 
-    .email-locked {
-      opacity: .65;
-      background: #0d1711;
-    }
+.email-locked{
+opacity:.65;
+background:#0d1711;
+}
 
-    .existing-account-note {
-      display: none;
-      background: #10291a;
-      border: 1px solid #205d37;
-      color: #9ff0bd;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      font-size: 13px;
-      line-height: 1.5;
-    }
+.existing-account-note{
+display:none;
+background:#10291a;
+border:1px solid #205d37;
+color:#9ff0bd;
+padding:12px;
+border-radius:10px;
+margin-bottom:15px;
+font-size:13px;
+line-height:1.5;
+}
 
-    .existing-account-note.show {
-      display: block;
-    }
-  </style>
+.existing-account-note.show{
+display:block;
+}
+</style>
 </head>
 
 <body>
 
 <div class="app">
 
-  <div class="top">
-    <div class="logo">JDA</div>
-    <h1>JDA Networks</h1>
-    <div class="subtitle">Connect. Communicate. Belong.</div>
-  </div>
+<div class="top">
+<div class="logo">JDA</div>
+<h1>JDA Networks</h1>
+<div class="subtitle">Connect. Communicate. Belong.</div>
+</div>
 
 
-  <!-- LOADING -->
+<!-- LOADING -->
 
-  <div id="loadingScreen" class="screen active">
+<div id="loadingScreen" class="screen active">
 
-    <div class="loading">
-      <div class="spinner"></div>
-      <div>Checking your account...</div>
-    </div>
+<div class="loading">
+<div class="spinner"></div>
+<div>Checking your account...</div>
+</div>
 
-  </div>
+</div>
 
 
-  <!-- WELCOME -->
+<!-- WELCOME -->
 
-  <div id="welcomeScreen" class="screen">
+<div id="welcomeScreen" class="screen">
 
-    <div class="welcome">
+<div class="welcome">
 
-      <h2>Welcome to JDA Networks</h2>
+<h2>Welcome to JDA Networks</h2>
 
-      <p>
-        A private network for JDA students and staff.
-        Register once, wait for approval, then access your account.
-      </p>
+<p>
+A private network for JDA students and staff.
+Register once, wait for approval, then access your account.
+</p>
 
-      <div class="choice">
+<div class="choice">
 
-        <button id="studentChoice">
+<button id="studentChoice">
+<span class="choice-icon">🎓</span>
+<span class="choice-title">Student</span>
+<span class="choice-sub">Create student account</span>
+</button>
 
-          <span class="choice-icon">🎓</span>
+<button id="staffChoice">
+<span class="choice-icon">👨‍💼</span>
+<span class="choice-title">Staff</span>
+<span class="choice-sub">Create staff account</span>
+</button>
 
-          <span class="choice-title">
-            Student
-          </span>
+</div>
 
-          <span class="choice-sub">
-            Create student account
-          </span>
+<div class="switch">
+Already registered?
+<span class="link" id="goLogin">Log in</span>
+</div>
 
-        </button>
+</div>
+</div>
 
 
-        <button id="staffChoice">
+<!-- REGISTER -->
 
-          <span class="choice-icon">👨‍💼</span>
+<div id="registerScreen" class="screen">
 
-          <span class="choice-title">
-            Staff
-          </span>
+<button class="back" id="registerBack">← Back</button>
 
-          <span class="choice-sub">
-            Create staff account
-          </span>
+<div class="form-title" id="registerTitle">
+Student Registration
+</div>
 
-        </button>
+<div class="form-subtitle">
+Enter your real details. Your account must be approved by an administrator.
+</div>
 
-      </div>
+<div id="existingAccountNote"
+class="existing-account-note">
 
+Your Firebase account is already signed in.
+Complete your JDA Networks profile below.
+You will not need to create another account.
 
-      <div class="switch">
+</div>
 
-        Already registered?
+<div id="registerMessage" class="message"></div>
 
-        <span class="link" id="goLogin">
-          Log in
-        </span>
+<form id="registerForm">
 
-      </div>
+<div class="photo-box">
 
-    </div>
+<img id="photoPreview"
+class="photo-preview"
+alt="Profile photo"
+src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%2315241b'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='35' fill='%2389958d'%3E%3F%3C/text%3E%3C/svg%3E">
 
-  </div>
+<label for="photoInput"
+class="photo-button">
+📷 Add profile photo
+</label>
 
+<input id="photoInput"
+type="file"
+accept="image/*">
 
-  <!-- REGISTER -->
+</div>
 
-  <div id="registerScreen" class="screen">
 
-    <button class="back" id="registerBack">
-      ← Back
-    </button>
+<div class="field">
 
+<label for="realName">Full name</label>
 
-    <div class="form-title" id="registerTitle">
-      Student Registration
-    </div>
+<input id="realName"
+type="text"
+placeholder="Enter your full name"
+autocomplete="name"
+required>
 
+</div>
 
-    <div class="form-subtitle">
-      Enter your real details. Your account must be approved by an administrator.
-    </div>
 
+<div class="field">
 
-    <div
-      id="existingAccountNote"
-      class="existing-account-note">
+<label for="jdaNumber">JDA Number</label>
 
-      Your Firebase account is already signed in.
-      Complete your JDA Networks profile below.
-      You will not need to create another account.
+<input id="jdaNumber"
+type="text"
+placeholder="Enter your JDA number"
+autocomplete="off"
+required>
 
-    </div>
+</div>
 
 
-    <div id="registerMessage" class="message"></div>
+<div id="studentFields">
 
+<div class="field">
 
-    <form id="registerForm">
+<label for="className">Class</label>
 
+<select id="className">
 
-      <!-- PHOTO -->
+<option value="">Select class</option>
+<option value="Form One">Form One</option>
+<option value="Form Two">Form Two</option>
+<option value="Form Three">Form Three</option>
+<option value="Form Four">Form Four</option>
+<option value="Form Five">Form Five</option>
+<option value="Form Six">Form Six</option>
 
-      <div class="photo-box">
+</select>
 
-        <img
-          id="photoPreview"
-          class="photo-preview"
-          alt="Profile photo"
-          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%2315241b'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='35' fill='%2389958d'%3E%3F%3C/text%3E%3C/svg%3E"
-        >
+</div>
 
-        <label
-          for="photoInput"
-          class="photo-button">
+<div class="field">
 
-          📷 Add profile photo
+<label for="stream">Stream</label>
 
-        </label>
+<input id="stream"
+type="text"
+placeholder="Example: Blue, Green, A, B">
 
-        <input
-          id="photoInput"
-          type="file"
-          accept="image/*">
+</div>
 
-      </div>
+</div>
 
 
-      <!-- NAME -->
+<div id="staffFields" style="display:none;">
 
-      <div class="field">
+<div class="field">
 
-        <label for="realName">
-          Full name
-        </label>
+<label for="department">Department</label>
 
-        <input
-          id="realName"
-          type="text"
-          placeholder="Enter your full name"
-          autocomplete="name"
-          required>
+<input id="department"
+type="text"
+placeholder="Enter your department">
 
-      </div>
+</div>
 
+</div>
 
-      <!-- JDA NUMBER -->
 
-      <div class="field">
+<div class="field">
 
-        <label for="jdaNumber">
-          JDA Number
-        </label>
+<label for="registerEmail">Email address</label>
 
-        <input
-          id="jdaNumber"
-          type="text"
-          placeholder="Enter your JDA number"
-          autocomplete="off"
-          required>
+<input id="registerEmail"
+type="email"
+placeholder="Enter your email"
+autocomplete="email"
+required>
 
-      </div>
+</div>
 
 
-      <!-- STUDENT -->
+<div class="field" id="passwordField">
 
-      <div id="studentFields">
+<label for="registerPassword">Password</label>
 
-        <div class="field">
+<div class="password-wrap">
 
-          <label for="className">
-            Class
-          </label>
+<input id="registerPassword"
+type="password"
+placeholder="At least 6 characters"
+autocomplete="new-password"
+minlength="6"
+required>
 
-          <select id="className">
+<span class="show-password"
+data-target="registerPassword">
+Show
+</span>
 
-            <option value="">
-              Select class
-            </option>
+</div>
+</div>
 
-            <option value="Form One">
-              Form One
-            </option>
 
-            <option value="Form Two">
-              Form Two
-            </option>
+<div class="field" id="confirmPasswordField">
 
-            <option value="Form Three">
-              Form Three
-            </option>
+<label for="confirmPassword">Confirm password</label>
 
-            <option value="Form Four">
-              Form Four
-            </option>
+<div class="password-wrap">
 
-            <option value="Form Five">
-              Form Five
-            </option>
+<input id="confirmPassword"
+type="password"
+placeholder="Repeat your password"
+autocomplete="new-password"
+required>
 
-            <option value="Form Six">
-              Form Six
-            </option>
+<span class="show-password"
+data-target="confirmPassword">
+Show
+</span>
 
-          </select>
+</div>
+</div>
 
-        </div>
 
+<button id="registerButton"
+class="primary"
+type="submit">
 
-        <div class="field">
+Create Account
 
-          <label for="stream">
-            Stream
-          </label>
+</button>
 
-          <input
-            id="stream"
-            type="text"
-            placeholder="Example: Blue, Green, A, B">
+<div class="small-note">
 
-        </div>
+By registering, your details will be submitted for administrator
+approval before you can use JDA Networks.
 
-      </div>
+</div>
 
+</form>
 
-      <!-- STAFF -->
 
-      <div
-        id="staffFields"
-        style="display:none;">
+<div class="switch">
 
-        <div class="field">
+Already have an account?
 
-          <label for="department">
-            Department
-          </label>
+<span class="link" id="registerLogin">
+Log in
+</span>
 
-          <input
-            id="department"
-            type="text"
-            placeholder="Enter your department">
+</div>
 
-        </div>
+</div>
 
-      </div>
 
+<!-- LOGIN -->
 
-      <!-- EMAIL -->
+<div id="loginScreen" class="screen">
 
-      <div class="field">
+<button class="back" id="loginBack">← Back</button>
 
-        <label for="registerEmail">
-          Email address
-        </label>
+<div class="form-title">Log in</div>
 
-        <input
-          id="registerEmail"
-          type="email"
-          placeholder="Enter your email"
-          autocomplete="email"
-          required>
+<div class="form-subtitle">
+Sign in to your JDA Networks account.
+</div>
 
-      </div>
+<div id="loginMessage" class="message"></div>
 
+<form id="loginForm">
 
-      <!-- PASSWORD -->
+<div class="field">
 
-      <div
-        class="field"
-        id="passwordField">
+<label for="loginEmail">Email address</label>
 
-        <label for="registerPassword">
-          Password
-        </label>
+<input id="loginEmail"
+type="email"
+placeholder="Enter your email"
+autocomplete="email"
+required>
 
-        <div class="password-wrap">
+</div>
 
-          <input
-            id="registerPassword"
-            type="password"
-            placeholder="At least 6 characters"
-            autocomplete="new-password"
-            minlength="6"
-            required>
+<div class="field">
 
-          <span
-            class="show-password"
-            data-target="registerPassword">
+<label for="loginPassword">Password</label>
 
-            Show
+<div class="password-wrap">
 
-          </span>
+<input id="loginPassword"
+type="password"
+placeholder="Enter your password"
+autocomplete="current-password"
+required>
 
-        </div>
+<span class="show-password"
+data-target="loginPassword">
+Show
+</span>
 
-      </div>
+</div>
+</div>
 
+<button id="loginButton"
+class="primary"
+type="submit">
+Log In
+</button>
 
-      <!-- CONFIRM PASSWORD -->
+</form>
 
-      <div
-        class="field"
-        id="confirmPasswordField">
+<div class="switch">
 
-        <label for="confirmPassword">
-          Confirm password
-        </label>
+Don't have an account?
 
-        <div class="password-wrap">
+<span class="link" id="loginRegister">
+Register
+</span>
 
-          <input
-            id="confirmPassword"
-            type="password"
-            placeholder="Repeat your password"
-            autocomplete="new-password"
-            required>
+</div>
 
-          <span
-            class="show-password"
-            data-target="confirmPassword">
+</div>
 
-            Show
 
-          </span>
+<!-- PENDING -->
 
-        </div>
+<div id="pendingScreen" class="screen">
 
-      </div>
+<div class="pending">
 
+<div class="pending-icon">⏳</div>
 
-      <button
-        id="registerButton"
-        class="primary"
-        type="submit">
+<h2>Registration Pending</h2>
 
-        Create Account
+<p>
+Your JDA Networks account has been created successfully.
+An administrator must approve your registration before you can
+enter the network.
+</p>
 
-      </button>
+<div class="info-card">
 
+<div class="info-row">
+<span class="info-label">Name</span>
+<span class="info-value" id="pendingName">—</span>
+</div>
 
-      <div class="small-note">
+<div class="info-row">
+<span class="info-label">JDA Number</span>
+<span class="info-value" id="pendingJda">—</span>
+</div>
 
-        By registering, your details will be submitted for administrator
-        approval before you can use JDA Networks.
+<div class="info-row">
+<span class="info-label">Account</span>
+<span class="info-value" id="pendingType">—</span>
+</div>
 
-      </div>
+<div class="info-row">
+<span class="info-label">Status</span>
+<span class="info-value">Pending approval</span>
+</div>
 
-    </form>
+</div>
 
+<button id="checkApproval"
+class="primary">
+Check Approval
+</button>
 
-    <div class="switch">
+<button id="pendingLogout"
+class="secondary">
+Log out
+</button>
 
-      Already have an account?
+</div>
+</div>
 
-      <span
-        class="link"
-        id="registerLogin">
 
-        Log in
+<!-- DISABLED -->
 
-      </span>
+<div id="disabledScreen" class="screen">
 
-    </div>
+<div class="pending">
 
-  </div>
+<div class="pending-icon">🚫</div>
 
+<h2>Account Disabled</h2>
 
-  <!-- LOGIN -->
+<p>
+Your JDA Networks account is currently disabled.
+Please contact the administrator if you believe this is a mistake.
+</p>
 
-  <div id="loginScreen" class="screen">
+<button id="disabledLogout"
+class="secondary">
+Log out
+</button>
 
-    <button
-      class="back"
-      id="loginBack">
+</div>
+</div>
 
-      ← Back
 
-    </button>
+<!-- REJECTED -->
 
+<div id="rejectedScreen" class="screen">
 
-    <div class="form-title">
-      Log in
-    </div>
+<div class="pending">
 
+<div class="pending-icon">❌</div>
 
-    <div class="form-subtitle">
-      Sign in to your JDA Networks account.
-    </div>
+<h2>Registration Not Approved</h2>
 
+<p>
+Your registration has not been approved.
+Please contact the JDA Networks administrator for assistance.
+</p>
 
-    <div
-      id="loginMessage"
-      class="message">
-    </div>
+<button id="rejectedLogout"
+class="secondary">
+Log out
+</button>
 
-
-    <form id="loginForm">
-
-
-      <div class="field">
-
-        <label for="loginEmail">
-          Email address
-        </label>
-
-        <input
-          id="loginEmail"
-          type="email"
-          placeholder="Enter your email"
-          autocomplete="email"
-          required>
-
-      </div>
-
-
-      <div class="field">
-
-        <label for="loginPassword">
-          Password
-        </label>
-
-        <div class="password-wrap">
-
-          <input
-            id="loginPassword"
-            type="password"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-            required>
-
-          <span
-            class="show-password"
-            data-target="loginPassword">
-
-            Show
-
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <button
-        id="loginButton"
-        class="primary"
-        type="submit">
-
-        Log In
-
-      </button>
-
-    </form>
-
-
-    <div class="switch">
-
-      Don't have an account?
-
-      <span
-        class="link"
-        id="loginRegister">
-
-        Register
-
-      </span>
-
-    </div>
-
-  </div>
-
-
-  <!-- PENDING -->
-
-  <div id="pendingScreen" class="screen">
-
-    <div class="pending">
-
-      <div class="pending-icon">
-        ⏳
-      </div>
-
-      <h2>
-        Registration Pending
-      </h2>
-
-      <p>
-        Your JDA Networks account has been created successfully.
-        An administrator must approve your registration before you can
-        enter the network.
-      </p>
-
-
-      <div class="info-card">
-
-        <div class="info-row">
-
-          <span class="info-label">
-            Name
-          </span>
-
-          <span
-            class="info-value"
-            id="pendingName">
-
-            —
-
-          </span>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span class="info-label">
-            JDA Number
-          </span>
-
-          <span
-            class="info-value"
-            id="pendingJda">
-
-            —
-
-          </span>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span class="info-label">
-            Account
-          </span>
-
-          <span
-            class="info-value"
-            id="pendingType">
-
-            —
-
-          </span>
-
-        </div>
-
-
-        <div class="info-row">
-
-          <span class="info-label">
-            Status
-          </span>
-
-          <span class="info-value">
-            Pending approval
-          </span>
-
-        </div>
-
-      </div>
-
-
-      <button
-        id="checkApproval"
-        class="primary">
-
-        Check Approval
-
-      </button>
-
-
-      <button
-        id="pendingLogout"
-        class="secondary">
-
-        Log out
-
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- DISABLED -->
-
-  <div id="disabledScreen" class="screen">
-
-    <div class="pending">
-
-      <div class="pending-icon">
-        🚫
-      </div>
-
-      <h2>
-        Account Disabled
-      </h2>
-
-      <p>
-        Your JDA Networks account is currently disabled.
-        Please contact the administrator if you believe this is a mistake.
-      </p>
-
-      <button
-        id="disabledLogout"
-        class="secondary">
-
-        Log out
-
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- REJECTED -->
-
-  <div id="rejectedScreen" class="screen">
-
-    <div class="pending">
-
-      <div class="pending-icon">
-        ❌
-      </div>
-
-      <h2>
-        Registration Not Approved
-      </h2>
-
-      <p>
-        Your registration has not been approved.
-        Please contact the JDA Networks administrator for assistance.
-      </p>
-
-      <button
-        id="rejectedLogout"
-        class="secondary">
-
-        Log out
-
-      </button>
-
-    </div>
-
-  </div>
+</div>
+</div>
 
 </div>
 
 
 <script type="module">
 
-  import {
-    auth,
-    db,
-    storage
-  } from "./firebase.js";
+import {
+auth,
+db,
+storage
+} from "./firebase.js";
 
 
-  import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut,
-    setPersistence,
-    browserLocalPersistence
-  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+import {
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+signOut,
+setPersistence,
+browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 
-  import {
-    doc,
-    getDoc,
-    setDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import {
+doc,
+getDoc,
+setDoc,
+serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-  import {
-    ref,
-    uploadBytes,
-    getDownloadURL
-  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
+import {
+ref,
+uploadBytes,
+getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
 
 
-  /*
-  ==================================================
-  JDA NETWORKS
-  AUTHENTICATION + REGISTRATION
-  ==================================================
-  */
+let accountType = "";
+let selectedPhoto = null;
+let existingAuthUser = null;
+let registrationFromExistingAccount = false;
 
 
-  let accountType = "";
+const screens = {
 
-  let selectedPhoto = null;
+loading:document.getElementById("loadingScreen"),
+welcome:document.getElementById("welcomeScreen"),
+register:document.getElementById("registerScreen"),
+login:document.getElementById("loginScreen"),
+pending:document.getElementById("pendingScreen"),
+disabled:document.getElementById("disabledScreen"),
+rejected:document.getElementById("rejectedScreen")
 
-  let existingAuthUser = null;
+};
 
-  let registrationFromExistingAccount = false;
 
+function showScreen(name){
 
-  const screens = {
+Object.values(screens).forEach(screen=>{
+screen.classList.remove("active");
+});
 
-    loading:
-      document.getElementById("loadingScreen"),
+screens[name].classList.add("active");
 
-    welcome:
-      document.getElementById("welcomeScreen"),
+}
 
-    register:
-      document.getElementById("registerScreen"),
 
-    login:
-      document.getElementById("loginScreen"),
+function showMessage(element,text,type="error"){
 
-    pending:
-      document.getElementById("pendingScreen"),
+element.textContent=text;
+element.className="message show "+type;
 
-    disabled:
-      document.getElementById("disabledScreen"),
+}
 
-    rejected:
-      document.getElementById("rejectedScreen")
 
-  };
+function hideMessage(element){
 
+element.textContent="";
+element.className="message";
 
-  /*
-  ==================================================
-  SHOW SCREEN
-  ==================================================
-  */
+}
 
-  function showScreen(name) {
 
-    Object.values(screens).forEach(screen => {
+/*
+====================================================
+IMPORTANT:
+PREVENT FIREBASE FROM WAITING FOREVER
+====================================================
+*/
 
-      screen.classList.remove("active");
+function withTimeout(promise,seconds,step){
 
-    });
+return Promise.race([
 
-    screens[name].classList.add("active");
+promise,
 
-  }
+new Promise((resolve,reject)=>{
 
+setTimeout(()=>{
 
-  /*
-  ==================================================
-  MESSAGES
-  ==================================================
-  */
+reject(
+new Error(
+"TIMEOUT:"+step
+)
+);
 
-  function showMessage(
-    element,
-    text,
-    type = "error"
-  ) {
+},seconds*1000);
 
-    element.textContent = text;
+})
 
-    element.className =
-      "message show " + type;
+]);
 
-  }
+}
 
 
-  function hideMessage(element) {
+/*
+====================================================
+PERSISTENCE
+====================================================
+*/
 
-    element.textContent = "";
+try{
 
-    element.className = "message";
+await setPersistence(
+auth,
+browserLocalPersistence
+);
 
-  }
+}catch(error){
 
+console.error("Persistence error:",error);
 
-  /*
-  ==================================================
-  BUTTON LOADING
-  ==================================================
-  */
+}
 
-  function setButtonLoading(
-    button,
-    loading,
-    originalText
-  ) {
 
-    button.disabled = loading;
+/*
+====================================================
+REGISTRATION TYPE
+====================================================
+*/
 
-    button.textContent =
-      loading
-        ? "Please wait..."
-        : originalText;
+function openRegistration(type){
 
-  }
+accountType=type;
 
+registrationFromExistingAccount=!!existingAuthUser;
 
-  /*
-  ==================================================
-  FIREBASE PERSISTENCE
-  ==================================================
-  */
+document.getElementById("registerTitle").textContent=
+type==="student"
+?"Student Registration"
+:"Staff Registration";
 
-  try {
 
-    await setPersistence(
-      auth,
-      browserLocalPersistence
-    );
+if(type==="student"){
 
-  } catch (error) {
+document.getElementById("studentFields").style.display="block";
+document.getElementById("staffFields").style.display="none";
+document.getElementById("className").required=true;
 
-    console.error(
-      "Persistence error:",
-      error
-    );
+}else{
 
-  }
+document.getElementById("studentFields").style.display="none";
+document.getElementById("staffFields").style.display="block";
+document.getElementById("className").required=false;
 
+}
 
-  /*
-  ==================================================
-  ACCOUNT TYPE
-  ==================================================
-  */
 
-  function openRegistration(type) {
+if(registrationFromExistingAccount){
 
-    accountType = type;
+const emailInput=
+document.getElementById("registerEmail");
 
-    registrationFromExistingAccount =
-      !!existingAuthUser;
+emailInput.value=existingAuthUser.email||"";
+emailInput.readOnly=true;
+emailInput.classList.add("email-locked");
 
+document.getElementById("passwordField").style.display="none";
+document.getElementById("confirmPasswordField").style.display="none";
 
-    document.getElementById(
-      "registerTitle"
-    ).textContent =
-      type === "student"
-        ? "Student Registration"
-        : "Staff Registration";
+document.getElementById("registerPassword").required=false;
+document.getElementById("confirmPassword").required=false;
 
+document.getElementById("existingAccountNote")
+.classList.add("show");
 
-    if (type === "student") {
+}else{
 
-      document.getElementById(
-        "studentFields"
-      ).style.display = "block";
+resetRegistrationAuthFields();
 
+}
 
-      document.getElementById(
-        "staffFields"
-      ).style.display = "none";
+hideMessage(
+document.getElementById("registerMessage")
+);
 
+showScreen("register");
 
-      document.getElementById(
-        "className"
-      ).required = true;
+}
 
 
-    } else {
+function resetRegistrationAuthFields(){
 
-      document.getElementById(
-        "studentFields"
-      ).style.display = "none";
+const emailInput=
+document.getElementById("registerEmail");
 
+emailInput.readOnly=false;
+emailInput.classList.remove("email-locked");
 
-      document.getElementById(
-        "staffFields"
-      ).style.display = "block";
+document.getElementById("passwordField").style.display="block";
+document.getElementById("confirmPasswordField").style.display="block";
 
+document.getElementById("registerPassword").required=true;
+document.getElementById("confirmPassword").required=true;
 
-      document.getElementById(
-        "className"
-      ).required = false;
+document.getElementById("existingAccountNote")
+.classList.remove("show");
 
-    }
+}
 
 
-    /*
-    If Firebase Auth already exists,
-    do NOT ask them to create another
-    Firebase account.
-    */
+/*
+====================================================
+WELCOME
+====================================================
+*/
 
-    if (registrationFromExistingAccount) {
+document.getElementById("studentChoice")
+.addEventListener("click",()=>{
+openRegistration("student");
+});
 
-      const emailInput =
-        document.getElementById(
-          "registerEmail"
-        );
 
+document.getElementById("staffChoice")
+.addEventListener("click",()=>{
+openRegistration("staff");
+});
 
-      emailInput.value =
-        existingAuthUser.email || "";
 
+document.getElementById("goLogin")
+.addEventListener("click",()=>{
+showScreen("login");
+});
 
-      emailInput.readOnly = true;
 
-      emailInput.classList.add(
-        "email-locked"
-      );
+document.getElementById("registerLogin")
+.addEventListener("click",()=>{
+showScreen("login");
+});
 
 
-      document.getElementById(
-        "passwordField"
-      ).style.display = "none";
+document.getElementById("loginRegister")
+.addEventListener("click",()=>{
 
+existingAuthUser=auth.currentUser||null;
 
-      document.getElementById(
-        "confirmPasswordField"
-      ).style.display = "none";
+openRegistration("student");
 
+});
 
-      document.getElementById(
-        "registerPassword"
-      ).required = false;
 
+document.getElementById("registerBack")
+.addEventListener("click",()=>{
 
-      document.getElementById(
-        "confirmPassword"
-      ).required = false;
+if(registrationFromExistingAccount){
 
+showScreen("login");
 
-      document.getElementById(
-        "existingAccountNote"
-      ).classList.add("show");
+}else{
 
+showScreen("welcome");
 
-    } else {
+}
 
-      resetRegistrationAuthFields();
+});
 
-    }
 
+document.getElementById("loginBack")
+.addEventListener("click",()=>{
+showScreen("welcome");
+});
 
-    hideMessage(
-      document.getElementById(
-        "registerMessage"
-      )
-    );
 
+/*
+====================================================
+PHOTO
+====================================================
+*/
 
-    showScreen("register");
+document.getElementById("photoInput")
+.addEventListener("change",event=>{
 
-  }
+const file=event.target.files[0];
 
+if(!file)return;
 
-  function resetRegistrationAuthFields() {
 
-    const emailInput =
-      document.getElementById(
-        "registerEmail"
-      );
+if(!file.type.startsWith("image/")){
 
+showMessage(
+document.getElementById("registerMessage"),
+"Please select an image file."
+);
 
-    emailInput.readOnly = false;
+event.target.value="";
+selectedPhoto=null;
+return;
 
-    emailInput.classList.remove(
-      "email-locked"
-    );
+}
 
 
-    document.getElementById(
-      "passwordField"
-    ).style.display = "block";
+if(file.size>5*1024*1024){
 
+showMessage(
+document.getElementById("registerMessage"),
+"Profile photo must be smaller than 5 MB."
+);
 
-    document.getElementById(
-      "confirmPasswordField"
-    ).style.display = "block";
+event.target.value="";
+selectedPhoto=null;
+return;
 
+}
 
-    document.getElementById(
-      "registerPassword"
-    ).required = true;
 
+selectedPhoto=file;
 
-    document.getElementById(
-      "confirmPassword"
-    ).required = true;
 
+const reader=new FileReader();
 
-    document.getElementById(
-      "existingAccountNote"
-    ).classList.remove("show");
+reader.onload=e=>{
 
-  }
+document.getElementById("photoPreview").src=e.target.result;
 
+};
 
-  /*
-  ==================================================
-  WELCOME BUTTONS
-  ==================================================
-  */
+reader.readAsDataURL(file);
 
-  document
-    .getElementById("studentChoice")
-    .addEventListener(
-      "click",
-      () => {
+});
 
-        openRegistration("student");
 
-      }
-    );
+/*
+====================================================
+PASSWORD SHOW/HIDE
+====================================================
+*/
 
+document.querySelectorAll(".show-password")
+.forEach(button=>{
 
-  document
-    .getElementById("staffChoice")
-    .addEventListener(
-      "click",
-      () => {
+button.addEventListener("click",()=>{
 
-        openRegistration("staff");
+const target=
+document.getElementById(button.dataset.target);
 
-      }
-    );
+if(target.type==="password"){
 
+target.type="text";
+button.textContent="Hide";
 
-  /*
-  ==================================================
-  NAVIGATION
-  ==================================================
-  */
+}else{
 
-  document
-    .getElementById("goLogin")
-    .addEventListener(
-      "click",
-      () => {
+target.type="password";
+button.textContent="Show";
 
-        showScreen("login");
+}
 
-      }
-    );
+});
 
+});
 
-  document
-    .getElementById("registerLogin")
-    .addEventListener(
-      "click",
-      () => {
 
-        showScreen("login");
+/*
+====================================================
+REGISTRATION
+====================================================
+*/
 
-      }
-    );
+document.getElementById("registerForm")
+.addEventListener("submit",async event=>{
 
+event.preventDefault();
 
-  document
-    .getElementById("loginRegister")
-    .addEventListener(
-      "click",
-      () => {
 
-        existingAuthUser =
-          auth.currentUser || null;
+const message=
+document.getElementById("registerMessage");
 
-        openRegistration("student");
+hideMessage(message);
 
-      }
-    );
 
+const button=
+document.getElementById("registerButton");
 
-  document
-    .getElementById("registerBack")
-    .addEventListener(
-      "click",
-      () => {
 
-        if (registrationFromExistingAccount) {
+const realName=
+document.getElementById("realName").value.trim();
 
-          showScreen("login");
 
-        } else {
+const jdaNumber=
+document.getElementById("jdaNumber").value.trim();
 
-          showScreen("welcome");
 
-        }
+const email=
+document.getElementById("registerEmail").value.trim();
 
-      }
-    );
 
+const password=
+document.getElementById("registerPassword").value;
 
-  document
-    .getElementById("loginBack")
-    .addEventListener(
-      "click",
-      () => {
 
-        showScreen("welcome");
+const confirmPassword=
+document.getElementById("confirmPassword").value;
 
-      }
-    );
 
+const className=
+document.getElementById("className").value;
 
-  /*
-  ==================================================
-  PHOTO
-  ==================================================
-  */
 
-  document
-    .getElementById("photoInput")
-    .addEventListener(
-      "change",
-      event => {
+const stream=
+document.getElementById("stream").value.trim();
 
-        const file =
-          event.target.files[0];
 
+const department=
+document.getElementById("department").value.trim();
 
-        if (!file) {
 
-          return;
+/*
+====================================================
+VALIDATION
+====================================================
+*/
 
-        }
+if(realName.length<3){
 
+showMessage(message,"Please enter your full name.");
+return;
 
-        if (
-          !file.type.startsWith(
-            "image/"
-          )
-        ) {
+}
 
-          showMessage(
-            document.getElementById(
-              "registerMessage"
-            ),
-            "Please select an image file."
-          );
 
+if(jdaNumber.length<1){
 
-          event.target.value = "";
+showMessage(message,"Please enter your JDA Number.");
+return;
 
-          selectedPhoto = null;
+}
 
-          return;
 
-        }
+if(!email){
 
+showMessage(message,"Please enter your email address.");
+return;
 
-        if (
-          file.size >
-          5 * 1024 * 1024
-        ) {
+}
 
-          showMessage(
-            document.getElementById(
-              "registerMessage"
-            ),
-            "Profile photo must be smaller than 5 MB."
-          );
 
+if(
+!registrationFromExistingAccount &&
+password.length<6
+){
 
-          event.target.value = "";
+showMessage(
+message,
+"Password must contain at least 6 characters."
+);
 
-          selectedPhoto = null;
+return;
 
-          return;
+}
 
-        }
 
+if(
+!registrationFromExistingAccount &&
+password!==confirmPassword
+){
 
-        selectedPhoto = file;
+showMessage(
+message,
+"Passwords do not match."
+);
 
+return;
 
-        const reader =
-          new FileReader();
+}
 
 
-        reader.onload =
-          e => {
+if(accountType==="student"&&!className){
 
-            document.getElementById(
-              "photoPreview"
-            ).src =
-              e.target.result;
+showMessage(
+message,
+"Please select your class."
+);
 
-          };
+return;
 
+}
 
-        reader.readAsDataURL(file);
 
-      }
-    );
+if(accountType==="staff"&&!department){
 
+showMessage(
+message,
+"Please enter your department."
+);
 
-  /*
-  ==================================================
-  SHOW PASSWORD
-  ==================================================
-  */
+return;
 
-  document
-    .querySelectorAll(
-      ".show-password"
-    )
-    .forEach(button => {
+}
 
-      button.addEventListener(
-        "click",
-        () => {
 
-          const target =
-            document.getElementById(
-              button.dataset.target
-            );
+if(!selectedPhoto){
 
+showMessage(
+message,
+"Please add your profile photo before registering."
+);
 
-          if (
-            target.type ===
-            "password"
-          ) {
+return;
 
-            target.type = "text";
+}
 
-            button.textContent =
-              "Hide";
 
-          } else {
+button.disabled=true;
 
-            target.type =
-              "password";
 
-            button.textContent =
-              "Show";
+let createdUser=null;
+let uploadedPhotoURL="";
 
-          }
 
-        }
-      );
+try{
 
-    });
+/*
+====================================================
+STEP 1 — AUTH
+====================================================
+*/
 
+button.textContent="Checking account...";
 
-  /*
-  ==================================================
-  REGISTRATION
-  ==================================================
-  */
 
-  document
-    .getElementById("registerForm")
-    .addEventListener(
-      "submit",
-      async event => {
+if(
+registrationFromExistingAccount &&
+existingAuthUser
+){
 
-        event.preventDefault();
+createdUser=existingAuthUser;
 
+}else{
 
-        const message =
-          document.getElementById(
-            "registerMessage"
-          );
+button.textContent="Creating account...";
 
+const credential=
+await withTimeout(
+createUserWithEmailAndPassword(
+auth,
+email,
+password
+),
+30,
+"creating your Firebase account"
+);
 
-        hideMessage(message);
+createdUser=credential.user;
 
+}
 
-        const button =
-          document.getElementById(
-            "registerButton"
-          );
 
+if(!createdUser){
 
-        const realName =
-          document.getElementById(
-            "realName"
-          ).value.trim();
+throw new Error(
+"Firebase user was not found."
+);
 
+}
 
-        const jdaNumber =
-          document.getElementById(
-            "jdaNumber"
-          ).value.trim();
 
+/*
+====================================================
+STEP 2 — PHOTO UPLOAD
+====================================================
+*/
 
-        const email =
-          document.getElementById(
-            "registerEmail"
-          ).value.trim();
+button.textContent="Uploading photo...";
 
 
-        const password =
-          document.getElementById(
-            "registerPassword"
-          ).value;
+const extension=
+selectedPhoto.name
+.split(".")
+.pop()
+.toLowerCase();
 
 
-        const confirmPassword =
-          document.getElementById(
-            "confirmPassword"
-          ).value;
+const photoRef=
+ref(
+storage,
+`profilePhotos/${createdUser.uid}/profile.${extension}`
+);
 
 
-        const className =
-          document.getElementById(
-            "className"
-          ).value;
+await withTimeout(
 
+uploadBytes(
+photoRef,
+selectedPhoto,
+{
+contentType:selectedPhoto.type
+}
+),
 
-        const stream =
-          document.getElementById(
-            "stream"
-          ).value.trim();
+45,
 
+"uploading your profile photo"
 
-        const department =
-          document.getElementById(
-            "department"
-          ).value.trim();
+);
 
 
-        /*
-        --------------------------------------------
-        VALIDATION
-        --------------------------------------------
-        */
+button.textContent="Getting photo link...";
 
 
-        if (realName.length < 3) {
+uploadedPhotoURL=
+await withTimeout(
 
-          showMessage(
-            message,
-            "Please enter your full name."
-          );
+getDownloadURL(photoRef),
 
-          return;
+30,
 
-        }
+"getting your profile photo link"
 
+);
 
-        if (jdaNumber.length < 1) {
 
-          showMessage(
-            message,
-            "Please enter your JDA Number."
-          );
+/*
+====================================================
+STEP 3 — FIRESTORE PROFILE
+====================================================
+*/
 
-          return;
+button.textContent="Saving profile...";
 
-        }
 
+const userData={
 
-        if (!email) {
+uid:createdUser.uid,
 
-          showMessage(
-            message,
-            "Please enter your email address."
-          );
+realName:realName,
 
-          return;
+jdaNumber:jdaNumber,
 
-        }
+email:createdUser.email||email,
 
+accountType:accountType,
 
-        /*
-        Password is only required when
-        creating a NEW Firebase account.
-        */
+photoURL:uploadedPhotoURL,
 
-        if (
-          !registrationFromExistingAccount &&
-          password.length < 6
-        ) {
+status:"pending",
 
-          showMessage(
-            message,
-            "Password must contain at least 6 characters."
-          );
+approved:false,
 
-          return;
+createdAt:serverTimestamp(),
 
-        }
+updatedAt:serverTimestamp()
 
+};
 
-        if (
-          !registrationFromExistingAccount &&
-          password !== confirmPassword
-        ) {
 
-          showMessage(
-            message,
-            "Passwords do not match."
-          );
+if(accountType==="student"){
 
-          return;
+userData.className=className;
+userData.stream=stream;
 
-        }
+}else{
 
+userData.department=department;
 
-        if (
-          accountType === "student" &&
-          !className
-        ) {
+}
 
-          showMessage(
-            message,
-            "Please select your class."
-          );
 
-          return;
+await withTimeout(
 
-        }
+setDoc(
+doc(db,"users",createdUser.uid),
+userData
+),
 
+30,
 
-        if (
-          accountType === "staff" &&
-          !department
-        ) {
+"saving your JDA Networks profile"
 
-          showMessage(
-            message,
-            "Please enter your department."
-          );
+);
 
-          return;
 
-        }
+/*
+====================================================
+SUCCESS
+====================================================
+*/
 
+button.textContent="Registration complete!";
 
-        /*
-        Profile photo is mandatory.
-        */
 
-        if (!selectedPhoto) {
+document.getElementById("pendingName")
+.textContent=realName;
 
-          showMessage(
-            message,
-            "Please add your profile photo before registering."
-          );
 
-          return;
+document.getElementById("pendingJda")
+.textContent=jdaNumber;
 
-        }
 
+document.getElementById("pendingType")
+.textContent=
+accountType==="student"
+?"Student"
+:"Staff";
 
-        setButtonLoading(
-          button,
-          true,
-          "Create Account"
-        );
 
+registrationFromExistingAccount=false;
+selectedPhoto=null;
 
-        let createdUser = null;
 
-        let uploadedPhotoURL = "";
+showScreen("pending");
 
 
-        try {
+}catch(error){
 
-          /*
-          ==================================================
-          STEP 1
-          GET OR CREATE FIREBASE AUTH USER
-          ==================================================
-          */
+console.error(
+"COMPLETE REGISTRATION ERROR:",
+error
+);
 
-          if (
-            registrationFromExistingAccount &&
-            existingAuthUser
-          ) {
 
-            /*
-            Existing Firebase account.
+let text="";
 
-            IMPORTANT:
-            We do NOT call
-            createUserWithEmailAndPassword()
-            here.
-            */
 
-            createdUser =
-              existingAuthUser;
+/*
+====================================================
+SHOW THE EXACT STAGE THAT FAILED
+====================================================
+*/
 
+if(error.message?.startsWith("TIMEOUT:")){
 
-          } else {
+const step=
+error.message.replace("TIMEOUT:","");
 
-            /*
-            New Firebase account.
-            */
+text=
+"JDA Networks timed out while "+step+
+". Check your internet connection and try again.";
 
-            const credential =
-              await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
-              );
+}else if(error.code==="storage/unauthorized"){
 
+text=
+"Profile photo upload was denied by Firebase Storage rules.";
 
-            createdUser =
-              credential.user;
+}else if(error.code==="storage/canceled"){
 
-          }
+text=
+"Profile photo upload was cancelled.";
 
+}else if(error.code==="storage/quota-exceeded"){
 
-          /*
-          ==================================================
-          STEP 2
-          UPLOAD PROFILE PHOTO
-          ==================================================
-          */
+text=
+"Firebase Storage quota was exceeded.";
 
-          if (selectedPhoto) {
+}else if(error.code==="storage/unknown"){
 
-            const extension =
-              selectedPhoto.name
-                .split(".")
-                .pop()
-                .toLowerCase();
+text=
+"Firebase Storage returned an unknown error. Check your internet connection.";
 
+}else if(error.code==="permission-denied"){
 
-            const photoRef =
-              ref(
-                storage,
-                `profilePhotos/${createdUser.uid}/profile.${extension}`
-              );
+text=
+"Firestore permission denied while saving your JDA profile.";
 
+}else if(
+error.message &&
+error.message.toLowerCase().includes("permission")
+){
 
-            await uploadBytes(
-              photoRef,
-              selectedPhoto,
-              {
-                contentType:
-                  selectedPhoto.type
-              }
-            );
+text=
+"Firebase permission was denied. Check the Firestore and Storage rules.";
 
+}else if(error.code==="auth/email-already-in-use"){
 
-            uploadedPhotoURL =
-              await getDownloadURL(
-                photoRef
-              );
+text=
+"This email is already registered. Log in to that Firebase account.";
 
-          }
+}else if(error.code==="auth/network-request-failed"){
 
+text=
+"Firebase network connection failed. Check your internet.";
 
-          /*
-          ==================================================
-          STEP 3
-          CREATE JDA FIRESTORE PROFILE
-          ==================================================
-          */
+}else{
 
-          const userData = {
+text=
+"Registration failed: "+
+(error.message||"Unknown Firebase error.");
 
-            uid:
-              createdUser.uid,
+}
 
-            realName:
-              realName,
 
-            jdaNumber:
-              jdaNumber,
+showMessage(
+message,
+text
+);
 
-            email:
-              createdUser.email || email,
 
-            accountType:
-              accountType,
+button.disabled=false;
+button.textContent="Create Account";
 
-            photoURL:
-              uploadedPhotoURL,
+return;
 
-            status:
-              "pending",
+}
 
-            approved:
-              false,
+button.disabled=false;
 
-            createdAt:
-              serverTimestamp(),
+});
 
-            updatedAt:
-              serverTimestamp()
 
-          };
+/*
+====================================================
+LOGIN
+====================================================
+*/
 
+document.getElementById("loginForm")
+.addEventListener("submit",async event=>{
 
-          if (
-            accountType ===
-            "student"
-          ) {
+event.preventDefault();
 
-            userData.className =
-              className;
 
-            userData.stream =
-              stream;
+const message=
+document.getElementById("loginMessage");
 
-          } else {
+hideMessage(message);
 
-            userData.department =
-              department;
 
-          }
+const button=
+document.getElementById("loginButton");
 
 
-          await setDoc(
-            doc(
-              db,
-              "users",
-              createdUser.uid
-            ),
-            userData
-          );
+const email=
+document.getElementById("loginEmail").value.trim();
 
 
-          /*
-          ==================================================
-          STEP 4
-          SHOW PENDING
-          ==================================================
-          */
+const password=
+document.getElementById("loginPassword").value;
 
-          document.getElementById(
-            "pendingName"
-          ).textContent =
-            realName;
 
+if(!email||!password){
 
-          document.getElementById(
-            "pendingJda"
-          ).textContent =
-            jdaNumber;
+showMessage(
+message,
+"Enter your email and password."
+);
 
+return;
 
-          document.getElementById(
-            "pendingType"
-          ).textContent =
-            accountType === "student"
-              ? "Student"
-              : "Staff";
+}
 
 
-          showScreen("pending");
+button.disabled=true;
+button.textContent="Signing in...";
 
 
-          /*
-          Reset existing-account mode.
-          */
+try{
 
-          registrationFromExistingAccount =
-            false;
+const credential=
+await withTimeout(
 
-          selectedPhoto = null;
+signInWithEmailAndPassword(
+auth,
+email,
+password
+),
 
+30,
 
-        } catch (error) {
+"signing in"
+);
 
-          console.error(
-            "Registration error:",
-            error
-          );
 
+await handleAuthenticatedUser(
+credential.user,
+true
+);
 
-          let text =
-            "Registration failed. Please try again.";
 
+}catch(error){
 
-          switch (error.code) {
+console.error("Login error:",error);
 
-            case "auth/email-already-in-use":
 
-              text =
-                "This email is already registered. Log in to that account and complete your JDA profile.";
+let text="Login failed. Please try again.";
 
-              break;
 
+switch(error.code){
 
-            case "auth/invalid-email":
+case "auth/invalid-credential":
+case "auth/wrong-password":
+case "auth/user-not-found":
 
-              text =
-                "Please enter a valid email address.";
+text="Incorrect email or password.";
+break;
 
-              break;
+case "auth/invalid-email":
 
+text="Please enter a valid email address.";
+break;
 
-            case "auth/weak-password":
+case "auth/user-disabled":
 
-              text =
-                "Your password is too weak. Use at least 6 characters.";
+text="This Firebase account has been disabled.";
+break;
 
-              break;
+case "auth/too-many-requests":
 
+text="Too many login attempts. Please wait and try again.";
+break;
 
-            case "auth/network-request-failed":
+case "auth/network-request-failed":
 
-              text =
-                "Network connection failed. Check your internet and try again.";
+text="Network connection failed. Check your internet.";
+break;
 
-              break;
+}
 
 
-            case "permission-denied":
+showMessage(message,text);
 
-              text =
-                "Firebase permission denied. Please check your Firestore rules.";
 
-              break;
+}finally{
 
+button.disabled=false;
+button.textContent="Log In";
 
-            default:
+}
 
-              if (
-                error.message &&
-                error.message
-                  .toLowerCase()
-                  .includes("permission")
-              ) {
+});
 
-                text =
-                  "Firebase permission was denied. Check your Firebase rules.";
 
-              }
+/*
+====================================================
+HANDLE AUTHENTICATED USER
+====================================================
+*/
 
-          }
+async function handleAuthenticatedUser(
+user,
+showErrors=false
+){
 
+if(!user){
 
-          showMessage(
-            message,
-            text
-          );
+showScreen("welcome");
+return;
 
+}
 
-        } finally {
 
-          setButtonLoading(
-            button,
-            false,
-            "Create Account"
-          );
+try{
 
-        }
+const profileRef=
+doc(db,"users",user.uid);
 
-      }
-    );
 
+const profileSnapshot=
+await withTimeout(
 
-  /*
-  ==================================================
-  LOGIN
-  ==================================================
-  */
+getDoc(profileRef),
 
-  document
-    .getElementById("loginForm")
-    .addEventListener(
-      "submit",
-      async event => {
+20,
 
-        event.preventDefault();
+"checking your JDA profile"
 
+);
 
-        const message =
-          document.getElementById(
-            "loginMessage"
-          );
 
+if(!profileSnapshot.exists()){
 
-        hideMessage(message);
+existingAuthUser=user;
+registrationFromExistingAccount=true;
+accountType="student";
 
 
-        const button =
-          document.getElementById(
-            "loginButton"
-          );
+document.getElementById("registerTitle")
+.textContent="Complete Registration";
 
 
-        const email =
-          document.getElementById(
-            "loginEmail"
-          ).value.trim();
+document.getElementById("registerEmail")
+.value=user.email||"";
 
 
-        const password =
-          document.getElementById(
-            "loginPassword"
-          ).value;
+document.getElementById("registerEmail")
+.readOnly=true;
 
 
-        if (!email || !password) {
+document.getElementById("registerEmail")
+.classList.add("email-locked");
 
-          showMessage(
-            message,
-            "Enter your email and password."
-          );
 
-          return;
+document.getElementById("passwordField")
+.style.display="none";
 
-        }
 
+document.getElementById("confirmPasswordField")
+.style.display="none";
 
-        setButtonLoading(
-          button,
-          true,
-          "Log In"
-        );
 
+document.getElementById("registerPassword")
+.required=false;
 
-        try {
 
-          const credential =
-            await signInWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
+document.getElementById("confirmPassword")
+.required=false;
 
 
-          /*
-          IMPORTANT:
+document.getElementById("existingAccountNote")
+.classList.add("show");
 
-          If the Auth account exists but
-          Firestore profile is missing,
-          handleAuthenticatedUser()
-          will now send the user directly
-          into registration.
-          */
 
-          await handleAuthenticatedUser(
-            credential.user,
-            true
-          );
+document.getElementById("studentFields")
+.style.display="block";
 
 
-        } catch (error) {
+document.getElementById("staffFields")
+.style.display="none";
 
-          console.error(
-            "Login error:",
-            error
-          );
 
+document.getElementById("className")
+.required=true;
 
-          let text =
-            "Login failed. Please try again.";
 
+hideMessage(
+document.getElementById("registerMessage")
+);
 
-          switch (error.code) {
 
-            case "auth/invalid-credential":
-            case "auth/wrong-password":
-            case "auth/user-not-found":
+showScreen("register");
 
-              text =
-                "Incorrect email or password.";
+return;
 
-              break;
+}
 
 
-            case "auth/invalid-email":
+const profile=
+profileSnapshot.data();
 
-              text =
-                "Please enter a valid email address.";
 
-              break;
+document.getElementById("pendingName")
+.textContent=profile.realName||"—";
 
 
-            case "auth/user-disabled":
+document.getElementById("pendingJda")
+.textContent=profile.jdaNumber||"—";
 
-              text =
-                "This Firebase account has been disabled.";
 
-              break;
+document.getElementById("pendingType")
+.textContent=
+profile.accountType==="student"
+?"Student"
+:"Staff";
 
 
-            case "auth/too-many-requests":
+if(
+profile.status==="approved"||
+profile.approved===true
+){
 
-              text =
-                "Too many login attempts. Please wait and try again.";
+window.location.replace("home.html");
+return;
 
-              break;
+}
 
 
-            case "auth/network-request-failed":
+if(profile.status==="disabled"){
 
-              text =
-                "Network connection failed. Check your internet.";
+showScreen("disabled");
+return;
 
-              break;
+}
 
-          }
 
+if(profile.status==="rejected"){
 
-          showMessage(
-            message,
-            text
-          );
+showScreen("rejected");
+return;
 
+}
 
-        } finally {
 
-          setButtonLoading(
-            button,
-            false,
-            "Log In"
-          );
+showScreen("pending");
 
-        }
 
-      }
-    );
+}catch(error){
 
+console.error(
+"Profile check error:",
+error
+);
 
-  /*
-  ==================================================
-  HANDLE AUTHENTICATED USER
-  ==================================================
-  */
 
-  async function handleAuthenticatedUser(
-    user,
-    showErrors = false
-  ) {
+if(showErrors){
 
-    if (!user) {
+showMessage(
+document.getElementById("loginMessage"),
 
-      showScreen("welcome");
+error.message?.startsWith("TIMEOUT:")
 
-      return;
+?"The account check timed out. Check your internet connection and try again."
 
-    }
+:"We could not check your JDA Networks account. Firebase returned: "+
+(error.message||"Unknown error.")
+);
 
+showScreen("login");
 
-    try {
+}else{
 
-      const profileRef =
-        doc(
-          db,
-          "users",
-          user.uid
-        );
+showScreen("welcome");
 
+}
 
-      const profileSnapshot =
-        await getDoc(
-          profileRef
-        );
+}
 
+}
 
-      /*
-      ==================================================
-      CRITICAL FIX
 
-      AUTH ACCOUNT EXISTS BUT FIRESTORE PROFILE
-      DOES NOT EXIST.
+/*
+====================================================
+CHECK APPROVAL
+====================================================
+*/
 
-      DO NOT LOG OUT.
+document.getElementById("checkApproval")
+.addEventListener("click",async()=>{
 
-      SEND USER TO REGISTRATION.
-      ==================================================
-      */
+const user=auth.currentUser;
 
-      if (
-        !profileSnapshot.exists()
-      ) {
+if(!user){
 
-        existingAuthUser =
-          user;
+showScreen("login");
+return;
 
+}
 
-        registrationFromExistingAccount =
-          true;
 
+const button=
+document.getElementById("checkApproval");
 
-        /*
-        Default registration type.
 
-        User can switch between
-        Student and Staff through
-        the welcome screen if needed.
-        */
+button.disabled=true;
+button.textContent="Checking...";
 
-        accountType =
-          "student";
 
+try{
 
-        document.getElementById(
-          "registerTitle"
-        ).textContent =
-          "Complete Registration";
+await handleAuthenticatedUser(user,false);
 
+}finally{
 
-        document.getElementById(
-          "registerEmail"
-        ).value =
-          user.email || "";
+button.disabled=false;
+button.textContent="Check Approval";
 
+}
 
-        document.getElementById(
-          "registerEmail"
-        ).readOnly = true;
+});
 
 
-        document.getElementById(
-          "registerEmail"
-        ).classList.add(
-          "email-locked"
-        );
+/*
+====================================================
+LOGOUT
+====================================================
+*/
 
+async function logout(){
 
-        document.getElementById(
-          "passwordField"
-        ).style.display = "none";
+try{
 
+await signOut(auth);
 
-        document.getElementById(
-          "confirmPasswordField"
-        ).style.display = "none";
+existingAuthUser=null;
+registrationFromExistingAccount=false;
+selectedPhoto=null;
 
+document.getElementById("registerForm").reset();
 
-        document.getElementById(
-          "registerPassword"
-        ).required = false;
+resetRegistrationAuthFields();
 
+showScreen("welcome");
 
-        document.getElementById(
-          "confirmPassword"
-        ).required = false;
+}catch(error){
 
+console.error("Logout error:",error);
 
-        document.getElementById(
-          "existingAccountNote"
-        ).classList.add("show");
+}
 
+}
 
-        document.getElementById(
-          "studentFields"
-        ).style.display = "block";
 
+document.getElementById("pendingLogout")
+.addEventListener("click",logout);
 
-        document.getElementById(
-          "staffFields"
-        ).style.display = "none";
 
+document.getElementById("disabledLogout")
+.addEventListener("click",logout);
 
-        document.getElementById(
-          "className"
-        ).required = true;
 
+document.getElementById("rejectedLogout")
+.addEventListener("click",logout);
 
-        hideMessage(
-          document.getElementById(
-            "registerMessage"
-          )
-        );
 
+/*
+====================================================
+AUTH STATE
+====================================================
+*/
 
-        showScreen("register");
+onAuthStateChanged(
+auth,
+async user=>{
 
+if(user){
 
-        return;
+await handleAuthenticatedUser(
+user,
+false
+);
 
-      }
+}else{
 
+showScreen("welcome");
 
-      /*
-      ==================================================
-      PROFILE EXISTS
-      ==================================================
-      */
+}
 
-      const profile =
-        profileSnapshot.data();
+}
+);
 
 
-      document.getElementById(
-        "pendingName"
-      ).textContent =
-        profile.realName || "—";
+/*
+====================================================
+?register=1
+====================================================
+*/
 
+const params=
+new URLSearchParams(
+window.location.search
+);
 
-      document.getElementById(
-        "pendingJda"
-      ).textContent =
-        profile.jdaNumber || "—";
 
+if(params.get("register")==="1"){
 
-      document.getElementById(
-        "pendingType"
-      ).textContent =
-        profile.accountType ===
-        "student"
-          ? "Student"
-          : "Staff";
+setTimeout(()=>{
 
+const user=auth.currentUser;
 
-      /*
-      ==================================================
-      APPROVED
-      ==================================================
-      */
+if(user){
 
-      if (
-        profile.status === "approved" ||
-        profile.approved === true
-      ) {
+existingAuthUser=user;
+registrationFromExistingAccount=true;
+accountType="student";
 
-        window.location.replace(
-          "home.html"
-        );
+openRegistration("student");
 
-        return;
+}else{
 
-      }
+showScreen("welcome");
 
+}
 
-      /*
-      ==================================================
-      DISABLED
-      ==================================================
-      */
+},500);
 
-      if (
-        profile.status ===
-        "disabled"
-      ) {
-
-        showScreen(
-          "disabled"
-        );
-
-        return;
-
-      }
-
-
-      /*
-      ==================================================
-      REJECTED
-      ==================================================
-      */
-
-      if (
-        profile.status ===
-        "rejected"
-      ) {
-
-        showScreen(
-          "rejected"
-        );
-
-        return;
-
-      }
-
-
-      /*
-      ==================================================
-      PENDING
-      ==================================================
-      */
-
-      showScreen(
-        "pending"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "Profile check error:",
-        error
-      );
-
-
-      if (showErrors) {
-
-        showMessage(
-          document.getElementById(
-            "loginMessage"
-          ),
-          "We could not check your JDA Networks account. Check your internet connection and try again."
-        );
-
-
-        showScreen(
-          "login"
-        );
-
-
-      } else {
-
-        showScreen(
-          "welcome"
-        );
-
-      }
-
-    }
-
-  }
-
-
-  /*
-  ==================================================
-  CHECK APPROVAL
-  ==================================================
-  */
-
-  document
-    .getElementById(
-      "checkApproval"
-    )
-    .addEventListener(
-      "click",
-      async () => {
-
-        const user =
-          auth.currentUser;
-
-
-        if (!user) {
-
-          showScreen(
-            "login"
-          );
-
-          return;
-
-        }
-
-
-        const button =
-          document.getElementById(
-            "checkApproval"
-          );
-
-
-        button.disabled =
-          true;
-
-
-        button.textContent =
-          "Checking...";
-
-
-        try {
-
-          await handleAuthenticatedUser(
-            user,
-            false
-          );
-
-
-        } finally {
-
-          button.disabled =
-            false;
-
-
-          button.textContent =
-            "Check Approval";
-
-        }
-
-      }
-    );
-
-
-  /*
-  ==================================================
-  LOGOUT
-  ==================================================
-  */
-
-  async function logout() {
-
-    try {
-
-      await signOut(
-        auth
-      );
-
-
-      existingAuthUser =
-        null;
-
-
-      registrationFromExistingAccount =
-        false;
-
-
-      selectedPhoto =
-        null;
-
-
-      document.getElementById(
-        "registerForm"
-      ).reset();
-
-
-      resetRegistrationAuthFields();
-
-
-      showScreen(
-        "welcome"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "Logout error:",
-        error
-      );
-
-    }
-
-  }
-
-
-  document
-    .getElementById(
-      "pendingLogout"
-    )
-    .addEventListener(
-      "click",
-      logout
-    );
-
-
-  document
-    .getElementById(
-      "disabledLogout"
-    )
-    .addEventListener(
-      "click",
-      logout
-    );
-
-
-  document
-    .getElementById(
-      "rejectedLogout"
-    )
-    .addEventListener(
-      "click",
-      logout
-    );
-
-
-  /*
-  ==================================================
-  AUTH STATE
-  ==================================================
-  */
-
-  onAuthStateChanged(
-    auth,
-    async user => {
-
-      if (user) {
-
-        await handleAuthenticatedUser(
-          user,
-          false
-        );
-
-      } else {
-
-        showScreen(
-          "welcome"
-        );
-
-      }
-
-    }
-  );
-
-
-  /*
-  ==================================================
-  SUPPORT ?register=1
-  ==================================================
-
-  This also allows a direct registration
-  link to work for an existing Firebase
-  account.
-  */
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-
-  if (
-    params.get("register") === "1"
-  ) {
-
-    setTimeout(
-      () => {
-
-        const user =
-          auth.currentUser;
-
-
-        if (user) {
-
-          existingAuthUser =
-            user;
-
-          registrationFromExistingAccount =
-            true;
-
-
-          accountType =
-            "student";
-
-
-          document.getElementById(
-            "registerTitle"
-          ).textContent =
-            "Complete Registration";
-
-
-          document.getElementById(
-            "registerEmail"
-          ).value =
-            user.email || "";
-
-
-          document.getElementById(
-            "registerEmail"
-          ).readOnly = true;
-
-
-          document.getElementById(
-            "registerEmail"
-          ).classList.add(
-            "email-locked"
-          );
-
-
-          document.getElementById(
-            "passwordField"
-          ).style.display = "none";
-
-
-          document.getElementById(
-            "confirmPasswordField"
-          ).style.display = "none";
-
-
-          document.getElementById(
-            "registerPassword"
-          ).required = false;
-
-
-          document.getElementById(
-            "confirmPassword"
-          ).required = false;
-
-
-          document.getElementById(
-            "existingAccountNote"
-          ).classList.add("show");
-
-
-          showScreen(
-            "register"
-          );
-
-        } else {
-
-          showScreen(
-            "welcome"
-          );
-
-        }
-
-      },
-      500
-    );
-
-  }
+}
 
 </script>
 

@@ -4,13 +4,18 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
 
+    // =====================================================
+    // HELPER FUNCTIONS
+    // =====================================================
+
     function signedIn() {
       return request.auth != null;
     }
 
     function superAdmin() {
       return signedIn()
-        && request.auth.token.email == "jonathanmentor62@gmail.com";
+        && request.auth.token.email
+           == "jonathanmentor62@gmail.com";
     }
 
     function admin() {
@@ -108,11 +113,9 @@ service cloud.firestore {
 
     match /conversations/{conversationId} {
 
-      // Needed when opening/checking one conversation.
       allow get:
         if approved();
 
-      // Needed for the Chats tab query.
       allow list:
         if approved();
 
@@ -168,6 +171,139 @@ service cloud.firestore {
 
 
     // =====================================================
+    // REAL WEBRTC CALLS
+    // =====================================================
+
+    match /calls/{callId} {
+
+      // A JDA-approved member can create a call
+      // only for another approved JDA member.
+      allow create:
+        if approved()
+        && request.resource.data.callerId
+           == request.auth.uid
+        && request.resource.data.calleeId is string
+        && request.resource.data.calleeId
+           != request.auth.uid
+        && request.resource.data.type
+           in ["audio", "video"]
+        && request.resource.data.status
+           == "ringing"
+        && get(
+          /databases/$(database)/documents/users/$(request.resource.data.calleeId)
+        ).data.status == "approved";
+
+      // Caller and receiver can see the call.
+      allow get:
+        if approved()
+        && (
+          resource.data.callerId == request.auth.uid
+          || resource.data.calleeId == request.auth.uid
+        );
+
+      // Required for the incoming-call listener.
+      allow list:
+        if approved();
+
+      // Caller/receiver can update the call,
+      // but cannot change who is calling whom.
+      allow update:
+        if approved()
+        && (
+          resource.data.callerId == request.auth.uid
+          || resource.data.calleeId == request.auth.uid
+        )
+        && request.resource.data.callerId
+           == resource.data.callerId
+        && request.resource.data.calleeId
+           == resource.data.calleeId
+        && request.resource.data.type
+           == resource.data.type
+        && request.resource.data.status
+           in [
+             "ringing",
+             "accepted",
+             "rejected",
+             "ended"
+           ];
+
+      // Caller/receiver may remove their call.
+      allow delete:
+        if approved()
+        && (
+          resource.data.callerId == request.auth.uid
+          || resource.data.calleeId == request.auth.uid
+        );
+
+
+      // ===================================================
+      // WEBRTC ICE CANDIDATES
+      // ===================================================
+
+      match /candidates/{candidateId} {
+
+        // Caller or receiver may send ICE candidates.
+        allow create:
+          if approved()
+          && request.resource.data.senderId
+             == request.auth.uid
+          && (
+            get(
+              /databases/$(database)/documents/calls/$(callId)
+            ).data.callerId == request.auth.uid
+            ||
+            get(
+              /databases/$(database)/documents/calls/$(callId)
+            ).data.calleeId == request.auth.uid
+          )
+          && request.resource.data.candidate is map;
+
+        // Caller or receiver can receive ICE candidates.
+        allow get:
+          if approved()
+          && (
+            get(
+              /databases/$(database)/documents/calls/$(callId)
+            ).data.callerId == request.auth.uid
+            ||
+            get(
+              /databases/$(database)/documents/calls/$(callId)
+            ).data.calleeId == request.auth.uid
+          );
+
+        allow list:
+          if approved()
+          && (
+            get(
+              /databases/$(database)/documents/calls/$(callId)
+            ).data.callerId == request.auth.uid
+            ||
+            get(
+              /databases/$(database)/documents/calls/$(callId)
+            ).data.calleeId == request.auth.uid
+          );
+
+        allow update:
+          if false;
+
+        allow delete:
+          if approved()
+          && (
+            resource.data.senderId == request.auth.uid
+            ||
+            get(
+              /databases/$(database)/documents/calls/$(callId)
+            ).data.callerId == request.auth.uid
+            ||
+            get(
+              /databases/$(database)/documents/calls/$(callId)
+            ).data.calleeId == request.auth.uid
+          );
+      }
+    }
+
+
+    // =====================================================
     // CONNECTIONS
     // =====================================================
 
@@ -210,8 +346,10 @@ service cloud.firestore {
       allow update:
         if signedIn()
         && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == resource.data.userId
-        && request.resource.data.type == resource.data.type;
+        && request.resource.data.userId
+           == resource.data.userId
+        && request.resource.data.type
+           == resource.data.type;
 
       allow delete:
         if admin();
@@ -226,13 +364,15 @@ service cloud.firestore {
 
       allow create, update:
         if signedIn()
-        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.userId
+           == request.auth.uid
         && request.resource.data.token is string
         && request.resource.data.token.size() > 0;
 
       allow delete:
         if signedIn()
-        && resource.data.userId == request.auth.uid;
+        && resource.data.userId
+           == request.auth.uid;
 
       allow read:
         if false;

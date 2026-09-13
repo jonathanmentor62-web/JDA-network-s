@@ -1,7 +1,7 @@
 /* =========================================================
    jChat
    Firebase Auth + Firestore + WebRTC
-   Follows home.html structure exactly
+   Production-oriented client engine
    ========================================================= */
 
 import {
@@ -20,6 +20,7 @@ import {
   getDoc,
   getDocs,
   addDoc,
+  setDoc,
   updateDoc,
   query,
   where,
@@ -31,7 +32,7 @@ import {
 
 
 /* =========================================================
-   TURN
+   WEBRTC
    ========================================================= */
 
 const METERED_TURN_USERNAME = "3e34f2edd42777aac34b9a4f";
@@ -39,7 +40,9 @@ const METERED_TURN_CREDENTIAL = "hSQcaWCgT3jN4xUe";
 
 const RTC_CONFIG = {
   iceServers: [
-    { urls: "stun:stun.relay.metered.ca:80" },
+    {
+      urls: "stun:stun.relay.metered.ca:80"
+    },
     {
       urls: "turn:global.relay.metered.ca:80",
       username: METERED_TURN_USERNAME,
@@ -73,6 +76,7 @@ let currentProfile = null;
 
 let members = [];
 let conversations = [];
+
 let currentConversation = null;
 let currentPeer = null;
 
@@ -80,11 +84,19 @@ let unsubscribeMessages = null;
 let unsubscribeMembers = null;
 let unsubscribeConversations = null;
 let unsubscribeIncomingCalls = null;
+let unsubscribeCurrentCall = null;
+let unsubscribeCandidates = null;
 
 let peerConnection = null;
 let localStream = null;
 let remoteStream = null;
+
 let currentCall = null;
+
+let pendingIceCandidates = [];
+let remoteDescriptionReady = false;
+
+let appStarted = false;
 
 
 /* =========================================================
@@ -93,8 +105,8 @@ let currentCall = null;
 
 const $ = id => document.getElementById(id);
 
-function escapeHTML(v = "") {
-  return String(v)
+function escapeHTML(value = "") {
+  return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -102,51 +114,102 @@ function escapeHTML(v = "") {
     .replaceAll("'", "&#039;");
 }
 
-const safe = v => escapeHTML(v);
+const safe = escapeHTML;
+
 
 function initials(name = "User") {
-  const p = name.trim().split(/\s+/);
-  if (!p.length) return "U";
-  if (p.length === 1) return p[0].substring(0, 2).toUpperCase();
-  return (p[0][0] + p[p.length - 1][0]).toUpperCase();
+  const clean = String(name).trim();
+
+  if (!clean) return "U";
+
+  const parts = clean.split(/\s+/);
+
+  if (parts.length === 1) {
+    return parts[0].substring(0, 2).toUpperCase();
+  }
+
+  return (
+    parts[0][0] +
+    parts[parts.length - 1][0]
+  ).toUpperCase();
 }
 
-function formatTime(ts) {
-  if (!ts) return "";
+
+function formatTime(timestamp) {
+  if (!timestamp) return "";
+
   try {
-    const d = typeof ts.toDate === "function" ? ts.toDate() : new Date(ts);
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  } catch { return ""; }
+    const date =
+      typeof timestamp.toDate === "function"
+        ? timestamp.toDate()
+        : new Date(timestamp);
+
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  } catch {
+    return "";
+  }
 }
 
-function formatRelative(ts) {
-  if (!ts) return "";
+
+function formatRelative(timestamp) {
+  if (!timestamp) return "";
+
   try {
-    const d = typeof ts.toDate === "function" ? ts.toDate() : new Date(ts);
-    const diff = (Date.now() - d.getTime()) / 1000;
+    const date =
+      typeof timestamp.toDate === "function"
+        ? timestamp.toDate()
+        : new Date(timestamp);
+
+    const diff =
+      (Date.now() - date.getTime()) / 1000;
+
     if (diff < 60) return "now";
-    if (diff < 3600) return Math.floor(diff / 60) + "m";
-    if (diff < 86400) return Math.floor(diff / 3600) + "h";
-    if (diff < 604800) return Math.floor(diff / 86400) + "d";
-    return d.toLocaleDateString();
-  } catch { return ""; }
+    if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+    if (diff < 604800) return `${Math.floor(diff / 86400)}d`;
+
+    return date.toLocaleDateString();
+  } catch {
+    return "";
+  }
 }
 
-function getPhoto(p) {
-  return p?.photoURL || p?.profilePhoto || "";
+
+function getPhoto(profile) {
+  return (
+    profile?.photoURL ||
+    profile?.profilePhoto ||
+    ""
+  );
 }
+
 
 function showToast(message) {
   if (window.jChatUI?.showToast) {
     window.jChatUI.showToast(message);
     return;
   }
-  let t = $("toast");
-  if (t) {
-    t.textContent = message;
-    t.classList.add("show");
-    setTimeout(() => t.classList.remove("show"), 2500);
-  }
+
+  const toast = $("toast");
+
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
+}
+
+
+function findMember(uid) {
+  return members.find(
+    member => member.uid === uid
+  );
 }
 
 
@@ -155,23 +218,82 @@ function showToast(message) {
    ========================================================= */
 
 onAuthStateChanged(auth, async user => {
+
   if (!user) {
+
     currentUser = null;
     currentProfile = null;
+
+    stopAllListeners();
+
     return;
   }
+
   currentUser = user;
+
   await startApp();
 });
 
 
-async function startApp() {
-  try {
-    const snap = await getDoc(doc(db, "users", currentUser.uid));
+/* =========================================================
+   APP START
+   ========================================================= */
 
-    currentProfile = snap.exists()
-      ? { uid: currentUser.uid, ...snap.data() }
-      : { uid: currentUser.uid, realName: currentUser.email || "jChat User" };
+async function startApp() {
+
+  if (appStarted) {
+    applyProfileToUI();
+    return;
+  }
+
+  appStarted = true;
+
+  try {
+
+    const userRef =
+      doc(db, "users", currentUser.uid);
+
+    const snap =
+      await getDoc(userRef);
+
+
+    if (!snap.exists()) {
+
+      currentProfile = {
+        uid: currentUser.uid,
+        realName:
+          currentUser.displayName ||
+          currentUser.phoneNumber ||
+          "jChat User",
+        phoneNumber:
+          currentUser.phoneNumber || "",
+        photoURL:
+          currentUser.photoURL || "",
+        about:
+          "Hey there! I am using jChat."
+      };
+
+      // Create the missing profile safely.
+      await setDoc(
+        userRef,
+        {
+          ...currentProfile,
+          isOnline: true,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
+
+    } else {
+
+      currentProfile = {
+        uid: currentUser.uid,
+        ...snap.data()
+      };
+
+    }
+
 
     applyProfileToUI();
 
@@ -181,257 +303,745 @@ async function startApp() {
     startConversationsListener();
     startIncomingCallListener();
 
-    window.addEventListener("beforeunload", () => setOnlineStatus(false));
-  } catch (err) {
-    console.error("startApp:", err);
-    showToast("Unable to load jChat.");
+    window.addEventListener(
+      "beforeunload",
+      handleBeforeUnload
+    );
+
+  } catch (error) {
+
+    console.error(
+      "jChat start error:",
+      error
+    );
+
+    appStarted = false;
+
+    showToast(
+      "Unable to load jChat."
+    );
   }
 }
 
 
+/* =========================================================
+   STOP LISTENERS
+   ========================================================= */
+
+function stopAllListeners() {
+
+  unsubscribeMembers?.();
+  unsubscribeConversations?.();
+  unsubscribeMessages?.();
+  unsubscribeIncomingCalls?.();
+  unsubscribeCurrentCall?.();
+  unsubscribeCandidates?.();
+
+  unsubscribeMembers = null;
+  unsubscribeConversations = null;
+  unsubscribeMessages = null;
+  unsubscribeIncomingCalls = null;
+  unsubscribeCurrentCall = null;
+  unsubscribeCandidates = null;
+
+  appStarted = false;
+}
+
+
+/* =========================================================
+   PROFILE UI
+   ========================================================= */
+
 function applyProfileToUI() {
-  const name = currentProfile?.realName || "jChat User";
-  const about = currentProfile?.about || "Hey there! I am using jChat.";
-  const photo = getPhoto(currentProfile);
 
-  const nameEl = $("profileName");
-  const aboutEl = $("profileAbout");
-  const avatarEl = $("profileAvatar");
+  const name =
+    currentProfile?.realName ||
+    "jChat User";
 
-  if (nameEl) nameEl.textContent = name;
-  if (aboutEl) aboutEl.textContent = about;
+  const about =
+    currentProfile?.about ||
+    "Hey there! I am using jChat.";
 
-  if (avatarEl) {
+  const photo =
+    getPhoto(currentProfile);
+
+
+  const nameElement =
+    $("profileName");
+
+  const aboutElement =
+    $("profileAbout");
+
+  const avatarElement =
+    $("profileAvatar");
+
+
+  if (nameElement) {
+    nameElement.textContent = name;
+  }
+
+  if (aboutElement) {
+    aboutElement.textContent = about;
+  }
+
+
+  if (avatarElement) {
+
     if (photo) {
-      avatarEl.innerHTML = `<img src="${photo}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+
+      avatarElement.innerHTML = `
+        <img
+          src="${safe(photo)}"
+          alt=""
+          style="
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            border-radius:50%;
+          "
+        >
+      `;
+
     } else {
-      avatarEl.textContent = initials(name);
+
+      avatarElement.textContent =
+        initials(name);
+
     }
   }
 }
 
 
+/* =========================================================
+   ONLINE STATUS
+   ========================================================= */
+
 async function setOnlineStatus(isOnline) {
+
   if (!currentUser) return;
+
   try {
-    await updateDoc(doc(db, "users", currentUser.uid), {
-      isOnline,
-      lastSeen: serverTimestamp()
-    });
-  } catch {}
+
+    await setDoc(
+      doc(db, "users", currentUser.uid),
+      {
+        isOnline,
+        lastSeen: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      },
+      {
+        merge: true
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Online status:",
+      error
+    );
+  }
 }
 
 
+function handleBeforeUnload() {
+
+  // Firestore network writes during beforeunload
+  // are not guaranteed, but we still attempt it.
+  setOnlineStatus(false);
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
 async function logoutUser() {
+
   try {
+
     await setOnlineStatus(false);
+
     await signOut(auth);
-  } catch {
-    showToast("Could not log out.");
+
+    stopAllListeners();
+
+    location.href = "index.html";
+
+  } catch (error) {
+
+    console.error(error);
+
+    showToast(
+      "Could not log out."
+    );
   }
 }
 
 
 /* =========================================================
-   MEMBERS LISTENER
+   MEMBERS
    ========================================================= */
 
 function startMembersListener() {
+
   if (!currentUser) return;
-  if (unsubscribeMembers) unsubscribeMembers();
+
+  unsubscribeMembers?.();
+
 
   unsubscribeMembers = onSnapshot(
-    query(collection(db, "users"), orderBy("realName")),
-    snap => {
-      members = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+
+    query(
+      collection(db, "users"),
+      orderBy("realName")
+    ),
+
+    snapshot => {
+
+      members =
+        snapshot.docs.map(docSnap => ({
+          uid: docSnap.id,
+          ...docSnap.data()
+        }));
+
       renderChatList();
       renderContacts();
+
+      if (currentPeer) {
+
+        const updatedPeer =
+          findMember(currentPeer.uid);
+
+        if (updatedPeer) {
+          currentPeer = updatedPeer;
+        }
+      }
     },
-    err => console.error("Members listener:", err)
+
+    error => {
+
+      console.error(
+        "Members listener:",
+        error
+      );
+    }
   );
 }
 
 
-function findMember(uid) {
-  return members.find(m => m.uid === uid);
-}
-
-
 /* =========================================================
-   CONVERSATIONS LISTENER
+   CONVERSATIONS
    ========================================================= */
 
 function startConversationsListener() {
+
   if (!currentUser) return;
-  if (unsubscribeConversations) unsubscribeConversations();
+
+  unsubscribeConversations?.();
+
 
   unsubscribeConversations = onSnapshot(
+
     query(
       collection(db, "conversations"),
-      where("participantIds", "array-contains", currentUser.uid)
+      where(
+        "participantIds",
+        "array-contains",
+        currentUser.uid
+      )
     ),
-    snap => {
-      conversations = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => {
-          const ta = a.lastMessageAt?.toMillis?.() || 0;
-          const tb = b.lastMessageAt?.toMillis?.() || 0;
-          return tb - ta;
-        });
+
+    snapshot => {
+
+      conversations =
+        snapshot.docs
+          .map(docSnap => ({
+            id: docSnap.id,
+            ...docSnap.data()
+          }))
+          .sort((a, b) => {
+
+            const aTime =
+              a.lastMessageAt?.toMillis?.() || 0;
+
+            const bTime =
+              b.lastMessageAt?.toMillis?.() || 0;
+
+            return bTime - aTime;
+          });
+
 
       renderChatList();
+
+      if (
+        currentConversation &&
+        !conversations.some(
+          c =>
+            c.id ===
+            currentConversation.id
+        )
+      ) {
+
+        currentConversation = null;
+        currentPeer = null;
+      }
     },
-    err => console.error("Conversations listener:", err)
+
+    error => {
+
+      console.error(
+        "Conversations listener:",
+        error
+      );
+    }
   );
 }
 
 
 /* =========================================================
-   CHAT LIST (home.html: #chatList, .chatItem, .avatar etc.)
+   CHAT LIST
    ========================================================= */
 
 function renderChatList() {
-  const list = $("chatList");
-  const empty = $("emptyChats");
+
+  const list =
+    $("chatList");
+
+  const empty =
+    $("emptyChats");
+
   if (!list) return;
 
-  const rows = conversations.filter(c => c.lastMessage || c.lastMessageAt);
+
+  const rows =
+    conversations.filter(
+      conversation =>
+        conversation.lastMessage ||
+        conversation.lastMessageAt
+    );
+
 
   if (!rows.length) {
+
     list.innerHTML = "";
-    if (empty) empty.style.display = "block";
+
+    if (empty) {
+      empty.style.display = "block";
+    }
+
     return;
   }
 
-  if (empty) empty.style.display = "none";
 
-  list.innerHTML = rows.map(convo => {
-    const otherId = (convo.participantIds || []).find(id => id !== currentUser.uid);
-    const other = findMember(otherId);
-    const name = other?.realName || "jChat User";
-    const photo = getPhoto(other);
-    const initialsText = initials(name);
+  if (empty) {
+    empty.style.display = "none";
+  }
 
-    const avatar = photo
-      ? `<img src="${photo}" alt="">`
-      : `<div class="avatar" style="font-size:16px">${initialsText}</div>`;
 
-    const onlineDot = other?.isOnline
-      ? `<span class="onlineDot"></span>`
-      : "";
+  list.innerHTML =
+    rows.map(conversation => {
 
-    const preview = safe(convo.lastMessage || "Tap to start chatting");
-    const time = formatRelative(convo.lastMessageAt) || formatTime(convo.lastMessageAt);
-    const unread = convo.unreadCount?.[currentUser.uid] || 0;
-    const unreadBadge = unread > 0
-      ? `<span class="unreadBadge">${unread}</span>`
-      : "";
+      const otherId =
+        (conversation.participantIds || [])
+          .find(
+            id => id !== currentUser.uid
+          );
 
-    const avatarBlock = photo
-      ? `<div class="avatar">${avatar}${onlineDot}</div>`
-      : `<div class="avatar">${initialsText}${onlineDot}</div>`;
 
-    return `
-      <div class="chatItem" data-conversation-id="${convo.id}" data-other-id="${otherId || ""}">
-        ${avatarBlock}
-        <div class="chatInfo">
-          <div class="chatTop">
-            <div class="chatName">${safe(name)}</div>
-            <div class="chatTime">${safe(time)}</div>
+      const other =
+        findMember(otherId);
+
+
+      const name =
+        other?.realName ||
+        "jChat User";
+
+      const photo =
+        getPhoto(other);
+
+      const avatarInitials =
+        initials(name);
+
+
+      const onlineDot =
+        other?.isOnline
+          ? `<span class="onlineDot"></span>`
+          : "";
+
+
+      const avatar =
+        photo
+          ? `
+            <div class="avatar">
+              <img
+                src="${safe(photo)}"
+                alt=""
+              >
+              ${onlineDot}
+            </div>
+          `
+          : `
+            <div class="avatar">
+              ${avatarInitials}
+              ${onlineDot}
+            </div>
+          `;
+
+
+      const preview =
+        safe(
+          conversation.lastMessage ||
+          "Tap to start chatting"
+        );
+
+
+      const time =
+        formatRelative(
+          conversation.lastMessageAt
+        ) ||
+        formatTime(
+          conversation.lastMessageAt
+        );
+
+
+      const unread =
+        Number(
+          conversation.unreadCount?.[
+            currentUser.uid
+          ] || 0
+        );
+
+
+      const badge =
+        unread > 0
+          ? `<span class="unreadBadge">${unread}</span>`
+          : "";
+
+
+      return `
+        <div
+          class="chatItem"
+          data-conversation-id="${safe(conversation.id)}"
+          data-other-id="${safe(otherId || "")}"
+        >
+
+          ${avatar}
+
+          <div class="chatInfo">
+
+            <div class="chatTop">
+
+              <div class="chatName">
+                ${safe(name)}
+              </div>
+
+              <div class="chatTime">
+                ${safe(time)}
+              </div>
+
+            </div>
+
+
+            <div class="chatBottom">
+
+              <div class="lastMessage">
+                ${preview}
+              </div>
+
+              ${badge}
+
+            </div>
+
           </div>
-          <div class="chatBottom">
-            <div class="lastMessage">${preview}</div>
-            ${unreadBadge}
-          </div>
+
         </div>
-      </div>
-    `;
-  }).join("");
+      `;
 
-  list.querySelectorAll("[data-conversation-id]").forEach(item => {
-    item.addEventListener("click", () => {
-      const convo = conversations.find(c => c.id === item.dataset.conversationId);
-      const other = findMember(item.dataset.otherId);
-      if (convo && other) openConversation(convo, other);
+    }).join("");
+
+
+  list
+    .querySelectorAll(
+      "[data-conversation-id]"
+    )
+    .forEach(item => {
+
+      item.addEventListener(
+        "click",
+        async () => {
+
+          const conversation =
+            conversations.find(
+              c =>
+                c.id ===
+                item.dataset.conversationId
+            );
+
+
+          const other =
+            findMember(
+              item.dataset.otherId
+            );
+
+
+          if (
+            conversation &&
+            other
+          ) {
+
+            await openConversation(
+              conversation,
+              other
+            );
+          }
+        }
+      );
     });
-  });
 }
 
 
 /* =========================================================
-   OPEN CONVERSATION (uses home.html #chatWindow)
+   OPEN CHAT
    ========================================================= */
 
-async function openConversation(convo, otherMember) {
-  currentConversation = convo;
-  currentPeer = otherMember;
+async function openConversation(
+  conversation,
+  otherMember
+) {
+
+  currentConversation =
+    conversation;
+
+  currentPeer =
+    otherMember;
+
 
   if (window.jChatUI?.openChat) {
+
     window.jChatUI.openChat({
-      name: otherMember.realName,
-      status: otherMember.isOnline ? "Online • Active now" : "Offline",
-      initials: initials(otherMember.realName),
-      photoURL: getPhoto(otherMember)
+      name:
+        otherMember.realName ||
+        "jChat User",
+
+      status:
+        otherMember.isOnline
+          ? "Online • Active now"
+          : "Offline",
+
+      initials:
+        initials(
+          otherMember.realName
+        ),
+
+      photoURL:
+        getPhoto(otherMember)
     });
+
   }
 
-  listenToMessages(convo.id);
-}
 
+  listenToMessages(
+    conversation.id
+  );
 
-function listenToMessages(conversationId) {
-  if (unsubscribeMessages) unsubscribeMessages();
-
-  unsubscribeMessages = onSnapshot(
-    query(
-      collection(db, "conversations", conversationId, "messages"),
-      orderBy("createdAt", "asc")
-    ),
-    snap => {
-      const messages = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderMessages(messages);
-    },
-    err => console.error("Messages listener:", err)
+  await markConversationRead(
+    conversation
   );
 }
 
 
 /* =========================================================
-   MESSAGES (home.html: .messageRow, .messageBubble)
+   MESSAGES LISTENER
    ========================================================= */
 
-function renderMessages(messages) {
-  const area = $("messagesArea");
-  if (!area) return;
+function listenToMessages(
+  conversationId
+) {
 
-  if (!messages.length) {
-    area.innerHTML = `
-      <div style="text-align:center;color:#8c91aa;font-size:13px;padding:40px 20px">
-        No messages yet. Say hi 👋
-      </div>
-    `;
+  unsubscribeMessages?.();
+
+
+  unsubscribeMessages =
+    onSnapshot(
+
+      query(
+        collection(
+          db,
+          "conversations",
+          conversationId,
+          "messages"
+        ),
+        orderBy(
+          "createdAt",
+          "asc"
+        )
+      ),
+
+      snapshot => {
+
+        const messages =
+          snapshot.docs.map(
+            docSnap => ({
+              id: docSnap.id,
+              ...docSnap.data()
+            })
+          );
+
+        renderMessages(messages);
+      },
+
+      error => {
+
+        console.error(
+          "Messages:",
+          error
+        );
+      }
+    );
+}
+
+
+/* =========================================================
+   MARK CONVERSATION READ
+   ========================================================= */
+
+async function markConversationRead(
+  conversation
+) {
+
+  if (!conversation || !currentUser) {
     return;
   }
 
-  area.innerHTML = messages.map(msg => {
-    const mine = msg.senderId === currentUser.uid;
-    const cls = mine ? "outgoing" : "incoming";
-    const ticks = mine
-      ? `<span class="seenTicks">${msg.read ? "✓✓" : "✓"}</span>`
-      : "";
-    const time = formatTime(msg.createdAt);
 
-    return `
-      <div class="messageRow ${cls}">
-        <div class="messageBubble">
-          <div class="messageText">${safe(msg.text || "")}</div>
-          <div class="messageMeta">${ticks}${time}</div>
-        </div>
+  const currentUnread =
+    Number(
+      conversation.unreadCount?.[
+        currentUser.uid
+      ] || 0
+    );
+
+
+  if (!currentUnread) {
+    return;
+  }
+
+
+  const updatedUnread = {
+    ...(conversation.unreadCount || {})
+  };
+
+  updatedUnread[currentUser.uid] = 0;
+
+
+  try {
+
+    await updateDoc(
+      doc(
+        db,
+        "conversations",
+        conversation.id
+      ),
+      {
+        unreadCount: updatedUnread
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Mark read:",
+      error
+    );
+  }
+}
+
+
+/* =========================================================
+   RENDER MESSAGES
+   ========================================================= */
+
+function renderMessages(
+  messages
+) {
+
+  const area =
+    $("messagesArea");
+
+  if (!area) return;
+
+
+  if (!messages.length) {
+
+    area.innerHTML = `
+      <div
+        style="
+          text-align:center;
+          color:#8c91aa;
+          font-size:13px;
+          padding:40px 20px;
+        "
+      >
+        No messages yet. Say hi 👋
       </div>
     `;
-  }).join("");
 
-  area.scrollTop = area.scrollHeight;
+    return;
+  }
+
+
+  area.innerHTML =
+    messages.map(message => {
+
+      const mine =
+        message.senderId ===
+        currentUser.uid;
+
+      const rowClass =
+        mine
+          ? "outgoing"
+          : "incoming";
+
+
+      const ticks =
+        mine
+          ? `
+            <span class="seenTicks">
+              ${message.read ? "✓✓" : "✓"}
+            </span>
+          `
+          : "";
+
+
+      return `
+        <div
+          class="messageRow ${rowClass}"
+        >
+
+          <div class="messageBubble">
+
+            <div class="messageText">
+              ${safe(message.text || "")}
+            </div>
+
+            <div class="messageMeta">
+              ${ticks}
+              ${safe(formatTime(message.createdAt))}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+
+  requestAnimationFrame(() => {
+    area.scrollTop =
+      area.scrollHeight;
+  });
 }
 
 
@@ -439,172 +1049,739 @@ function renderMessages(messages) {
    SEND MESSAGE
    ========================================================= */
 
-document.addEventListener("jchat-send-message", async e => {
-  const text = (e.detail?.text || "").trim();
-  if (!text || !currentConversation || !currentPeer) return;
+document.addEventListener(
+  "jchat-send-message",
+  async event => {
 
-  try {
-    await addDoc(
-      collection(db, "conversations", currentConversation.id, "messages"),
-      {
-        senderId: currentUser.uid,
-        receiverId: currentPeer.uid,
-        text,
-        createdAt: serverTimestamp(),
-        read: false
-      }
-    );
-
-    await updateDoc(doc(db, "conversations", currentConversation.id), {
-      lastMessage: text,
-      lastMessageAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-
-    document.dispatchEvent(new CustomEvent("jchat-message-sent"));
-  } catch (err) {
-    console.error(err);
-    showToast("Message could not be sent.");
-  }
-});
+    const text =
+      (event.detail?.text || "")
+        .trim();
 
 
-/* =========================================================
-   CONTACTS (home.html: #contactList)
-   ========================================================= */
-
-function renderContacts() {
-  const list = $("contactList");
-  if (!list) return;
-
-  const others = members.filter(m => m.uid !== currentUser.uid);
-
-  if (!others.length) {
-    list.innerHTML = `<div style="text-align:center;color:#8c91aa;padding:40px 20px;font-size:13px">No contacts yet.</div>`;
-    return;
-  }
-
-  list.innerHTML = others.map(m => {
-    const photo = getPhoto(m);
-    const avatar = photo
-      ? `<div class="avatar"><img src="${photo}" alt=""></div>`
-      : `<div class="avatar">${initials(m.realName)}</div>`;
-
-    return `
-      <div class="contactItem" data-member-id="${m.uid}">
-        ${avatar}
-        <div class="contactInfo">
-          <div class="contactName">${safe(m.realName || "")}</div>
-          <div class="contactAbout">${safe(m.about || "Hey there! I am using jChat.")}</div>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  list.querySelectorAll("[data-member-id]").forEach(item => {
-    item.addEventListener("click", async () => {
-      const member = findMember(item.dataset.memberId);
-      if (!member) return;
-      const convo = await getOrCreateConversation(member.uid);
-      openConversation(convo, member);
-    });
-  });
-}
-
-
-async function getOrCreateConversation(otherId) {
-  const ids = [currentUser.uid, otherId].sort();
-
-  const existing = conversations.find(c => {
-    const p = c.participantIds || [];
-    return p.length === 2 && p[0] === ids[0] && p[1] === ids[1];
-  });
-
-  if (existing) return existing;
-
-  const ref = await addDoc(collection(db, "conversations"), {
-    participantIds: ids,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-    lastMessage: "",
-    lastMessageAt: serverTimestamp()
-  });
-
-  return { id: ref.id, participantIds: ids };
-}
-
-
-/* =========================================================
-   CALL HISTORY (home.html: #callHistory)
-   ========================================================= */
-
-async function loadCallHistory() {
-  const container = $("callHistory");
-  if (!container) return;
-
-  try {
-    const snap = await getDocs(
-      query(
-        collection(db, "calls"),
-        where("participantIds", "array-contains", currentUser.uid),
-        orderBy("createdAt", "desc"),
-        limit(50)
-      )
-    );
-
-    const calls = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-    if (!calls.length) {
-      container.innerHTML = "";
-      const empty = $("emptyCalls");
-      if (empty) empty.style.display = "block";
+    if (
+      !text ||
+      !currentConversation ||
+      !currentPeer ||
+      !currentUser
+    ) {
       return;
     }
 
-    const empty = $("emptyCalls");
-    if (empty) empty.style.display = "none";
 
-    container.innerHTML = calls.map(call => {
-      const otherId = call.callerId === currentUser.uid ? call.calleeId : call.callerId;
-      const member = findMember(otherId);
-      const name = member?.realName || "jChat User";
-      const icon = call.type === "video" ? "🎥" : "📞";
+    try {
+
+      const conversationRef =
+        doc(
+          db,
+          "conversations",
+          currentConversation.id
+        );
+
+
+      const unread =
+        {
+          ...(currentConversation.unreadCount || {})
+        };
+
+
+      unread[currentPeer.uid] =
+        Number(
+          unread[currentPeer.uid] || 0
+        ) + 1;
+
+
+      await addDoc(
+
+        collection(
+          db,
+          "conversations",
+          currentConversation.id,
+          "messages"
+        ),
+
+        {
+          senderId:
+            currentUser.uid,
+
+          receiverId:
+            currentPeer.uid,
+
+          text,
+
+          createdAt:
+            serverTimestamp(),
+
+          read: false
+        }
+      );
+
+
+      await updateDoc(
+        conversationRef,
+        {
+          lastMessage: text,
+          lastMessageAt:
+            serverTimestamp(),
+          updatedAt:
+            serverTimestamp(),
+          unreadCount: unread
+        }
+      );
+
+
+      document.dispatchEvent(
+        new CustomEvent(
+          "jchat-message-sent"
+        )
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Send message:",
+        error
+      );
+
+      showToast(
+        "Message could not be sent."
+      );
+    }
+  }
+);
+
+
+/* =========================================================
+   CONTACTS
+   ========================================================= */
+
+function renderContacts() {
+
+  const list =
+    $("contactList");
+
+  if (!list) return;
+
+
+  const others =
+    members.filter(
+      member =>
+        member.uid !==
+        currentUser.uid
+    );
+
+
+  if (!others.length) {
+
+    list.innerHTML = `
+      <div
+        style="
+          text-align:center;
+          color:#8c91aa;
+          padding:40px 20px;
+          font-size:13px;
+        "
+      >
+        No contacts yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  list.innerHTML =
+    others.map(member => {
+
+      const photo =
+        getPhoto(member);
+
+
+      const avatar =
+        photo
+          ? `
+            <div class="avatar">
+              <img
+                src="${safe(photo)}"
+                alt=""
+              >
+            </div>
+          `
+          : `
+            <div class="avatar">
+              ${initials(member.realName)}
+            </div>
+          `;
+
 
       return `
-        <div class="callItem">
-          <div class="avatar">${icon}</div>
-          <div class="callDetails">
-            <div class="callName">${safe(name)}</div>
-            <div class="callMeta">${safe(call.status || "")} • ${formatTime(call.createdAt)}</div>
+        <div
+          class="contactItem"
+          data-member-id="${safe(member.uid)}"
+        >
+
+          ${avatar}
+
+          <div class="contactInfo">
+
+            <div class="contactName">
+              ${safe(member.realName || "")}
+            </div>
+
+            <div class="contactAbout">
+              ${safe(
+                member.about ||
+                "Hey there! I am using jChat."
+              )}
+            </div>
+
           </div>
+
         </div>
       `;
+
     }).join("");
-  } catch (err) {
-    console.error("Call history:", err);
+
+
+  list
+    .querySelectorAll(
+      "[data-member-id]"
+    )
+    .forEach(item => {
+
+      item.addEventListener(
+        "click",
+        async () => {
+
+          const member =
+            findMember(
+              item.dataset.memberId
+            );
+
+
+          if (!member) return;
+
+
+          const conversation =
+            await getOrCreateConversation(
+              member.uid
+            );
+
+
+          await openConversation(
+            conversation,
+            member
+          );
+        }
+      );
+    });
+}
+
+
+/* =========================================================
+   GET / CREATE CONVERSATION
+   ========================================================= */
+
+async function getOrCreateConversation(
+  otherId
+) {
+
+  if (!currentUser || !otherId) {
+    throw new Error(
+      "Invalid conversation users."
+    );
+  }
+
+
+  const ids = [
+    currentUser.uid,
+    otherId
+  ].sort();
+
+
+  const existing =
+    conversations.find(
+      conversation => {
+
+        const participants =
+          conversation.participantIds || [];
+
+
+        return (
+          participants.length === 2 &&
+          participants[0] === ids[0] &&
+          participants[1] === ids[1]
+        );
+      }
+    );
+
+
+  if (existing) {
+    return existing;
+  }
+
+
+  // Double-check Firestore before creating.
+  const snapshot =
+    await getDocs(
+      query(
+        collection(db, "conversations"),
+        where(
+          "participantIds",
+          "==",
+          ids
+        )
+      )
+    );
+
+
+  if (!snapshot.empty) {
+
+    const existingDoc =
+      snapshot.docs[0];
+
+    return {
+      id: existingDoc.id,
+      ...existingDoc.data()
+    };
+  }
+
+
+  const conversationRef =
+    await addDoc(
+      collection(db, "conversations"),
+      {
+        participantIds: ids,
+        createdAt:
+          serverTimestamp(),
+        updatedAt:
+          serverTimestamp(),
+        lastMessage: "",
+        lastMessageAt:
+          null,
+        unreadCount: {
+          [ids[0]]: 0,
+          [ids[1]]: 0
+        }
+      }
+    );
+
+
+  return {
+    id: conversationRef.id,
+    participantIds: ids,
+    unreadCount: {
+      [ids[0]]: 0,
+      [ids[1]]: 0
+    }
+  };
+}
+
+
+/* =========================================================
+   CALL HISTORY
+   ========================================================= */
+
+async function loadCallHistory() {
+
+  const container =
+    $("callHistory");
+
+  if (!container || !currentUser) {
+    return;
+  }
+
+
+  try {
+
+    const snapshot =
+      await getDocs(
+        query(
+          collection(db, "calls"),
+          where(
+            "participantIds",
+            "array-contains",
+            currentUser.uid
+          ),
+          orderBy(
+            "createdAt",
+            "desc"
+          ),
+          limit(50)
+        )
+      );
+
+
+    const calls =
+      snapshot.docs.map(
+        docSnap => ({
+          id: docSnap.id,
+          ...docSnap.data()
+        })
+      );
+
+
+    const empty =
+      $("emptyCalls");
+
+
+    if (!calls.length) {
+
+      container.innerHTML = "";
+
+      if (empty) {
+        empty.style.display = "block";
+      }
+
+      return;
+    }
+
+
+    if (empty) {
+      empty.style.display = "none";
+    }
+
+
+    container.innerHTML =
+      calls.map(call => {
+
+        const otherId =
+          call.callerId === currentUser.uid
+            ? call.calleeId
+            : call.callerId;
+
+
+        const member =
+          findMember(otherId);
+
+
+        const name =
+          member?.realName ||
+          "jChat User";
+
+
+        const icon =
+          call.type === "video"
+            ? "🎥"
+            : "📞";
+
+
+        return `
+          <div class="callItem">
+
+            <div class="avatar">
+              ${icon}
+            </div>
+
+            <div class="callDetails">
+
+              <div class="callName">
+                ${safe(name)}
+              </div>
+
+              <div class="callMeta">
+                ${safe(call.status || "")}
+                •
+                ${safe(formatTime(call.createdAt))}
+              </div>
+
+            </div>
+
+          </div>
+        `;
+
+      }).join("");
+
+
+  } catch (error) {
+
+    console.error(
+      "Call history:",
+      error
+    );
+
+    showToast(
+      "Could not load call history."
+    );
   }
 }
 
 
 /* =========================================================
-   WEBRTC — OUTGOING
+   WEBRTC — PEER CONNECTION
    ========================================================= */
 
-async function startCall(member, type) {
-  if (!currentUser || !member || peerConnection) {
-    if (peerConnection) showToast("You are already on a call.");
+async function createPeerConnection() {
+
+  if (peerConnection) {
+    return peerConnection;
+  }
+
+
+  peerConnection =
+    new RTCPeerConnection(
+      RTC_CONFIG
+    );
+
+
+  remoteDescriptionReady = false;
+  pendingIceCandidates = [];
+
+
+  peerConnection.onconnectionstatechange =
+    () => {
+
+      if (!peerConnection) return;
+
+      const state =
+        peerConnection.connectionState;
+
+
+      if (state === "connected") {
+
+        $("callStatus") &&
+          ($("callStatus").textContent =
+            "Connected");
+
+      }
+
+
+      if (
+        state === "failed"
+      ) {
+
+        showToast(
+          "Call connection failed."
+        );
+
+        cleanupCall();
+      }
+
+
+      if (
+        state === "closed"
+      ) {
+
+        cleanupCall();
+      }
+    };
+
+
+  peerConnection.oniceconnectionstatechange =
+    () => {
+
+      if (!peerConnection) return;
+
+      const state =
+        peerConnection.iceConnectionState;
+
+      console.log(
+        "ICE:",
+        state
+      );
+    };
+
+
+  return peerConnection;
+}
+
+
+/* =========================================================
+   ADD REMOTE ICE SAFELY
+   ========================================================= */
+
+async function addRemoteCandidate(
+  candidate
+) {
+
+  if (!peerConnection || !candidate) {
     return;
   }
 
+
+  if (!remoteDescriptionReady) {
+
+    pendingIceCandidates.push(
+      candidate
+    );
+
+    return;
+  }
+
+
   try {
-    const callRef = await addDoc(collection(db, "calls"), {
-      callerId: currentUser.uid,
-      calleeId: member.uid,
-      participantIds: [currentUser.uid, member.uid],
-      type,
-      status: "ringing",
-      createdAt: serverTimestamp()
-    });
+
+    await peerConnection.addIceCandidate(
+      new RTCIceCandidate(candidate)
+    );
+
+  } catch (error) {
+
+    console.error(
+      "ICE candidate:",
+      error
+    );
+  }
+}
+
+
+async function flushPendingCandidates() {
+
+  if (!peerConnection) return;
+
+  if (!remoteDescriptionReady) return;
+
+
+  const pending =
+    [...pendingIceCandidates];
+
+  pendingIceCandidates = [];
+
+
+  for (const candidate of pending) {
+
+    try {
+
+      await peerConnection.addIceCandidate(
+        new RTCIceCandidate(candidate)
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Pending ICE:",
+        error
+      );
+    }
+  }
+}
+
+
+/* =========================================================
+   LISTEN TO CANDIDATES
+   ========================================================= */
+
+function listenToCandidates(
+  callId
+) {
+
+  unsubscribeCandidates?.();
+
+
+  unsubscribeCandidates =
+    onSnapshot(
+
+      query(
+        collection(
+          db,
+          "calls",
+          callId,
+          "candidates"
+        ),
+        orderBy(
+          "createdAt",
+          "asc"
+        )
+      ),
+
+      async snapshot => {
+
+        for (
+          const change
+          of snapshot.docChanges()
+        ) {
+
+          if (
+            change.type !==
+            "added"
+          ) {
+            continue;
+          }
+
+
+          const data =
+            change.doc.data();
+
+
+          if (
+            data.senderId ===
+            currentUser.uid
+          ) {
+            continue;
+          }
+
+
+          await addRemoteCandidate(
+            data.candidate
+          );
+        }
+      },
+
+      error => {
+
+        console.error(
+          "Candidate listener:",
+          error
+        );
+      }
+    );
+}
+
+
+/* =========================================================
+   WEBRTC — OUTGOING CALL
+   ========================================================= */
+
+async function startCall(
+  member,
+  type
+) {
+
+  if (
+    !currentUser ||
+    !member
+  ) {
+    return;
+  }
+
+
+  if (peerConnection) {
+
+    showToast(
+      "You are already on a call."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    const callRef =
+      await addDoc(
+        collection(db, "calls"),
+        {
+          callerId:
+            currentUser.uid,
+
+          calleeId:
+            member.uid,
+
+          participantIds: [
+            currentUser.uid,
+            member.uid
+          ],
+
+          type,
+
+          status:
+            "ringing",
+
+          createdAt:
+            serverTimestamp()
+        }
+      );
+
 
     currentCall = {
       id: callRef.id,
@@ -614,368 +1791,1203 @@ async function startCall(member, type) {
       outgoing: true
     };
 
-    showCallOverlay(member, type, "Calling...");
+
+    showCallOverlay(
+      member,
+      type,
+      "Calling..."
+    );
+
 
     await createPeerConnection();
 
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: type === "video"
-    });
 
-    localStream.getTracks().forEach(t => peerConnection.addTrack(t, localStream));
+    localStream =
+      await navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+          video:
+            type === "video"
+        });
 
-    if (type === "video") showLocalVideo();
 
-    peerConnection.onicecandidate = async ev => {
-      if (!ev.candidate) return;
-      await addDoc(
-        collection(db, "calls", callRef.id, "candidates"),
-        {
-          senderId: currentUser.uid,
-          candidate: ev.candidate.toJSON(),
-          createdAt: serverTimestamp()
+    localStream
+      .getTracks()
+      .forEach(track => {
+
+        peerConnection.addTrack(
+          track,
+          localStream
+        );
+
+      });
+
+
+    if (type === "video") {
+      showLocalVideo();
+    }
+
+
+    peerConnection.onicecandidate =
+      async event => {
+
+        if (!event.candidate) {
+          return;
         }
+
+
+        try {
+
+          await addDoc(
+            collection(
+              db,
+              "calls",
+              callRef.id,
+              "candidates"
+            ),
+            {
+              senderId:
+                currentUser.uid,
+
+              candidate:
+                event.candidate.toJSON(),
+
+              createdAt:
+                serverTimestamp()
+            }
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Send ICE:",
+            error
+          );
+        }
+      };
+
+
+    peerConnection.ontrack =
+      event => {
+
+        if (!remoteStream) {
+          remoteStream =
+            new MediaStream();
+        }
+
+
+        const stream =
+          event.streams?.[0];
+
+
+        if (stream) {
+
+          stream
+            .getTracks()
+            .forEach(track => {
+
+              if (
+                !remoteStream
+                  .getTracks()
+                  .some(
+                    t =>
+                      t.id ===
+                      track.id
+                  )
+              ) {
+
+                remoteStream.addTrack(
+                  track
+                );
+              }
+            });
+
+        } else {
+
+          remoteStream.addTrack(
+            event.track
+          );
+        }
+
+
+        const video =
+          $("remoteVideo");
+
+
+        if (video) {
+          video.srcObject =
+            remoteStream;
+        }
+      };
+
+
+    const offer =
+      await peerConnection
+        .createOffer();
+
+
+    await peerConnection
+      .setLocalDescription(
+        offer
       );
-    };
 
-    peerConnection.ontrack = ev => {
-      if (!remoteStream) remoteStream = new MediaStream();
-      ev.streams[0]?.getTracks().forEach(t => remoteStream.addTrack(t));
-      const v = $("remoteVideo");
-      if (v) v.srcObject = remoteStream;
-    };
 
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
+    await updateDoc(
+      callRef,
+      {
+        offer: {
+          type:
+            offer.type,
 
-    await updateDoc(doc(db, "calls", callRef.id), {
-      offer: { type: offer.type, sdp: offer.sdp }
-    });
+          sdp:
+            offer.sdp
+        }
+      }
+    );
 
-    listenToCallChanges(callRef.id, member, true);
-    listenToCandidates(callRef.id);
-  } catch (err) {
-    console.error("startCall:", err);
+
+    listenToCallChanges(
+      callRef.id,
+      member,
+      true
+    );
+
+
+    listenToCandidates(
+      callRef.id
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "startCall:",
+      error
+    );
+
     await cleanupCall();
-    showToast("Could not start the call.");
+
+    showToast(
+      "Could not start the call."
+    );
   }
 }
 
 
-async function createPeerConnection() {
-  peerConnection = new RTCPeerConnection(RTC_CONFIG);
+/* =========================================================
+   CALL CHANGES
+   ========================================================= */
 
-  peerConnection.onconnectionstatechange = () => {
-    const s = peerConnection.connectionState;
-    if (s === "connected") {
-      const st = $("callStatus");
-      if (st) st.textContent = "Connected";
-    }
-    if (s === "failed" || s === "closed") cleanupCall();
-  };
+function listenToCallChanges(
+  callId,
+  member,
+  outgoing
+) {
 
-  return peerConnection;
-}
+  unsubscribeCurrentCall?.();
 
 
-function listenToCallChanges(callId, member, outgoing) {
-  onSnapshot(doc(db, "calls", callId), async snap => {
-    if (!snap.exists()) return;
-    const data = snap.data();
+  unsubscribeCurrentCall =
+    onSnapshot(
+      doc(db, "calls", callId),
 
-    if (outgoing && data.answer && peerConnection && !peerConnection.currentRemoteDescription) {
-      try {
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-        showCallOverlay(member, currentCall.type, "Connected");
-        showActiveCallControls();
-      } catch (err) {
-        console.error("Remote answer:", err);
-      }
-    }
+      async snapshot => {
 
-    if (data.status === "rejected" || data.status === "ended") {
-      await cleanupCall();
-      showToast(data.status === "rejected" ? "Call rejected." : "Call ended.");
-    }
-  });
-}
-
-
-function listenToCandidates(callId) {
-  onSnapshot(
-    query(
-      collection(db, "calls", callId, "candidates"),
-      orderBy("createdAt", "asc")
-    ),
-    async snap => {
-      for (const change of snap.docChanges()) {
-        if (change.type !== "added") continue;
-        const data = change.doc.data();
-        if (data.senderId === currentUser.uid) continue;
-        if (!peerConnection || !data.candidate) continue;
-        try {
-          await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
-        } catch (err) {
-          console.error("addIceCandidate:", err);
+        if (!snapshot.exists()) {
+          return;
         }
+
+
+        const data =
+          snapshot.data();
+
+
+        if (
+          outgoing &&
+          data.answer &&
+          peerConnection &&
+          !peerConnection
+            .currentRemoteDescription
+        ) {
+
+          try {
+
+            await peerConnection
+              .setRemoteDescription(
+                new RTCSessionDescription(
+                  data.answer
+                )
+              );
+
+
+            remoteDescriptionReady =
+              true;
+
+
+            await flushPendingCandidates();
+
+
+            showCallOverlay(
+              member,
+              currentCall.type,
+              "Connected"
+            );
+
+            showActiveCallControls();
+
+
+          } catch (error) {
+
+            console.error(
+              "Remote answer:",
+              error
+            );
+          }
+        }
+
+
+        if (
+          data.status ===
+          "rejected"
+        ) {
+
+          showToast(
+            "Call rejected."
+          );
+
+          await cleanupCall();
+
+          return;
+        }
+
+
+        if (
+          data.status ===
+          "ended"
+        ) {
+
+          await cleanupCall();
+
+          return;
+        }
+      },
+
+      error => {
+
+        console.error(
+          "Call listener:",
+          error
+        );
       }
-    }
-  );
+    );
 }
 
 
 /* =========================================================
-   WEBRTC — INCOMING
+   INCOMING CALLS
    ========================================================= */
 
 function startIncomingCallListener() {
+
   if (!currentUser) return;
-  if (unsubscribeIncomingCalls) unsubscribeIncomingCalls();
 
-  unsubscribeIncomingCalls = onSnapshot(
-    query(
-      collection(db, "calls"),
-      where("calleeId", "==", currentUser.uid),
-      where("status", "==", "ringing"),
-      limit(1)
-    ),
-    snap => {
-      snap.docChanges().forEach(change => {
-        if (change.type !== "added") return;
-        const data = change.doc.data();
-        if (peerConnection) return;
+  unsubscribeIncomingCalls?.();
 
-        const member = findMember(data.callerId);
-        if (!member) return;
 
-        currentCall = {
-          id: change.doc.id,
-          callerId: data.callerId,
-          calleeId: data.calleeId,
-          type: data.type,
-          outgoing: false
-        };
+  unsubscribeIncomingCalls =
+    onSnapshot(
 
-        showIncomingCall(member, data.type);
-      });
-    }
-  );
+      query(
+        collection(db, "calls"),
+        where(
+          "calleeId",
+          "==",
+          currentUser.uid
+        ),
+        where(
+          "status",
+          "==",
+          "ringing"
+        ),
+        limit(1)
+      ),
+
+      snapshot => {
+
+        snapshot
+          .docChanges()
+          .forEach(change => {
+
+            if (
+              change.type !==
+              "added"
+            ) {
+              return;
+            }
+
+
+            if (peerConnection) {
+              return;
+            }
+
+
+            const data =
+              change.doc.data();
+
+
+            const member =
+              findMember(
+                data.callerId
+              );
+
+
+            if (!member) {
+              return;
+            }
+
+
+            currentCall = {
+              id: change.doc.id,
+              callerId:
+                data.callerId,
+              calleeId:
+                data.calleeId,
+              type:
+                data.type,
+              outgoing: false
+            };
+
+
+            showIncomingCall(
+              member,
+              data.type
+            );
+          });
+      },
+
+      error => {
+
+        console.error(
+          "Incoming calls:",
+          error
+        );
+      }
+    );
 }
 
 
+/* =========================================================
+   ACCEPT INCOMING CALL
+   ========================================================= */
+
 async function acceptIncomingCall() {
-  if (!currentCall || currentCall.outgoing) return;
+
+  if (
+    !currentCall ||
+    currentCall.outgoing
+  ) {
+    return;
+  }
+
 
   try {
-    const callRef = doc(db, "calls", currentCall.id);
-    const snap = await getDoc(callRef);
-    if (!snap.exists()) throw new Error("Call missing");
-    const data = snap.data();
+
+    const callRef =
+      doc(
+        db,
+        "calls",
+        currentCall.id
+      );
+
+
+    const snapshot =
+      await getDoc(callRef);
+
+
+    if (!snapshot.exists()) {
+      throw new Error(
+        "Call no longer exists."
+      );
+    }
+
+
+    const data =
+      snapshot.data();
+
+
+    if (
+      data.status !==
+      "ringing"
+    ) {
+      return;
+    }
+
 
     await createPeerConnection();
 
-    localStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: currentCall.type === "video"
-    });
 
-    localStream.getTracks().forEach(t => peerConnection.addTrack(t, localStream));
+    localStream =
+      await navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+          video:
+            currentCall.type ===
+            "video"
+        });
 
-    if (currentCall.type === "video") showLocalVideo();
 
-    peerConnection.onicecandidate = async ev => {
-      if (!ev.candidate) return;
-      await addDoc(
-        collection(db, "calls", currentCall.id, "candidates"),
-        {
-          senderId: currentUser.uid,
-          candidate: ev.candidate.toJSON(),
-          createdAt: serverTimestamp()
-        }
-      );
-    };
+    localStream
+      .getTracks()
+      .forEach(track => {
 
-    peerConnection.ontrack = ev => {
-      if (!remoteStream) remoteStream = new MediaStream();
-      ev.streams[0]?.getTracks().forEach(t => remoteStream.addTrack(t));
-      const v = $("remoteVideo");
-      if (v) v.srcObject = remoteStream;
-    };
+        peerConnection.addTrack(
+          track,
+          localStream
+        );
 
-    if (data.offer) {
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+      });
+
+
+    if (
+      currentCall.type ===
+      "video"
+    ) {
+
+      showLocalVideo();
     }
 
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
 
-    await updateDoc(callRef, {
-      answer: { type: answer.type, sdp: answer.sdp },
-      status: "accepted"
-    });
+    peerConnection.onicecandidate =
+      async event => {
 
-    const member = findMember(currentCall.callerId);
-    showCallOverlay(member || { realName: "jChat User" }, currentCall.type, "Connected");
+        if (!event.candidate) {
+          return;
+        }
+
+
+        try {
+
+          await addDoc(
+            collection(
+              db,
+              "calls",
+              currentCall.id,
+              "candidates"
+            ),
+            {
+              senderId:
+                currentUser.uid,
+
+              candidate:
+                event.candidate.toJSON(),
+
+              createdAt:
+                serverTimestamp()
+            }
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Incoming ICE:",
+            error
+          );
+        }
+      };
+
+
+    peerConnection.ontrack =
+      event => {
+
+        if (!remoteStream) {
+          remoteStream =
+            new MediaStream();
+        }
+
+
+        const stream =
+          event.streams?.[0];
+
+
+        if (stream) {
+
+          stream
+            .getTracks()
+            .forEach(track => {
+
+              if (
+                !remoteStream
+                  .getTracks()
+                  .some(
+                    t =>
+                      t.id ===
+                      track.id
+                  )
+              ) {
+
+                remoteStream.addTrack(
+                  track
+                );
+              }
+            });
+
+        } else {
+
+          remoteStream.addTrack(
+            event.track
+          );
+        }
+
+
+        const video =
+          $("remoteVideo");
+
+
+        if (video) {
+          video.srcObject =
+            remoteStream;
+        }
+      };
+
+
+    if (!data.offer) {
+
+      throw new Error(
+        "Call offer missing."
+      );
+    }
+
+
+    await peerConnection
+      .setRemoteDescription(
+        new RTCSessionDescription(
+          data.offer
+        )
+      );
+
+
+    remoteDescriptionReady =
+      true;
+
+
+    await flushPendingCandidates();
+
+
+    const answer =
+      await peerConnection
+        .createAnswer();
+
+
+    await peerConnection
+      .setLocalDescription(
+        answer
+      );
+
+
+    await updateDoc(
+      callRef,
+      {
+        answer: {
+          type:
+            answer.type,
+
+          sdp:
+            answer.sdp
+        },
+
+        status:
+          "accepted"
+      }
+    );
+
+
+    const member =
+      findMember(
+        currentCall.callerId
+      );
+
+
+    showCallOverlay(
+      member || {
+        realName:
+          "jChat User"
+      },
+      currentCall.type,
+      "Connected"
+    );
+
+
     showActiveCallControls();
-    listenToCandidates(currentCall.id);
-  } catch (err) {
-    console.error("accept:", err);
+
+
+    listenToCallChanges(
+      currentCall.id,
+      member || {
+        realName:
+          "jChat User"
+      },
+      false
+    );
+
+
+    listenToCandidates(
+      currentCall.id
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Accept call:",
+      error
+    );
+
     await rejectIncomingCall();
   }
 }
 
 
+/* =========================================================
+   REJECT
+   ========================================================= */
+
 async function rejectIncomingCall() {
-  if (!currentCall) return;
+
+  if (!currentCall) {
+    return;
+  }
+
+
   try {
-    await updateDoc(doc(db, "calls", currentCall.id), { status: "rejected" });
-  } catch {}
+
+    await updateDoc(
+      doc(
+        db,
+        "calls",
+        currentCall.id
+      ),
+      {
+        status:
+          "rejected"
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Reject call:",
+      error
+    );
+  }
+
+
   await cleanupCall();
-}
-
-
-async function endCall() {
-  if (currentCall) {
-    try {
-      await updateDoc(doc(db, "calls", currentCall.id), { status: "ended" });
-    } catch {}
-  }
-  await cleanupCall();
-}
-
-
-async function cleanupCall() {
-  if (localStream) {
-    localStream.getTracks().forEach(t => t.stop());
-    localStream = null;
-  }
-  if (remoteStream) {
-    remoteStream.getTracks().forEach(t => t.stop());
-    remoteStream = null;
-  }
-  if (peerConnection) {
-    try { peerConnection.close(); } catch {}
-    peerConnection = null;
-  }
-  currentCall = null;
-
-  const overlay = $("callOverlay");
-  if (overlay) overlay.classList.remove("show");
-
-  const lv = $("localVideo");
-  const rv = $("remoteVideo");
-  if (lv) { lv.srcObject = null; }
-  if (rv) { rv.srcObject = null; }
 }
 
 
 /* =========================================================
-   CALL OVERLAY UI (home.html: #callOverlay)
+   END CALL
    ========================================================= */
 
-function showCallOverlay(member, type, status) {
-  const overlay = $("callOverlay");
-  if (!overlay) return;
-  overlay.classList.add("show");
+async function endCall() {
 
-  const name = $("callName");
-  const stat = $("callStatus");
-  if (name) name.textContent = member.realName || "jChat User";
-  if (stat) stat.textContent = status;
+  const call =
+    currentCall;
 
-  const lv = $("localVideo");
-  const rv = $("remoteVideo");
-  if (lv) lv.style.display = type === "video" ? "block" : "none";
-  if (rv) rv.style.display = type === "video" ? "block" : "none";
+
+  if (call) {
+
+    try {
+
+      await updateDoc(
+        doc(
+          db,
+          "calls",
+          call.id
+        ),
+        {
+          status:
+            "ended"
+        }
+      );
+
+    } catch (error) {
+
+      console.error(
+        "End call:",
+        error
+      );
+    }
+  }
+
+
+  await cleanupCall();
 }
 
 
-function showIncomingCall(member, type) {
+/* =========================================================
+   CLEANUP CALL
+   ========================================================= */
+
+async function cleanupCall() {
+
+  unsubscribeCurrentCall?.();
+  unsubscribeCandidates?.();
+
+  unsubscribeCurrentCall = null;
+  unsubscribeCandidates = null;
+
+
+  if (localStream) {
+
+    localStream
+      .getTracks()
+      .forEach(track =>
+        track.stop()
+      );
+
+    localStream = null;
+  }
+
+
+  if (remoteStream) {
+
+    remoteStream
+      .getTracks()
+      .forEach(track =>
+        track.stop()
+      );
+
+    remoteStream = null;
+  }
+
+
+  if (peerConnection) {
+
+    try {
+      peerConnection.close();
+    } catch {}
+
+    peerConnection = null;
+  }
+
+
+  pendingIceCandidates = [];
+  remoteDescriptionReady = false;
+
+  currentCall = null;
+
+
+  const overlay =
+    $("callOverlay");
+
+  if (overlay) {
+    overlay.classList.remove("show");
+  }
+
+
+  const localVideo =
+    $("localVideo");
+
+  const remoteVideo =
+    $("remoteVideo");
+
+
+  if (localVideo) {
+    localVideo.srcObject = null;
+  }
+
+
+  if (remoteVideo) {
+    remoteVideo.srcObject = null;
+  }
+}
+
+
+/* =========================================================
+   CALL UI
+   ========================================================= */
+
+function showCallOverlay(
+  member,
+  type,
+  status
+) {
+
+  const overlay =
+    $("callOverlay");
+
+  if (!overlay) return;
+
+
+  overlay.classList.add(
+    "show"
+  );
+
+
+  const name =
+    $("callName");
+
+  const callStatus =
+    $("callStatus");
+
+
+  if (name) {
+    name.textContent =
+      member.realName ||
+      "jChat User";
+  }
+
+
+  if (callStatus) {
+    callStatus.textContent =
+      status;
+  }
+
+
+  const localVideo =
+    $("localVideo");
+
+  const remoteVideo =
+    $("remoteVideo");
+
+
+  const isVideo =
+    type === "video";
+
+
+  if (localVideo) {
+    localVideo.style.display =
+      isVideo
+        ? "block"
+        : "none";
+  }
+
+
+  if (remoteVideo) {
+    remoteVideo.style.display =
+      isVideo
+        ? "block"
+        : "none";
+  }
+}
+
+
+function showIncomingCall(
+  member,
+  type
+) {
+
   showCallOverlay(
     member,
     type,
-    type === "video" ? "Incoming video call" : "Incoming audio call"
+    type === "video"
+      ? "Incoming video call"
+      : "Incoming audio call"
   );
+
+
+  // If home.html has dedicated incoming
+  // buttons, activate them.
+  $("acceptCallBtn")?.classList.add("show");
+  $("rejectCallBtn")?.classList.add("show");
 }
 
 
-function showActiveCallControls() {}
+function showActiveCallControls() {
+
+  $("acceptCallBtn")?.classList.remove("show");
+  $("rejectCallBtn")?.classList.remove("show");
+}
 
 
 function showLocalVideo() {
-  const v = $("localVideo");
-  if (v && localStream) {
-    v.srcObject = localStream;
-    v.style.display = "block";
+
+  const video =
+    $("localVideo");
+
+  if (
+    video &&
+    localStream
+  ) {
+
+    video.srcObject =
+      localStream;
+
+    video.style.display =
+      "block";
+
+    video.muted = true;
+
+    video.playsInline = true;
+
+    video.play?.().catch(() => {});
   }
 }
 
 
 /* =========================================================
-   WIRE UP home.html ELEMENTS
+   HOME UI
    ========================================================= */
 
 function wireHomeUI() {
-  // chat window back button
-  $("closeChatButton")?.addEventListener("click", () => {
-    if (unsubscribeMessages) {
-      unsubscribeMessages();
-      unsubscribeMessages = null;
-    }
-    currentConversation = null;
-    currentPeer = null;
-  });
 
-  // chat window call buttons
-  $("audioCallButton")?.addEventListener("click", () => {
-    if (currentPeer) startCall(currentPeer, "audio");
-  });
+  $("closeChatButton")
+    ?.addEventListener(
+      "click",
+      () => {
 
-  $("videoCallButton")?.addEventListener("click", () => {
-    if (currentPeer) startCall(currentPeer, "video");
-  });
+        unsubscribeMessages?.();
 
-  // header video button — call current peer if any
-  $("headerVideoButton")?.addEventListener("click", () => {
-    if (currentPeer) startCall(currentPeer, "video");
-    else showToast("Open a chat first.");
-  });
+        unsubscribeMessages =
+          null;
 
-  // call overlay controls
-  $("endCallBtn")?.addEventListener("click", endCall);
+        currentConversation =
+          null;
 
-  $("muteCallBtn")?.addEventListener("click", () => {
-    if (!localStream) return;
-    const tracks = localStream.getAudioTracks();
-    if (!tracks.length) return;
-    const enabled = tracks[0].enabled;
-    tracks.forEach(t => (t.enabled = !enabled));
-  });
+        currentPeer =
+          null;
+      }
+    );
 
-  $("cameraCallBtn")?.addEventListener("click", () => {
-    if (!localStream) return;
-    const tracks = localStream.getVideoTracks();
-    if (!tracks.length) return showToast("This is an audio call.");
-    const enabled = tracks[0].enabled;
-    tracks.forEach(t => (t.enabled = !enabled));
-  });
 
-  // settings / logout wiring in profile screen
-  $("logoutButton")?.addEventListener("click", logoutUser);
+  $("audioCallButton")
+    ?.addEventListener(
+      "click",
+      () => {
 
-  // calls screen — load history when opened
-  document.querySelectorAll('.navButton[data-target="callsScreen"]')
-    .forEach(btn => btn.addEventListener("click", () => setTimeout(loadCallHistory, 50)));
+        if (currentPeer) {
 
-  // contacts search
-  $("contactSearchInput")?.addEventListener("input", () => {
-    const q = ($("contactSearchInput").value || "").toLowerCase().trim();
-    document.querySelectorAll("#contactList .contactItem").forEach(item => {
-      const name = item.querySelector(".contactName")?.textContent?.toLowerCase() || "";
-      item.style.display = !q || name.includes(q) ? "" : "none";
+          startCall(
+            currentPeer,
+            "audio"
+          );
+
+        } else {
+
+          showToast(
+            "Open a chat first."
+          );
+        }
+      }
+    );
+
+
+  $("videoCallButton")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        if (currentPeer) {
+
+          startCall(
+            currentPeer,
+            "video"
+          );
+
+        } else {
+
+          showToast(
+            "Open a chat first."
+          );
+        }
+      }
+    );
+
+
+  $("headerVideoButton")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        if (currentPeer) {
+
+          startCall(
+            currentPeer,
+            "video"
+          );
+
+        } else {
+
+          showToast(
+            "Open a chat first."
+          );
+        }
+      }
+    );
+
+
+  $("endCallBtn")
+    ?.addEventListener(
+      "click",
+      endCall
+    );
+
+
+  $("acceptCallBtn")
+    ?.addEventListener(
+      "click",
+      acceptIncomingCall
+    );
+
+
+  $("rejectCallBtn")
+    ?.addEventListener(
+      "click",
+      rejectIncomingCall
+    );
+
+
+  $("muteCallBtn")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        if (!localStream) {
+          return;
+        }
+
+
+        const tracks =
+          localStream
+            .getAudioTracks();
+
+
+        if (!tracks.length) {
+          return;
+        }
+
+
+        const enabled =
+          tracks[0].enabled;
+
+
+        tracks.forEach(
+          track => {
+            track.enabled =
+              !enabled;
+          }
+        );
+
+
+        showToast(
+          enabled
+            ? "Microphone muted"
+            : "Microphone unmuted"
+        );
+      }
+    );
+
+
+  $("cameraCallBtn")
+    ?.addEventListener(
+      "click",
+      () => {
+
+        if (!localStream) {
+          return;
+        }
+
+
+        const tracks =
+          localStream
+            .getVideoTracks();
+
+
+        if (!tracks.length) {
+
+          showToast(
+            "This is an audio call."
+          );
+
+          return;
+        }
+
+
+        const enabled =
+          tracks[0].enabled;
+
+
+        tracks.forEach(
+          track => {
+            track.enabled =
+              !enabled;
+          }
+        );
+
+
+        showToast(
+          enabled
+            ? "Camera off"
+            : "Camera on"
+        );
+      }
+    );
+
+
+  $("logoutButton")
+    ?.addEventListener(
+      "click",
+      logoutUser
+    );
+
+
+  document
+    .querySelectorAll(
+      '.navButton[data-target="callsScreen"]'
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          setTimeout(
+            loadCallHistory,
+            100
+          );
+        }
+      );
     });
-  });
+
+
+  $("contactSearchInput")
+    ?.addEventListener(
+      "input",
+      () => {
+
+        const value =
+          (
+            $("contactSearchInput")
+              .value || ""
+          )
+          .toLowerCase()
+          .trim();
+
+
+        document
+          .querySelectorAll(
+            "#contactList .contactItem"
+          )
+          .forEach(item => {
+
+            const name =
+              item
+                .querySelector(
+                  ".contactName"
+                )
+                ?.textContent
+                ?.toLowerCase() || "";
+
+
+            item.style.display =
+              !value ||
+              name.includes(value)
+                ? ""
+                : "none";
+          });
+      }
+    );
 }
 
 
@@ -983,9 +2995,14 @@ function wireHomeUI() {
    BOOT
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  wireHomeUI();
-});
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    wireHomeUI();
+
+  }
+);
 
 
 /* =========================================================
@@ -993,11 +3010,26 @@ document.addEventListener("DOMContentLoaded", () => {
    ========================================================= */
 
 window.jChatApp = {
+
   startCall,
+
   endCall,
+
+  acceptIncomingCall,
+
+  rejectIncomingCall,
+
   cleanupCall,
+
   loadCallHistory,
-  renderChatList
+
+  renderChatList,
+
+  openConversation
+
 };
 
-console.log("jChat app.js loaded.");
+
+console.log(
+  "jChat app.js loaded successfully."
+);

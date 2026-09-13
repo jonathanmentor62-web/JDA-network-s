@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,
+  initial-scale=1.0,
+  maximum-scale=1.0,
+  user-scalable=no"
+>
+
+<title>jChat — Create Account</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #070914;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  padding: 28px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(73, 93, 255, .18);
+  filter: blur(80px);
+  top: -100px;
+  right: -100px;
+  pointer-events: none;
+}
+
+.logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  margin: 20px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 900;
+  background: linear-gradient(135deg,#536dff,#8d4dff);
+  box-shadow: 0 0 35px rgba(91,100,255,.35);
+}
+
+h1 {
+  text-align: center;
+  margin: 8px 0;
+  font-size: 27px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #9298b3;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.step {
+  display: none;
+}
+
+.step.active {
+  display: block;
+}
+
+label {
+  display: block;
+  color: #aeb4ce;
+  font-size: 13px;
+  margin: 17px 0 8px;
+}
+
+input {
+  width: 100%;
+  height: 52px;
+  border: 1px solid #242a42;
+  border-radius: 15px;
+  outline: none;
+  background: #101425;
+  color: white;
+  padding: 0 15px;
+  font-size: 15px;
+}
+
+input:focus {
+  border-color: #6675ff;
+  box-shadow: 0 0 0 3px rgba(102,117,255,.10);
+}
+
+.phoneRow {
+  display: flex;
+  gap: 8px;
+}
+
+.country {
+  width: 92px;
+}
+
+.phone {
+  flex: 1;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 52px;
+  border-radius: 15px;
+  margin-top: 20px;
+  color: white;
+  font-weight: 700;
+  font-size: 15px;
+  background: linear-gradient(135deg,#536dff,#874fff);
+  box-shadow: 0 10px 30px rgba(83,109,255,.20);
+}
+
+button:disabled {
+  opacity: .55;
+}
+
+.secondary {
+  background: #151a2c;
+  box-shadow: none;
+}
+
+.message {
+  min-height: 22px;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 13px;
+  color: #9fa6c2;
+}
+
+.error {
+  color: #ff7f92;
+}
+
+.success {
+  color: #64e6a4;
+}
+
+.otp {
+  text-align: center;
+  letter-spacing: 9px;
+  font-size: 24px;
+}
+
+.photoBox {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.photoPreview {
+  width: 105px;
+  height: 105px;
+  border-radius: 50%;
+  background: #151a2c;
+  border: 2px solid #343b60;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8d94b1;
+  font-size: 12px;
+}
+
+.photoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileButton {
+  display: block;
+  width: 150px;
+  margin: 10px auto;
+  height: 42px;
+  line-height: 42px;
+  text-align: center;
+  border-radius: 12px;
+  background: #151a2c;
+  color: #d9dcf0;
+  font-size: 13px;
+}
+
+.loginLink {
+  text-align: center;
+  margin-top: 25px;
+  color: #8e96b8;
+  font-size: 14px;
+}
+
+.loginLink span {
+  color: #7181ff;
+  font-weight: 700;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="glow"></div>
+
+  <div class="logo">jC</div>
+
+  <h1>Create your jChat account</h1>
+
+  <div class="subtitle">
+    Create a real jChat account using your mobile number.
+  </div>
+
+
+  <!-- =====================================================
+       STEP 1 — PHONE
+       ===================================================== -->
+
+  <section id="phoneStep" class="step active">
+
+    <label>Mobile number</label>
+
+    <div class="phoneRow">
+
+      <input
+        id="countryCode"
+        class="country"
+        value="+256"
+        inputmode="tel"
+      >
+
+      <input
+        id="phoneNumber"
+        class="phone"
+        placeholder="701234567"
+        inputmode="tel"
+      >
+
+    </div>
+
+    <div id="recaptcha-container"></div>
+
+    <button id="sendCodeButton">
+      Send verification code
+    </button>
+
+    <div id="phoneMessage" class="message"></div>
+
+  </section>
+
+
+  <!-- =====================================================
+       STEP 2 — OTP
+       ===================================================== -->
+
+  <section id="otpStep" class="step">
+
+    <h2 style="text-align:center">
+      Verify your number
+    </h2>
+
+    <div class="subtitle">
+      Enter the verification code sent to your phone.
+    </div>
+
+    <label>6-digit code</label>
+
+    <input
+      id="otpCode"
+      class="otp"
+      maxlength="6"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+      placeholder="••••••"
+    >
+
+    <button id="verifyCodeButton">
+      Verify number
+    </button>
+
+    <button id="resendButton" class="secondary">
+      Resend code
+    </button>
+
+    <div id="otpMessage" class="message"></div>
+
+  </section>
+
+
+  <!-- =====================================================
+       STEP 3 — PROFILE
+       ===================================================== -->
+
+  <section id="profileStep" class="step">
+
+    <h2 style="text-align:center">
+      Create your profile
+    </h2>
+
+    <div class="subtitle">
+      Add the information people will see on jChat.
+    </div>
+
+    <div class="photoBox">
+      <div id="photoPreview" class="photoPreview">
+        Photo
+      </div>
+    </div>
+
+    <input
+      id="profilePhoto"
+      class="fileInput"
+      type="file"
+      accept="image/jpeg,image/png,image/webp"
+    >
+
+    <label for="profilePhoto" class="fileButton">
+      Choose profile photo
+    </label>
+
+    <label>Real name</label>
+
+    <input
+      id="realName"
+      type="text"
+      maxlength="60"
+      placeholder="Your name"
+      autocomplete="name"
+    >
+
+    <label>Gmail / Email</label>
+
+    <input
+      id="email"
+      type="email"
+      placeholder="you@gmail.com"
+      autocomplete="email"
+    >
+
+    <label>About</label>
+
+    <input
+      id="about"
+      type="text"
+      maxlength="120"
+      placeholder="Hey there! I am using jChat."
+    >
+
+    <button id="createAccountButton">
+      Create jChat account
+    </button>
+
+    <div id="profileMessage" class="message"></div>
+
+  </section>
+
+
+  <div class="loginLink">
+    Already have an account?
+    <span onclick="location.href='index.html'">Log in</span>
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import {
+  auth,
+  db,
+  storage
+} from "./firebase.js";
+
+import {
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  updateProfile
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+import {
+  doc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.2.1/firebase-storage.js";
+
+
+const $ = id => document.getElementById(id);
+
+let confirmationResult = null;
+let verifiedUser = null;
+let recaptchaVerifier = null;
+
+
+/* =====================================================
+   HELPERS
+   ===================================================== */
+
+function showMessage(id, text, type = "") {
+
+  const el = $(id);
+
+  if (!el) return;
+
+  el.textContent = text;
+
+  el.className = "message " + type;
+}
+
+
+function showStep(id) {
+
+  document.querySelectorAll(".step")
+    .forEach(el => el.classList.remove("active"));
+
+  $(id)?.classList.add("active");
+
+}
+
+
+/* =====================================================
+   REAL FIREBASE RECAPTCHA
+   ===================================================== */
+
+function setupRecaptcha() {
+
+  if (recaptchaVerifier) return;
+
+  recaptchaVerifier = new RecaptchaVerifier(
+    auth,
+    "recaptcha-container",
+    {
+      size: "invisible"
+    }
+  );
+
+}
+
+
+/* =====================================================
+   SEND REAL SMS CODE
+   ===================================================== */
+
+$("sendCodeButton").addEventListener("click", async () => {
+
+  const country =
+    $("countryCode").value.trim();
+
+  const number =
+    $("phoneNumber").value.trim();
+
+  if (!number) {
+
+    showMessage(
+      "phoneMessage",
+      "Enter your mobile number.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const fullNumber =
+    country + number.replace(/^0+/, "");
+
+
+  try {
+
+    $("sendCodeButton").disabled = true;
+
+    showMessage(
+      "phoneMessage",
+      "Sending verification code..."
+    );
+
+
+    setupRecaptcha();
+
+
+    confirmationResult =
+      await signInWithPhoneNumber(
+        auth,
+        fullNumber,
+        recaptchaVerifier
+      );
+
+
+    showStep("otpStep");
+
+    showMessage(
+      "otpMessage",
+      "Verification code sent."
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "phoneMessage",
+      error.message || "Could not send verification code.",
+      "error"
+    );
+
+    try {
+      recaptchaVerifier?.clear();
+    } catch {}
+
+    recaptchaVerifier = null;
+
+  } finally {
+
+    $("sendCodeButton").disabled = false;
+
+  }
+
+});
+
+
+/* =====================================================
+   VERIFY REAL OTP
+   ===================================================== */
+
+$("verifyCodeButton").addEventListener("click", async () => {
+
+  const code =
+    $("otpCode").value.trim();
+
+
+  if (code.length !== 6) {
+
+    showMessage(
+      "otpMessage",
+      "Enter the 6-digit verification code.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!confirmationResult) {
+
+    showMessage(
+      "otpMessage",
+      "Request a new verification code.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    $("verifyCodeButton").disabled = true;
+
+    const result =
+      await confirmationResult.confirm(code);
+
+
+    verifiedUser = result.user;
+
+
+    showStep("profileStep");
+
+
+    showMessage(
+      "profileMessage",
+      "Phone number verified successfully.",
+      "success"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "otpMessage",
+      "Invalid or expired verification code.",
+      "error"
+    );
+
+  } finally {
+
+    $("verifyCodeButton").disabled = false;
+
+  }
+
+});
+
+
+/* =====================================================
+   RESEND
+   ===================================================== */
+
+$("resendButton").addEventListener("click", () => {
+
+  showStep("phoneStep");
+
+  showMessage(
+    "phoneMessage",
+    "You can request a new code."
+  );
+
+});
+
+
+/* =====================================================
+   PHOTO PREVIEW
+   ===================================================== */
+
+$("profilePhoto").addEventListener("change", event => {
+
+  const file = event.target.files?.[0];
+
+  if (!file) return;
+
+  if (file.size > 5 * 1024 * 1024) {
+
+    showMessage(
+      "profileMessage",
+      "Photo must be smaller than 5 MB.",
+      "error"
+    );
+
+    event.target.value = "";
+
+    return;
+  }
+
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+
+    $("photoPreview").innerHTML =
+      `<img src="${reader.result}" alt="">`;
+
+  };
+
+  reader.readAsDataURL(file);
+
+});
+
+
+/* =====================================================
+   CREATE REAL USER PROFILE
+   ===================================================== */
+
+$("createAccountButton").addEventListener("click", async () => {
+
+  if (!verifiedUser) {
+
+    showMessage(
+      "profileMessage",
+      "Verify your phone number first.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const name =
+    $("realName").value.trim();
+
+  const email =
+    $("email").value.trim();
+
+  const about =
+    $("about").value.trim();
+
+
+  if (!name) {
+
+    showMessage(
+      "profileMessage",
+      "Enter your real name.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if (!email) {
+
+    showMessage(
+      "profileMessage",
+      "Enter your Gmail/email address.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try {
+
+    $("createAccountButton").disabled = true;
+
+    showMessage(
+      "profileMessage",
+      "Creating your jChat account..."
+    );
+
+
+    let photoURL = "";
+
+
+    const file =
+      $("profilePhoto").files?.[0];
+
+
+    /* Upload profile photo */
+
+    if (file) {
+
+      const photoRef =
+        ref(
+          storage,
+          `profilePhotos/${verifiedUser.uid}/profile`
+        );
+
+
+      await uploadBytes(
+        photoRef,
+        file
+      );
+
+
+      photoURL =
+        await getDownloadURL(photoRef);
+
+    }
+
+
+    /* Update Firebase Auth profile */
+
+    await updateProfile(
+      verifiedUser,
+      {
+        displayName: name,
+        photoURL
+      }
+    );
+
+
+    /* Save Firestore profile */
+
+    await setDoc(
+      doc(db, "users", verifiedUser.uid),
+      {
+
+        uid: verifiedUser.uid,
+
+        realName: name,
+
+        email,
+
+        phoneNumber:
+          verifiedUser.phoneNumber || "",
+
+        photoURL,
+
+        about:
+          about ||
+          "Hey there! I am using jChat.",
+
+        isOnline: true,
+
+        createdAt:
+          serverTimestamp(),
+
+        updatedAt:
+          serverTimestamp()
+
+      },
+      {
+        merge: true
+      }
+    );
+
+
+    showMessage(
+      "profileMessage",
+      "Account created successfully.",
+      "success"
+    );
+
+
+    setTimeout(() => {
+
+      location.href = "home.html";
+
+    }, 800);
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "profileMessage",
+      error.message ||
+      "Could not create your account.",
+      "error"
+    );
+
+  } finally {
+
+    $("createAccountButton").disabled = false;
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>
